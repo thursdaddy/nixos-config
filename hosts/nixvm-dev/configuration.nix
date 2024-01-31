@@ -8,6 +8,8 @@
   imports =
     [
       ./hardware-configuration.nix
+      ../../modules/nixos/user
+      ../shared
     ];
 
   boot.loader.grub.enable = true;
@@ -56,9 +58,6 @@
   };
 
   # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
