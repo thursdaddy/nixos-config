@@ -67,30 +67,6 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.thurs = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "docker" ]; # Enable ‘sudo’ for the user.
-    initialPassword = "password";
-    shell = pkgs.zsh;
-    packages = with pkgs; [
-      neovim
-      gthumb
-      tmux
-      tree
-    ];
-  };
-
-  security.sudo.extraRules= [
-    {  users = [ "thurs" ];
-      commands = [
-         { command = "ALL" ;
-           options= [ "NOPASSWD" ]; # "SETENV" # Adding the following could be a good idea
-        }
-      ];
-    }
-  ];
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [

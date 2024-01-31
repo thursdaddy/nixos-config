@@ -9,18 +9,25 @@
       home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ...}@inputs: {
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ...}@inputs:
+    let
+        username = "thurs";
+    in {
       nixosConfigurations = {
           "nixvm-dev" = nixpkgs.lib.nixosSystem {
+              specialArgs = { inherit username; };
               system = "x86_64-linux";
               modules = [
                ./hosts/nixvm-dev/configuration.nix
+               ./modules/nixos/user
               ];
           };
           "nixvm" = nixpkgs.lib.nixosSystem {
+              specialArgs = { inherit username; };
               system = "x86_64-linux";
               modules = [
                ./hosts/nixvm/configuration.nix
+               ./modules/nixos/user
               ];
           };
       };
