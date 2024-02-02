@@ -7,9 +7,14 @@
 
       home-manager.url = "github:nix-community/home-manager";
       home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+      nixos-generators = {
+          url = "github:nix-community/nixos-generators";
+          inputs.nixpkgs.follows = "nixpkgs";
+      };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ...}@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, nixos-generators, ...}@inputs:
     let
         username = "thurs";
     in {
@@ -29,6 +34,18 @@
                ./hosts/nixvm/configuration.nix
                ./modules/nixos/user
               ];
+          };
+      };
+      packages.x86_64-linux = {
+          iso = nixos-generators.nixosGenerate {
+              specialArgs = { inherit username; };
+              system = "x86_64-linux";
+              modules = [
+                ./systems/x86_64-iso
+                ./modules/nixos/user
+                ./hosts/shared
+              ];
+              format = "iso";
           };
       };
   };
