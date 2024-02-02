@@ -2,7 +2,7 @@
   description = "I have no idea what I am doing";
 
   inputs = {
-      nixpkgs.url = "github:nixos/nixpkgs/release-23.11";
+      nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
 
       nixos-generators = {
           url = "github:nix-community/nixos-generators";
@@ -10,7 +10,7 @@
       };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-generators, ...}@inputs:
+  outputs = { self, nixpkgs, nixos-generators, ...}@inputs:
     let
         username = "thurs";
     in {
