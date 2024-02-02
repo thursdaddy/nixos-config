@@ -38,8 +38,10 @@
       };
       packages.x86_64-linux = {
           iso = nixos-generators.nixosGenerate {
+              pkgs = nixpkgs.legacyPackages.x86_64-linux;
               specialArgs = { inherit username; };
               system = "x86_64-linux";
+              lib = nixpkgs.legacyPackages.x86_64-linux.lib;
               modules = [
                 ./systems/x86_64-iso
                 ./modules/nixos/user
