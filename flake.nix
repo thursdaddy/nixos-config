@@ -3,7 +3,6 @@
 
   inputs = {
       nixpkgs.url = "github:nixos/nixpkgs/release-23.11";
-      nixpkgs-unstable.url = "github:nixos/nixpkgs";
 
       nixos-generators = {
           url = "github:nix-community/nixos-generators";
@@ -11,7 +10,7 @@
       };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, nixos-generators, ...}@inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-generators, ...}@inputs:
     let
         username = "thurs";
     in {
