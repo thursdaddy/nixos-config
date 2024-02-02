@@ -5,9 +5,6 @@
       nixpkgs.url = "github:nixos/nixpkgs/release-23.11";
       nixpkgs-unstable.url = "github:nixos/nixpkgs";
 
-      home-manager.url = "github:nix-community/home-manager";
-      home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
       nixos-generators = {
           url = "github:nix-community/nixos-generators";
           inputs.nixpkgs.follows = "nixpkgs";
@@ -38,10 +35,8 @@
       };
       packages.x86_64-linux = {
           iso = nixos-generators.nixosGenerate {
-              pkgs = nixpkgs.legacyPackages.x86_64-linux;
               specialArgs = { inherit username; };
               system = "x86_64-linux";
-              lib = nixpkgs.legacyPackages.x86_64-linux.lib;
               modules = [
                 ./systems/x86_64-iso
                 ./modules/nixos/user
