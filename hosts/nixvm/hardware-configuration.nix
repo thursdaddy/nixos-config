@@ -10,7 +10,7 @@
 
   boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
@@ -19,12 +19,17 @@
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/0FAA-AC37";
+    { device = "/dev/disk/by-uuid/E8AD-D529";
       fsType = "vfat";
     };
 
   fileSystems."/home" =
     { device = "NIXROOT/home";
+      fsType = "zfs";
+    };
+
+  fileSystems."/persist" =
+    { device = "NIXROOT/persist";
       fsType = "zfs";
     };
 
@@ -35,7 +40,7 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.ens18.useDHCP = lib.mkDefault true;
+  # networking.interfaces.eth0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }
