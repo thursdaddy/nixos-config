@@ -15,4 +15,6 @@
 
   programs.zsh.autosuggestions.enable = true;
 
+  users.users.${username}.shell = pkgs.zsh;
+
 }

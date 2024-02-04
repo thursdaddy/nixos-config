@@ -16,4 +16,9 @@
     networking.nameservers = [ "192.168.20.80" ];
 
     system.stateVersion = "23.11";
+
+    boot.supportedFilesystems = [ "zfs" ];
+    boot.zfs.forceImportRoot = false;
+    networking.hostId = "00000000";
+
 }
