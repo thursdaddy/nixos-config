@@ -10,7 +10,7 @@
       };
   };
 
-  outputs = { self, nixpkgs, nixos-generators, ...}@inputs:
+  outputs = { self, nixpkgs, nixos-generators, ... }@inputs:
     let
         username = "thurs";
     in {
@@ -38,8 +38,9 @@
               system = "x86_64-linux";
               modules = [
                 ./systems/x86_64-iso
-                ./modules/nixos/user
                 ./hosts/shared
+                ./modules/nixos/programs/zsh
+                ./modules/nixos/user
               ];
               format = "iso";
           };
