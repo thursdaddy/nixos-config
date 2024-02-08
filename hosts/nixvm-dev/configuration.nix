@@ -36,4 +36,7 @@
 
   system.stateVersion = "23.11";
 
+  programs.zsh.shellAliases = {
+      "ds" = "docker ps -qa";
+  };
 }

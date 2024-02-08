@@ -28,6 +28,7 @@
                home-manager.nixosModules.home-manager
                {
                    home-manager.useGlobalPkgs = true;
+                   home-manager.useUserPackages = true;
                    home-manager.extraSpecialArgs = { inherit username; inherit inputs; }; # allows access to flake inputs in hm modules
                    home-manager.users.${username}.imports = [ ./hosts/nixvm-dev/home.nix ];
                }
