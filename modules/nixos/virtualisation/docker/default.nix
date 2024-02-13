@@ -1,7 +1,18 @@
-{ username, ... }: {
+{ lib, username, config, ... }:
+let
+    cfg = config.myopt.user;
+in {
+    options.myopt.user = {
+        enable = lib.mkEnableOption "user";
+    };
 
-    virtualisation.docker.enable = true;
+    config = lib.mkIf config.myopt.user.enable  {
 
-    users.users.${username}.extraGroups = [ "docker" ];
+        virtualisation.docker.enable = true;
+
+        users.users.${username}.extraGroups = [ "docker" ];
+
+        environment.etc.userNAME.text = config.myopt.user.etc;
+    };
 
 }

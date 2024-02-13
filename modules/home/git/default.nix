@@ -1,22 +1,32 @@
-{ pkgs, ... }: {
+{ lib, config, pkgs, ... }: let
+    inherit (lib) mkEnableOption mkIf;
+    cfg = config.myopt.git;
 
-  home.packages = with pkgs; [ git ripgrep hub ];
+    in {
+        options.myopt.git = {
+            enable = mkEnableOption "Git";
+        };
 
-  programs.git = {
-    enable = true;
-    userName  = "thursdaddy";
-    userEmail = "thursdaddy@pm.me";
-    extraConfig = {
-      init = { defaultBranch = "main"; };
-      pull = { rebase = false; };
-      push = { autoSetupRemote = true; };
-    };
-  };
+        config = mkIf cfg.enable {
+            home.packages = with pkgs; [ git ripgrep hub ];
 
-  programs.zsh.shellAliases = {
-      "gst" = "${pkgs.git}/bin/git -P status";
-      "gd" = "${pkgs.git}/bin/git -P diff";
-      "gds" = "${pkgs.git}/bin/git -P diff --staged";
-  };
+            programs.git = {
+              enable = true;
+              userName  = "thursdaddy";
+              userEmail = "thursdaddy@pm.me";
+              extraConfig = {
+                init = { defaultBranch = "main"; };
+                pull = { rebase = false; };
+                push = { autoSetupRemote = true; };
+              };
+            };
+
+            programs.zsh.shellAliases = {
+                "gst" = "git -P status";
+                "gd" = "git -P diff";
+                "gds" = "git -P diff --staged";
+            };
+        };
+
 
 }

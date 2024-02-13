@@ -5,6 +5,7 @@
     imports = [
       ./../../modules/home/git
       ./../../modules/home/zsh
+      ./options.nix
     ];
 
     home.username = "${username}";

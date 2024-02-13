@@ -6,6 +6,7 @@
       ../shared
       ../../modules/nixos/user
       ../../modules/nixos/virtualisation/docker
+      ./options.nix
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -34,9 +35,7 @@
   services.xserver.displayManager.sddm.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
 
+
   system.stateVersion = "23.11";
 
-  programs.zsh.shellAliases = {
-      "ds" = "docker ps -qa";
-  };
 }
