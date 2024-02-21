@@ -1,10 +1,13 @@
 { home-manager, username, pkgs, ... }: {
 
-    imports = [
-      ../../modules/home/import.nix
-    ];
-
     programs.home-manager.enable = true;
+
+    imports = [
+      ./../../modules/home/git
+      ./../../modules/home/zsh
+      ./../../lib
+      ./options.nix
+    ];
 
     home.username = "${username}";
     home.homeDirectory = "/home/${username}";

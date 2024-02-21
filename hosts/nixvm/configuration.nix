@@ -4,13 +4,17 @@
   imports =
     [
       ./hardware-configuration.nix
-      ../../modules/nixos/user
-      ../../modules/nixos/programs/zsh
-      ../../modules/nixos/virtualisation/docker
-      ../shared
+      ../../lib
+      ../../modules/nixos/import.nix
+      ./options.nix
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # https://discourse.nixos.org/t/problems-after-switching-to-flake-system/24093/8
+  nix.nixPath = [ "/etc/nix/path" ];
+  nix.registry.nixpkgs.flake = inputs.nixpkgs;
+
+  environment.etc."nix/path/nixpkgs".source = inputs.nixpkgs;
 
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;
@@ -34,11 +38,6 @@
 
   # Set your time zone.
   time.timeZone = "America/Phoenix";
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
 
   system.stateVersion = "23.11";
 

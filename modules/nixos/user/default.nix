@@ -1,4 +1,4 @@
-{ pkgs, username, config, ... }: {
+{ pkgs, username, ... }: {
 
   users.users.${username} = {
     isNormalUser = true;
@@ -8,6 +8,7 @@
     extraGroups = [ "wheel" ];
     shell = pkgs.zsh;
     ignoreShellProgramCheck = true;
+    packages = [ pkgs.neovim pkgs.jq ];
   };
 
 }

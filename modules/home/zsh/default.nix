@@ -5,6 +5,7 @@
   programs.zsh = {
     enable = true;
     enableAutosuggestions = true;
+    #historySubstringSearch = true;
 
     shellAliases = {
       ll = "ls -larth";

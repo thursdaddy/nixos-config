@@ -25,20 +25,20 @@
               system = "x86_64-linux";
               modules = [
                ./hosts/nixvm-dev/configuration.nix
+              ];
+          };
+          "nixvm" = nixpkgs.lib.nixosSystem {
+              specialArgs = { inherit username; inherit inputs; };
+              system = "x86_64-linux";
+              modules = [
+               ./hosts/nixvm/configuration.nix
                home-manager.nixosModules.home-manager
                {
                    home-manager.useGlobalPkgs = true;
                    home-manager.useUserPackages = true;
                    home-manager.extraSpecialArgs = { inherit username; inherit inputs; }; # allows access to flake inputs in hm modules
-                   home-manager.users.${username}.imports = [ ./hosts/nixvm-dev/home.nix ];
+                   home-manager.users.${username}.imports = [ ./hosts/nixvm/home.nix ];
                }
-              ];
-          };
-          "nixvm" = nixpkgs.lib.nixosSystem {
-              specialArgs = { inherit username; };
-              system = "x86_64-linux";
-              modules = [
-               ./hosts/nixvm/configuration.nix
               ];
           };
       };
@@ -49,7 +49,6 @@
               modules = [
                 ./systems/x86_64-iso
                 ./hosts/shared
-                ./modules/nixos/programs/zsh
                 ./modules/nixos/user
               ];
               format = "iso";
