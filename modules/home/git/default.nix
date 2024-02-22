@@ -1,14 +1,15 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, pkgs, username, ... }:
 with lib;
 let
-  cfg = config.myopt.git;
+  cfg = config.mine.git;
 
   in {
-      options.myopt.git = {
+      options.mine.git = {
           enable = mkEnableOption "Git";
       };
 
       config = mkIf cfg.enable {
+        home-manager.users.${username} = {
           home.packages = with pkgs; [ git gh ];
 
           programs.git = {
@@ -27,7 +28,7 @@ let
               "gd" = "git -P diff";
               "gds" = "git -P diff --staged";
           };
+        };
       };
-
 
 }

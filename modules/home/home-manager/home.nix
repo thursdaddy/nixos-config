@@ -1,9 +1,5 @@
 { home-manager, username, pkgs, ... }: {
 
-    imports = [
-      ../../modules/home/import.nix
-    ];
-
     programs.home-manager.enable = true;
 
     home.username = "${username}";
