@@ -17,11 +17,15 @@
 
   outputs = { self, nixpkgs, nixos-generators, home-manager, ... }@inputs:
     let
-        username = "thurs";
+      username = "thurs";
+      lib = nixpkgs.lib.extend
+        (self: super: {
+           thurs = import ./lib { inherit inputs; lib = self; };
+        });
     in {
       nixosConfigurations = {
           "nixvm-dev" = nixpkgs.lib.nixosSystem {
-              specialArgs = { inherit username; inherit inputs; };
+              specialArgs = { inherit username; inherit inputs; inherit lib; };
               system = "x86_64-linux";
               modules = [
                ./hosts/nixvm-dev/configuration.nix

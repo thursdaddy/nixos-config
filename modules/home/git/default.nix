@@ -1,7 +1,9 @@
 { lib, config, pkgs, username, ... }:
 with lib;
 let
+
   cfg = config.mine.git;
+  user = config.mine.user;
 
   in {
       options.mine.git = {
@@ -14,8 +16,8 @@ let
 
           programs.git = {
             enable = true;
-            userName  = "thursdaddy";
-            userEmail = "thursdaddy@pm.me";
+            userName  = "${user.name}";
+            userEmail = "${user.email}";
             extraConfig = {
               init = { defaultBranch = "main"; };
               pull = { rebase = false; };

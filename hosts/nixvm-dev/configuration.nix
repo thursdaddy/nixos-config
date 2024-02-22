@@ -1,4 +1,6 @@
-{ config, pkgs, inputs, username, ... }: {
+{ lib, config, pkgs, inputs, username, ... }:
+with lib;
+with lib.thurs; {
 
   imports =
     [
@@ -23,15 +25,20 @@
     networking.hostName = "nixvm-dev";
     networking.networkmanager.enable = true;
 
-    mine.home-manager.enable = true;
-    mine.kde.enable = true;
-    mine.firewall.enable = true;
-    mine.timezone.enable = true;
-    mine.openssh.enable = true;
-    mine.docker.enable = true;
-    mine.git.enable = true;
-    mine.zsh.enable = true;
-
+    mine = {
+      git = enabled;
+      home-manager = enabled;
+      kde = enabled;
+      firewall = enabled;
+      timezone = enabled;
+      openssh = enabled;
+      docker = enabled;
+      zsh = enabled;
+      user = {
+          enable = true;
+          email = "thurs@pm.me";
+      };
+    };
   };
 
 }

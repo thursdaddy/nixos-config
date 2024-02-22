@@ -1,4 +1,6 @@
-{ inputs, ... }: {
+{ inputs, ... }:
+{
+
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
     # https://discourse.nixos.org/t/problems-after-switching-to-flake-system/24093/8

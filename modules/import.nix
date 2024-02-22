@@ -1,4 +1,8 @@
 { lib, ... }:
+
+# Credit: @infinisil
+# https://github.com/Infinisil/system/blob/df9232c4b6cec57874e531c350157c37863b91a0/config/new-modules/default.nix
+
 with lib;
 let
     getDir = dir:
