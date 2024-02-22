@@ -23,13 +23,14 @@
     networking.hostName = "nixvm-dev";
     networking.networkmanager.enable = true;
 
+    mine.home-manager.enable = true;
+    mine.kde.enable = true;
     mine.firewall.enable = true;
     mine.timezone.enable = true;
     mine.openssh.enable = true;
     mine.docker.enable = true;
     mine.git.enable = true;
     mine.zsh.enable = true;
-    #mine.home-manager = true;
 
   };
 
