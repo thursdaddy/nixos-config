@@ -1,10 +1,10 @@
 { lib, config, pkgs, ... }:
 with lib;
 let
-  cfg = config.mine.kde;
+  cfg = config.mine.nixos.kde;
 
   in {
-    options.mine.kde = {
+    options.mine.nixos.kde = {
       enable = mkEnableOption "KDE";
     };
 

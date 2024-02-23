@@ -1,17 +1,17 @@
-{ lib, config, pkgs, username, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 let
 
-  cfg = config.mine.git;
-  user = config.mine.user;
+  cfg = config.mine.home.git;
+  user = config.mine.nixos.user;
 
   in {
-      options.mine.git = {
+      options.mine.home.git = {
           enable = mkEnableOption "Git";
       };
 
       config = mkIf cfg.enable {
-        home-manager.users.${username} = {
+        home-manager.users.${user.name} = {
           home.packages = with pkgs; [ git gh ];
 
           programs.git = {

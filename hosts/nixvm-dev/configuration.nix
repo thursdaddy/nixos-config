@@ -1,12 +1,11 @@
-{ lib, config, pkgs, inputs, username, ... }:
+{ lib, ... }:
 with lib;
 with lib.thurs; {
 
-  imports =
-    [
-      ./hardware-configuration.nix
-      ../../modules/import.nix
-    ];
+  imports = [
+    ./hardware-configuration.nix
+    ../../modules/import.nix
+  ];
 
   config = {
     system.stateVersion = "23.11";
@@ -21,22 +20,26 @@ with lib.thurs; {
 
     services.zfs.autoScrub.enable = true;
 
-    networking.hostId = "adc83a82";
-    networking.hostName = "nixvm-dev";
-    networking.networkmanager.enable = true;
+    networking = {
+      hostId = "adc83a82";
+      hostName = "nixvm-dev";
+      networkmanager.enable = true;
+    };
 
     mine = {
-      git = enabled;
-      home-manager = enabled;
-      kde = enabled;
-      firewall = enabled;
-      timezone = enabled;
-      openssh = enabled;
-      docker = enabled;
-      zsh = enabled;
-      user = {
-          enable = true;
-          email = "thurs@pm.me";
+      nixos = {
+        user = enabled;
+        flakes = enabled;
+        openssh = enabled;
+        docker = enabled;
+        kde = enabled;
+        firewall = enabled;
+        nixvim = enabled;
+      };
+      home = {
+        home-manager = enabled;
+        git = enabled;
+        zsh = enabled;
       };
     };
   };

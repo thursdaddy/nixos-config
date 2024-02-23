@@ -1,15 +1,26 @@
-{ lib, config, username, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 with lib.thurs;
 let
-  cfg = config.mine.user;
+  cfg = config.mine.nixos.user;
+
+  is-linux = pkgs.stdenv.isLinux;
+
+  home-directory =
+    if cfg.name == null then
+      null
+    else if is-linux then
+      "/home/${cfg.name}"
+    else
+      "/Users/${cfg.name}";
 
   in {
-    options.mine.user = {
-      enable = mkEnableOption "Enable user";
-      name = mkOpt types.str "thurs" "My username";
-      alias = mkOpt types.str "thursdaddy" "My alias";
+    options.mine.nixos.user = {
+      enable = mkEnableOption "Enable User";
+      name = mkOpt types.str "thurs" "User account name";
+      alias = mkOpt types.str "thursdaddy" "My full alias";
       email = mkOpt types.str "thursdaddy@pm.me" "My Email";
+      homeDir = mkOpt types.str "${home-directory}" "Home Directory Path";
     };
 
     config = mkIf cfg.enable {
@@ -21,7 +32,6 @@ let
         openssh.authorizedKeys.keys = [ "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDf3iS7lXUebJun3jQ3EJWkFoZcCrfaaAJaZWE1FFqEkLUFXhuBxITRXXqVyPjBHrY52RoAmg6RQejQDBcyV4sSs1IWMhHr50RzdM1FXGJunel6l3gvg36vUZ8OU+KU3N7E41it8we8IvV+QeDfV3QhXWAvCHIwA7UdTha00YDPaZxmZPOOnq0tE16d/9u8F8jYyuuBPwtE8PilaY5q6HI151hNTxb7vxru3H6faUjO1JKnY3UjU32FyTkz4o4IkvmdAWoft38gmtdr1VU0Fg/aZ8H6ltUPGdj8d/Nr6iUvxT41cIMmPNEeKJQ1mrVlIZ2AMN9LggLVIx02LbIQ2Pabbvyhq4FHCTztYkYjPnBBEbqKcsSMObqzGhQQxiOkrbVjmx8qei0NvnmPUHpoPCKzcJhApTBRKd7Pck2+nl56BJG9YqnELjAiogolELyJgnB88g4zKKGi/o21GW1vRXGMMn/gCWkiPBjBlBzYjGDaVFfMLc9GVhVfgnJFFiVZmMk= thurs@nixos" ];
         extraGroups = [ "wheel" ];
         shell = pkgs.zsh;
-        packages = [ pkgs.neovim ];
       };
 
     };

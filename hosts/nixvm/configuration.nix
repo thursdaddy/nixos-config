@@ -1,44 +1,43 @@
 { lib, inputs, config, pkgs, ... }:
+with lib;
+with lib.thurs; {
 
-{
-  imports =
-    [
-      ./hardware-configuration.nix
-      ../../lib
-      ../../modules/nixos/import.nix
-      ./options.nix
-    ];
+  imports = [
+    ./hardware-configuration.nix
+    ../../modules/import.nix
+  ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  # https://discourse.nixos.org/t/problems-after-switching-to-flake-system/24093/8
-  nix.nixPath = [ "/etc/nix/path" ];
-  nix.registry.nixpkgs.flake = inputs.nixpkgs;
+  config = {
+    system.stateVersion = "23.11";
 
-  environment.etc."nix/path/nixpkgs".source = inputs.nixpkgs;
+    boot.loader.grub.enable = true;
+    boot.loader.grub.useOSProber = true;
+    boot.loader.grub.efiSupport = true;
+    boot.loader.grub.efiInstallAsRemovable = true;
+    boot.loader.grub.device = "nodev";
+    boot.supportedFilesystems = [ "zfs" ];
+    boot.zfs.requestEncryptionCredentials = true;
 
-  # Use the GRUB 2 boot loader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.efiInstallAsRemovable = true;
-  boot.loader.grub.device = "nodev";
+    services.zfs.autoScrub.enable = true;
 
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+    # head -c4 /dev/urandom | od -A none -t x4
+    networking.hostId = "13e5ce87";
+    networking.hostName = "nixvm";
 
-  # ZFS boot
-  boot.supportedFilesystems = [ "zfs" ];
-  boot.zfs.requestEncryptionCredentials = true;
+    networking.networkmanager.enable = true;
 
-  # ZFS AutoScrub
-  services.zfs.autoScrub.enable = true;
+    mine = {
+      git = enabled;
+      home-manager = enabled;
+      kde = enabled;
+      firewall = enabled;
+      openssh = enabled;
+      zsh = enabled;
+      user = {
+          enable = true;
+      };
+    };
 
-  # head -c4 /dev/urandom | od -A none -t x4
-  networking.hostId = "13e5ce87";
-  networking.hostName = "nixvm";
-  networking.networkmanager.enable = true;
-
-  # Set your time zone.
-  time.timeZone = "America/Phoenix";
-
-  system.stateVersion = "23.11";
+  };
 
 }

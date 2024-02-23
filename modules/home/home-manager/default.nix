@@ -1,20 +1,24 @@
-{ lib, config, pkgs, username, inputs,  ... }:
+{ lib, config, inputs,  ... }:
 with lib;
+with lib.thurs;
 let
-  cfg = config.mine.home-manager;
+
+  cfg = config.mine.home.home-manager;
+  user = config.mine.nixos.user;
 
   in {
-      options.mine.home-manager = {
-          enable = mkEnableOption "HM";
+      options.mine.home.home-manager = {
+          enable = mkEnableOption "Enable Home-Manager";
       };
 
       imports = [ inputs.home-manager.nixosModules.home-manager ];
 
-      config = {
+      config = mkIf cfg.enable {
+
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
-        home-manager.extraSpecialArgs = { inherit username; inherit inputs; };
-        home-manager.users.${username}.imports = [ ./home.nix ];
+        home-manager.extraSpecialArgs = { inherit inputs; inherit user; };
+        home-manager.users.${user.name}.imports = [ ./home.nix ];
 
       };
 

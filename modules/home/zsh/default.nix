@@ -1,16 +1,19 @@
-{ inputs, username, lib, config, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 let
-  cfg = config.mine.zsh;
+
+  cfg = config.mine.home.zsh;
+  user = config.mine.nixos.user;
 
   in {
-    options.mine.zsh = {
+    options.mine.home.zsh = {
       enable = mkEnableOption "zsh";
     };
 
     config = mkIf cfg.enable {
+
       programs.zsh.enable = true;
-      home-manager.users.${username} = {
+      home-manager.users.${user.name} = {
 
         home.packages = with pkgs; [ zsh ];
 
@@ -31,9 +34,8 @@ let
             plugins = ["man" "history-substring-search" "history" ];
             theme = "agnoster";
           };
-
         };
       };
-    };
 
+    };
 }

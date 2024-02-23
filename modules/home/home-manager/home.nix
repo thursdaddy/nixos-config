@@ -1,12 +1,9 @@
-{ home-manager, username, pkgs, ... }: {
+{ pkgs, user, ... }:
+{
+      programs.home-manager.enable = true;
 
-    programs.home-manager.enable = true;
-
-    home.username = "${username}";
-    home.homeDirectory = "/home/${username}";
-    home.stateVersion = "23.11";
-    home.packages = [
-        pkgs.neovim
-    ];
+      home.username = "${user.name}";
+      home.homeDirectory = "${user.homeDir}";
+      home.stateVersion = "23.11";
 
 }

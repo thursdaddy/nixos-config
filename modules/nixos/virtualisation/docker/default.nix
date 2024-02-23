@@ -1,16 +1,19 @@
-{ lib, username, config, ... }:
+{ lib, config, ... }:
+with lib;
+with lib.thurs;
 let
-    cfg = config.mine.docker;
+  cfg = config.mine.nixos.docker;
+  user = config.mine.nixos.user;
 
 in {
-    options.mine.docker = {
-        enable = lib.mkEnableOption "docker";
+    options.mine.nixos.docker = {
+        enable = mkEnableOption "docker";
     };
 
     config = lib.mkIf cfg.enable  {
 
         virtualisation.docker.enable = true;
-        users.users.${username}.extraGroups = [ "docker" ];
+        users.users.${user.name}.extraGroups = [ "docker" ];
 
     };
 
