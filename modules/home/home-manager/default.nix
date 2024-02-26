@@ -11,7 +11,10 @@ let
           enable = mkEnableOption "Enable Home-Manager";
       };
 
-      imports = [ inputs.home-manager.nixosModules.home-manager ];
+      imports = [
+#       inputs.hyprland.homeManagerModules.default
+        inputs.home-manager.nixosModules.home-manager
+      ];
 
       config = mkIf cfg.enable {
 
@@ -19,6 +22,7 @@ let
         home-manager.useUserPackages = true;
         home-manager.extraSpecialArgs = { inherit inputs; inherit user; };
         home-manager.users.${user.name}.imports = [ ./home.nix ];
+
 
       };
 

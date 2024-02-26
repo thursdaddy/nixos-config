@@ -10,7 +10,7 @@ in
       relativenumber = true;
       nu = true;
 
-      guicursor = "";
+      guicursor = "i-c-ci:hor10-iCursor-blinkwait300-blinkon200-blinkoff150,n:ver10-iCursor-blinkwait10-blinkon100-blinkoff150";
 
       # tabs
       shiftwidth = 2;
@@ -18,6 +18,7 @@ in
       tabstop = 2;
       softtabstop = 2;
 
+      autoindent = true;
       smartindent = true;
       wrap = false;
 
@@ -33,16 +34,15 @@ in
 
       scrolloff = 8;
       signcolumn = "auto";
+      list = true;
+      listchars = "lead:·,trail:·,eol:↲,extends:+,precedes:+";
 
     };
-
-    match.ExtraWhitespace = "\\s\\+$";
 
     highlight = {
      Comment.fg = "#708090";
      Comment.bg = "none";
      Comment.bold = true;
-     ExtraWhitespace.bg = "#708090";
     };
   };
 

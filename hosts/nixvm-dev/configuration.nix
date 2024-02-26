@@ -32,7 +32,7 @@ with lib.thurs; {
         flakes = enabled;
         openssh = enabled;
         docker = enabled;
-        kde = enabled;
+        #kde = enabled;
         firewall = enabled;
         nixvim = enabled;
       };
