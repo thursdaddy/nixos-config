@@ -40,6 +40,7 @@ with lib.thurs; {
         home-manager = enabled;
         git = enabled;
         zsh = enabled;
+        tmux = enabled;
       };
     };
   };
