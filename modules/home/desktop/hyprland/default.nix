@@ -25,11 +25,11 @@ in {
           "$mod" = "SUPER";
           bind =
             [
+            "$mod_SHIFT, Q, killactive"
             "$mod, F, exec, firefox"
-              "$mod, RETURN, exec, alacritty"
-              "$mod_SHIFT, Q, exec, hyprlock"
-              "$mod_SHIFT, X, killactive"
-              ", Print, exec, grimblast copy area"
+            "$mod, RETURN, exec, alacritty"
+            "$mod_SHIFT, X, exec, hyprlock"
+            ", Print, exec, grimblast copy area"
             ]
             ++ (
                 # workspaces
