@@ -2,19 +2,20 @@
 with lib;
 with lib.thurs;
 let
-  cfg = config.mine.nixos.docker;
-  user = config.mine.nixos.user;
+
+cfg = config.mine.nixos.docker;
+user = config.mine.nixos.user;
 
 in {
-    options.mine.nixos.docker = {
-        enable = mkEnableOption "docker";
-    };
+  options.mine.nixos.docker = {
+    enable = mkEnableOption "docker";
+  };
 
-    config = lib.mkIf cfg.enable  {
+  config = lib.mkIf cfg.enable  {
 
-        virtualisation.docker.enable = true;
-        users.users.${user.name}.extraGroups = [ "docker" ];
+    virtualisation.docker.enable = true;
+    users.users.${user.name}.extraGroups = [ "docker" ];
 
-    };
+  };
 
 }

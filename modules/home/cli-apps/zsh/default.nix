@@ -2,52 +2,52 @@
 with lib;
 let
 
-  cfg = config.mine.home.zsh;
-  user = config.mine.nixos.user;
+cfg = config.mine.home.zsh;
+user = config.mine.nixos.user;
 
-  in {
-    options.mine.home.zsh = {
-      enable = mkEnableOption "zsh";
-    };
+in {
+  options.mine.home.zsh = {
+    enable = mkEnableOption "zsh";
+  };
 
-    config = mkIf cfg.enable {
+  config = mkIf cfg.enable {
 
-      programs.zsh.enable = true;
-      home-manager.users.${user.name} = {
+    programs.zsh.enable = true;
+    home-manager.users.${user.name} = {
 
-        home.packages = with pkgs; [ zsh ];
+      home.packages = with pkgs; [ zsh ];
 
-        programs.zsh = {
-          enable = true;
-          enableAutosuggestions = true;
+      programs.zsh = {
+        enable = true;
+        enableAutosuggestions = true;
 
-          shellAliases = {
-            ll = "ls -larth";
-            db = "docker build -t $(whoami)/$(basename $(pwd)):dev .";
-            dbnc = "docker build --no-cache -t $(whoami)/$(basename $(pwd)):dev .";
-            dr = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev bash";
-            drs = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev sh";
-          };
-
-          oh-my-zsh = {
-            enable = true;
-            plugins = ["man" "history-substring-search" "history" ];
-          };
-
-          plugins = [
-          {
-            name = "powerlevel10k";
-            src = pkgs.zsh-powerlevel10k;
-            file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-          }
-          {
-            name = "powerlevel10k-config";
-            src = ./p10k;
-            file = "p10k.zsh";
-          }
-          ];
+        shellAliases = {
+          ll = "ls -larth";
+          db = "docker build -t $(whoami)/$(basename $(pwd)):dev .";
+          dbnc = "docker build --no-cache -t $(whoami)/$(basename $(pwd)):dev .";
+          dr = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev bash";
+          drs = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev sh";
         };
-      };
 
+        oh-my-zsh = {
+          enable = true;
+          plugins = ["man" "history-substring-search" "history" ];
+        };
+
+        plugins = [
+        {
+          name = "powerlevel10k";
+          src = pkgs.zsh-powerlevel10k;
+          file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+        }
+        {
+          name = "powerlevel10k-config";
+          src = ./p10k;
+          file = "p10k.zsh";
+        }
+        ];
+      };
     };
+
+  };
 }

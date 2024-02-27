@@ -1,7 +1,7 @@
 { lib, config, ... }:
 with lib;
 let
-  user = config.mine.nixos.user;
+user = config.mine.nixos.user;
 in
 {
   programs.nixvim = {
@@ -40,9 +40,9 @@ in
     };
 
     highlight = {
-     Comment.fg = "#708090";
-     Comment.bg = "none";
-     Comment.bold = true;
+      Comment.fg = "#708090";
+      Comment.bg = "none";
+      Comment.bold = true;
     };
   };
 

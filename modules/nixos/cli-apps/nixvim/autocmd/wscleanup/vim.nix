@@ -2,7 +2,7 @@
 # auto cleanup whitespace when saving
   programs.nixvim = {
     autoGroups = {
-        wscleanup = { };
+      wscleanup = { };
     };
 
     autoCmd = [

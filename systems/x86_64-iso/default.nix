@@ -3,7 +3,7 @@ with lib;
 with lib.thurs; {
 
   imports = [
-      ../../modules/import.nix
+    ../../modules/import.nix
   ];
 
  config = {

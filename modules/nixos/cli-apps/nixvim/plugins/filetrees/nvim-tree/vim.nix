@@ -2,7 +2,7 @@
 
   programs.nixvim = {
      plugins = {
-         nvim-tree = { enable = true; };
+       nvim-tree = { enable = true; };
      };
 
      keymaps = [

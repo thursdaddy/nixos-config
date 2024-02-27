@@ -3,24 +3,24 @@ with lib;
 with lib.thurs;
 let
 
-  cfg = config.mine.nixos.hyprland;
+cfg = config.mine.nixos.hyprland;
 
-  in {
-      options.mine.nixos.hyprland = {
-        enable = mkEnableOption "Enable Home-Manager";
-      };
+in {
+  options.mine.nixos.hyprland = {
+    enable = mkEnableOption "Enable Home-Manager";
+  };
 
-      imports = [
-        inputs.hyprland.nixosModules.default
-      ];
+  imports = [
+    inputs.hyprland.nixosModules.default
+  ];
 
-      config = mkIf cfg.enable {
+  config = mkIf cfg.enable {
 
-        programs.hyprland = {
-          enable = true;
-          xwayland.enable = false;
-        };
+    programs.hyprland = {
+      enable = true;
+      xwayland.enable = false;
+    };
 
-      };
+  };
 
 }

@@ -5,19 +5,20 @@
 
 with lib;
 let
-    getDir = dir:
-      mapAttrs (file: type: if type == "directory" then getDir "${dir}/${file}" else type)
-      (builtins.readDir dir);
+  getDir = dir:
+    mapAttrs (file: type: if type == "directory" then getDir "${dir}/${file}" else type)
+    (builtins.readDir dir);
 
-    files = dir:
-      collect isString (mapAttrsRecursive (path: type: concatStringsSep "/" path)
-      (getDir dir));
+  files = dir:
+    collect isString (mapAttrsRecursive (path: type: concatStringsSep "/" path)
+    (getDir dir));
 
-    getVimNix = dir:
-      builtins.map(file: ./. + "/${file}")
-      (builtins.filter (file: builtins.baseNameOf file == "vim.nix")
-      (files dir));
+  getVimNix = dir:
+    builtins.map(file: ./. + "/${file}")
+    (builtins.filter (file: builtins.baseNameOf file == "vim.nix")
+    (files dir));
 in {
 
-    imports = getVimNix ./.;
+  imports = getVimNix ./.;
+
 }

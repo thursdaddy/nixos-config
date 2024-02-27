@@ -2,7 +2,7 @@
 
   programs.nixvim = {
     autoGroups = {
-        highlight_yank = { };
+      highlight_yank = { };
     };
 
     autoCmd = [

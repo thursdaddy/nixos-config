@@ -3,22 +3,22 @@ with lib;
 with lib.thurs;
 let
 
-  cfg = config.mine.home.alacritty;
-  user = config.mine.nixos.user;
+cfg = config.mine.home.alacritty;
+user = config.mine.nixos.user;
 
-  in {
-      options.mine.home.alacritty = {
-        enable = mkOpt types.bool true "Enable Alacritty";
+in {
+  options.mine.home.alacritty = {
+    enable = mkOpt types.bool true "Enable Alacritty";
+  };
+
+  config = mkIf cfg.enable {
+    home-manager.users.${user.name} = {
+
+      programs.alacritty = {
+        enable = true;
       };
 
-      config = mkIf cfg.enable {
-        home-manager.users.${user.name} = {
-
-          programs.alacritty = {
-              enable = true;
-          };
-
-        };
-      };
+    };
+  };
 
 }
