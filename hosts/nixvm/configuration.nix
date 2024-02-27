@@ -20,21 +20,28 @@ with lib.thurs; {
 
     services.zfs.autoScrub.enable = true;
 
-    # head -c4 /dev/urandom | od -A none -t x4
-    networking.hostId = "13e5ce87";
-    networking.hostName = "nixvm";
-
-    networking.networkmanager.enable = true;
+    networking = {
+        networkmanager.enable = true;
+        hostName = "nixvm";
+        hostId = "13e5ce87";
+    };
 
     mine = {
-      git = enabled;
-      home-manager = enabled;
-      kde = enabled;
-      firewall = enabled;
-      openssh = enabled;
-      zsh = enabled;
-      user = {
-          enable = true;
+      nixos = {
+        user = enabled;
+        fonts = enabled;
+        flakes = enabled;
+        openssh = enabled;
+        docker = enabled;
+        firewall = enabled;
+        nixvim = enabled;
+        kde = enabled;
+      };
+      home = {
+        home-manager = enabled;
+        git = enabled;
+        zsh = enabled;
+        tmux = enabled;
       };
     };
 

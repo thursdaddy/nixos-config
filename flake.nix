@@ -20,13 +20,11 @@
        };
 
       hyprland.url = "github:hyprwm/Hyprland";
-      hyprland-plugins = {
-        url = "github:hyprwm/hyprland-plugins";
-        inputs.hyprland.follows = "hyprland";
-      };
+      hyprlock.url = "github:hyprwm/Hyprlock";
+
   };
 
-  outputs = { self, nixpkgs, nixos-generators, nixvim, home-manager, hyprland, hyprland-plugins, ... }@inputs:
+  outputs = { self, nixpkgs, nixos-generators, nixvim, home-manager, hyprland, hyprlock, ... }@inputs:
     let
       lib = nixpkgs.lib.extend
         (self: super: {

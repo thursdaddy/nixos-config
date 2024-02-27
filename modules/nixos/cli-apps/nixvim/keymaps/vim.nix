@@ -13,6 +13,7 @@
       { mode = "n"; key = "}"; action = "}zz"; }
       { mode = "n"; key = "{"; action = "{zz"; }
 
+      # Send delete actions to black hole register
       { mode = "n"; key = "D"; action = "\"_D"; }
       { mode = "n"; key = "d"; action = "\"_d"; }
       { mode = "n"; key = "\"*D"; action = "\"*D"; }

@@ -21,23 +21,28 @@ with lib.thurs; {
     services.zfs.autoScrub.enable = true;
 
     networking = {
-      hostId = "adc83a82";
-      hostName = "nixvm-dev";
       networkmanager.enable = true;
+      hostName = "nixvm-dev";
+      hostId = "adc83a82";
     };
 
+    # TODO: improve options and default/group them accordingly
     mine = {
       nixos = {
         user = enabled;
+        fonts = enabled;
         flakes = enabled;
         openssh = enabled;
         docker = enabled;
-        #kde = enabled;
         firewall = enabled;
         nixvim = enabled;
+        hyprland  = enabled;
       };
       home = {
         home-manager = enabled;
+        hyprland  = enabled;
+        hyprlock = enabled;
+        waybar = enabled;
         git = enabled;
         zsh = enabled;
         tmux = enabled;
