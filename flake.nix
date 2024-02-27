@@ -26,8 +26,7 @@
 
   outputs = { self, nixpkgs, nixos-generators, nixvim, home-manager, hyprland, hyprlock, ... }@inputs:
   let
-    lib = nixpkgs.lib.extend
-    (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
+    lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
   in {
     nixosConfigurations = {
       "nixvm-dev" = nixpkgs.lib.nixosSystem {
