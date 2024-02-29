@@ -36,7 +36,6 @@ with lib.thurs; {
     mine = {
       nixos = {
         zsh = enabled;
-        firewall = enabled;
         flakes = enabled;
         openssh = {
           enable = true;

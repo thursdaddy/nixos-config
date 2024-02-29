@@ -7,7 +7,7 @@ cfg = config.mine.nixos.firewall;
 
 in {
   options.mine.nixos.firewall = {
-    enable = mkOpt types.bool true "Enable firewall";
+    enable = mkOpt types.bool false "Enable firewall";
   };
 
   config = mkIf cfg.enable {

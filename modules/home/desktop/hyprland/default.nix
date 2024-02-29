@@ -13,23 +13,31 @@ in {
 
   config = mkIf cfg.enable {
 
-    home-manager.users.${user.name} = {
-      wayland.windowManager.hyprland = {
+      services.xserver = {
         enable = true;
+      };
 
-        systemd = {
+      services.xserver.displayManager.sddm = {
+        enable = true;
+      };
+
+      home-manager.users.${user.name} = {
+        wayland.windowManager.hyprland = {
           enable = true;
-        };
 
-        settings = {
-          "$mod" = "SUPER";
-          bind =
-            [
-            "$mod_SHIFT, Q, killactive"
-            "$mod, F, exec, firefox"
-            "$mod, RETURN, exec, alacritty"
-            "$mod_SHIFT, X, exec, hyprlock"
-            ", Print, exec, grimblast copy area"
+          systemd = {
+            enable = true;
+          };
+
+          settings = {
+            "$mod" = "SUPER";
+            bind =
+              [
+              "$mod_SHIFT, Q, killactive"
+                "$mod, F, exec, firefox"
+                "$mod, return, exec, alacritty"
+                "$mod_SHIFT, X, exec, hyprlock"
+                ", Print, exec, grimblast copy area"
             ]
             ++ (
                 # workspaces

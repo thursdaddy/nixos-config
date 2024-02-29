@@ -7,7 +7,7 @@ cfg = config.mine.nixos.fonts;
 
 in {
   options.mine.nixos.fonts = {
-    enable = mkOpt types.bool true "Enable Fonts";
+    enable = mkOpt types.bool false "Enable Fonts";
   };
 
   config = mkIf cfg.enable {

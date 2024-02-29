@@ -2,6 +2,7 @@
 with lib;
 with lib.thurs;
 let
+
 cfg = config.mine.nixos.zsh;
 
 in {

@@ -8,7 +8,7 @@ user = config.mine.nixos.user;
 
 in {
   options.mine.home.alacritty = {
-    enable = mkOpt types.bool true "Enable Alacritty";
+    enable = mkOpt types.bool false "Enable Alacritty";
   };
 
   config = mkIf cfg.enable {

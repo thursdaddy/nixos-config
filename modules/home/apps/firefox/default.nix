@@ -8,7 +8,7 @@ user = config.mine.nixos.user;
 
 in {
   options.mine.home.firefox = {
-    enable = mkOpt types.bool true "Enable Firefox";
+    enable = mkOpt types.bool false "Enable Firefox";
   };
 
   config = mkIf cfg.enable {

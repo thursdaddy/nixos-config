@@ -36,7 +36,10 @@ with lib.thurs; {
         docker = enabled;
         firewall = enabled;
         nixvim = enabled;
-        hyprland  = enabled;
+        hyprland = enabled;
+        sddm = {
+          enable = true;
+        };
       };
       home = {
         home-manager = enabled;
