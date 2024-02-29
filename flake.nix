@@ -43,6 +43,13 @@
           ./hosts/nixvm/configuration.nix
         ];
       };
+      "c137" = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; inherit lib; };
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/c137/configuration.nix
+        ];
+      };
     };
     packages.x86_64-linux = {
       iso = nixos-generators.nixosGenerate {
