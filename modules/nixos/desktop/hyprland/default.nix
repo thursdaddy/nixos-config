@@ -1,4 +1,4 @@
-{ lib, config, inputs,  ... }:
+{ lib, config, inputs, pkgs, ... }:
 with lib;
 with lib.thurs;
 let
@@ -15,6 +15,9 @@ in {
   ];
 
   config = mkIf cfg.enable {
+    environment.systemPackages = [
+      pkgs.wdisplays
+    ];
 
     programs.hyprland = {
       enable = true;

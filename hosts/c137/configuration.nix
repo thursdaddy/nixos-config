@@ -1,6 +1,8 @@
-{ lib, ... }:
+{ lib, config, ... }:
 with lib;
-with lib.thurs; {
+with lib.thurs;
+let user = config.mine.nixos.user ;
+in {
 
   imports = [
     ./hardware-configuration.nix
@@ -26,6 +28,18 @@ with lib.thurs; {
       hostId = "80f1eef1";
     };
 
+    services.xserver.videoDrivers = [ "amdgpu" ];
+
+    nixpkgs.config.allowUnfree = true;
+
+    security.sudo.extraRules = [{
+      users = [ "${user.name}" ];
+      commands = [{
+        command = "ALL";
+        options = [ "NOPASSWD" ];
+      }];
+    }];
+
     # TODO: improve options and default/group them accordingly
     mine = {
       nixos = {
@@ -37,18 +51,29 @@ with lib.thurs; {
         firewall = enabled;
         nixvim = enabled;
         hyprland = enabled;
-        sddm = {
-          enable = true;
-        };
+        hyprpaper = enabled;
+        neofetch = enabled;
+        pipewire = enabled;
+        bluetooth = enabled;
+        gthumb = enabled;
+        vlc = enabled;
+        sddm = enabled;
+        utils = enabled;
       };
       home = {
         home-manager = enabled;
+        alacritty = enabled;
+        firefox = enabled;
+        chrome = enabled;
+        brave = enabled;
         hyprland  = enabled;
         hyprlock = enabled;
         waybar = enabled;
+        fuzzel = enabled;
         git = enabled;
         zsh = enabled;
         tmux = enabled;
+        discord = enabled;
       };
     };
   };

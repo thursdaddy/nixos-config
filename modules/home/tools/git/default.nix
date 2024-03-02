@@ -26,6 +26,7 @@ in {
       };
 
       programs.zsh.shellAliases = {
+        "gaa" = "git add .";
         "gst" = "git -P status";
         "gd" = "git -P diff";
         "gds" = "git -P diff --staged";

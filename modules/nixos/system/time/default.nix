@@ -1,4 +1,4 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, ... }:
 with lib;
 with lib.thurs;
 let
@@ -7,7 +7,7 @@ cfg = config.mine.nixos.timezone;
 
 in {
   options.mine.nixos.timezone = {
-    enable = mkOpt types.bool false "Enable time";
+    enable = mkOpt types.bool true "Enable time";
     location = mkOpt types.str "America/Phoenix" "Timezone Location";
   };
 

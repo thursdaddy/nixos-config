@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 with lib.thurs;
 let
@@ -15,6 +15,7 @@ in {
 
       services.xserver = {
         enable = true;
+        videoDrivers = [ "amdgpu" ];
       };
 
       services.xserver.displayManager.sddm = {
@@ -29,15 +30,32 @@ in {
             enable = true;
           };
 
+          extraConfig = ''
+            monitor=DP-1, 2560x1440@165, 90x0, 1
+            monitor=DP-2, 3840x1600@144, 0x1440, 1
+            monitor=DP-3, 2560x1440@120, 3840x480, 1, transform, 3
+          '';
+
           settings = {
             "$mod" = "SUPER";
             bind =
               [
+              "$mod, F, fullscreen"
+              "$mod, Y, exec, ${pkgs.google-chrome}/share/google/chrome/chrome --app=https://youtube.com"
+              "$mod, space, exec, fuzzel"
               "$mod_SHIFT, Q, killactive"
-                "$mod, F, exec, firefox"
-                "$mod, return, exec, alacritty"
-                "$mod_SHIFT, X, exec, hyprlock"
-                ", Print, exec, grimblast copy area"
+              "$mod_SHIFT, X, exec, hyprlock"
+              "$mod, return, exec, alacritty"
+              # Mouse Focus
+              "$mod, h, movefocus, l"
+              "$mod, l, movefocus, r"
+              "$mod, k, movefocus, u"
+              "$mod, j, movefocus, d"
+              # Window Management
+              "$mod_SHIFT, h, movewindow, l"
+              "$mod_SHIFT, l, movewindow, r"
+              "$mod_SHIFT, k, movewindow, u"
+              "$mod_SHIFT, j, movewindow, d"
             ]
             ++ (
                 # workspaces
@@ -50,7 +68,7 @@ in {
                   builtins.toString (x + 1 - (c * 10));
                   in [
                   "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                  "$mod SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
+                  "$mod_SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
                   ]
                   )
                 10)
