@@ -16,6 +16,17 @@ in {
 
       programs.alacritty = {
         enable = true;
+
+        settings = {
+          window.opacity = 0.9;
+          cursor.style.shape = "Underline";
+          cursor.style.blinking = "Always";
+          cursor.thickness = 0.20;
+
+          selection.save_to_clipboard = true;
+
+          decorations = "none";
+        };
       };
 
     };

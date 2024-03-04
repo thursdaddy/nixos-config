@@ -1,4 +1,4 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, pkgs, inputs, ... }:
 with lib;
 with lib.thurs;
 let
@@ -10,6 +10,10 @@ in {
   options.mine.home.hyprland = {
     enable = mkOpt types.bool false "Enable Hyprland";
   };
+
+  imports = [
+    inputs.hyprland.nixosModules.default
+  ];
 
   config = mkIf cfg.enable {
 
@@ -25,6 +29,7 @@ in {
       home-manager.users.${user.name} = {
         wayland.windowManager.hyprland = {
           enable = true;
+          package = inputs.hyprland.packages.${pkgs.system}.hyprland;
 
           systemd = {
             enable = true;

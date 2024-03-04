@@ -11,9 +11,21 @@ in {
 
   config = mkIf cfg.enable {
 
+    systemd.user.services.hyprpaper = {
+      enable = true;
+      description = "Hyprland wallpaper daemon";
+      after = ["default.target"];
+      serviceConfig = {
+        Type = "simple";
+        Restart = "always";
+        RestartSec = "3";
+        ExecStart = "${lib.getExe pkgs.hyprpaper}";
+      };
+    };
+
     environment.systemPackages = with pkgs; [
       hyprpaper
     ];
-  };
 
+  };
 }

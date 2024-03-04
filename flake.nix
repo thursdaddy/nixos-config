@@ -21,7 +21,6 @@
 
     hyprland.url = "github:hyprwm/Hyprland";
     hyprlock.url = "github:hyprwm/Hyprlock";
-
   };
 
   outputs = { self, nixpkgs, nixos-generators, nixvim, home-manager, hyprland, hyprlock, ... }@inputs:

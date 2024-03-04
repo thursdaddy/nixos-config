@@ -53,10 +53,6 @@ in {
             [ "pulseaudio" "cpu" "memory" "temperature" "clock" "tray" ];
           clock.format = "{:%Y-%m-%d %H:%M}";
         };
-        "hyprland/workspaces" = {
-          all-outputs = true;
-          active-only = false;
-        };
       };
       };
     };

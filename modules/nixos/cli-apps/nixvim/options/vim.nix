@@ -43,6 +43,11 @@ in
       Comment.fg = "#708090";
       Comment.bg = "none";
       Comment.bold = true;
+
+      Normal.bg = "none";
+      NonText.bg = "none";
+      NonText.fg = "#48494B";
+      SpecialKey.fg = "#48494B";
     };
   };
 

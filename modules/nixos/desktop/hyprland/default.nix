@@ -10,10 +10,6 @@ in {
     enable = mkEnableOption "Enable Home-Manager";
   };
 
-  imports = [
-    inputs.hyprland.nixosModules.default
-  ];
-
   config = mkIf cfg.enable {
     environment.systemPackages = [
       pkgs.wdisplays
@@ -21,7 +17,8 @@ in {
 
     programs.hyprland = {
       enable = true;
-      xwayland.enable = false;
+      package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+      xwayland.enable = true;
     };
 
   };
