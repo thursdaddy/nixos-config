@@ -11,6 +11,7 @@ in {
 
   config = {
     system.stateVersion = "23.11";
+    nixpkgs.config.allowUnfree = true;
 
     boot.loader.grub.enable = true;
     boot.loader.grub.useOSProber = true;
@@ -28,9 +29,10 @@ in {
       hostId = "80f1eef1";
     };
 
-    services.xserver.videoDrivers = [ "amdgpu" ];
-
-    nixpkgs.config.allowUnfree = true;
+    services.xserver = {
+      enable = true;
+      videoDrivers = [ "amdgpu" ];
+    };
 
     security.sudo.extraRules = [{
       users = [ "${user.name}" ];

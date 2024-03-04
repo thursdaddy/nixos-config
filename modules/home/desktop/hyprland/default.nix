@@ -17,15 +17,6 @@ in {
 
   config = mkIf cfg.enable {
 
-      services.xserver = {
-        enable = true;
-        videoDrivers = [ "amdgpu" ];
-      };
-
-      services.xserver.displayManager.sddm = {
-        enable = true;
-      };
-
       home-manager.users.${user.name} = {
         wayland.windowManager.hyprland = {
           enable = true;
