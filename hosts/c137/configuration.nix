@@ -46,6 +46,7 @@ in {
     mine = {
       nixos = {
         user = enabled;
+        bottom = enabled;
         fonts = enabled;
         flakes = enabled;
         openssh = enabled;
