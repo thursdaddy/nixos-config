@@ -1,0 +1,99 @@
+* {
+    font-family: "UbuntuMono Nerd Font";
+    font-size: 16px;
+}
+
+
+window#waybar {
+    background-color: #225877;
+    color: #ffffff;
+}
+
+
+.modules-left {
+	background-color: #323232;
+	padding: 0px 0px 0px 0px;
+}
+
+
+.modules-right {
+	background-color: #323232;
+	padding: 0px 5px 0px 0px;
+}
+
+
+#custom-scratch {
+	background-color: #323232;
+	color: #b8b8b8;
+	padding: 0px 9px 0px 9px;
+}
+
+
+#workspaces {
+}
+
+
+#workspaces button {
+	padding: 0px 11px 0px 11px;
+ 	min-width: 1px;
+	color: #888888;
+}
+
+
+#workspaces button.focused {
+	padding: 0px 11px 0px 11px;
+	background-color: #285577;
+	color: #ffffff;
+}
+
+
+#mode {
+	 background-color: #900000;
+	 color: #ffffff;
+     padding: 0px 5px 0px 5px;
+     border: 1px solid #2f343a;
+}
+
+
+#window {
+	 color: #ffffff;
+	 background-color: #285577;
+     padding: 0px 10px 0px 10px;
+}
+
+
+window#waybar.empty #window {
+	background-color: transparent;
+	color: transparent;
+}
+
+
+window#waybar.empty {
+	background-color: #323232;
+}
+
+
+#network, #temperature, #backlight, #pulseudio, #battery {
+    padding: 0px 15px 0px 15px;
+}
+
+
+#clock {
+	margin: 0px 15px 0px 15px;
+}
+
+
+#tray{
+   padding: 0px 8px 0px 5px;
+   margin: 0px 5px 0px 5px;
+}
+
+
+#battery.critical {
+   color: #ff5555;
+}
+
+
+#network.disconnected {
+    color: #ff5555;
+}

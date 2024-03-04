@@ -156,7 +156,7 @@
 #workspaces button {
     font-weight: bold; /* Somewhy the bar-wide setting is ignored*/
     padding: 0;
-    /*color: #999;*/
+    color: #D8DEE9;
     opacity: 0.3;
     background: none;
     font-size: 1em;

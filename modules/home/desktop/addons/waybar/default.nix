@@ -32,6 +32,10 @@ in {
           modules-right =
             [ "pulseaudio" "cpu" "memory" "temperature" "clock" "tray" ];
           clock.format = "{:%Y-%m-%d %H:%M}";
+          "hyprland/workspaces" = {
+            active-only = false;
+            all-outputs = true;
+          };
         };
         top = {
           output = [ "!DP-2" "DP-1" "!DP-3" ];
