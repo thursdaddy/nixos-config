@@ -27,6 +27,7 @@ let
           escapeTime = 0;
           baseIndex = 1;
           historyLimit = 20000;
+          terminal = "screen-256color";
           extraConfig = ''
             bind | split-window -h -c "#{pane_current_path}"
             bind _ split-window -v -c "#{pane_current_path}"
@@ -42,7 +43,7 @@ let
             bind R command-prompt -I "#{session_name}" "rename-session '%%'"
 
             # Edit configuration and reload
-            bind C-e new-window -n 'tmux.conf' "sh -c '\${EDITOR:-nvim} ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf && tmux display \"Config reloaded\"'"
+            bind C-e new-window -n 'tmux.conf' "sh -c 'nvim ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf && tmux display \"Config reloaded\"'"
 
             # Reload tmux configuration
             bind C-r source-file ~/.config/.tmux.conf \; display "Config reloaded"
@@ -55,6 +56,7 @@ let
             bind -r Tab previous-window   # cycle thru MRU tabs
             bind -r C-o swap-pane -D
 
+            # TODO: nixify this
             # TOKYO DARK COLORS:
             BG_DARK="#1f2335"
             BG="#24283b"
