@@ -1,4 +1,4 @@
-{ lib, config, inputs, ... }:
+{ lib, config, pkgs, inputs, ... }:
 with lib;
 with lib.thurs;
 let
@@ -20,6 +20,7 @@ in {
 
       programs.hyprlock = {
         enable = true;
+        package = inputs.hyprlock.packages.${pkgs.system}.hyprlock;
 
         general.grace = 1;
 
@@ -44,7 +45,8 @@ in {
           path = "$HOME/pictures/wallpapers/blue_astronaut_in_space.png";
         }];
 
-        labels = [{
+        labels = [
+        {
           monitor = "DP-1";
           text = ''cmd[update:100] echo "<b>$(date +'%_I:%M:%S')</b>"'';
           position = {
@@ -54,7 +56,8 @@ in {
           font_family = "Nerd Fonts";
           font_size = 60;
           color = "rgba(255, 255, 255, 1.0)";
-        }];
+        }
+        ];
       };
     };
   };

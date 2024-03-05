@@ -30,6 +30,16 @@ in {
             monitor=DP-1, 2560x1440@165, 90x0, 1
             monitor=DP-2, 3840x1600@144, 0x1440, 1
             monitor=DP-3, 2560x1440@120, 3840x480, 1, transform, 3
+            workspace = 1, monitor:DP-2
+            workspace = 2, monitor:DP-2
+            workspace = 3, monitor:DP-2
+            workspace = 4, monitor:DP-2
+            workspace = 5, monitor:DP-3
+            workspace = 6, monitor:DP-3
+            workspace = 7, monitor:DP-3
+            workspace = 8, monitor:DP-1
+            workspace = 9, monitor:DP-1
+            workspace = 0, monitor:DP-1
           '';
 
           settings = {

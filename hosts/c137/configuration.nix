@@ -29,11 +29,6 @@ in {
       hostId = "80f1eef1";
     };
 
-    services.xserver = {
-      enable = true;
-      videoDrivers = [ "amdgpu" ];
-    };
-
     security.sudo.extraRules = [{
       users = [ "${user.name}" ];
       commands = [{
@@ -54,13 +49,11 @@ in {
         firewall = enabled;
         nixvim = enabled;
         hyprland = enabled;
-        hyprpaper = enabled;
         neofetch = enabled;
         pipewire = enabled;
         bluetooth = enabled;
         gthumb = enabled;
         vlc = enabled;
-        sddm = enabled;
         utils = enabled;
       };
       home = {
@@ -69,8 +62,10 @@ in {
         firefox = enabled;
         chrome = enabled;
         brave = enabled;
+        cursor = enabled;
         hyprland  = enabled;
         hyprlock = enabled;
+        hyprpaper = enabled;
         waybar = enabled;
         fuzzel = enabled;
         git = enabled;
