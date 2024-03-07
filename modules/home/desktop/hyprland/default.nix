@@ -24,7 +24,14 @@ in {
 
           systemd = {
             enable = true;
+            extraCommands = [
+              "systemctl --user import-environment PATH"
+              "systemctl --user restart xdg-desktop-portal.service"
+              "systemctl --user stop hyprland-session.target"
+              "systemctl --user start hyprland-session.target"
+            ];
           };
+
 
           extraConfig = ''
             monitor=DP-1, 2560x1440@165, 90x0, 1

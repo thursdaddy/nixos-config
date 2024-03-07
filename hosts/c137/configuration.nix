@@ -18,15 +18,10 @@ in {
     boot.loader.grub.efiSupport = true;
     boot.loader.grub.efiInstallAsRemovable = true;
     boot.loader.grub.device = "nodev";
-    boot.supportedFilesystems = [ "zfs" ];
-    boot.zfs.requestEncryptionCredentials = true;
-
-    services.zfs.autoScrub.enable = true;
 
     networking = {
       networkmanager.enable = true;
       hostName = "c137";
-      hostId = "80f1eef1";
     };
 
     security.sudo.extraRules = [{

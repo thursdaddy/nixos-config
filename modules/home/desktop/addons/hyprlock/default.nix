@@ -25,7 +25,6 @@ in {
         general.grace = 1;
 
         input-fields = [{
-          monitor = "DP-1";
           size.width = 250;
           size.height = 60;
           outline_thickness = 2;
@@ -47,7 +46,6 @@ in {
 
         labels = [
         {
-          monitor = "DP-1";
           text = ''cmd[update:100] echo "<b>$(date +'%_I:%M:%S')</b>"'';
           position = {
             x = 0;

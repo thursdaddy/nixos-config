@@ -11,19 +11,17 @@
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ "amdgpu" ];
   boot.kernelModules = [ "kvm-amd" ];
-  boot.kernelParams = [ "quiet" "splash" "vga=current" "rd.systemd.show_status=false" "rd.udev.log_level=3" "udev.log_priority=3" ];
-  boot.initrd.verbose = false;
-  boot.consoleLogLevel = 0;
   boot.extraModulePackages = [ ];
+
+  boot.initrd.luks.devices = {
+  "luks-rpool-nvme-CT2000P5PSSD8_22393B9712C0-part2".device = "/dev/disk/by-id/nvme-CT2000P5PSSD8_22393B9712C0-part2";
+  };
+
+  networking.hostId = "c8cf78d0";
 
   fileSystems."/" =
     { device = "NIXROOT/root";
       fsType = "zfs";
-    };
-
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/C4B2-EF6C";
-      fsType = "vfat";
     };
 
   fileSystems."/home" =
@@ -36,15 +34,23 @@
       fsType = "zfs";
     };
 
-  swapDevices = [ ];
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-uuid/7D91-10AC";
+      fsType = "vfat";
+    };
+
+ # swapDevices =
+ #  [ { device = "/dev/disk/by-uuid/f445a75b-5234-4534-964b-eedb46af1c99"; }
+ #   ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.eth0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.enp7s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
 }

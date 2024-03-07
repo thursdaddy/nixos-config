@@ -22,8 +22,9 @@ in {
 
       style = ./themes/nord/style.css;
 
-      settings = {
-        main = {
+      settings = [
+        {
+          name = "main";
           output = [ "DP-2" "!DP-1" "!DP-3" ];
           layer = "top";
           position = "top";
@@ -34,10 +35,14 @@ in {
           clock.format = "{:%Y-%m-%d %H:%M}";
           "hyprland/workspaces" = {
             active-only = false;
-            all-outputs = true;
+            all-outputs = false;
+            persistent-workspaces = {
+              "DP-2" = [ 1 2 3 4 ];
+            };
           };
-        };
-        top = {
+        }
+        {
+          name = "top";
           output = [ "!DP-2" "DP-1" "!DP-3" ];
           layer = "bottom";
           position = "bottom";
@@ -46,8 +51,16 @@ in {
           modules-right =
             [ "pulseaudio" "cpu" "memory" "temperature" "clock" "tray" ];
           clock.format = "{:%Y-%m-%d %H:%M}";
-        };
-        right = {
+          "hyprland/workspaces" = {
+            active-only = false;
+            all-outputs = false;
+            persistent-workspaces = {
+              "DP-1" = [ 8 9 ];
+            };
+          };
+        }
+        {
+          name = "side";
           output = [ "!DP-2" "!DP-1" "DP-3" ];
           layer = "bottom";
           position = "bottom";
@@ -56,10 +69,17 @@ in {
           modules-right =
             [ "pulseaudio" "cpu" "memory" "temperature" "clock" "tray" ];
           clock.format = "{:%Y-%m-%d %H:%M}";
-        };
-      };
+          "hyprland/workspaces" = {
+            active-only = false;
+            all-outputs = false;
+            persistent-workspaces = {
+              "DP-3" = [ 5 6 7 ];
+            };
+          };
+        }
+      ];
       };
     };
+
   };
 }
-
