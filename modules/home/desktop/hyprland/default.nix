@@ -17,7 +17,25 @@ in {
 
   config = mkIf cfg.enable {
 
+      xdg.portal = {
+        enable = true;
+        wlr.enable = true;
+        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+      };
+
+      environment.systemPackages = with pkgs; [
+        xdg-utils
+      ];
+
       home-manager.users.${user.name} = {
+        home.sessionVariables = {
+          MOZ_ENABLE_WAYLAND = 1;
+          XDG_CURRENT_SESSION = "hyprland";
+          XDG_SESSION_TYPE = "wayland";
+          QT_QPA_PLATFORM="wayland"; # maybe "wayland-egl"
+          QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
+        };
+
         wayland.windowManager.hyprland = {
           enable = true;
           package = inputs.hyprland.packages.${pkgs.system}.hyprland;
