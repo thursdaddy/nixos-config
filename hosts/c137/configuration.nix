@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 with lib.thurs;
 let user = config.mine.nixos.user ;
@@ -31,6 +31,18 @@ in {
         options = [ "NOPASSWD" ];
       }];
     }];
+
+    hardware.opengl = {
+      enable = true;
+      driSupport = true;
+      driSupport32Bit = true;
+      extraPackages  = with pkgs; [
+        vulkan-loader
+        vulkan-validation-layers
+        vulkan-extension-layer
+      ];
+    };
+
 
     # TODO: improve options and default/group them accordingly
     mine = {

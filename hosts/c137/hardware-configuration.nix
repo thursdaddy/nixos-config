@@ -9,9 +9,12 @@
     ];
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ "amdgpu" ];
+  boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
+  boot.kernelParams = [ "quiet" "splash" "vga=current" "rd.systemd.show_status=false" "rd.udev.log_level=3" "udev.log_priority=3" ];
+  boot.initrd.verbose = false;
+  boot.consoleLogLevel = 0;
 
   boot.initrd.luks.devices = {
   "luks-rpool-nvme-CT2000P5PSSD8_22393B9712C0-part2".device = "/dev/disk/by-id/nvme-CT2000P5PSSD8_22393B9712C0-part2";

@@ -22,18 +22,8 @@ in {
           enable = true;
           package = inputs.hyprland.packages.${pkgs.system}.hyprland;
 
-          systemd = {
-            enable = true;
-            extraCommands = [
-              "systemctl --user import-environment PATH"
-              "systemctl --user restart xdg-desktop-portal.service"
-              "systemctl --user stop hyprland-session.target"
-              "systemctl --user start hyprland-session.target"
-            ];
-          };
-
-
           extraConfig = ''
+            # MONITORS AND WORKSPACES
             monitor=DP-1, 2560x1440@165, 90x0, 1
             monitor=DP-2, 3840x1600@144, 0x1440, 1
             monitor=DP-3, 2560x1440@120, 3840x480, 1, transform, 3
@@ -47,18 +37,37 @@ in {
             workspace = 8, monitor:DP-1
             workspace = 9, monitor:DP-1
             workspace = 0, monitor:DP-1
+            # RULES
+            windowrulev2 = workspace 8 silent, class:(Google-chrome)
+            windowrulev2 = workspace 5 silent, class:(discord)
+            windowrulev2 = maximize, class:(Google-chrome)
           '';
 
           settings = {
             "$mod" = "SUPER";
+            "dwindle" = {
+              preserve_split = true;
+              pseudotile = true;
+              force_split = 2;
+            };
+            "master" = {
+              new_is_master = true;
+            };
+            bindm =
+            [
+              "$mod, mouse:272, movewindow"
+              "$mod, mouse:273, resizewindow"
+            ];
             bind =
-              [
-              "$mod, F, fullscreen"
-              "$mod, Y, exec, ${pkgs.google-chrome}/share/google/chrome/chrome --app=https://youtube.com"
+            [
               "$mod, space, exec, fuzzel"
+              "$mod, return, exec, alacritty"
+              "$mod, F, fullscreen"
+              "$mod, t, layoutmsg, togglesplit"
+              "$mod_SHIFT, F, fullscreen, 1"
+              "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.google-chrome} --app=https://youtube.com --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder"
               "$mod_SHIFT, Q, killactive"
               "$mod_SHIFT, X, exec, hyprlock"
-              "$mod, return, exec, alacritty"
               # Mouse Focus
               "$mod, h, movefocus, l"
               "$mod, l, movefocus, r"
@@ -69,6 +78,10 @@ in {
               "$mod_SHIFT, l, movewindow, r"
               "$mod_SHIFT, k, movewindow, u"
               "$mod_SHIFT, j, movewindow, d"
+              "$mod_SHIFT, a, movewindow, l"
+              "$mod_SHIFT, d, movewindow, r"
+              "$mod_SHIFT, w, movewindow, u"
+              "$mod_SHIFT, s, movewindow, d"
             ]
             ++ (
                 # workspaces
