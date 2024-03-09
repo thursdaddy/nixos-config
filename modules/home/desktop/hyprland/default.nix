@@ -52,13 +52,14 @@ in {
             workspace = 5, monitor:DP-3
             workspace = 6, monitor:DP-3
             workspace = 7, monitor:DP-3
-            workspace = 8, monitor:DP-1
+            workspace = 8, monitor:DP-1, gapsin:0, gapsout:0
             workspace = 9, monitor:DP-1
             workspace = 0, monitor:DP-1
             # RULES
             windowrulev2 = workspace 8 silent, class:(Google-chrome)
             windowrulev2 = workspace 5 silent, class:(discord)
             windowrulev2 = maximize, class:(Google-chrome)
+            windowrulev2 = size 90%, class:(Google-chrome)
           '';
 
           settings = {
@@ -80,26 +81,26 @@ in {
             [
               "$mod, space, exec, fuzzel"
               "$mod, return, exec, alacritty"
+              "$mod, T, layoutmsg, togglesplit"
               "$mod, F, fullscreen"
-              "$mod, t, layoutmsg, togglesplit"
               "$mod_SHIFT, F, fullscreen, 1"
+              "$mod, G, exec, grim -g \"$(slurp)\" \"/home/thurs/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
+              "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
               "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.google-chrome} --app=https://youtube.com --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder"
+              "$mod_SHIFT, D, exec, ${lib.getExe pkgs.google-chrome} --app=https://deezer.com --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder"
+              "$mod_SHIFT, P, exec, ${lib.getExe pkgs.google-chrome} --app=https://192.168.20.80:32400 --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder"
               "$mod_SHIFT, Q, killactive"
               "$mod_SHIFT, X, exec, hyprlock"
               # Mouse Focus
-              "$mod, h, movefocus, l"
-              "$mod, l, movefocus, r"
-              "$mod, k, movefocus, u"
-              "$mod, j, movefocus, d"
+              "$mod, H, movefocus, l"
+              "$mod, L, movefocus, r"
+              "$mod, K, movefocus, u"
+              "$mod, J, movefocus, d"
               # Window Management
-              "$mod_SHIFT, h, movewindow, l"
-              "$mod_SHIFT, l, movewindow, r"
-              "$mod_SHIFT, k, movewindow, u"
-              "$mod_SHIFT, j, movewindow, d"
-              "$mod_SHIFT, a, movewindow, l"
-              "$mod_SHIFT, d, movewindow, r"
-              "$mod_SHIFT, w, movewindow, u"
-              "$mod_SHIFT, s, movewindow, d"
+              "$mod_SHIFT, H, movewindow, l"
+              "$mod_SHIFT, L, movewindow, r"
+              "$mod_SHIFT, K, movewindow, u"
+              "$mod_SHIFT, J, movewindow, d"
             ]
             ++ (
                 # workspaces

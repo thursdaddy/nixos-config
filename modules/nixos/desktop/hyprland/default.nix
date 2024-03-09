@@ -7,12 +7,13 @@ cfg = config.mine.nixos.hyprland;
 
 in {
   options.mine.nixos.hyprland = {
-    enable = mkEnableOption "Enable Home-Manager";
+    enable = mkEnableOption "Enable Hyprland system package";
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [
-      pkgs.wdisplays
+    environment.systemPackages = with pkgs; [
+      wdisplays
+      wl-clipboard
     ];
 
     programs.hyprland = {

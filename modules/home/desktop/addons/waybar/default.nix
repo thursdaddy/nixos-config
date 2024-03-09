@@ -27,7 +27,7 @@ in {
           name = "main";
           output = [ "DP-2" "!DP-1" "!DP-3" ];
           layer = "top";
-          position = "top";
+          position = "bottom";
           modules-left = [ "hyprland/workspaces" ];
           modules-center = [ "hyprland/window" ];
           modules-right =
@@ -44,7 +44,7 @@ in {
         {
           name = "top";
           output = [ "!DP-2" "DP-1" "!DP-3" ];
-          layer = "bottom";
+          layer = "top";
           position = "bottom";
           modules-left = [ "hyprland/workspaces" ];
           modules-center = [ "hyprland/window" ];
@@ -62,7 +62,7 @@ in {
         {
           name = "side";
           output = [ "!DP-2" "!DP-1" "DP-3" ];
-          layer = "bottom";
+          layer = "top";
           position = "bottom";
           modules-left = [ "hyprland/workspaces" ];
           modules-center = [ "hyprland/window" ];

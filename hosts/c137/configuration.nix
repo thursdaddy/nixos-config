@@ -19,11 +19,6 @@ in {
     boot.loader.grub.efiInstallAsRemovable = true;
     boot.loader.grub.device = "nodev";
 
-    networking = {
-      networkmanager.enable = true;
-      hostName = "c137";
-    };
-
     security.sudo.extraRules = [{
       users = [ "${user.name}" ];
       commands = [{
@@ -62,6 +57,12 @@ in {
         gthumb = enabled;
         vlc = enabled;
         utils = enabled;
+        screenshots = enabled;
+        network = {
+          enable = true;
+          hostname = "c137";
+          applet = true;
+        };
       };
       home = {
         home-manager = enabled;
