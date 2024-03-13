@@ -22,7 +22,6 @@ in
       smartindent = true;
       wrap = false;
 
-      # disable swap, enable undorfile
       swapfile = false;
       backup = false;
       undofile = true;
@@ -45,9 +44,16 @@ in
       Comment.bold = true;
 
       Normal.bg = "none";
+      Normal.ctermbg = "none";
       NonText.bg = "none";
+      NonText.ctermbg = "none";
       NonText.fg = "#48494B";
       SpecialKey.fg = "#48494B";
+      NvimTreeNormal.ctermbg = "none";
+      NvimTreeNormal.bg = "none";
+      NormalFloat.bg = "none";
+      NormalFloat.ctermbg = "none";
+      LineNr.bg = "none";
     };
   };
 

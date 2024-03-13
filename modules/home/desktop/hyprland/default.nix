@@ -80,11 +80,11 @@ in {
             bind =
             [
               "$mod, space, exec, fuzzel"
-              "$mod, return, exec, alacritty"
+              "$mod, return, exec, kitty"
               "$mod, T, layoutmsg, togglesplit"
               "$mod, F, fullscreen"
               "$mod_SHIFT, F, fullscreen, 1"
-              "$mod, G, exec, grim -g \"$(slurp)\" \"/home/thurs/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
+              "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
               "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
               "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.google-chrome} --app=https://youtube.com --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder"
               "$mod_SHIFT, D, exec, ${lib.getExe pkgs.google-chrome} --app=https://deezer.com --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder"

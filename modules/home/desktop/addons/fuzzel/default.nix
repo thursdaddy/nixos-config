@@ -21,7 +21,6 @@ in {
             fuzzy = true;
             font = "Hack:size=11";
             dpi-aware = "yes";
-#            icon-theme = "Nordzy-dark";
             layer = "overlay";
             exit-on-keyboard-focus-loss = true;
             fields = "filename,name,generic";
@@ -45,7 +44,7 @@ in {
           };
           border = {
             width = 2;
-            radius = 0;
+            radius = 4;
           };
           dmenu = {
             mode = "text";

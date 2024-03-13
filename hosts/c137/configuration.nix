@@ -38,6 +38,9 @@ in {
       ];
     };
 
+    networking.firewall = {
+      allowedTCPPorts = [ 3000 ];
+    };
 
     # TODO: improve options and default/group them accordingly
     mine = {
@@ -58,6 +61,7 @@ in {
         vlc = enabled;
         utils = enabled;
         screenshots = enabled;
+        ollama = enabled;
         network = {
           enable = true;
           hostname = "c137";
@@ -67,6 +71,7 @@ in {
       home = {
         home-manager = enabled;
         alacritty = enabled;
+        kitty = enabled;
         firefox = enabled;
         chrome = enabled;
         brave = enabled;
