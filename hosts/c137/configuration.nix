@@ -38,10 +38,6 @@ in {
       ];
     };
 
-    networking.firewall = {
-      allowedTCPPorts = [ 3000 ];
-    };
-
     # TODO: improve options and default/group them accordingly
     mine = {
       nixos = {
@@ -54,6 +50,7 @@ in {
         firewall = enabled;
         nixvim = enabled;
         hyprland = enabled;
+        sddm = enabled;
         neofetch = enabled;
         pipewire = enabled;
         bluetooth = enabled;
@@ -71,6 +68,7 @@ in {
       home = {
         home-manager = enabled;
         alacritty = enabled;
+        syncthing = enabled;
         kitty = enabled;
         firefox = enabled;
         chrome = enabled;
