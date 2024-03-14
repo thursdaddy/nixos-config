@@ -12,10 +12,20 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home-manager.users.${user.name} = {
+    environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
-      programs.google-chrome = {
+    home-manager.users.${user.name} = {
+      programs.chromium = {
         enable = true;
+
+        commandLineArgs = [
+          "--ignore-gpu-blocklist"
+          "--enable-gpu-rasterization"
+          "--enable-zero-copy"
+          "--enable-features=VaapiVideoDecoder"
+          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
+        ];
       };
 
     };

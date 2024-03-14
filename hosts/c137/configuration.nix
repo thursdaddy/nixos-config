@@ -38,6 +38,10 @@ in {
       ];
     };
 
+    environment.systemPackages = [
+      pkgs.glxinfo
+    ];
+
     # TODO: improve options and default/group them accordingly
     mine = {
       nixos = {

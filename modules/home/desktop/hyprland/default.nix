@@ -5,6 +5,7 @@ let
 
 cfg = config.mine.home.hyprland;
 user = config.mine.nixos.user;
+chrome-flags = "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder --enable-features=UseOzonePlatform --ozone-platform=wayland";
 
 in {
   options.mine.home.hyprland = {
@@ -29,7 +30,6 @@ in {
 
       home-manager.users.${user.name} = {
         home.sessionVariables = {
-          MOZ_ENABLE_WAYLAND = 1;
           XDG_CURRENT_SESSION = "hyprland";
           XDG_SESSION_TYPE = "wayland";
           QT_QPA_PLATFORM="wayland";
@@ -56,11 +56,12 @@ in {
             workspace = 9, monitor:DP-1
             workspace = 0, monitor:DP-1
             # RULES
-            windowrulev2 = workspace 8 silent, class:(Google-chrome)
+            windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
+            windowrulev2 = workspace 6 silent, class:(chrome-deezer.com__-Default)
             windowrulev2 = workspace 5 silent, class:(discord)
-            windowrulev2 = workspace 6 silent, class:(obsidian)
-            windowrulev2 = maximize, class:(Google-chrome)
-            windowrulev2 = size 90%, class:(Google-chrome)
+            windowrulev2 = workspace 7 silent, class:(obsidian)
+            windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
+            windowrulev2 = size 90%, class:(chrome-youtube.com__-Default)
           '';
 
           settings = {
@@ -87,9 +88,9 @@ in {
               "$mod_SHIFT, F, fullscreen, 1"
               "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
               "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
-              "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.google-chrome} --app=https://youtube.com --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder"
-              "$mod_SHIFT, D, exec, ${lib.getExe pkgs.google-chrome} --app=https://deezer.com --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder"
-              "$mod_SHIFT, P, exec, ${lib.getExe pkgs.google-chrome} --app=https://192.168.20.80:32400 --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder"
+              "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
+              "$mod_SHIFT, D, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://deezer.com"
+              "$mod_SHIFT, P, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://192.168.20.80:32400"
               "$mod_SHIFT, Q, killactive"
               "$mod_SHIFT, X, exec, hyprlock"
               # Mouse Focus

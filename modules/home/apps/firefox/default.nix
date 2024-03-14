@@ -12,6 +12,7 @@ in {
   };
 
   config = mkIf cfg.enable {
+    environment.sessionVariables.MOZ_ENABLE_WAYLAND = "1";
     home-manager.users.${user.name} = {
 
       programs.firefox = {
