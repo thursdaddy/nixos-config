@@ -56,6 +56,7 @@ in {
         bluetooth = enabled;
         gthumb = enabled;
         vlc = enabled;
+        obsidian = enabled;
         utils = enabled;
         screenshots = enabled;
         ollama = enabled;

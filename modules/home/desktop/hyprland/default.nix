@@ -32,7 +32,7 @@ in {
           MOZ_ENABLE_WAYLAND = 1;
           XDG_CURRENT_SESSION = "hyprland";
           XDG_SESSION_TYPE = "wayland";
-          QT_QPA_PLATFORM="wayland"; # maybe "wayland-egl"
+          QT_QPA_PLATFORM="wayland";
           QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
         };
 
@@ -58,6 +58,7 @@ in {
             # RULES
             windowrulev2 = workspace 8 silent, class:(Google-chrome)
             windowrulev2 = workspace 5 silent, class:(discord)
+            windowrulev2 = workspace 6 silent, class:(obsidian)
             windowrulev2 = maximize, class:(Google-chrome)
             windowrulev2 = size 90%, class:(Google-chrome)
           '';
