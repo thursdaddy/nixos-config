@@ -54,7 +54,6 @@ in {
         firewall = enabled;
         nixvim = enabled;
         hyprland = enabled;
-        sddm = enabled;
         neofetch = enabled;
         pipewire = enabled;
         bluetooth = enabled;
