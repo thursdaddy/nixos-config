@@ -72,6 +72,7 @@ in {
       home = {
         home-manager = enabled;
         alacritty = enabled;
+        discord = enabled;
         syncthing = enabled;
         kitty = enabled;
         firefox = enabled;
@@ -87,12 +88,14 @@ in {
         zsh = enabled;
         tmux = {
           enable = true;
-          sessionizerPaths = [
-            "${user.homeDir}/projects/nixos"
-            "${user.homeDir}/projects/cloud"
-          ];
+          sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/projects/nixos"
+              "${user.homeDir}/projects/cloud"
+            ];
+          };
         };
-        discord = enabled;
       };
     };
   };
