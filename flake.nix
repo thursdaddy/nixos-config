@@ -28,12 +28,6 @@
   let
     lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
   in {
-    devShells.tf = nixpkgs.legacyPackages.x86_64-linux.mkShell {
-      buildInputs = [
-        nixpkgs.legacyPackages.x86_64-linux.terraform
-        nixpkgs.legacyPackages.x86_64-linux.awscli2
-      ];
-    };
     nixosConfigurations = {
       "nixvm" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; inherit lib; };
