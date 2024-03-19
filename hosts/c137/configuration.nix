@@ -73,6 +73,7 @@ in {
         home-manager = enabled;
         alacritty = enabled;
         discord = enabled;
+        direnv = enabled;
         syncthing = enabled;
         kitty = enabled;
         firefox = enabled;
