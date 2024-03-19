@@ -26,6 +26,7 @@ in {
       };
 
       programs.zsh.shellAliases = {
+        "ga" = "git add";
         "gaa" = "git add .";
         "gc" = "git commit";
         "gca" = "git commit --amend";
