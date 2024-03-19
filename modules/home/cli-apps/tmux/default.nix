@@ -8,12 +8,51 @@ let
   in {
     options.mine.home.tmux = {
       enable = mkEnableOption "Enable tmux";
+      sessionizerPaths = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+      };
     };
 
     config = mkIf cfg.enable {
 
       home-manager.users.${user.name} = {
-        home.packages = with pkgs; [ tmux ];
+        home.packages = with pkgs; [
+          tmux
+          (writeShellScriptBin "tmuxs" (builtins.readFile ./scripts/tmuxs)) # tmux sessionizer
+        ];
+
+        # autocomplete scripts to find the basenames of cfg.sessionizerPaths for tmux sessionizer
+        home.file = {
+          "${user.homeDir}/.local/bin/tmuxs_autocomplete.sh" = {
+              text = let
+                tmuxs_paths = builtins.concatStringsSep " " cfg.sessionizerPaths;
+              in
+              ''
+              #/usr/bin/env bash
+
+              _tmuxs_autocomplete() {
+                local cur="''${COMP_WORDS[COMP_CWORD]}"
+                local prev="''${COMP_WORDS[COMP_CWORD-1]}"
+                local dir=$(find ${tmuxs_paths} -maxdepth 1 -mindepth 1 -type d -not -path '*/.*')
+
+                if [[ $prev == "tmuxs" ]]; then
+                  COMPREPLY=($(compgen -W "$(basename -a $dir)" -- "$cur"))
+                fi
+
+              }
+
+              complete -F _tmuxs_autocomplete tmuxs
+              '';
+          };
+        };
+
+        # source the autocomplete script in zsh
+        programs.zsh = {
+          initExtra = ''
+            source ~/.local/bin/tmuxs_autocomplete.sh
+          '';
+        };
 
         programs.tmux = {
           enable = true;

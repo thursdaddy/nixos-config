@@ -85,7 +85,13 @@ in {
         fuzzel = enabled;
         git = enabled;
         zsh = enabled;
-        tmux = enabled;
+        tmux = {
+          enable = true;
+          sessionizerPaths = [
+            "${user.homeDir}/projects/nixos"
+            "${user.homeDir}/projects/cloud"
+          ];
+        };
         discord = enabled;
       };
     };

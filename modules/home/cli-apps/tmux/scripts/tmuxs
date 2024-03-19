@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]; then
+  exit 1
+fi
+
+tmux has-session -t $1 2>/dev/null
+
+if [ $? != 0 ]; then
+  echo "tmux session $1 does not exist!"
+  path=$(find ~ -type d -name $1 -print -quit 2>&1)
+  cd $path
+  tmux new-session -d -s "$1" -n nvim 'nvim' \; \
+    new-window \; \
+    select-window -t :nvim\;
+  tmux attach-session -t $1
+else
+  tmux attach-session -t $1
+fi
