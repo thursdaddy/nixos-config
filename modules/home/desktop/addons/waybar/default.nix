@@ -55,7 +55,7 @@ in {
             active-only = false;
             all-outputs = false;
             persistent-workspaces = {
-              "DP-1" = [ 8 9 ];
+              "DP-1" = [ 8 9 10 ];
             };
           };
         }

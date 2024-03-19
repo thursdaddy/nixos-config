@@ -32,7 +32,7 @@ in {
         home.sessionVariables = {
           XDG_CURRENT_SESSION = "hyprland";
           XDG_SESSION_TYPE = "wayland";
-          QT_QPA_PLATFORM="wayland";
+          QT_QPA_PLATFORM="wayland-egl";
           QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
         };
 
@@ -54,7 +54,7 @@ in {
             workspace = 7, monitor:DP-3
             workspace = 8, monitor:DP-1, gapsin:0, gapsout:0
             workspace = 9, monitor:DP-1
-            workspace = 0, monitor:DP-1
+            workspace = 10, monitor:DP-1
             # RULES
             windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
             windowrulev2 = workspace 6 silent, class:(chrome-deezer.com__-Default)
@@ -85,9 +85,10 @@ in {
               "$mod, return, exec, kitty"
               "$mod, T, layoutmsg, togglesplit"
               "$mod, F, fullscreen"
-              "$mod_SHIFT, F, fullscreen, 1"
               "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
               "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
+              "$mod_SHIFT, F, fullscreen, 1"
+              "$mod_SHIFT, O, exec, obsidian"
               "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
               "$mod_SHIFT, D, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://deezer.com"
               "$mod_SHIFT, P, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://192.168.20.80:32400"

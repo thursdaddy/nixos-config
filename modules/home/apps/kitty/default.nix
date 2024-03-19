@@ -1,4 +1,4 @@
-{ lib, config,  ... }:
+{ lib, config, ... }:
 with lib;
 with lib.thurs;
 let
@@ -16,7 +16,10 @@ in {
 
       programs.kitty = {
         enable = true;
-        theme = "Gruvbox Material Dark Hard";
+        theme = "duckbones";
+        font = {
+          name = "HackNF-Regular";
+        };
 
         settings = {
           scrollback_lines = "20000";
