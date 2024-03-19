@@ -16,7 +16,7 @@ in {
 
       programs.kitty = {
         enable = true;
-        theme = "srcery";
+        theme = "Tomorrow Night";
         font = {
           name = "HackNF-Regular";
         };
