@@ -19,23 +19,30 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     hyprland.url = "github:hyprwm/Hyprland";
     hyprlock.url = "github:hyprwm/Hyprlock";
     hyprpaper.url = "github:hyprwm/Hyprpaper";
   };
 
-  outputs = { self, nixpkgs, nixos-generators, nixvim, home-manager, hyprland, hyprlock, hyprpaper, ... }@inputs:
+  outputs = { self, nixpkgs, nixos-generators, nixvim, nix-darwin, home-manager, hyprland, hyprlock, hyprpaper, ... }@inputs:
   let
     lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
   in {
-    nixosConfigurations = {
-      "nixvm" = nixpkgs.lib.nixosSystem {
+    darwinConfigurations = {
+      "mbp" = nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs; inherit lib; };
-        system = "x86_64-linux";
+        system = "aarch64-darwin";
         modules = [
-          ./hosts/nixvm/configuration.nix
+          ./hosts/mbp/configuration.nix
         ];
       };
+    };
+    nixosConfigurations = {
       "c137" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; inherit lib; };
         system = "x86_64-linux";

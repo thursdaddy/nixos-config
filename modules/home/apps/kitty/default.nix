@@ -3,17 +3,16 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.home.kitty;
-user = config.mine.nixos.user;
+cfg = config.mine.apps.kitty;
+user = config.mine.user;
 
 in {
-  options.mine.home.kitty = {
+  options.mine.apps.kitty = {
     enable = mkOpt types.bool false "Enable Kitty";
   };
 
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
-
       programs.kitty = {
         enable = true;
         theme = "Tomorrow Night";
@@ -27,8 +26,6 @@ in {
           background_opacity = "0.9";
         };
       };
-
     };
   };
-
 }

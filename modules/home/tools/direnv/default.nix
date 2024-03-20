@@ -3,7 +3,7 @@ with lib;
 let
 
   cfg = config.mine.home.direnv;
-  user = config.mine.nixos.user;
+  user = config.mine.user;
 
   in {
     options.mine.home.direnv = {

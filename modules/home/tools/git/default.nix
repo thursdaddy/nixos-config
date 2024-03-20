@@ -2,11 +2,11 @@
 with lib;
 let
 
-cfg = config.mine.home.git;
-user = config.mine.nixos.user;
+cfg = config.mine.tools.git;
+user = config.mine.user;
 
 in {
-  options.mine.home.git = {
+  options.mine.tools.git = {
     enable = mkEnableOption "Git";
   };
 

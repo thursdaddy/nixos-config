@@ -3,21 +3,16 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.home.hyprlock;
-user = config.mine.nixos.user;
+cfg = config.mine.desktop.hyprlock;
+user = config.mine.user;
 
 in {
-  options.mine.home.hyprlock = {
+  options.mine.desktop.hyprlock = {
     enable = mkOpt types.bool false "Enable hyprlock";
   };
 
   config = mkIf cfg.enable {
-
     home-manager.users.${user.name} = {
-      imports = [
-        inputs.hyprlock.homeManagerModules.hyprlock
-      ];
-
       programs.hyprlock = {
         enable = true;
         package = inputs.hyprlock.packages.${pkgs.system}.hyprlock;
@@ -59,5 +54,4 @@ in {
       };
     };
   };
-
 }

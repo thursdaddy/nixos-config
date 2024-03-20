@@ -3,19 +3,11 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.nixos.user;
-is-linux = pkgs.stdenv.isLinux;
-
-home-directory =
-  if cfg.name == null then
-    null
-  else if is-linux then
-    "/home/${cfg.name}"
-  else
-    "/Users/${cfg.name}";
+cfg = config.mine.user;
+home-directory = "/home/${cfg.name}";
 
 in {
-  options.mine.nixos.user = {
+  options.mine.user = {
     enable = mkEnableOption "Enable User";
     name = mkOpt types.str "thurs" "User account name";
     alias = mkOpt types.str "thursdaddy" "My full alias";
@@ -24,7 +16,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-
     users.users.${cfg.name} = {
       isNormalUser = true;
       createHome = true;

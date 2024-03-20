@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
 cfg = config.mine.home.firefox;
-user = config.mine.nixos.user;
+user = config.mine.user;
 
 in {
   options.mine.home.firefox = {
@@ -12,8 +12,8 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.sessionVariables.MOZ_ENABLE_WAYLAND = "1";
     home-manager.users.${user.name} = {
+      home.sessionVariables.MOZ_ENABLE_WAYLAND = "1";
 
       programs.firefox = {
         enable = true;

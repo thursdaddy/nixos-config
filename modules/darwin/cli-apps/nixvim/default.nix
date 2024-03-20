@@ -1,4 +1,4 @@
-{ lib, config, pkgs, inputs,  ... }:
+{ lib, config, inputs, ... }:
 with lib;
 with lib.thurs;
 let
@@ -11,8 +11,8 @@ in {
   };
 
   imports = [
-    inputs.nixvim.nixosModules.nixvim
-    ./import.nix
+    inputs.nixvim.nixDarwinModules.nixvim
+    ../../../nixos/cli-apps/nixvim/import.nix
   ];
 
   config = mkIf cfg.enable {
@@ -21,5 +21,4 @@ in {
       vimAlias = true;
     };
   };
-
 }

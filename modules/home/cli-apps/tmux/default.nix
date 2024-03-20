@@ -2,16 +2,15 @@
 with lib;
 let
 
-  cfg = config.mine.home.tmux;
-  user = config.mine.nixos.user;
+  cfg = config.mine.cli-apps.tmux;
+  user = config.mine.user;
 
   in {
-    options.mine.home.tmux = {
+    options.mine.cli-apps.tmux = {
       enable = mkEnableOption "Enable tmux";
     };
 
     config = mkIf cfg.enable {
-
       home-manager.users.${user.name} = {
         home.packages = with pkgs; [ tmux ];
 

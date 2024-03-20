@@ -2,11 +2,11 @@
 with lib;
 let
 
-cfg = config.mine.home.tmux.sessionizer;
-user = config.mine.nixos.user;
+cfg = config.mine.cli-apps.tmux.sessionizer;
+user = config.mine.user;
 
 in {
-  options.mine.home.tmux.sessionizer = {
+  options.mine.cli-apps.tmux.sessionizer = {
     enable = mkEnableOption "Enable tmux-sessionizor";
     searchPaths = mkOption {
       type = types.listOf types.str;

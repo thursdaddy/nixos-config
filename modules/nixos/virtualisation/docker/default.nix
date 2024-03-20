@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
 cfg = config.mine.nixos.docker;
-user = config.mine.nixos.user;
+user = config.mine.user;
 
 in {
   options.mine.nixos.docker = {

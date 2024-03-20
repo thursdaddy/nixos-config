@@ -1,15 +1,14 @@
-{ lib, config, pkgs, inputs, ... }:
+{ lib, config, ... }:
 with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.home.hyprpaper;
-user = config.mine.nixos.user;
+cfg = config.mine.desktop.hyprpaper;
+user = config.mine.user;
 
 in {
-  options.mine.home.hyprpaper = {
+  options.mine.desktop.hyprpaper = {
     enable = mkOpt types.bool false "hyprpaper";
-
     settings = with types; {
       preload = mkOption {
         type = listOf path;
@@ -31,7 +30,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    mine.home.hyprpaper.settings = {
+    mine.desktop.hyprpaper.settings = {
       preload = [
         "/home/thurs/pictures/wallpapers/blue_astronaut_in_space.png"
         "/home/thurs/pictures/wallpapers/Kurzgesagt_Galaxies.png"
@@ -40,24 +39,6 @@ in {
         "DP-2,/home/thurs/pictures/wallpapers/blue_astronaut_in_space.png"
         "DP-1,/home/thurs/pictures/wallpapers/Kurzgesagt_Galaxies.png"
       ];
-    };
-
-    environment.systemPackages = [
-      inputs.hyprpaper.packages.${pkgs.system}.hyprpaper
-    ];
-
-    systemd.user.services.hyprpaper = {
-      bindsTo = ["graphical-session.target"];
-      after = ["graphical-session-pre.target"];
-      description = "autostart service for Hyprpaper";
-      documentation = ["https://github.com/hyprwm/hyprpaper"];
-      serviceConfig = {
-        ExecStart = "${lib.getExe inputs.hyprpaper.packages.${pkgs.system}.hyprpaper}";
-        ExecStop = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
-        Restart = "on-failure";
-        KillMode = "mixed";
-      };
-      wantedBy = [ "hyprland-session.target" ];
     };
 
     home-manager.users.${user.name} = {

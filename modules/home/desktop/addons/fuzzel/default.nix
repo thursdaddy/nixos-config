@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
 cfg = config.mine.home.fuzzel;
-user = config.mine.nixos.user;
+user = config.mine.user;
 
 in {
   options.mine.home.fuzzel = {
@@ -12,7 +12,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-
     home-manager.users.${user.name} = {
       programs.fuzzel = {
         enable = true;
@@ -54,5 +53,4 @@ in {
       };
     };
   };
-
 }

@@ -1,7 +1,7 @@
 { lib, config, ... }:
 with lib;
 let
-user = config.mine.nixos.user;
+user = config.mine.user;
 in
 {
   programs.nixvim = {

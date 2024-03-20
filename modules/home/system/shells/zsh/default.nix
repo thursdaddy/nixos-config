@@ -2,24 +2,19 @@
 with lib;
 let
 
-cfg = config.mine.home.zsh;
-user = config.mine.nixos.user;
+cfg = config.mine.system.shells.zsh;
+user = config.mine.user;
 
 in {
-  options.mine.home.zsh = {
-    enable = mkEnableOption "zsh";
-  };
-
   config = mkIf cfg.enable {
-
-    programs.zsh.enable = true;
     home-manager.users.${user.name} = {
-
-      home.packages = with pkgs; [ zsh ];
-
       programs.zsh = {
         enable = true;
         enableAutosuggestions = true;
+
+        initExtra = mkIf pkgs.stdenv.hostPlatform.isAarch64 ''
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+        '';
 
         shellAliases = {
           ll = "ls -larth";
@@ -35,19 +30,18 @@ in {
         };
 
         plugins = [
-        {
-          name = "powerlevel10k";
-          src = pkgs.zsh-powerlevel10k;
-          file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-        }
-        {
-          name = "powerlevel10k-config";
-          src = ./p10k;
-          file = "p10k.zsh";
-        }
+          {
+            name = "powerlevel10k";
+            src = pkgs.zsh-powerlevel10k;
+            file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+          }
+          {
+            name = "powerlevel10k-config";
+            src = ./p10k;
+            file = "p10k.zsh";
+          }
         ];
       };
     };
-
   };
 }

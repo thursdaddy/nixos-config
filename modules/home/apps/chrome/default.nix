@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
 cfg = config.mine.home.chrome;
-user = config.mine.nixos.user;
+user = config.mine.user;
 
 in {
   options.mine.home.chrome = {
@@ -12,9 +12,9 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
     home-manager.users.${user.name} = {
+      home.sessionVariables.NIXOS_OZONE_WL = "1";
       programs.chromium = {
         enable = true;
 
