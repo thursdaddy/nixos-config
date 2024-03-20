@@ -26,6 +26,7 @@ in {
     };
 
     tools = {
+      direnv = enabled;
       git = enabled;
       home-manager = enabled;
     };

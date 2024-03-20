@@ -64,6 +64,7 @@ in {
       };
 
       tools = {
+        direnv = enabled;
         git = enabled;
         home-manager = enabled;
       };
@@ -110,7 +111,6 @@ in {
       };
       home = {
         discord = enabled;
-        direnv = enabled;
         syncthing = enabled;
         firefox = enabled;
         chrome = enabled;

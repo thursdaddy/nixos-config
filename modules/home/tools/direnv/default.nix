@@ -2,11 +2,11 @@
 with lib;
 let
 
-  cfg = config.mine.home.direnv;
+  cfg = config.mine.tools.direnv;
   user = config.mine.user;
 
   in {
-    options.mine.home.direnv = {
+    options.mine.tools.direnv = {
       enable = mkEnableOption "Enable direnv";
     };
 
