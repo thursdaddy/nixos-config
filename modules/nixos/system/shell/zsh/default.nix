@@ -2,10 +2,10 @@
 with lib;
 let
 
-  cfg = config.mine.system.shells.zsh;
+  cfg = config.mine.system.shell.zsh;
 
 in {
-  options.mine.system.shells.zsh = {
+  options.mine.system.shell.zsh = {
     enable = mkEnableOption "zsh";
   };
 

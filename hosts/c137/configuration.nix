@@ -61,6 +61,7 @@ in {
 
       apps = {
         kitty = enabled;
+        discord = enabled;
       };
 
       tools = {
@@ -71,7 +72,7 @@ in {
 
       system = {
         nix.flakes = enabled;
-        shells.zsh = enabled;
+        shell.zsh = enabled;
       };
 
       cli-apps = {
@@ -110,7 +111,6 @@ in {
         };
       };
       home = {
-        discord = enabled;
         syncthing = enabled;
         firefox = enabled;
         chrome = enabled;

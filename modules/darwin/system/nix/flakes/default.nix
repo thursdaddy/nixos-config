@@ -3,11 +3,11 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.system.nix.flakes;
+  cfg = config.mine.system.nix.flakes;
 
 in {
   options.mine.system.nix.flakes = {
-    enable = mkEnableOption "Enable Flakes";
+    enable = mkOpt types.bool true "Enable Flakes";
   };
 
   config = mkIf cfg.enable {
@@ -16,5 +16,7 @@ in {
         experimental-features = nix-command flakes
       '';
     };
+
+    programs.nix-index.enable = false;
   };
 }

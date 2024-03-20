@@ -2,15 +2,14 @@
 with lib;
 let
 
-cfg = config.mine.nixos.utils;
+  cfg = config.mine.system.utils;
 
 in {
-  options.mine.nixos.utils = {
-    enable = mkEnableOption "utils";
+  options.mine.system.utils = {
+    enable = mkEnableOption "Enable various system utils";
   };
 
   config = mkIf cfg.enable {
-
     environment.systemPackages = with pkgs; [
       curl
       file
@@ -27,5 +26,4 @@ in {
       wget
     ];
   };
-
 }

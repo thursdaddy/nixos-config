@@ -1,13 +1,12 @@
 { lib, config, inputs, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.cli-apps.nixvim;
+  cfg = config.mine.cli-apps.nixvim;
 
 in {
   options.mine.cli-apps.nixvim = {
-    enable = mkEnableOption "NixVim";
+    enable = mkEnableOption "Install NixVim";
   };
 
   imports = [

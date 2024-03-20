@@ -2,7 +2,7 @@
 with lib;
 let
 
-cfg = config.mine.system.shells.zsh;
+cfg = config.mine.system.shell.zsh;
 user = config.mine.user;
 
 in {
@@ -12,7 +12,7 @@ in {
         enable = true;
         enableAutosuggestions = true;
 
-        initExtra = mkIf pkgs.stdenv.hostPlatform.isAarch64 ''
+        initExtra = mkIf pkgs.stdenv.hostPlatform.isDarwin ''
           eval "$(/opt/homebrew/bin/brew shellenv)"
         '';
 

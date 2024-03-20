@@ -12,17 +12,13 @@ in {
     ../../modules/home/import.nix
   ];
 
-  system.checks.verifyNixPath = false;
-  services.nix-daemon.enable = true;
-  programs.nix-index.enable = false;
-
   mine = {
     user = enabled;
 
     system = {
-      nix.flakes = enabled;
-      shells.zsh = enabled;
       security.touchsudo = enabled;
+      shell.zsh = enabled;
+      utils = enabled;
     };
 
     tools = {
@@ -33,6 +29,7 @@ in {
 
     apps = {
       kitty = enabled;
+      discord = enabled;
     };
 
     cli-apps = {
