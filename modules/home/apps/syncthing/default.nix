@@ -6,6 +6,10 @@ let
   user = config.mine.user;
 
 in {
+  options.mine.apps.syncthing = {
+    enable = mkEnableOption "Enable Syncthing";
+  };
+
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
       services.syncthing = {
