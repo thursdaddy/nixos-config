@@ -1,13 +1,12 @@
 { lib, config, inputs, pkgs, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.desktop.hyprland;
+  cfg = config.mine.desktop.hyprland;
 
 in {
-  options.mine.nixos.hyprland = {
-    enable = mkEnableOption "Enable Hyprland system package";
+  options.mine.desktop.hyprland = {
+    enable = mkEnableOption "Enable Hyprland Window Manager system package";
   };
 
   imports = [

@@ -1,17 +1,18 @@
 { lib, config, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.nixos.openssh;
+  cfg = config.mine.services.openssh;
 
 in {
-  options.mine.nixos.openssh = {
+  options.mine.services.openssh = {
     enable = mkEnableOption "Enable OpenSSH";
-    iso = mkOpt types.bool false "If build is an iso";
+    iso = mkEnableOption "If build is an iso";
   };
 
   config = mkIf cfg.enable {
+    # Passwordless sudo when SSH'ing with keys
+    security.pam.enableSSHAgentAuth = true;
 
     services.openssh = {
       enable = true;
@@ -23,9 +24,5 @@ in {
           else "no";
       };
     };
-
-    # Passwordless sudo when SSH'ing with keys
-    security.pam.enableSSHAgentAuth = true;
   };
-
 }

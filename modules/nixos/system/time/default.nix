@@ -3,10 +3,10 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.nixos.timezone;
+  cfg = config.mine.system.timezone;
 
 in {
-  options.mine.nixos.timezone = {
+  options.mine.system.timezone = {
     enable = mkOpt types.bool true "Enable time";
     location = mkOpt types.str "America/Phoenix" "Timezone Location";
   };
@@ -14,5 +14,4 @@ in {
   config = mkIf cfg.enable {
     time.timeZone = "${cfg.location}";
   };
-
 }

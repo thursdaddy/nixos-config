@@ -1,18 +1,17 @@
 { pkgs, lib, config, ... }:
 with lib;
 let
-cfg = config.mine.nixos.bottom;
+
+  cfg = config.mine.tools.bottom;
 
 in {
-  options.mine.nixos.bottom = {
-    enable = mkEnableOption "Enable bottom";
+  options.mine.tools.bottom = {
+    enable = mkEnableOption "Enable bottom, a terminal based system monitor.";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = [
       pkgs.bottom
     ];
-
   };
-
 }

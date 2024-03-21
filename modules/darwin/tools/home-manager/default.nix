@@ -1,13 +1,10 @@
 { lib, config, inputs, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.tools.home-manager;
-user = config.mine.user;
-allowed-unfree-packages = [
-  "discord"
-];
+  cfg = config.mine.tools.home-manager;
+  user = config.mine.user;
+  allowed-unfree-packages = [ "discord" ];
 
 in {
   options.mine.tools.home-manager = {

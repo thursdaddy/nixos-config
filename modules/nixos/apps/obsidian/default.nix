@@ -1,12 +1,11 @@
 { lib, config, pkgs, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.nixos.obsidian;
+  cfg = config.mine.apps.obsidian;
 
 in {
-  options.mine.nixos.obsidian = {
+  options.mine.apps.obsidian = {
     enable = mkEnableOption "obsidian";
   };
 
@@ -18,6 +17,5 @@ in {
     environment.systemPackages = [
       pkgs.obsidian
     ];
-
   };
 }

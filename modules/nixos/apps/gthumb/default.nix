@@ -2,18 +2,16 @@
 with lib;
 let
 
-cfg = config.mine.nixos.gthumb;
+  cfg = config.mine.apps.gthumb;
 
 in {
-  options.mine.nixos.gthumb = {
+  options.mine.apps.gthumb = {
     enable = mkEnableOption "Gthumb";
   };
 
   config = mkIf cfg.enable {
-
     environment.systemPackages = with pkgs; [
       gthumb
     ];
   };
-
 }

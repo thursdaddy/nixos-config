@@ -1,17 +1,16 @@
 { lib, config, ... }:
 with lib;
 let
-cfg = config.mine.nixos.kde;
+
+  cfg = config.mine.system.desktop.kde;
 
 in {
-  options.mine.nixos.kde = {
+  options.mine.system.desktop.kde = {
     enable = mkEnableOption "KDE";
   };
 
   config = mkIf cfg.enable {
     services.xserver.enable = true;
-    services.xserver.displayManager.sddm.enable = true;
     services.xserver.desktopManager.plasma5.enable = true;
   };
-
 }

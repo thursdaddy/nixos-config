@@ -1,10 +1,11 @@
 { pkgs, lib, config, ... }:
 with lib;
 let
-cfg = config.mine.nixos.neofetch;
+
+  cfg = config.mine.cli-apps.neofetch;
 
 in {
-  options.mine.nixos.neofetch = {
+  options.mine.cli-apps.neofetch = {
     enable = mkEnableOption "Enable Neofetch";
   };
 
@@ -12,7 +13,5 @@ in {
     environment.systemPackages = [
       pkgs.neofetch
     ];
-
   };
-
 }

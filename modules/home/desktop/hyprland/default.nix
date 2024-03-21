@@ -8,10 +8,6 @@ user = config.mine.user;
 chrome-flags = "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder --enable-features=UseOzonePlatform --ozone-platform=wayland";
 
 in {
-  options.mine.desktop.hyprland = {
-    enable = mkOpt types.bool false "Enable Hyprland";
-  };
-
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
       home.sessionVariables = {

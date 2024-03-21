@@ -15,9 +15,7 @@ in {
 
   config = {
     system.stateVersion = "23.11";
-    nixpkgs.config.allowUnfree = true;
 
-    # TODO: improve options and default/group them accordingly
     mine = {
       user = enabled;
 
@@ -27,32 +25,56 @@ in {
         hyprland = enabled;
         hyprlock = enabled;
         hyprpaper = enabled;
+        screenshots = enabled;
         waybar = enabled;
       };
 
       apps = {
-        kitty = enabled;
         discord = enabled;
+        gthumb = enabled;
+        kitty = enabled;
+        obsidian = enabled;
         syncthing = enabled;
+        vlc = enabled;
       };
 
       tools = {
         direnv = enabled;
         git = enabled;
         home-manager = enabled;
+        bottom = enabled;
+      };
+
+      services = {
+        bluetooth = enabled;
+        openssh = enabled;
       };
 
       system = {
+        audio.pipewire = enabled;
         boot.grub = enabled;
-        nix.flakes = enabled;
-        shell.zsh = enabled;
+        fonts = enabled;
+        networking = {
+          enable = true;
+          firewall = enabled;
+          hostname = "c137";
+          applet = true;
+        };
+        nix = {
+          unfree = enabled;
+          flakes = enabled;
+        };
         security.sudonopass = enabled;
+        shell.zsh = enabled;
         utils = enabled;
         video.amd = enabled;
+        virtualisation.docker = enabled;
       };
 
       cli-apps = {
+        neofetch = enabled;
         nixvim = enabled;
+        ollama = enabled;
         tmux = {
           enable = true;
           sessionizer = {
@@ -64,31 +86,11 @@ in {
           };
         };
       };
-
-      nixos = {
-        bottom = enabled;
-        fonts = enabled;
-        openssh = enabled;
-        docker = enabled;
-        firewall = enabled;
-        neofetch = enabled;
-        pipewire = enabled;
-        bluetooth = enabled;
-        gthumb = enabled;
-        vlc = enabled;
-        obsidian = enabled;
-        screenshots = enabled;
-        ollama = enabled;
-        network = {
-          enable = true;
-          hostname = "c137";
-          applet = true;
-        };
-      };
+      # TODO: Get home-manager installed packages to show up in Spotlight / Applications
       home = {
-        firefox = enabled;
-        chrome = enabled;
         brave = enabled;
+        chrome = enabled;
+        firefox = enabled;
       };
     };
   };

@@ -1,10 +1,11 @@
 { pkgs, lib, config, ... }:
 with lib;
 let
-cfg = config.mine.nixos.ollama;
+
+  cfg = config.mine.cli-apps.ollama;
 
 in {
-  options.mine.nixos.ollama = {
+  options.mine.cli-apps.ollama = {
     enable = mkEnableOption "Enable Ollama";
   };
 
@@ -15,12 +16,6 @@ in {
       pkgs.amdgpu_top
     ];
 
-    # Open port for ollama-webui container
-    networking.firewall = {
-      allowedTCPPorts = [ 3000 ];
-    };
-
-
+    networking.firewall.allowedTCPPorts = [ 3000 ];
   };
-
 }

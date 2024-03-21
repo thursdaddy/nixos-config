@@ -1,13 +1,12 @@
 { lib, config, pkgs, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.nixos.screenshots;
+  cfg = config.mine.desktop.screenshots;
 
 in {
-  options.mine.nixos.screenshots = {
-    enable = mkOpt types.bool false "Enable screenshots with grim and slurp";
+  options.mine.desktop.screenshots = {
+    enable = mkEnableOption "Enable screenshots with grim and slurp";
   };
 
   config = mkIf cfg.enable {

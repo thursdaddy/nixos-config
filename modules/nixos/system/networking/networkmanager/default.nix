@@ -3,13 +3,13 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.nixos.network;
+  cfg = config.mine.system.networking;
 
 in {
-  options.mine.nixos.network = {
-    enable = mkOpt types.bool false "Enable network";
+  options.mine.system.networking = {
+    enable = mkEnableOption "Enable NetworkManager";
     hostname = mkOpt types.str "" "Hostname";
-    applet = mkOpt types.bool false "Enable desktop applet";
+    applet = mkEnableOption "Enable desktop applet";
   };
 
   config = mkIf cfg.enable {

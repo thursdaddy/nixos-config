@@ -1,20 +1,17 @@
 { lib, config, pkgs, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.nixos.vlc;
+  cfg = config.mine.apps.vlc;
 
 in {
-  options.mine.nixos.vlc = {
+  options.mine.apps.vlc = {
     enable = mkEnableOption "vlc";
   };
 
   config = lib.mkIf cfg.enable  {
-
     environment.systemPackages = [
       pkgs.vlc
     ];
-
   };
 }
