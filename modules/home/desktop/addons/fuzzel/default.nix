@@ -1,14 +1,13 @@
 { lib, config, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.home.fuzzel;
-user = config.mine.user;
+  cfg = config.mine.desktop.fuzzel;
+  user = config.mine.user;
 
 in {
-  options.mine.home.fuzzel = {
-    enable = mkOpt types.bool false "Enable fuzzel";
+  options.mine.desktop.fuzzel = {
+    enable = mkEnableOption "Enable fuzzel";
   };
 
   config = mkIf cfg.enable {

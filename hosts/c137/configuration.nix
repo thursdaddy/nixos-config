@@ -1,4 +1,4 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, ... }:
 with lib;
 with lib.thurs;
 let
@@ -17,51 +17,23 @@ in {
     system.stateVersion = "23.11";
     nixpkgs.config.allowUnfree = true;
 
-    boot.loader.grub.enable = true;
-    boot.loader.grub.useOSProber = true;
-    boot.loader.grub.efiSupport = true;
-    boot.loader.grub.efiInstallAsRemovable = true;
-    boot.loader.grub.device = "nodev";
-
-    security.sudo.extraRules = [{
-      users = [ "${user.name}" ];
-      commands = [{
-        command = "ALL";
-        options = [ "NOPASSWD" ];
-      }];
-    }];
-
-    hardware.opengl = {
-      enable = true;
-      driSupport = true;
-      driSupport32Bit = true;
-      extraPackages  = with pkgs; [
-        vulkan-loader
-        vulkan-validation-layers
-        vulkan-extension-layer
-      ];
-    };
-
-    environment.systemPackages = [
-      pkgs.glxinfo
-    ];
-
-    networking.firewall.allowedTCPPorts = [ 8384 22000 ];
-    networking.firewall.allowedUDPPorts = [ 22000 21027 ];
-
     # TODO: improve options and default/group them accordingly
     mine = {
       user = enabled;
 
       desktop = {
+        cursor = enabled;
+        fuzzel = enabled;
         hyprland = enabled;
         hyprlock = enabled;
         hyprpaper = enabled;
+        waybar = enabled;
       };
 
       apps = {
         kitty = enabled;
         discord = enabled;
+        syncthing = enabled;
       };
 
       tools = {
@@ -71,8 +43,12 @@ in {
       };
 
       system = {
+        boot.grub = enabled;
         nix.flakes = enabled;
         shell.zsh = enabled;
+        security.sudonopass = enabled;
+        utils = enabled;
+        video.amd = enabled;
       };
 
       cli-apps = {
@@ -101,7 +77,6 @@ in {
         gthumb = enabled;
         vlc = enabled;
         obsidian = enabled;
-        utils = enabled;
         screenshots = enabled;
         ollama = enabled;
         network = {
@@ -111,13 +86,9 @@ in {
         };
       };
       home = {
-        syncthing = enabled;
         firefox = enabled;
         chrome = enabled;
         brave = enabled;
-        cursor = enabled;
-        waybar = enabled;
-        fuzzel = enabled;
       };
     };
   };
