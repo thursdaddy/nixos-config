@@ -2,11 +2,11 @@
 with lib;
 let
 
-  cfg = config.mine.home.brave;
+  cfg = config.mine.apps.brave;
   user = config.mine.user;
 
 in {
-  options.mine.home.brave = {
+  options.mine.apps.brave = {
     enable = mkEnableOption "Install Brave browser";
   };
 

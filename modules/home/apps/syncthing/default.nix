@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 let
 
@@ -14,9 +14,6 @@ in {
     home-manager.users.${user.name} = {
       services.syncthing = {
         enable = true;
-        tray = {
-          enable = true;
-        };
       };
     };
   };

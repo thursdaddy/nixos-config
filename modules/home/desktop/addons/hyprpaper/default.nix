@@ -36,8 +36,9 @@ in {
         "/home/thurs/pictures/wallpapers/Kurzgesagt_Galaxies.png"
       ];
       wallpapers = [
-        "DP-2,/home/thurs/pictures/wallpapers/blue_astronaut_in_space.png"
         "DP-1,/home/thurs/pictures/wallpapers/Kurzgesagt_Galaxies.png"
+        "DP-2,/home/thurs/pictures/wallpapers/blue_astronaut_in_space.png"
+        "DP-3,/home/thurs/pictures/wallpapers/blue_astronaut_in_space.png"
       ];
     };
 

@@ -1,20 +1,20 @@
-{ lib, config,  ... }:
+{ lib, config, pkgs, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.home.chrome;
+cfg = config.mine.apps.chromium;
 user = config.mine.user;
 
 in {
-  options.mine.home.chrome = {
-    enable = mkOpt types.bool false "Enable chrome";
+  options.mine.apps.chromium = {
+    enable = mkEnableOption "Enable chrome";
   };
 
-  config = mkIf cfg.enable {
-
+  # browser builds not supported on darwin, use homebrew instead
+  config = mkIf (cfg.enable && ! pkgs.stdenv.isDarwin) {
     home-manager.users.${user.name} = {
       home.sessionVariables.NIXOS_OZONE_WL = "1";
+
       programs.chromium = {
         enable = true;
 
@@ -27,8 +27,6 @@ in {
           "--ozone-platform=wayland"
         ];
       };
-
     };
   };
-
 }

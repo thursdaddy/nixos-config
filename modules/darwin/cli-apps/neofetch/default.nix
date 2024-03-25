@@ -1,4 +1,4 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, ... }:
 with lib;
 let
 
@@ -10,8 +10,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [
-      pkgs.neofetch
-    ];
+    homebrew.brews = [ "neofetch" ];
   };
 }

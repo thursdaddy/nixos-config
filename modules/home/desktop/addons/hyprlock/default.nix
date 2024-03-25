@@ -46,7 +46,7 @@ in {
             x = 0;
             y = 30;
           };
-          font_family = "Nerd Fonts";
+          font_family = "Hack Nerd Fonts";
           font_size = 60;
           color = "rgba(255, 255, 255, 1.0)";
         }

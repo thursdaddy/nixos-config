@@ -14,8 +14,8 @@ in {
       "electron-25.9.0"
     ];
 
-    environment.systemPackages = [
-      pkgs.obsidian
+    environment.systemPackages = with pkgs; [
+      obsidian
     ];
   };
 }

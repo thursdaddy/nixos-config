@@ -17,7 +17,6 @@ in {
 
     system = {
       security.touchsudo = enabled;
-      shell.zsh = enabled;
       utils = enabled;
     };
 
@@ -30,10 +29,15 @@ in {
     apps = {
       kitty = enabled;
       discord = enabled;
+      syncthing = enabled;
+      firefox = enabled;
+      chromium = enabled;
+      obsidian = enabled;
     };
 
     cli-apps = {
       homebrew = enabled;
+      neofetch = enabled;
       nixvim = enabled;
       tmux = {
         enable = true;

@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 let
 
@@ -14,9 +14,6 @@ in {
     home-manager.users.${user.name} = {
       programs.waybar = {
         enable = true;
-        systemd = {
-          enable = true;
-        };
 
       style = ./themes/nord/style.css;
 
@@ -77,6 +74,25 @@ in {
         }
         ];
       };
+
+      systemd.user.services.waybar = {
+        Unit = {
+          Description =
+            "Highly customizable Wayland bar for Sway and Wlroots based compositors.";
+          Documentation = "https://github.com/Alexays/Waybar/wiki";
+          PartOf = [ "graphical-session.target" "desktop.service" ];
+          After = [ "graphical-session-pre.target" ];
+        };
+
+        Service = {
+          ExecStart = "${pkgs.waybar}/bin/waybar";
+          ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
+          Restart = "on-failure";
+          KillMode = "mixed";
+        };
+
+        Install = { WantedBy = [ "graphical-session.target" ]; };
+      };
+    };
   };
-};
 }

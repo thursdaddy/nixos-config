@@ -20,6 +20,7 @@ in {
       user = enabled;
 
       desktop = {
+        bitwarden = enabled;
         cursor = enabled;
         fuzzel = enabled;
         hyprland = enabled;
@@ -36,6 +37,9 @@ in {
         obsidian = enabled;
         syncthing = enabled;
         vlc = enabled;
+        chromium = enabled;
+        firefox = enabled;
+        brave = enabled;
       };
 
       tools = {
@@ -86,13 +90,6 @@ in {
           };
         };
       };
-      # TODO: Get home-manager installed packages to show up in Spotlight / Applications
-      home = {
-        brave = enabled;
-        chrome = enabled;
-        firefox = enabled;
-      };
     };
   };
-
 }

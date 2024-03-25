@@ -16,8 +16,7 @@ in {
       "discord"
     ];
 
-    # hopefully mkIf are temporary until I can figure out how to get home-manager apps to show up in Spotlight / Dock
-    home-manager.users.${user.name} = mkIf (pkgs.stdenv.hostPlatform.isLinux && pkgs.stdenv.hostPlatform.isx86) {
+    home-manager.users.${user.name} = {
       home.packages = with pkgs; [ discord ];
     };
   };

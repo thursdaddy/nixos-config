@@ -1,24 +1,22 @@
-{ lib, config,  ... }:
+{ lib, config, pkgs, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.home.firefox;
-user = config.mine.user;
+  cfg = config.mine.apps.firefox;
+  user = config.mine.user;
 
 in {
-  options.mine.home.firefox = {
-    enable = mkOpt types.bool false "Enable Firefox";
+  options.mine.apps.firefox = {
+    enable = mkEnableOption "Enable Firefox";
   };
 
-  config = mkIf cfg.enable {
+  config = mkIf (cfg.enable && ! pkgs.stdenv.isDarwin) {
     home-manager.users.${user.name} = {
-      home.sessionVariables.MOZ_ENABLE_WAYLAND = "1";
-
       programs.firefox = {
         enable = true;
       };
 
+      home.sessionVariables.MOZ_ENABLE_WAYLAND = "1";
     };
   };
 

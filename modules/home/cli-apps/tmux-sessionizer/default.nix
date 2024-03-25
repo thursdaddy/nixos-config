@@ -2,8 +2,8 @@
 with lib;
 let
 
-cfg = config.mine.cli-apps.tmux.sessionizer;
-user = config.mine.user;
+  cfg = config.mine.cli-apps.tmux.sessionizer;
+  user = config.mine.user;
 
 in {
   options.mine.cli-apps.tmux.sessionizer = {
@@ -71,9 +71,7 @@ in {
             tmux attach-session -t $1
           fi
         '')
-        ];
-
+      ];
     };
-
   };
 }

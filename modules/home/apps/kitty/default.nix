@@ -1,14 +1,13 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, ... }:
 with lib;
-with lib.thurs;
 let
 
-cfg = config.mine.apps.kitty;
-user = config.mine.user;
+  cfg = config.mine.apps.kitty;
+  user = config.mine.user;
 
 in {
   options.mine.apps.kitty = {
-    enable = mkOpt types.bool false "Enable Kitty";
+    enable = mkEnableOption "Enable Kitty";
   };
 
   config = mkIf cfg.enable {
@@ -17,7 +16,7 @@ in {
         enable = true;
         theme = "Tomorrow Night";
         font = {
-          name = "HackNF-Regular";
+          name = "Hack Nerd Font";
         };
 
         settings = {

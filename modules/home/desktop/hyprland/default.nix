@@ -41,10 +41,11 @@ in {
           workspace = 9, monitor:DP-1
           workspace = 10, monitor:DP-1
           # RULES
-          windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
-          windowrulev2 = workspace 6 silent, class:(chrome-deezer.com__-Default)
+          windowrulev2 = workspace 4 silent, class:(Bitwarden)
           windowrulev2 = workspace 5 silent, class:(discord)
+          windowrulev2 = workspace 6 silent, class:(chrome-deezer.com__-Default)
           windowrulev2 = workspace 7 silent, class:(obsidian)
+          windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
           windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
           windowrulev2 = size 90%, class:(chrome-youtube.com__-Default)
         '';
@@ -71,6 +72,8 @@ in {
             "$mod, T, layoutmsg, togglesplit"
             "$mod, F, fullscreen"
             "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
+            "$mod_SHIFT, O, exec, obsidian"
+            "$mod_SHIFT, B, exec, firefox"
             "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
             "$mod_SHIFT, F, fullscreen, 1"
             "$mod_SHIFT, O, exec, obsidian"
@@ -108,6 +111,32 @@ in {
              );
         };
       };
+
+      home.packages = with pkgs; [
+        # shell script start desktop apps
+        (writeShellScriptBin "_desktop.restart" ''
+          #/usr/bin/env bash
+
+          systemctl --user restart desktop.service
+          ${pkgs.discord}/bin/discord >/dev/null 2>&1 &
+        '')
+      ];
+
+      systemd.user.services.desktop = {
+        Unit = {
+          Description = "Systemd oneshot to restart services linked to desktop.service";
+          Documentation = "Coming soon...";
+          After = [ "graphical-session-pre.target" ];
+        };
+
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.coreutils}/bin/sleep 1";
+        };
+
+        Install = { WantedBy = [ "graphical-session.target" ]; };
+      };
+
     };
   };
 }
