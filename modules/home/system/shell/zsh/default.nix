@@ -17,11 +17,12 @@ in {
         '';
 
         shellAliases = {
-          ll = "ls -larth";
           db = "docker build -t $(whoami)/$(basename $(pwd)):dev .";
           dbnc = "docker build --no-cache -t $(whoami)/$(basename $(pwd)):dev .";
           dr = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev bash";
           drs = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev sh";
+          ll = "ls -larth";
+          kssh = "kitty +kitten ssh";
         };
 
         oh-my-zsh = {

@@ -72,7 +72,10 @@ in {
         shell.zsh = enabled;
         utils = enabled;
         video.amd = enabled;
-        virtualisation.docker = enabled;
+        virtualisation = {
+          docker = enabled;
+          libvirtd = enabled;
+        };
       };
 
       cli-apps = {
