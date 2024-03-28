@@ -27,12 +27,13 @@ in {
     };
 
     apps = {
-      kitty = enabled;
-      discord = enabled;
-      syncthing = enabled;
-      firefox = enabled;
       chromium = enabled;
+      discord = enabled;
+      firefox = enabled;
+      keybase = enabled;
+      kitty = enabled;
       obsidian = enabled;
+      syncthing = enabled;
     };
 
     cli-apps = {

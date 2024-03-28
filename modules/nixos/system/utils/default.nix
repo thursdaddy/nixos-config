@@ -12,17 +12,19 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       curl
+      dig
       file
       fzf
       glow
-      dig
+      hdparm
       jq
       killall
+      ncdu
       nmap
+      pciutils
       ripgrep
       unzip
       usbutils
-      pciutils
       wget
     ];
   };

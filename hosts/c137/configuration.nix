@@ -31,15 +31,16 @@ in {
       };
 
       apps = {
+        brave = enabled;
+        chromium = enabled;
         discord = enabled;
         gthumb = enabled;
+        firefox = enabled;
+        keybase = enabled;
         kitty = enabled;
         obsidian = enabled;
         syncthing = enabled;
         vlc = enabled;
-        chromium = enabled;
-        firefox = enabled;
-        brave = enabled;
       };
 
       tools = {
@@ -56,7 +57,10 @@ in {
 
       system = {
         audio.pipewire = enabled;
-        boot.grub = enabled;
+        boot = {
+          binfmt = enabled;
+          grub = enabled;
+        };
         fonts = enabled;
         networking = {
           enable = true;

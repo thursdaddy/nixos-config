@@ -14,6 +14,7 @@ in {
       "fzf"
       "bind"
       "jq"
+      "ncdu"
       "ripgrep"
     ];
   };
