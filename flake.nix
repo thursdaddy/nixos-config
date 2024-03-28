@@ -33,6 +33,11 @@
   outputs = { self, nixpkgs, nixos-generators, nixvim, nix-darwin, home-manager, hyprland, hyprlock, hyprpaper, unstable, ... }@inputs:
   let
     lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
+    # used wtih devShells
+    supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+    forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
+      pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
+    });
   in {
     darwinConfigurations = {
       "mbp" = nix-darwin.lib.darwinSystem {
@@ -62,5 +67,31 @@
         ];
       };
     };
+    devShells = forEachSupportedSystem ({ pkgs }: {
+      tf = pkgs.mkShell {
+        buildInputs = [
+          pkgs.opentofu
+          pkgs.awscli2
+        ];
+      };
+      kubectl = pkgs.mkShell {
+        buildInputs = [
+          pkgs.kubectl
+          pkgs.awscli2
+        ];
+      };
+      pulumi = pkgs.mkShell {
+        buildInputs = [
+          pkgs.pulumi-bin
+          pkgs.python311
+          pkgs.awscli2
+        ];
+      };
+      python = pkgs.mkShell {
+        buildInputs = [
+          pkgs.python311
+        ];
+      };
+    });
   };
 }
