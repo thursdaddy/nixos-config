@@ -23,8 +23,11 @@ in {
     services.ollama = {
       enable = true;
       acceleration = "rocm";
+      environmentVariables = {
+        HSA_OVERRIDE_GFX_VERSION = "10.3.0";
+      };
     };
 
-    networking.firewall.allowedTCPPorts = [ 3000 ];
+    networking.firewall.allowedTCPPorts = [ 3000 11434 ];
   };
 }
