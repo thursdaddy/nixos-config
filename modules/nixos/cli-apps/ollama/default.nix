@@ -1,21 +1,30 @@
-{ pkgs, lib, config, inputs, ... }:
+{ lib, config, inputs, pkgs, ... }:
 with lib;
 let
 
   cfg = config.mine.cli-apps.ollama;
-  unstablePkgs = import inputs.unstable { system = "x86_64-linux"; };
+
 in {
   options.mine.cli-apps.ollama = {
     enable = mkEnableOption "Enable Ollama";
   };
 
+  disabledModules = [ "services/misc/ollama.nix" ];
+  imports = [ (inputs.unstable + "/nixos/modules/services/misc/ollama.nix") ];
+
   config = mkIf cfg.enable {
-    environment.systemPackages = [
-      unstablePkgs.ollama
-      pkgs.amdgpu_top
+
+    nixpkgs.overlays = [
+      (final: prev: {
+        inherit (inputs.unstable.legacyPackages.${pkgs.system}) ollama;
+      })
     ];
 
-    services.ollama.acceleration = "rocm";
+    services.ollama = {
+      enable = true;
+      acceleration = "rocm";
+    };
+
     networking.firewall.allowedTCPPorts = [ 3000 ];
   };
 }

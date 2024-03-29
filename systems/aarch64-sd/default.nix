@@ -1,13 +1,8 @@
-{ lib, pkgs, ... }:
-with lib;
-with lib.thurs; {
+{ pkgs, ... }: {
 
-  imports = [
-    ../../modules/import.nix
-  ];
+  imports = [ ];
 
- config = {
-
+  config = {
     system.stateVersion = "23.11";
 
     boot.supportedFilesystems = [ "zfs" ];
@@ -32,6 +27,5 @@ with lib.thurs; {
       neovim
       git
     ];
-
  };
 }

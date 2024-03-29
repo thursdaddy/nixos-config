@@ -66,6 +66,14 @@
           ./systems/x86_64-iso
         ];
       };
+      pi4 = nixos-generators.nixosGenerate {
+        specialArgs = { inherit inputs; };
+        system = "aarch64-linux";
+        format = "sd-aarch64";
+        modules = [
+          ./systems/aarch64-sd
+        ];
+      };
     };
     devShells = forEachSupportedSystem ({ pkgs }: {
       tf = pkgs.mkShell {
