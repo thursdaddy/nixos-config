@@ -66,7 +66,15 @@
           ./systems/x86_64-iso
         ];
       };
-      pi4 = nixos-generators.nixosGenerate {
+      ami = nixos-generators.nixosGenerate {
+        specialArgs = { inherit inputs; inherit lib; };
+        system = "x86_64-linux";
+        format = "amazon";
+        modules = [
+          ./systems/x86_64-ami
+        ];
+      };
+      pi4-sd = nixos-generators.nixosGenerate {
         specialArgs = { inherit inputs; };
         system = "aarch64-linux";
         format = "sd-aarch64";
