@@ -1,6 +1,7 @@
 { ... }: {
-
   programs.nixvim = {
+    plugins.lsp-format.enable = true;
+
     plugins.lsp = {
       enable = true;
 

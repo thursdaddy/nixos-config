@@ -28,6 +28,6 @@ in {
       };
     };
 
-    networking.firewall.allowedTCPPorts = [ 3000 11434 ];
+    networking.firewall.allowedTCPPorts = [ 8080 11434 ];
   };
 }

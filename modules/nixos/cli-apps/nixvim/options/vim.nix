@@ -20,7 +20,6 @@ in
 
       autoindent = true;
       smartindent = true;
-      wrap = false;
 
       swapfile = false;
       backup = false;
