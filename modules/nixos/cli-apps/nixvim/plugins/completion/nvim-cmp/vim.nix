@@ -14,17 +14,17 @@
       snippet = { expand = "luasnip"; };
 
       sources = [
-      { name = "nvim_lsp"; }
-      { name = "luasnip"; }
-      { name = "buffer"; }
-      { name = "nvim_lua"; }
-      { name = "path"; }
+        { name = "nvim_lsp"; }
+        { name = "luasnip"; }
+        { name = "buffer"; }
+        { name = "nvim_lua"; }
+        { name = "path"; }
       ];
 
       mapping = {
         # This needs to be updated, re-watch TJ's kickstart re-vamp video
         "<CR>" = "cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = true })";
-        "<Tab>" = {
+        "<C-n>" = {
           modes = [ "i" "s" ];
           action =
             # lua
@@ -40,7 +40,7 @@
                 end
                 '';
         };
-        "<S-Tab>" = {
+        "<C-p>" = {
           modes = [ "i" "s" ];
           action =
             # lua

@@ -16,6 +16,7 @@ in {
       file
       fzf
       glow
+      gnumake
       hdparm
       jq
       killall
