@@ -43,17 +43,12 @@ The end goal was to easily enable/disable module configurations via custom boole
 
 This requires an opinionated repo structure and naming convention. All modules are in defined via directory name that contains a `default.nix` file, and their custom options should be system/arch agnostic.
 
-> You could argue there is an excessive use of directory separation but bulk importing, covered below, makes this a lot easier.
-
 All modules are imported per system basis via the hosts `configuration.nix` file.
 
  - Darwin       -> `modules/darwin/import.nix`
  - home-manager -> `modules/home/import.nix`
  - NixOS        -> `modules/nixos/import.nix`
  - NixVim       -> `modules/nixos/cli-apps/nixvim/import.nix` (see note below)
-
-A few enefits I see are being able to easily re-use existing files as templates for a new configuration or
-if I want to entirely disable a module I can simply rename it to `default.nix.disabled`. It also allows me to easily navigate the folder structure using neovim and fzf to find a specific module.
 
 > NixVim Note: The nixvim files are `nix.vim` to allow them to be imported along with NixVims nixos
 and darwin modules. Works well for now but may be re-architected in the future.
