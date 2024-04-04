@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# just a simple wrapper script for nix builds
+
+target=$1
+
+function ami {
+  nix build .\#ami
+  copy_artifact_path && cleanup
+}
+
+function c137 {
+  sudo nixos-rebuild --flake .\#c137 switch
+}
+
+function mbp {
+  darwin-rebuild switch --flake .\#mbp
+}
+
+function sd-aarch64 {
+  nix build .\#sd-aarch64
+  copy_artifact_path && cleanup
+}
+
+function copy_artifact_path {
+  if [ -L ./result ]; then
+    artifact_path=$(readlink ./result)
+    # vhd = ami, zst = sd-aarch64
+    artifact=$(find $artifact_path -type f \( -iname '*.vhd' -o -iname '*.zst' \))
+    printf "\nCopy $artifact to builds/\n\n"
+    sudo cp $artifact builds/
+  else
+    exit 1
+  fi
+}
+
+function cleanup {
+  if [ -L ./result ]; then rm -v ./result; fi
+  printf "Updating permissions in builds dir:\n"
+  sudo chown -R $(whoami):users builds/
+  ls -lah builds/ | grep nixos
+}
+
+# flakes are married to git
+git add .
+
+case $target in
+  ami) ami;;
+  c137) c137;;
+  mbp) mbp;;
+  sd-aarch64) sd-aarch64;;
+esac

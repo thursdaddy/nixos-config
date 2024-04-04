@@ -74,7 +74,7 @@
           ./systems/x86_64-ami
         ];
       };
-      pi4-sd = nixos-generators.nixosGenerate {
+      sd-aarch64 = nixos-generators.nixosGenerate {
         specialArgs = { inherit inputs; };
         system = "aarch64-linux";
         format = "sd-aarch64";
