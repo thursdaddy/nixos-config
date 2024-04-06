@@ -24,6 +24,7 @@ in {
       nmap
       pciutils
       ripgrep
+      tree
       unzip
       usbutils
       wget

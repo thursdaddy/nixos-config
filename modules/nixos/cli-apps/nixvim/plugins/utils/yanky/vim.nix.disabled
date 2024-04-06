@@ -1,9 +1,0 @@
-{ ... }: {
-# not in 23.11 branch but might want to checkout later via unstable
-  programs.nixvim = {
-     plugins = {
-          yanky = { enable = true; };
-     };
-  };
-
-}

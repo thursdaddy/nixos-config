@@ -3,7 +3,7 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.cli-apps.nixvim;
+  cfg = config.mine.cli-apps.nixvim;
 
 in {
   options.mine.cli-apps.nixvim = {
@@ -12,7 +12,7 @@ in {
 
   imports = [
     inputs.nixvim.nixosModules.nixvim
-    ./import.nix
+    ../../../nixvim/import.nix
   ];
 
   config = mkIf cfg.enable {

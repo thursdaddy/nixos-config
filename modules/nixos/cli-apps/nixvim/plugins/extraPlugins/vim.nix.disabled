@@ -1,9 +1,0 @@
-{ pkgs, ... }: {
-
-  programs.nixvim = {
-    extraPlugins = with pkgs.vimPlugins; [
-      { plugin = yanky; config = "lua require(\"yanky\").setup()";}
-    ];
-  };
-
-}

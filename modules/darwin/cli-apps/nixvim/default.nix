@@ -11,7 +11,7 @@ in {
 
   imports = [
     inputs.nixvim.nixDarwinModules.nixvim
-    ../../../nixos/cli-apps/nixvim/import.nix
+    ../../../nixvim/import.nix
   ];
 
   config = mkIf cfg.enable {
