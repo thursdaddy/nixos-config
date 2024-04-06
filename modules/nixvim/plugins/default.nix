@@ -2,17 +2,23 @@
   programs.nixvim = {
     plugins = {
       auto-save.enable = true;
+      bufferline.enable = true;
       cmp-buffer.enable = true;
       cmp-emoji.enable = true;
       cmp-nvim-lsp.enable = true;
       cmp-path.enable = true;
       comment-nvim.enable = true;
+      endwise.enable = true;
       fugitive.enable = true;
       gitsigns.enable = true;
+      illuminate.enable = true;
       indent-blankline.enable = true;
+      lastplace.enable = true;
       lsp.enable = true;
       lsp-format.enable = true;
       luasnip.enable = true;
+      noice.enable = true;
+      nvim-tree.enable = true;
       surround.enable = true;
       undotree.enable = true;
       lualine = {
@@ -21,6 +27,10 @@
         sections = {
           lualine_c = [ "filename" ];
         };
+      };
+      notify = {
+        enable = true;
+        backgroundColour = "#000000";
       };
       nvim-cmp = {
         enable = true;
@@ -71,10 +81,6 @@
               '';
           };
         };
-      };
-      nvim-tree = {
-        enable = true;
-
       };
       telescope = {
         enable = true;

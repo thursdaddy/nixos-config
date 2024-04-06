@@ -1,5 +1,4 @@
 { ... }: {
-
   programs.nixvim = {
     highlight = {
       Comment.fg = "#708090";

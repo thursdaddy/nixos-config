@@ -13,6 +13,9 @@
       { mode = "n"; key = "}"; action = "}zz"; }
       { mode = "n"; key = "{"; action = "{zz"; }
 
+      { mode = "n"; key = "<C-o>"; action = "<CMD>bprev<CR>"; }
+      { mode = "n"; key = "<C-p>"; action = "<CMD>bnext<CR>"; }
+      { mode = "n"; key = "<C-x>"; action = "<CMD>bdelete<CR>"; }
       # Send delete actions to black hole register
       #{ mode = "n"; key = "D"; action = "\"_D"; }
       #{ mode = "n"; key = "d"; action = "\"_d"; }
