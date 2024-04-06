@@ -1,7 +1,6 @@
 { ... }: {
   programs.nixvim = {
     plugins = {
-      auto-save.enable = true;
       bufferline.enable = true;
       cmp-buffer.enable = true;
       cmp-emoji.enable = true;
@@ -14,13 +13,29 @@
       illuminate.enable = true;
       indent-blankline.enable = true;
       lastplace.enable = true;
-      lsp.enable = true;
       lsp-format.enable = true;
       luasnip.enable = true;
       noice.enable = true;
       nvim-tree.enable = true;
       surround.enable = true;
       undotree.enable = true;
+      auto-save = {
+        enable = true;
+        triggerEvents = [ "BufLeave" ];
+      };
+      lsp = {
+        enable = true;
+        servers = {
+          nil_ls.enable = true;
+          bashls.enable = true;
+          terraformls.enable = true;
+
+          lua-ls = {
+            enable = true;
+            settings.telemetry.enable = false;
+          };
+        };
+      };
       lualine = {
         enable = true;
         theme = "onedark";
@@ -48,7 +63,7 @@
         mapping = {
           # This needs to be updated, re-watch TJ's kickstart re-vamp video
           "<CR>" = "cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = true })";
-          "<C-n>" = {
+          "<Tab>" = {
             modes = [ "i" "s" ];
             action =
               # lua
@@ -64,7 +79,7 @@
                   end
               '';
           };
-          "<C-p>" = {
+          "<S-Tab>" = {
             modes = [ "i" "s" ];
             action =
               # lua
