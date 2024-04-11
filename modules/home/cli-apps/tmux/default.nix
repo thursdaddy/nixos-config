@@ -27,6 +27,10 @@ let
           baseIndex = 1;
           historyLimit = 20000;
           terminal = "screen-256color";
+          plugins = with pkgs; [
+            tmuxPlugins.vim-tmux-navigator
+            tmuxPlugins.tmux-fzf
+          ];
           extraConfig = ''
             bind | split-window -h -c "#{pane_current_path}"
             bind _ split-window -v -c "#{pane_current_path}"
@@ -34,8 +38,7 @@ let
             bind x kill-pane
             bind X kill-window
 
-            set -g set-titles on
-            set -g set-titles-string "#I:#W"
+            set-window-option -g allow-rename off
 
             # Rename session and window
             bind r command-prompt -I "#{window_name}" "rename-window '%%'"
@@ -45,7 +48,7 @@ let
             bind C-e new-window -n 'tmux.conf' "sh -c 'nvim ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf && tmux display \"Config reloaded\"'"
 
             # Reload tmux configuration
-            bind C-r source-file ~/.config/.tmux.conf \; display "Config reloaded"
+            bind C-r source-file ~/.config/tmux/tmux.conf \; display "Config reloaded"
 
             # Select pane and windows
             bind -r C-a last-window
@@ -96,14 +99,14 @@ let
             set -g status-style bg='#44475a',fg='#bd93f9'
             set -g status-interval 5
 
-            set -g window-status-current-format "#[fg=$MAGENTA]      #I#[fg=$BLUE1]❘#[fg=$GREEN]#W#[fg=$BLUE1]★  "
-            set -g window-status-format "#[fg=$FG_DARK]      #I❘#W  "
+            set -g window-status-current-format "#[fg=$MAGENTA]      #I#[fg=$BLUE1] ❘#[fg=$GREEN]#W#[fg=$BLUE1]★  "
+            set -g window-status-format "#[fg=$FG_DARK]      #I ❘#W  "
 
             set -g status-left-length 100
             set -g status-left "#[fg=$BG]#[bg=$BLUE5]#{?client_prefix,#[bg=$GREEN],}  "
             set -ga status-left "#[fg=$FG]#[bg=$BG_DARK]  #S  "
 
-            set -g status-right " #[fg=$MAGENTA] %a #[fg=$TEAL]#[fg=$GREEN]%l:%M:%S #[bg=$BG_DARK]#[fg=$FG_DARK]  %m-%d-%Y "
+            set -g status-right " #[fg=$MAGENTA] %a #[fg=$TEAL] #[fg=$GREEN]%l:%M:%S #[bg=$BG_DARK]#[fg=$FG_DARK]  %m-%d-%Y "
             set -ga status-right "#[fg=$BG]#[bg=$BLUE5]   #(git rev-parse --abbrev-ref HEAD) "
 
             set -g mode-style "fg=$FG_DARK,bg=$TERMINAL_BLACK"

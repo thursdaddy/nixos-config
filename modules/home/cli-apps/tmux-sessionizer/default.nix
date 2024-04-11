@@ -64,7 +64,7 @@ in {
             path=$(find ${tmuxs_paths} -type d -name $1 -print -quit 2>&1)
             cd $path
             tmux new-session -d -s "$1" -n nvim 'nvim' \; \
-              new-window \; \
+              new-window -n zsh \; \
               select-window -t :nvim\;
             tmux attach-session -t $1
           else

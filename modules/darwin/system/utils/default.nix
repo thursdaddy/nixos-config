@@ -16,6 +16,7 @@ in {
       "jq"
       "ncdu"
       "ripgrep"
+      "reattach-to-user-namespace"
     ];
   };
 
