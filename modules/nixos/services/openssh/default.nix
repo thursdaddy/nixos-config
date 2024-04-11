@@ -20,7 +20,7 @@ in {
         PasswordAuthentication = false;
         PermitRootLogin =
           if (cfg.iso)
-            then "yes"
+            then "prohibit-password"
           else "no";
       };
     };
