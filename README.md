@@ -48,7 +48,4 @@ All modules are imported per system basis via the hosts `configuration.nix` file
  - Darwin       -> `modules/darwin/import.nix`
  - home-manager -> `modules/home/import.nix`
  - NixOS        -> `modules/nixos/import.nix`
- - NixVim       -> `modules/nixos/cli-apps/nixvim/import.nix` (see note below)
-
-> NixVim Note: The nixvim files are `nix.vim` to allow them to be imported along with NixVims nixos
-and darwin modules. Works well for now but may be re-architected in the future.
+ - NixVim       -> `modules/nixvim/import.nix` (see note below)
