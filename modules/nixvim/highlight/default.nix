@@ -16,6 +16,9 @@
       NormalFloat.bg = "none";
       NormalFloat.ctermbg = "none";
       LineNr.bg = "none";
+      SignColumn.ctermbg = "none";
+      DiagnosticVirtualTextError.ctermbg = "none";
+      DiagnosticVirtualTextError.bg = "none";
     };
   };
 }

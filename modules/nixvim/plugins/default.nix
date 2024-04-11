@@ -1,7 +1,7 @@
 { ... }: {
   programs.nixvim = {
     plugins = {
-      bufferline.enable = true;
+      barbecue.enable = true;
       cmp-buffer.enable = true;
       cmp-emoji.enable = true;
       cmp-nvim-lsp.enable = true;
@@ -9,19 +9,29 @@
       comment-nvim.enable = true;
       endwise.enable = true;
       fugitive.enable = true;
-      gitsigns.enable = true;
+      gitgutter.enable = true;
       illuminate.enable = true;
       indent-blankline.enable = true;
       lastplace.enable = true;
       lsp-format.enable = true;
       luasnip.enable = true;
       noice.enable = true;
-      nvim-tree.enable = true;
       surround.enable = true;
+      tmux-navigator.enable = true;
       undotree.enable = true;
       auto-save = {
         enable = true;
         triggerEvents = [ "BufLeave" ];
+      };
+#     bufferline = {
+#       enable = true;
+#       diagnostics = "nvim_lsp";
+#     };
+      nvim-tree = {
+        enable = true;
+        view = {
+          side = "right";
+        };
       };
       lsp = {
         enable = true;
@@ -125,6 +135,10 @@
     };
     # plugin specific keymaps
     keymaps = [
+      { mode = "n"; key = "<C-h>"; action = "<CMD>TmuxNavigateLeft<CR>zz"; }
+      { mode = "n"; key = "<C-j>"; action = "<CMD>TmuxNavigateDown<CR>zz"; }
+      { mode = "n"; key = "<C-k>"; action = "<CMD>TmuxNavigateUp<CR>zz"; }
+      { mode = "n"; key = "<C-l>"; action = "<CMD>TmuxNavigateRight<CR>zz"; }
       # nvim-tree
       { mode = "n"; key = "<leader>e"; action = "<CMD>NvimTreeToggle<CR>"; }
       { mode = "n"; key = "<leader>E"; action = "<CMD>NvimTreeFocus<CR>"; }

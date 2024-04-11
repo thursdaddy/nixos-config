@@ -25,9 +25,8 @@ in
       backup = false;
       undofile = true;
       undodir = mkIf (user.enable) "${user.homeDir}/.vim/undodir";
-      updatetime = 2000;
 
-      hlsearch = false;
+      hlsearch = true;
       incsearch = true;
 
       scrolloff = 8;

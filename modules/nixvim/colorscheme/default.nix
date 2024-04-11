@@ -1,6 +1,6 @@
 { ... }: {
   programs.nixvim = {
-      colorschemes.gruvbox.enable = true;
-      colorschemes.gruvbox.transparentBg = true;
+    colorschemes.gruvbox.enable = true;
+    colorschemes.gruvbox.transparentBg = true;
   };
 }
