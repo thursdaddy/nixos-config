@@ -4,9 +4,10 @@ let
 
   cfg = config.mine.apps.chromium;
 
-in {
+in
+{
   config = mkIf cfg.enable {
-   homebrew.casks = [ "chromium" ];
+    homebrew.casks = [ "chromium" ];
   };
 
 }

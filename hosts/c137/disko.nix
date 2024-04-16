@@ -26,14 +26,14 @@
           };
         };
       };
-     };
+    };
     zpool = {
       NIXROOT = {
         type = "zpool";
-    	options = {
-    	  ashift = "12";
-    	  autotrim = "on";
-            };
+        options = {
+          ashift = "12";
+          autotrim = "on";
+        };
         rootFsOptions = {
           acltype = "posixacl";
           dnodesize = "auto";
@@ -57,12 +57,12 @@
             mountpoint = "/";
             options."com.sun:auto-snapshot" = "true";
           };
-          home  = {
+          home = {
             type = "zfs_fs";
             options.mountpoint = "legacy";
             mountpoint = "/home";
           };
-          persist  = {
+          persist = {
             type = "zfs_fs";
             options.mountpoint = "legacy";
             mountpoint = "/persist";

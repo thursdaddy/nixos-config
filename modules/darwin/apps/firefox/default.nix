@@ -4,9 +4,10 @@ let
 
   cfg = config.mine.apps.firefox;
 
-in {
+in
+{
   config = mkIf cfg.enable {
-   homebrew.casks = [ "firefox" ];
+    homebrew.casks = [ "firefox" ];
   };
 
 }

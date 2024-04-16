@@ -1,9 +1,10 @@
 { inputs, lib, config, ... }:
 with lib;
 let
-cfg = config.mine.system.nix.flakes;
+  cfg = config.mine.system.nix.flakes;
 
-in {
+in
+{
   options.mine.system.nix.flakes = {
     enable = mkEnableOption "Enable Flakes";
   };

@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.system.shell.zsh;
 
-in {
+in
+{
   options.mine.system.shell.zsh = {
     enable = mkEnableOption "zsh";
   };

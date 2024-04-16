@@ -2,10 +2,11 @@
 with lib;
 let
 
-cfg = config.mine.tools.git;
-user = config.mine.user;
+  cfg = config.mine.tools.git;
+  user = config.mine.user;
 
-in {
+in
+{
   options.mine.tools.git = {
     enable = mkEnableOption "Git";
   };
@@ -16,7 +17,7 @@ in {
 
       programs.git = {
         enable = true;
-        userName  = "${user.name}";
+        userName = "${user.name}";
         userEmail = "${user.email}";
         extraConfig = {
           init = { defaultBranch = "main"; };

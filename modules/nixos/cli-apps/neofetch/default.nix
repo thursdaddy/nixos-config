@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.cli-apps.neofetch;
 
-in {
+in
+{
   options.mine.cli-apps.neofetch = {
     enable = mkEnableOption "Enable Neofetch";
   };

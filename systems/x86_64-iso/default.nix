@@ -6,7 +6,7 @@ with lib.thurs; {
     ../../modules/import.nix
   ];
 
- config = {
+  config = {
 
     system.stateVersion = "23.11";
 
@@ -33,5 +33,5 @@ with lib.thurs; {
       git
     ];
 
- };
+  };
 }

@@ -3,9 +3,10 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.desktop.bitwarden;
+  cfg = config.mine.desktop.bitwarden;
 
-in {
+in
+{
   options.mine.desktop.bitwarden = {
     enable = mkEnableOption "Install Bitwarden desktop";
   };

@@ -5,7 +5,8 @@
 
 {
   imports =
-    [ (modulesPath + "/installer/scan/not-detected.nix")
+    [
+      (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
@@ -17,34 +18,38 @@
   boot.consoleLogLevel = 0;
 
   boot.initrd.luks.devices = {
-  "luks-rpool-nvme-CT2000P5PSSD8_22393B9712C0-part2".device = "/dev/disk/by-id/nvme-CT2000P5PSSD8_22393B9712C0-part2";
+    "luks-rpool-nvme-CT2000P5PSSD8_22393B9712C0-part2".device = "/dev/disk/by-id/nvme-CT2000P5PSSD8_22393B9712C0-part2";
   };
 
   networking.hostId = "c8cf78d0";
 
   fileSystems."/" =
-    { device = "NIXROOT/root";
+    {
+      device = "NIXROOT/root";
       fsType = "zfs";
     };
 
   fileSystems."/home" =
-    { device = "NIXROOT/home";
+    {
+      device = "NIXROOT/home";
       fsType = "zfs";
     };
 
   fileSystems."/persist" =
-    { device = "NIXROOT/persist";
+    {
+      device = "NIXROOT/persist";
       fsType = "zfs";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/7D91-10AC";
+    {
+      device = "/dev/disk/by-uuid/7D91-10AC";
       fsType = "vfat";
     };
 
- # swapDevices =
- #  [ { device = "/dev/disk/by-uuid/f445a75b-5234-4534-964b-eedb46af1c99"; }
- #   ];
+  # swapDevices =
+  #  [ { device = "/dev/disk/by-uuid/f445a75b-5234-4534-964b-eedb46af1c99"; }
+  #   ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

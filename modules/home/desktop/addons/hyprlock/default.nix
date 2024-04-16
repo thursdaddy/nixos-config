@@ -3,10 +3,11 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.desktop.hyprlock;
-user = config.mine.user;
+  cfg = config.mine.desktop.hyprlock;
+  user = config.mine.user;
 
-in {
+in
+{
   options.mine.desktop.hyprlock = {
     enable = mkOpt types.bool false "Enable hyprlock";
   };
@@ -40,16 +41,16 @@ in {
         }];
 
         labels = [
-        {
-          text = ''cmd[update:100] echo "<b>$(date +'%_I:%M:%S')</b>"'';
-          position = {
-            x = 0;
-            y = 30;
-          };
-          font_family = "Hack Nerd Fonts";
-          font_size = 60;
-          color = "rgba(255, 255, 255, 1.0)";
-        }
+          {
+            text = ''cmd[update:100] echo "<b>$(date +'%_I:%M:%S')</b>"'';
+            position = {
+              x = 0;
+              y = 30;
+            };
+            font_family = "Hack Nerd Fonts";
+            font_size = 60;
+            color = "rgba(255, 255, 255, 1.0)";
+          }
         ];
       };
     };

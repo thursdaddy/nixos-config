@@ -1,12 +1,13 @@
-{ lib, config,  ... }:
+{ lib, config, ... }:
 with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.home.alacritty;
-user = config.mine.user;
+  cfg = config.mine.home.alacritty;
+  user = config.mine.user;
 
-in {
+in
+{
   options.mine.home.alacritty = {
     enable = mkOpt types.bool false "Enable Alacritty";
   };

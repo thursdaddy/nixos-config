@@ -5,7 +5,8 @@ let
   cfg = config.mine.desktop.cursor;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.desktop.cursor = {
     enable = mkEnableOption "Enable Cursor theme";
   };

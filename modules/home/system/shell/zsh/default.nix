@@ -2,10 +2,11 @@
 with lib;
 let
 
-cfg = config.mine.system.shell.zsh;
-user = config.mine.user;
+  cfg = config.mine.system.shell.zsh;
+  user = config.mine.user;
 
-in {
+in
+{
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
       programs.zsh = {
@@ -27,7 +28,7 @@ in {
 
         oh-my-zsh = {
           enable = true;
-          plugins = ["man" "history-substring-search" "history" ];
+          plugins = [ "man" "history-substring-search" "history" ];
         };
 
         plugins = [

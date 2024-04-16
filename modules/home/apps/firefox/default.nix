@@ -5,7 +5,8 @@ let
   cfg = config.mine.apps.firefox;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.apps.firefox = {
     enable = mkEnableOption "Enable Firefox";
   };

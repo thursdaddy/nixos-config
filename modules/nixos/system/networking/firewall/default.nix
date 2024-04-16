@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.system.networking.firewall;
 
-in {
+in
+{
   options.mine.system.networking.firewall = {
     enable = mkEnableOption "Enable firewall";
   };

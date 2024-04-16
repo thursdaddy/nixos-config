@@ -5,7 +5,8 @@ let
   cfg = config.mine.apps.brave;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.apps.brave = {
     enable = mkEnableOption "Install Brave browser";
   };

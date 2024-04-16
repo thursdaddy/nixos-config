@@ -1,11 +1,12 @@
-{ lib, config, pkgs, inputs,  ... }:
+{ lib, config, pkgs, inputs, ... }:
 with lib;
 with lib.thurs;
 let
 
   cfg = config.mine.cli-apps.nixvim;
 
-in {
+in
+{
   options.mine.cli-apps.nixvim = {
     enable = mkEnableOption "NixVim";
   };

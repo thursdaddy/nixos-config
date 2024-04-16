@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.system.audio.pipewire;
 
-in {
+in
+{
   options.mine.system.audio.pipewire = {
     enable = mkEnableOption "Enable pipewire audio";
   };

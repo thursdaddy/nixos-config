@@ -5,7 +5,8 @@ let
 
   cfg = config.mine.system.nix.daemon;
 
-in {
+in
+{
   options.mine.system.nix.daemon = {
     enable = mkOpt types.bool true "Enable Nix Daemon";
   };

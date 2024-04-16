@@ -23,10 +23,6 @@
         enable = true;
         triggerEvents = [ "BufLeave" ];
       };
-#     bufferline = {
-#       enable = true;
-#       diagnostics = "nvim_lsp";
-#     };
       nvim-tree = {
         enable = true;
         view = {
@@ -81,15 +77,15 @@
             action =
               # lua
               ''
-              function(fallback)
-              if cmp.visible() then
-                cmp.select_next_item()
-                  elseif require("luasnip").expand_or_jumpable() then
-                  vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true), "")
-              else
-                fallback()
-                  end
-                  end
+                function(fallback)
+                if cmp.visible() then
+                  cmp.select_next_item()
+                    elseif require("luasnip").expand_or_jumpable() then
+                    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true), "")
+                else
+                  fallback()
+                    end
+                    end
               '';
           };
           "<S-Tab>" = {
@@ -97,15 +93,15 @@
             action =
               # lua
               ''
-              function(fallback)
-              if cmp.visible() then
-                cmp.select_prev_item()
-                  elseif require("luasnip").jumpable(-1) then
-                  vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-jump-prev", true, true, true), "")
-              else
-                fallback()
-                  end
-                  end
+                function(fallback)
+                if cmp.visible() then
+                  cmp.select_prev_item()
+                    elseif require("luasnip").jumpable(-1) then
+                    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-jump-prev", true, true, true), "")
+                else
+                  fallback()
+                    end
+                    end
               '';
           };
         };
@@ -113,7 +109,8 @@
       telescope = {
         enable = true;
         highlightTheme = "ivy";
-        defaults = { ## these dont seem to be working but arent breaking anything
+        defaults = {
+          ## these dont seem to be working but arent breaking anything
           layout_strategy = "horizontal";
           layout_config = {
             height = 0.85;

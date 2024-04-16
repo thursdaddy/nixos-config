@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.apps.gthumb;
 
-in {
+in
+{
   options.mine.apps.gthumb = {
     enable = mkEnableOption "Gthumb";
   };

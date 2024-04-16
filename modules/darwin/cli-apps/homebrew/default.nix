@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.cli-apps.homebrew;
 
-in {
+in
+{
   options.mine.cli-apps.homebrew = {
     enable = mkEnableOption "Enable Homebrew";
   };

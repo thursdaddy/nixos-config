@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.system.utils;
 
-in {
+in
+{
   options.mine.system.utils = {
     enable = mkEnableOption "system utils";
   };

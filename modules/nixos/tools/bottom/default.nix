@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.tools.bottom;
 
-in {
+in
+{
   options.mine.tools.bottom = {
     enable = mkEnableOption "Enable bottom, a terminal based system monitor.";
   };

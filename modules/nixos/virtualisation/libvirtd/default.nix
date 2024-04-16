@@ -5,12 +5,13 @@ let
   cfg = config.mine.system.virtualisation.libvirtd;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.system.virtualisation.libvirtd = {
     enable = mkEnableOption "libvirtd";
   };
 
-  config = lib.mkIf cfg.enable  {
+  config = lib.mkIf cfg.enable {
     users.users.${user.name}.extraGroups = mkIf user.enable [ "libvirtd" ];
 
     environment.systemPackages = with pkgs; [
@@ -25,10 +26,12 @@ in {
         swtpm.enable = true;
         ovmf = {
           enable = true;
-          packages = [(pkgs.OVMF.override {
-            secureBoot = true;
-            tpmSupport = true;
-          }).fd];
+          packages = [
+            (pkgs.OVMF.override {
+              secureBoot = true;
+              tpmSupport = true;
+            }).fd
+          ];
         };
       };
     };

@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.cli-apps.ollama;
 
-in {
+in
+{
   options.mine.cli-apps.ollama = {
     enable = mkEnableOption "Enable Ollama";
   };

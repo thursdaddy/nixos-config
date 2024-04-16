@@ -9,7 +9,8 @@ let
     "discord"
   ];
 
-in {
+in
+{
   options.mine.tools.home-manager = {
     enable = mkEnableOption "Enable Home-Manager";
   };

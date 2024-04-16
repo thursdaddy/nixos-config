@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.services.openssh;
 
-in {
+in
+{
   options.mine.services.openssh = {
     enable = mkEnableOption "Enable OpenSSH";
     iso = mkEnableOption "If build is an iso";
@@ -20,7 +21,7 @@ in {
         PasswordAuthentication = false;
         PermitRootLogin =
           if (cfg.iso)
-            then "prohibit-password"
+          then "prohibit-password"
           else "no";
       };
     };

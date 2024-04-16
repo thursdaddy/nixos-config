@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.system.desktop.kde;
 
-in {
+in
+{
   options.mine.system.desktop.kde = {
     enable = mkEnableOption "KDE";
   };

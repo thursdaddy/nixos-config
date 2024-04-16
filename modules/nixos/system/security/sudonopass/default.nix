@@ -5,7 +5,8 @@ let
   cfg = config.mine.system.security.sudonopass;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.system.security.sudonopass = {
     enable = mkEnableOption "zsh";
   };

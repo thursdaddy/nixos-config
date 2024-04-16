@@ -5,7 +5,8 @@ let
 
   cfg = config.mine.system.timezone;
 
-in {
+in
+{
   options.mine.system.timezone = {
     enable = mkOpt types.bool true "Enable time";
     location = mkOpt types.str "America/Phoenix" "Timezone Location";

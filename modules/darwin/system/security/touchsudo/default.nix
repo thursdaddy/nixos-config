@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.system.security.touchsudo;
 
-in {
+in
+{
   options.mine.system.security.touchsudo = {
     enable = mkEnableOption "Enable sudo via Touch ID";
   };

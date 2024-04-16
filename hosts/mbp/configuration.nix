@@ -5,7 +5,8 @@ let
 
   user = config.mine.user;
 
-in {
+in
+{
 
   imports = [
     ../../modules/darwin/import.nix

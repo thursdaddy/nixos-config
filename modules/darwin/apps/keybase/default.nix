@@ -4,13 +4,14 @@ let
 
   cfg = config.mine.apps.keybase;
 
-in {
+in
+{
   options.mine.apps.keybase = {
     enable = mkEnableOption "keybase";
   };
 
   config = mkIf cfg.enable {
-   homebrew.casks = [ "keybase" ];
+    homebrew.casks = [ "keybase" ];
   };
 
 }

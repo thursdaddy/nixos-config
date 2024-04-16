@@ -5,7 +5,8 @@ let
   cfg = config.mine.apps.kitty;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.apps.kitty = {
     enable = mkEnableOption "Enable Kitty";
   };

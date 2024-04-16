@@ -2,10 +2,11 @@
 with lib;
 let
 
-cfg = config.mine.apps.chromium;
-user = config.mine.user;
+  cfg = config.mine.apps.chromium;
+  user = config.mine.user;
 
-in {
+in
+{
   options.mine.apps.chromium = {
     enable = mkEnableOption "Enable chrome";
   };

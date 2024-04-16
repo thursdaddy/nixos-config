@@ -5,7 +5,8 @@ let
   cfg = config.mine.services.flameshot;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.services.flameshot = {
     enable = mkEnableOption "Enable Flameshot screenshot tool";
   };

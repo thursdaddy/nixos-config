@@ -5,7 +5,8 @@ let
   cfg = config.mine.desktop.fuzzel;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.desktop.fuzzel = {
     enable = mkEnableOption "Enable fuzzel";
   };

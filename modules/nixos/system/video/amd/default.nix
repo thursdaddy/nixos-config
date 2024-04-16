@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.system.video.amd;
 
-in {
+in
+{
   options.mine.system.video.amd = {
     enable = mkEnableOption "Enable AMD Video Drivers";
   };
@@ -14,7 +15,7 @@ in {
       enable = true;
       driSupport = true;
       driSupport32Bit = true;
-      extraPackages  = with pkgs; [
+      extraPackages = with pkgs; [
         amdvlk
         vulkan-loader
         vulkan-validation-layers

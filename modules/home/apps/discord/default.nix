@@ -6,7 +6,8 @@ let
   cfg = config.mine.apps.discord;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.apps.discord = {
     enable = mkOpt types.bool false "Install Discord";
   };

@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.system.boot.grub;
 
-in {
+in
+{
   options.mine.system.boot.grub = {
     enable = mkEnableOption "Enable Grub Bootloader";
   };

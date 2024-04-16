@@ -4,12 +4,13 @@ let
 
   cfg = config.mine.apps.keybase;
 
-in {
+in
+{
   options.mine.apps.keybase = {
     enable = mkEnableOption "keybase";
   };
 
-  config = lib.mkIf cfg.enable  {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       keybase
       keybase-gui

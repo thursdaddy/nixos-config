@@ -5,12 +5,13 @@ let
   cfg = config.mine.system.virtualisation.docker;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.system.virtualisation.docker = {
     enable = mkEnableOption "docker";
   };
 
-  config = lib.mkIf cfg.enable  {
+  config = lib.mkIf cfg.enable {
     virtualisation.docker.enable = true;
     users.users.${user.name}.extraGroups = mkIf user.enable [ "docker" ];
   };

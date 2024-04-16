@@ -4,12 +4,13 @@ let
 
   cfg = config.mine.apps.vlc;
 
-in {
+in
+{
   options.mine.apps.vlc = {
     enable = mkEnableOption "vlc";
   };
 
-  config = lib.mkIf cfg.enable  {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = [
       pkgs.vlc
     ];

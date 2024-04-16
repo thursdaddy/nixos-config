@@ -5,7 +5,8 @@ let
 
   cfg = config.mine.system.nix.flakes;
 
-in {
+in
+{
   options.mine.system.nix.flakes = {
     enable = mkOpt types.bool true "Enable Flakes";
   };

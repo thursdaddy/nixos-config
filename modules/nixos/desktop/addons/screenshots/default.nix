@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.desktop.screenshots;
 
-in {
+in
+{
   options.mine.desktop.screenshots = {
     enable = mkEnableOption "Enable screenshots with grim and slurp";
   };

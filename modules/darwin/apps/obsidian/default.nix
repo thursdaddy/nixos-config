@@ -4,12 +4,13 @@ let
 
   cfg = config.mine.apps.obsidian;
 
-in {
+in
+{
   options.mine.apps.obsidian = {
     enable = mkEnableOption "obsidian";
   };
 
-  config = lib.mkIf cfg.enable  {
+  config = lib.mkIf cfg.enable {
     homebrew.casks = [ "obsidian" ];
   };
 }

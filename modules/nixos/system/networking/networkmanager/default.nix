@@ -5,7 +5,8 @@ let
 
   cfg = config.mine.system.networking;
 
-in {
+in
+{
   options.mine.system.networking = {
     enable = mkEnableOption "Enable NetworkManager";
     hostname = mkOpt types.str "" "Hostname";

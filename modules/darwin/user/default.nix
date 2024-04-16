@@ -3,10 +3,11 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.user;
-home-directory = "/Users/${cfg.name}";
+  cfg = config.mine.user;
+  home-directory = "/Users/${cfg.name}";
 
-in {
+in
+{
   options.mine.user = {
     enable = mkEnableOption "Enable User";
     name = mkOpt types.str "thurs" "User account name";

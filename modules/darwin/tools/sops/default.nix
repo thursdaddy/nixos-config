@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.tools.sops;
 
-in {
+in
+{
   options.mine.tools.sops = {
     enable = mkEnableOption "Enable sops";
   };

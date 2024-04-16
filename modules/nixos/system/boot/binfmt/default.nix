@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.system.boot.binfmt;
 
-in {
+in
+{
   options.mine.system.boot.binfmt = {
     enable = mkEnableOption "Enable binfmt emulation";
   };

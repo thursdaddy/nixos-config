@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.cli-apps.nixvim;
 
-in {
+in
+{
   options.mine.cli-apps.nixvim = {
     enable = mkEnableOption "Install NixVim";
   };

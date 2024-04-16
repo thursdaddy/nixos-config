@@ -4,7 +4,8 @@ let
 
   cfg = config.mine.system.nix.unfree;
 
-in {
+in
+{
   options.mine.system.nix.unfree = {
     enable = mkEnableOption "Enable Unfree packages";
   };
