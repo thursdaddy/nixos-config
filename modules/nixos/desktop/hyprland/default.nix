@@ -4,7 +4,12 @@ let
 
   cfg = config.mine.desktop.hyprland;
 
-in {
+in
+{
+  options.mine.desktop.hyprland = {
+    enable = mkEnableOption "Enable Hyprland Window Manager";
+  };
+
   imports = [
     inputs.hyprland.nixosModules.default
   ];

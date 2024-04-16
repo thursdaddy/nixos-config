@@ -3,21 +3,22 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.desktop.hyprland;
-user = config.mine.user;
-chrome-flags = "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder --enable-features=UseOzonePlatform --ozone-platform=wayland";
+  cfg = config.mine.desktop.hyprland;
+  user = config.mine.user;
+  chrome-flags = "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder --enable-features=UseOzonePlatform --ozone-platform=wayland";
 
-in {
+in
+{
   options.mine.desktop.hyprland = {
-    enable = mkEnableOption "Enable Hyprland Window Manager";
+    home = mkEnableOption "Enable Hyprland Home-Manager config";
   };
 
-  config = mkIf cfg.enable {
+  config = mkIf cfg.home {
     home-manager.users.${user.name} = {
       home.sessionVariables = {
         XDG_CURRENT_SESSION = "hyprland";
         XDG_SESSION_TYPE = "wayland";
-        QT_QPA_PLATFORM="wayland-egl";
+        QT_QPA_PLATFORM = "wayland-egl";
         QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
       };
 
@@ -61,54 +62,60 @@ in {
             new_is_master = true;
           };
           bindm =
-          [
-            "$mod, mouse:272, movewindow"
-            "$mod, mouse:273, resizewindow"
-          ];
+            [
+              "$mod, mouse:272, resizewindow"
+              "$mod, mouse:273, movewindow"
+            ];
           bind =
-          [
-            "$mod, space, exec, fuzzel"
-            "$mod, return, exec, kitty"
-            "$mod, T, layoutmsg, togglesplit"
-            "$mod, F, fullscreen"
-            "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
-            "$mod_SHIFT, B, exec, firefox"
-            "$mod_SHIFT, D, exec, discord"
-            "$mod_SHIFT, F, fullscreen, 1"
-            "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
-            "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
-            "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://deezer.com"
-            "$mod_SHIFT, O, exec, obsidian"
-            "$mod_SHIFT, P, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://192.168.20.80:32400"
-            "$mod_SHIFT, Q, killactive"
-            "$mod_SHIFT, X, exec, hyprlock"
-            # Mouse Focus
-            "$mod, H, movefocus, l"
-            "$mod, L, movefocus, r"
-            "$mod, K, movefocus, u"
-            "$mod, J, movefocus, d"
-            # Window Management
-            "$mod_SHIFT, H, movewindow, l"
-            "$mod_SHIFT, L, movewindow, r"
-            "$mod_SHIFT, K, movewindow, u"
-            "$mod_SHIFT, J, movewindow, d"
-          ]
-          ++ (
+            [
+              "$mod, space, exec, fuzzel"
+              "$mod, return, exec, kitty"
+              "$mod, T, layoutmsg, togglesplit"
+              "$mod, F, fullscreen"
+              "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
+              "$mod_SHIFT, B, exec, firefox"
+              "$mod_SHIFT, D, exec, discord"
+              "$mod_SHIFT, F, fullscreen, 1"
+              "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
+              "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
+              "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://deezer.com"
+              "$mod_SHIFT, O, exec, obsidian"
+              "$mod_SHIFT, P, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://192.168.20.80:32400"
+              "$mod_SHIFT, Q, killactive"
+              "$mod_SHIFT, X, exec, hyprlock"
+              # Mouse Focus
+              "$mod, H, movefocus, l"
+              "$mod, L, movefocus, r"
+              "$mod, K, movefocus, u"
+              "$mod, J, movefocus, d"
+              # Window Management
+              "$mod_SHIFT, H, movewindow, l"
+              "$mod_SHIFT, L, movewindow, r"
+              "$mod_SHIFT, K, movewindow, u"
+              "$mod_SHIFT, J, movewindow, d"
+              # Workspace Switcher
+              "$mod, TAB, workspace, previous"
+            ]
+            ++ (
               # workspaces
               # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
-              builtins.concatLists (builtins.genList (
-                x: let
-                ws = let
-                c = (x + 1) / 10;
-                in
-                builtins.toString (x + 1 - (c * 10));
-                in [
-                "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                "$mod_SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
-                ]
+              builtins.concatLists (builtins.genList
+                (
+                  x:
+                  let
+                    ws =
+                      let
+                        c = (x + 1) / 10;
+                      in
+                      builtins.toString (x + 1 - (c * 10));
+                  in
+                  [
+                    "$mod, ${ws}, workspace, ${toString (x + 1)}"
+                    "$mod_SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
+                  ]
                 )
-              10)
-             );
+                10)
+            );
         };
       };
 

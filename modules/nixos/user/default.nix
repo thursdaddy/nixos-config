@@ -3,10 +3,11 @@ with lib;
 with lib.thurs;
 let
 
-cfg = config.mine.user;
-home-directory = "/home/${cfg.name}";
+  cfg = config.mine.user;
+  home-directory = "/home/${cfg.name}";
 
-in {
+in
+{
   options.mine.user = {
     enable = mkEnableOption "Enable User";
     name = mkOpt types.str "thurs" "User account name";
@@ -16,6 +17,11 @@ in {
   };
 
   config = mkIf cfg.enable {
+    environment.variables = {
+      EDITOR = "nvim";
+      VISUAL = "nvim";
+    };
+
     users.users.${cfg.name} = {
       isNormalUser = true;
       createHome = true;

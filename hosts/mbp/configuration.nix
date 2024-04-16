@@ -24,6 +24,7 @@ in {
       direnv = enabled;
       git = enabled;
       home-manager = enabled;
+      sops = enabled;
     };
 
     apps = {

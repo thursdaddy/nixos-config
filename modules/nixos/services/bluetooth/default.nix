@@ -4,7 +4,12 @@ let
 
   cfg = config.mine.services.bluetooth;
 
-in {
+in
+{
+  options.mine.services.bluetooth = {
+    enable = mkEnableOption "Enable bluetooth";
+  };
+
   config = mkIf cfg.enable {
     hardware.bluetooth = {
       enable = true;
@@ -18,5 +23,7 @@ in {
     environment.systemPackages = [
       pkgs.blueman
     ];
+
+    services.blueman.enable = true;
   };
 }

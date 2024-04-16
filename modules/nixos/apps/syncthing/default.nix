@@ -4,8 +4,13 @@ let
 
   cfg = config.mine.apps.syncthing;
 
-in {
-  config = mkIf cfg.enable {
+in
+{
+  options.mine.apps.syncthing = {
+    isNix = mkEnableOption "Enable NixOS config for syncthing";
+  };
+
+  config = mkIf cfg.isNix {
     networking.firewall.allowedTCPPorts = [ 8384 22000 ];
     networking.firewall.allowedUDPPorts = [ 22000 21027 ];
 

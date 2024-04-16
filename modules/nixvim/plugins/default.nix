@@ -36,14 +36,17 @@
       lsp = {
         enable = true;
         servers = {
-          nil_ls.enable = true;
           bashls.enable = true;
-          terraformls.enable = true;
-
           lua-ls = {
             enable = true;
             settings.telemetry.enable = false;
           };
+          nixd = {
+            enable = true;
+            settings.formatting.command = "nixpkgs-fmt";
+          };
+          nil_ls.enable = true;
+          terraformls.enable = true;
         };
       };
       lualine = {
@@ -55,13 +58,14 @@
       };
       notify = {
         enable = true;
+        topDown = false;
         backgroundColour = "#000000";
+        fps = 200;
       };
       nvim-cmp = {
         enable = true;
         autoEnableSources = true;
         snippet = { expand = "luasnip"; };
-
         sources = [
           { name = "nvim_lsp"; }
           { name = "luasnip"; }
@@ -69,7 +73,6 @@
           { name = "nvim_lua"; }
           { name = "path"; }
         ];
-
         mapping = {
           # This needs to be updated, re-watch TJ's kickstart re-vamp video
           "<CR>" = "cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = true })";

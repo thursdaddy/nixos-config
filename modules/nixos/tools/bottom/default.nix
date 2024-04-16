@@ -10,8 +10,8 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [
-      pkgs.bottom
+    environment.systemPackages = with pkgs; [
+      bottom
     ];
   };
 }

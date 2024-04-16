@@ -1,11 +1,12 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, ... }:
 with lib;
 let
 
   cfg = config.mine.apps.syncthing;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.apps.syncthing = {
     enable = mkEnableOption "Enable Syncthing";
   };

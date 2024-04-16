@@ -5,12 +5,13 @@ let
   cfg = config.mine.services.bluetooth;
   user = config.mine.user;
 
-in {
+in
+{
   options.mine.services.bluetooth = {
-    enable = mkEnableOption "Enable bluetooth";
+    applet = mkEnableOption "Enable bluetooth applet";
   };
 
-  config = mkIf cfg.enable {
+  config = mkIf cfg.applet {
     home-manager.users.${user.name} = {
       services.blueman-applet.enable = true;
     };

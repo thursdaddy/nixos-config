@@ -5,7 +5,8 @@ let
 
   user = config.mine.user;
 
-in {
+in
+{
 
   imports = [
     ./hardware-configuration.nix
@@ -23,9 +24,15 @@ in {
         bitwarden = enabled;
         cursor = enabled;
         fuzzel = enabled;
-        hyprland = enabled;
+        hyprland = {
+          enable = true;
+          home = true;
+        };
         hyprlock = enabled;
-        hyprpaper = enabled;
+        hyprpaper = {
+          enable = true;
+          home = true;
+        };
         screenshots = enabled;
         waybar = enabled;
       };
@@ -39,7 +46,10 @@ in {
         keybase = enabled;
         kitty = enabled;
         obsidian = enabled;
-        syncthing = enabled;
+        syncthing = {
+          enable = true;
+          isNix = true;
+        };
         vlc = enabled;
       };
 
@@ -48,11 +58,16 @@ in {
         git = enabled;
         home-manager = enabled;
         bottom = enabled;
+        sops = enabled;
       };
 
       services = {
-        bluetooth = enabled;
+        bluetooth = {
+          enable = true;
+          applet = true;
+        };
         openssh = enabled;
+        tailscale = enabled;
       };
 
       system = {
