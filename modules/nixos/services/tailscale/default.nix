@@ -15,9 +15,8 @@ in
       enable = true;
       openFirewall = true;
       authKeyFile = config.sops.secrets.tailscale_auth_key.path;
-      extraUpFlags = [
-        "--accept-dns=false"
-      ];
+      useRoutingFeatures = "both";
+      extraUpFlags = [ "--advertise-exit-node --accept-routes" ];
     };
   };
 }

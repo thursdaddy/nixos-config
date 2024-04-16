@@ -30,15 +30,22 @@
     mine = {
       services.openssh.enable = true;
       services.openssh.iso = true;
-      services.tailscale.enable = true;
       system.utils.enable = true;
     };
 
-    services.resolved = {
+    services.tailscale = {
       enable = true;
-      domains = [ "~." ];
-      fallbackDns = [ "1.1.1.1" "1.0.0.1" ];
+      openFirewall = true;
+      authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+      useRoutingFeatures = "both";
+      extraUpFlags = [ "--advertise-exit-node --accept-routes" ];
     };
+
+    #   services.resolved = {
+    #     enable = true;
+    #     domains = [ "~." ];
+    #     fallbackDns = [ "1.1.1.1" "1.0.0.1" ];
+    #   };
 
     systemd.services.decrypt-sops = {
       description = "Decrypt sops secrets";
