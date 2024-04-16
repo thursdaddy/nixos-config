@@ -1,4 +1,4 @@
-My NixOS configuration
+NixOS configuration
 ======================
 
 Here is my always evolving Nix flake ❄
@@ -10,6 +10,7 @@ Est, Feb 2024.
 | Name | Details |
 |:-----------| :------|
 | [nixpkgs](https://github.com/NixOS/nixpkgs/tree/nixos-23.11) | 23.11 |
+| [unstable](https://github.com/NixOS/nixos-unstable) | Unstable |
 | [nix-darwin](https://github.com/LnL7/nix-darwin) | Nix on MacOS |
 | [home-manager](https://github.com/nix-community/home-manager/tree/release-23.11) | Manage apps and configs via nix! Importing as NixOS and Darwin modules (Not standalone) |
 | [nixos-generators](https://github.com/nix-community/nixos-generators) | Create NixOS configurations for various targets |
@@ -17,6 +18,9 @@ Est, Feb 2024.
 | [hyprland](https://github.com/hyprwm/Hyprland) | Wayland tiling WM configured via home-manager|
 | [hyprlock](https://github.com/hyprwm/Hyprlock) | Lock screen for Hyprland configured via home-manager|
 | [hyprpaper](https://github.com/hyprwm/Hyprpaper) | Wallpaper manager for Hyprland configured via home-manager|
+| [sops](https://github.com/Mic92/sops-nix) | Nix sops implementation|
+| [secrets](github:thursdaddy/sops-secrets/main) | My private repo that contains encrypted secrets|
+
 
 ## Structure
 
@@ -33,7 +37,9 @@ Est, Feb 2024.
     ├── darwin      # darwin configurations
     ├── home        # home-manager configurations
     ├── nixos       # nixos configurations
+    ├── nixvim      # nixvim configurations
 ├── shells          # flakes for direnv devShells
+├── secrets         # encrypted secrets repo
 └── systems         # nixos-generator targets
 ```
 
