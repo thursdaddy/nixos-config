@@ -110,8 +110,9 @@ in
           set -g status-left "#[fg=$BG]#[bg=$BLUE5]#{?client_prefix,#[bg=$GREEN],}  "
           set -ga status-left "#[fg=$FG]#[bg=$BG_DARK]  #S  "
 
-          set -g status-right " #[fg=$MAGENTA] %a #[fg=$TEAL] #[fg=$GREEN]%l:%M:%S #[bg=$BG_DARK]#[fg=$FG_DARK]  %m-%d-%Y "
-          set -ga status-right "#[fg=$BG]#[bg=$BLUE5]   #(git rev-parse --abbrev-ref HEAD) "
+          set -g status-right "#[fg=$BG]#[bg=$BLUE5]   #(git rev-parse --abbrev-ref HEAD) "
+          set -ga status-right " #[bg=$BG_DARK]#[fg=$MAGENTA] %a #[fg=$TEAL] #[fg=$GREEN]%l:%M:%S #[bg=$BG_DARK]#[fg=$FG_DARK]  %m-%d-%Y "
+          set -ga status-right "#[fg=$BG]#[bg=$BLUE5] #(hostname -s) "
 
           set -g mode-style "fg=$FG_DARK,bg=$TERMINAL_BLACK"
         '';
