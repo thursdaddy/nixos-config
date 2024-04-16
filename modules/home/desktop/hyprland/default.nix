@@ -23,10 +23,12 @@ in
       };
 
       wayland.windowManager.hyprland = {
+        plugins = [ inputs.hy3.packages.x86_64-linux.hy3 ];
         enable = true;
         package = inputs.hyprland.packages.${pkgs.system}.hyprland;
 
         extraConfig = ''
+
           # MONITORS AND WORKSPACES
           monitor=DP-1, 2560x1440@165, 90x0, 1
           monitor=DP-2, 3840x1600@144, 0x1440, 1
@@ -41,6 +43,7 @@ in
           workspace = 8, monitor:DP-1, gapsin:0, gapsout:0
           workspace = 9, monitor:DP-1
           workspace = 10, monitor:DP-1
+
           # RULES
           windowrulev2 = workspace 4 silent, class:(Bitwarden)
           windowrulev2 = workspace 5 silent, class:(discord)
@@ -49,27 +52,58 @@ in
           windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
           windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
           windowrulev2 = size 90%, class:(chrome-youtube.com__-Default)
+
+          plugin {
+            hy3 {
+              no_gaps_when_only = 1
+              node_collapse_policy = 0
+              tabs {
+                rounding = 2
+                height = 12
+                padding = 5
+                col.active = 0xff3ac3dc
+              }
+              autotile {
+                enable = true
+              }
+            }
+          }
         '';
 
         settings = {
           "$mod" = "SUPER";
-          "dwindle" = {
-            preserve_split = true;
-            pseudotile = true;
-            force_split = 2;
+
+          general = {
+            layout = "hy3";
+            gaps_in = 5;
+            gaps_out = 10;
           };
-          "master" = {
+
+          master = {
             new_is_master = true;
           };
+
+          binds = {
+            allow_workspace_cycles = true;
+          };
+
+          decoration = {
+            dim_inactive = true;
+            dim_strength = 0.1;
+            rounding = 5;
+          };
+
           bindm =
             [
               "$mod, mouse:272, resizewindow"
               "$mod, mouse:273, movewindow"
             ];
+
           bind =
             [
               "$mod, space, exec, fuzzel"
               "$mod, return, exec, kitty"
+              "$mod_SHIFT, return, exec, [float;noanim] kitty"
               "$mod, T, layoutmsg, togglesplit"
               "$mod, F, fullscreen"
               "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
@@ -81,20 +115,24 @@ in
               "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://deezer.com"
               "$mod_SHIFT, O, exec, obsidian"
               "$mod_SHIFT, P, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://192.168.20.80:32400"
-              "$mod_SHIFT, Q, killactive"
+              "$mod_SHIFT, Q, hy3:killactive"
               "$mod_SHIFT, X, exec, hyprlock"
               # Mouse Focus
-              "$mod, H, movefocus, l"
-              "$mod, L, movefocus, r"
-              "$mod, K, movefocus, u"
-              "$mod, J, movefocus, d"
+              "$mod, H, hy3:movefocus, l"
+              "$mod, L, hy3:movefocus, r"
+              "$mod, K, hy3:movefocus, u"
+              "$mod, J, hy3:movefocus, d"
               # Window Management
-              "$mod_SHIFT, H, movewindow, l"
-              "$mod_SHIFT, L, movewindow, r"
-              "$mod_SHIFT, K, movewindow, u"
-              "$mod_SHIFT, J, movewindow, d"
+              "$mod_SHIFT, H, hy3:movewindow, l"
+              "$mod_SHIFT, L, hy3:movewindow, r"
+              "$mod_SHIFT, K, hy3:movewindow, u"
+              "$mod_SHIFT, J, hy3:movewindow, d"
               # Workspace Switcher
               "$mod, TAB, workspace, previous"
+              # HY3 splits
+              "$mod, S, hy3:makegroup, tab, force_empheral"
+              "$mod, V, hy3:makegroup, v, force_empheral"
+              "$mod, D, hy3:makegroup, h, force_empheral"
             ]
             ++ (
               # workspaces
@@ -111,7 +149,7 @@ in
                   in
                   [
                     "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                    "$mod_SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
+                    "$mod_SHIFT, ${ws}, hy3:movetoworkspace, ${toString (x + 1)}"
                   ]
                 )
                 10)
