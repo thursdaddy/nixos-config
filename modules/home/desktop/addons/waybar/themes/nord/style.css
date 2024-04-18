@@ -294,3 +294,7 @@
 #tray {
     background: #434C5E;
 }
+
+#custom-notification {
+  font-family: "NotoSansMono Nerd Font";
+}
