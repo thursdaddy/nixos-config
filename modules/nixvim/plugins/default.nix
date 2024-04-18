@@ -119,7 +119,6 @@
           };
         };
         keymaps = {
-          "<leader>ff" = "find_files";
           "<leader>fb" = "buffers";
           "<leader>fs" = "grep_string";
           "<leader>fh" = "oldfiles";
@@ -135,6 +134,7 @@
     };
     # plugin specific keymaps
     keymaps = [
+      { mode = "n"; key = "<leader>ff"; action = "<CMD>Telescope find_files find_command=rg,--no-ignore,--files,--hidden,--glob,!.git,--glob,!.terraform prompt_prefix=🔍<CR>"; }
       { mode = "n"; key = "<C-h>"; action = "<CMD>TmuxNavigateLeft<CR>zz"; }
       { mode = "n"; key = "<C-j>"; action = "<CMD>TmuxNavigateDown<CR>zz"; }
       { mode = "n"; key = "<C-k>"; action = "<CMD>TmuxNavigateUp<CR>zz"; }
