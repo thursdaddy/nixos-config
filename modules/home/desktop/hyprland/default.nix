@@ -62,6 +62,9 @@ in
                 height = 12
                 padding = 5
                 col.active = 0xff3ac3dc
+                col.text.active = 0xff000000
+                col.text.inactive = 0xffffffff
+
               }
               autotile {
                 enable = true
@@ -104,7 +107,6 @@ in
               "$mod, space, exec, fuzzel"
               "$mod, return, exec, kitty"
               "$mod_SHIFT, return, exec, [float;noanim] kitty"
-              "$mod, T, layoutmsg, togglesplit"
               "$mod, F, fullscreen"
               "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
               "$mod_SHIFT, B, exec, firefox"
@@ -130,7 +132,8 @@ in
               # Workspace Switcher
               "$mod, TAB, workspace, previous"
               # HY3 splits
-              "$mod, S, hy3:makegroup, tab, force_empheral"
+              "$mod, S, layoutmsg, togglesplit"
+              "$mod, T, hy3:makegroup, tab, force_empheral"
               "$mod, V, hy3:makegroup, v, force_empheral"
               "$mod, D, hy3:makegroup, h, force_empheral"
             ]
@@ -161,8 +164,7 @@ in
         # shell script start desktop apps
         (writeShellScriptBin "restart.desktop" ''
           #/usr/bin/env bash
-
-          systemctl --user restart desktop.service
+          ${config.systemd.package}/bin/systemctl --user restart desktop.service
         '')
       ];
 
