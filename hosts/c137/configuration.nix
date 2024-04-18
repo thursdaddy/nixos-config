@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, inputs, ... }:
 with lib;
 with lib.thurs;
 let
@@ -16,6 +16,8 @@ in
 
   config = {
     system.stateVersion = "23.11";
+
+    sops.secrets.tailscale_auth_key = { };
 
     mine = {
       user = enabled;
@@ -58,7 +60,11 @@ in
         git = enabled;
         home-manager = enabled;
         bottom = enabled;
-        sops = enabled;
+        sops = {
+          enable = true;
+          defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/secrets.yaml");
+          ageKeyFile = "${user.homeDir}/.config/sops/age/keys.txt";
+        };
       };
 
       services = {
@@ -67,7 +73,11 @@ in
           applet = true;
         };
         openssh = enabled;
-        tailscale = enabled;
+        tailscale = {
+          enable = true;
+          authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+          useRoutingFeatures = "client";
+        };
       };
 
       system = {
