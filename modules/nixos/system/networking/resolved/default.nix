@@ -2,15 +2,15 @@
 with lib;
 let
 
-  cfg = config.mine.system.networking;
+  cfg = config.mine.system.networking.resolved;
 
 in
 {
-  options.mine.system.networking = {
-    resolved = mkEnableOption "Enable systemd-resovled";
+  options.mine.system.networking.resolved = {
+    enable = mkEnableOption "Enable systemd-resovled";
   };
 
-  config = mkIf cfg.resolved {
+  config = mkIf cfg.enable {
     services.resolved = {
       enable = true;
       domains = [ "~." ];

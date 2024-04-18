@@ -11,12 +11,14 @@ in
   options.mine.user = {
     enable = mkEnableOption "Enable User";
     name = mkOpt types.str "thurs" "User account name";
-    alias = mkOpt types.str "thursdaddy" "My full alias";
+    alias = mkOpt types.str "thursdaddy" "Full alias";
     email = mkOpt types.str "thursdaddy@pm.me" "My Email";
     homeDir = mkOpt types.str "${home-directory}" "Home Directory Path";
   };
 
   config = mkIf cfg.enable {
+    nix.settings.trusted-users = [ "${cfg.name}" ];
+
     environment.variables = {
       EDITOR = "nvim";
       VISUAL = "nvim";

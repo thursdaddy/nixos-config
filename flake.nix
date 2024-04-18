@@ -71,6 +71,15 @@
           ];
         };
       };
+      nixosConfigurations = {
+        "cloudbox" = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; inherit lib; };
+          system = "x86_64-linux";
+          modules = [
+            ./hosts/cloudbox/configuration.nix
+          ];
+        };
+      };
       packages.x86_64-linux = {
         iso = nixos-generators.nixosGenerate {
           specialArgs = { inherit inputs; inherit lib; };
