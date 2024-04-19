@@ -1,5 +1,5 @@
-NixOS configuration
-======================
+NixOS
+=====
 
 Here is my always evolving Nix flake ❄
 
@@ -20,6 +20,7 @@ Est, Feb 2024.
 | [hyprpaper](https://github.com/hyprwm/Hyprpaper) | Wallpaper manager for Hyprland configured via home-manager|
 | [sops](https://github.com/Mic92/sops-nix) | Nix sops implementation|
 | [secrets](github:thursdaddy/sops-secrets/main) | My private repo that contains encrypted secrets|
+| [hy3](https://github.com/outfoxxed/hy3) | i3 / sway like layout for hyprland|
 
 
 ## Structure
@@ -30,6 +31,7 @@ Est, Feb 2024.
 ├── hosts
     ├── mbp         # 2021 MBP M1
     ├── c137        # AMD 5950x, 64GB DDR4, AMD 6600XT
+    ├── cloudbox    # AWS instance
 ├── flake.nix
 ├── flake.lock
 ├── lib             # extending lib with my own functions
@@ -38,20 +40,15 @@ Est, Feb 2024.
     ├── home        # home-manager configurations
     ├── nixos       # nixos configurations
     ├── nixvim      # nixvim configurations
-├── shells          # flakes for direnv devShells
 ├── secrets         # encrypted secrets repo
 └── systems         # nixos-generator targets
 ```
 
 ## Notes
 
-The end goal was to easily enable/disable module configurations via custom boolean options, for example `mine.cli-apps.nixvim = enabled`. All module configurations are disabled by default.
-
-This requires an opinionated repo structure and naming convention. All modules are in defined via directory name that contains a `default.nix` file, and their custom options should be system/arch agnostic.
-
-All modules are imported per system basis via the hosts `configuration.nix` file.
+All modules are imported on a per system basis via the hosts `configuration.nix` file.
 
  - Darwin       -> `modules/darwin/import.nix`
  - home-manager -> `modules/home/import.nix`
  - NixOS        -> `modules/nixos/import.nix`
- - NixVim       -> `modules/nixvim/import.nix` (see note below)
+ - NixVim       -> `modules/nixvim/import.nix`
