@@ -43,10 +43,9 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixos-generators, nixvim, nix-darwin, home-manager, hyprland, hyprlock, hyprpaper, hy3, unstable, sops-nix, secrets, ... }@inputs:
+  outputs = { self, nixpkgs, unstable, nix-darwin, nixos-generators, home-manager, sops-nix, secrets, nixvim, hyprland, hyprlock, hyprpaper, hy3, ... } @ inputs:
     let
       lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
-      # used wtih devShells
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
         pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
