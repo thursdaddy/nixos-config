@@ -9,6 +9,7 @@ in
 {
 
   imports = [
+    (inputs.nixpkgs + "/nixos/modules/virtualisation/amazon-image.nix")
     ../../modules/nixos/import.nix
     ../../modules/home/import.nix
   ];
@@ -25,12 +26,14 @@ in
         sops = {
           enable = true;
           defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/secrets.yaml");
-          ageKeyFile = "/root/sops/age/keys.txt";
+          # ageKeyFile = "/root/sops/age/keys.txt";
+          ageKeyFile = "${user.homeDir}/.config/sops/age/keys.txt";
         };
       };
 
       services = {
         openssh = enabled;
+        r53-updater = enabled;
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets.tailscale_auth_key.path;
