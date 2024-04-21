@@ -17,8 +17,6 @@ in
   config = {
     system.stateVersion = "23.11";
 
-    sops.secrets.tailscale_auth_key = { };
-
     mine = {
       user = enabled;
 
@@ -56,10 +54,11 @@ in
       };
 
       tools = {
+        bottom = enabled;
         direnv = enabled;
         git = enabled;
         home-manager = enabled;
-        bottom = enabled;
+        keymapp = enabled;
         sops = {
           enable = true;
           defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/secrets.yaml");
@@ -72,6 +71,7 @@ in
           enable = true;
           applet = true;
         };
+        input-remapper = enabled;
         openssh = enabled;
         tailscale = {
           enable = true;
