@@ -26,7 +26,7 @@ in
         sops = {
           enable = true;
           defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/secrets.yaml");
-          # ageKeyFile = "/root/sops/age/keys.txt";
+          # ageKeyFile = "/root/keys.txt";
           ageKeyFile = "${user.homeDir}/.config/sops/age/keys.txt";
         };
       };

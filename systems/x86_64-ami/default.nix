@@ -11,10 +11,6 @@ with lib.thurs;
     system.stateVersion = "23.11";
 
     mine = {
-      nix = {
-        flakes = enabled;
-      };
-
       services.tailscale = {
         enable = true;
         authKeyFile = config.sops.secrets.tailscale_auth_key.path;
@@ -36,12 +32,17 @@ with lib.thurs;
           resolved = enabled;
           forwarding.ipv4 = true;
         };
+        nix = {
+          flakes = enabled;
+        };
         utils = enabled;
       };
 
       tools = {
+        ssm-session-manager = enabled;
         sops = {
           enable = true;
+          requiresNetwork = true;
           defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/tailscale_auth.yaml");
         };
       };
@@ -53,31 +54,5 @@ with lib.thurs;
       awscli2
     ];
 
-    sops.secrets.tailscale_auth_key = { };
-
-    systemd.services.decrypt-sops = {
-      description = "Decrypt sops secrets";
-      wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        Restart = "on-failure";
-        RestartSec = "2s";
-      };
-      script = config.system.activationScripts.setupSecrets.text;
-    };
-
-    systemd.services.tailscaled-autoconnect-reload = {
-      after = [ "decrypt-sops.service" ];
-      partOf = [ "decrypt-sops.service" ];
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-      };
-      script = ''
-        ${config.systemd.package}/bin/systemctl restart tailscaled-autoconnect
-      '';
-    };
   };
 }

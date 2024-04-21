@@ -96,6 +96,7 @@
           format = "amazon";
           modules = [
             ./systems/x86_64-ami
+            ({ ... }: { amazonImage.sizeMB = 4 * 1024; })
           ];
         };
         sd-aarch64 = nixos-generators.nixosGenerate {

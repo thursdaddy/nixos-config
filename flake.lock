@@ -625,11 +625,11 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1713487202,
-        "narHash": "sha256-UthLniXMMTtgnHyj60RXKm2yllpzFGFGK2U4Hk8VSo8=",
+        "lastModified": 1713562132,
+        "narHash": "sha256-0wg9UTVmUUb3O3Zr4PaBBulyU1VxDYjttE6Cm0zzwjM=",
         "owner": "thursdaddy",
         "repo": "sops-secrets",
-        "rev": "218e673bed449895a83a76ba8b135f8b4c196504",
+        "rev": "c67501b02b6fc66557b7ad06106dcc0afc713ac3",
         "type": "github"
       },
       "original": {

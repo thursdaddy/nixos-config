@@ -1,8 +1,9 @@
 { lib, config, pkgs, ... }:
 with lib;
 let
-  user = config.mine.user;
+
   cfg = config.mine.services.r53-updater;
+
   r53-updater = pkgs.writeShellApplication {
     name = "r53-updater";
     runtimeInputs = with pkgs; [ awscli2 coreutils curl dig gawk ];
@@ -10,12 +11,12 @@ let
     text = ''
       export AWS_PAGER=""
       # Function to get current public IP address
-      get_current_ip() {
+      get_instance_ip() {
           curl -s icanhazip.com
       }
 
       # Function to get IP address currently assigned to a domain
-      get_domain_ip() {
+      get_current_dns_record() {
           local domain="$1"
           dig +short "$domain"
       }
@@ -56,8 +57,8 @@ let
 
       for fqdn in "$@"; do
           base_domain=$(echo "$fqdn" | awk -F'.' '{print $(NF-1)"."$NF}')
-          current_ip=$(get_current_ip)
-          instance_ip=$(get_domain_ip "$fqdn")
+          instance_ip=$(get_instance_ip)
+          dns_record=$(get_current_dns_record "$fqdn")
           hosted_zone_id=$(get_hosted_zone_id "$base_domain")
 
           if [ -z "$hosted_zone_id" ]; then
@@ -65,11 +66,11 @@ let
               continue
           fi
 
-          if [ "$current_ip" != "$instance_ip" ]; then
+          if [ "$instance_ip" != "$dns_record" ]; then
               echo "IP has changed for $fqdn. Updating Route 53 record."
-              echo "Current IP: $current_ip"
               echo "Instance IP: $instance_ip"
-              update_route53_record "$current_ip" "$hosted_zone_id" "$fqdn"
+              echo "Current DNS IP: $dns_record"
+              update_route53_record "$instance_ip" "$hosted_zone_id" "$fqdn"
           else
               echo "IP has not changed for $fqdn. No action needed."
           fi
@@ -83,7 +84,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    sops.secrets.domains_to_check = { };
+    sops.secrets.domains_to_check_dev = { };
 
     environment.systemPackages = [
       r53-updater
@@ -98,7 +99,7 @@ in
         Restart = "on-failure";
         RestartSec = "5s";
       };
-      script = "/run/current-system/sw/bin/r53-updater $(cat /run/secrets/domains_to_check)";
+      script = "/run/current-system/sw/bin/r53-updater $(cat /run/secrets/domains_to_check_dev)";
     };
   };
 }
