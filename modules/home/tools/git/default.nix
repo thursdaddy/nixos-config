@@ -19,6 +19,12 @@ in
         enable = true;
         userName = "${user.name}";
         userEmail = "${user.email}";
+        includes = [
+          {
+            path = "~/projects/nixos/secrets/.gitconfig";
+            condition = "gitdir:~/projects/nixos/secrets/";
+          }
+        ];
         extraConfig = {
           init = { defaultBranch = "main"; };
           pull = { rebase = false; };

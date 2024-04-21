@@ -10,7 +10,7 @@ function ami {
 }
 
 function c137 {
-  sudo nixos-rebuild --flake .\#c137 switch
+  sudo nixos-rebuild --flake .\#c137 switch #--option eval-cache false
 }
 
 function mbp {
