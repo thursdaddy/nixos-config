@@ -67,6 +67,7 @@
           system = "x86_64-linux";
           modules = [
             ./hosts/c137/configuration.nix
+            (import ./overlays/unstable)
           ];
         };
       };
