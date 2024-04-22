@@ -34,6 +34,7 @@ in
           home = true;
         };
         screenshots = enabled;
+        swaync = enabled;
         waybar = enabled;
       };
 
@@ -110,13 +111,13 @@ in
       cli-apps = {
         neofetch = enabled;
         nixvim = enabled;
-        ollama = enabled;
+        ollama = disabled;
         tmux = {
           enable = true;
           sessionizer = {
             enable = true;
             searchPaths = [
-              "${user.homeDir}/projects/nixos"
+              "${user.homeDir}/projects/nix"
               "${user.homeDir}/projects/cloud"
             ];
           };

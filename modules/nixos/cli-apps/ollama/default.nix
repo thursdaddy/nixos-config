@@ -19,6 +19,23 @@ in
       (final: prev: {
         inherit (inputs.unstable.legacyPackages.${pkgs.system}) ollama;
       })
+      # ollama build fails due to rocm issues, overrding package version does not fix it.
+      # possibly related to this:
+      # https://github.com/NixOS/nixpkgs/issues/305641
+      # disabling for now as im not really using ollama
+      (self: super: {
+        ollama = super.ollama.overrideAttrs
+          (old: rec {
+            version = "0.1.29";
+            src = super.fetchFromGitHub {
+              owner = "jmorganca";
+              repo = "ollama";
+              rev = "v${version}";
+              hash = "sha256-M2G53DJF/22ZVCAb4jGjyErKO6q2argehHSV7AEef6w=";
+              fetchSubmodules = true;
+            };
+          });
+      })
     ];
 
     services.ollama = {
