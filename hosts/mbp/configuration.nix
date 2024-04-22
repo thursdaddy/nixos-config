@@ -47,7 +47,7 @@ in
         sessionizer = {
           enable = true;
           searchPaths = [
-            "${user.homeDir}/projects/nixos"
+            "${user.homeDir}/projects/nix"
             "${user.homeDir}/projects/cloud"
           ];
         };
