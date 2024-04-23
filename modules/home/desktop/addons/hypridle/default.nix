@@ -5,6 +5,7 @@ let
 
   cfg = config.mine.desktop.hypridle;
   user = config.mine.user;
+  notify-message = "notify-send \"$(date '+%A %I:%M:%S')\"";
 
 in
 {
@@ -18,23 +19,25 @@ in
 
       services.hypridle = {
         enable = true;
+        ignoreDbusInhibit = true;
         lockCmd = "pidof hyprlock || ${inputs.hyprlock.packages.${pkgs.system}.hyprlock}/bin/hyprlock";
         afterSleepCmd = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on";
         beforeSleepCmd = "loginctl lock-session";
         listeners = [
           {
-            timeout = 30;
-            onTimeout = "loginctl lock-session";
+            timeout = 600;
+            onTimeout = "${notify-message} \"HyprIdle: Locking Screen...\" && loginctl lock-session";
+            onResume = "${notify-message} \"HyprIdle: Screen Unlocked!\"";
           }
           {
-            timeout = 915;
+            timeout = 900;
             onTimeout = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms off";
-            onResume = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on ";
+            onResume = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on";
 
           }
           {
             timeout = 1800;
-            onTimeout = "systemctl suspend";
+            onTimeout = "${notify-message} \"HyprIdle: Suspending system..\" && systemctl suspend";
           }
         ];
       };
