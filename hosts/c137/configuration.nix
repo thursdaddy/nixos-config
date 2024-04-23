@@ -24,6 +24,7 @@ in
         bitwarden = enabled;
         cursor = enabled;
         fuzzel = enabled;
+        hypridle = enabled;
         hyprland = {
           enable = true;
           home = true;
