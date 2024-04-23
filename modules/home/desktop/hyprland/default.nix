@@ -28,7 +28,6 @@ in
         package = inputs.hyprland.packages.${pkgs.system}.hyprland;
 
         extraConfig = ''
-
           # MONITORS AND WORKSPACES
           monitor=DP-1, 2560x1440@165, 90x0, 1
           monitor=DP-2, 3840x1600@144, 0x1440, 1
@@ -99,7 +98,7 @@ in
           bindm =
             [
               "$mod, mouse:272, resizewindow"
-              "$mod, mouse:273, movewindow"
+              "$mod, mouse:273, hy3:movewindow"
             ];
 
           bind =
@@ -159,30 +158,6 @@ in
             );
         };
       };
-
-      home.packages = with pkgs; [
-        # shell script start desktop apps
-        (writeShellScriptBin "restart.desktop" ''
-          #/usr/bin/env bash
-          ${config.systemd.package}/bin/systemctl --user restart desktop.service
-        '')
-      ];
-
-      systemd.user.services.desktop = {
-        Unit = {
-          Description = "Systemd oneshot to restart services linked to desktop.service";
-          Documentation = "Coming soon...";
-          After = [ "graphical-session-pre.target" ];
-        };
-
-        Service = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.coreutils}/bin/sleep 1";
-        };
-
-        Install = { WantedBy = [ "graphical-session.target" ]; };
-      };
-
     };
   };
 }

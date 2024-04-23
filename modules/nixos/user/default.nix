@@ -24,6 +24,10 @@ in
       VISUAL = "nvim";
     };
 
+    systemd.user.extraConfig = ''
+      DefaultEnvironment="PATH=/run/current-system/sw/bin"
+    '';
+
     users.users.${cfg.name} = {
       isNormalUser = true;
       createHome = true;
