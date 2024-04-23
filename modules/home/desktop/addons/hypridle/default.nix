@@ -14,24 +14,22 @@ in
 
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
-      imports = [
-        inputs.hypridle.homeManagerModules.hypridle
-      ];
+      imports = [ inputs.hypridle.homeManagerModules.hypridle ];
 
       services.hypridle = {
         enable = true;
-        lockCmd = "pidof hyprlock || /etc/profiles/per-user/thurs/bin/hyprlock";
-        afterSleepCmd = "/etc/profiles/per-user/thurs/bin/hyprctl dispatch dpms on";
+        lockCmd = "pidof hyprlock || ${inputs.hyprlock.packages.${pkgs.system}.hyprlock}/bin/hyprlock";
+        afterSleepCmd = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on";
         beforeSleepCmd = "loginctl lock-session";
         listeners = [
           {
-            timeout = 900;
+            timeout = 30;
             onTimeout = "loginctl lock-session";
           }
           {
             timeout = 915;
-            onTimeout = "/etc/profiles/per-user/thurs/bin/hyprctl dispatch dpms off";
-            onResume = "/etc/profiles/per-user/thurs/bin/hyprctl dispatch dpms on ";
+            onTimeout = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms off";
+            onResume = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on ";
 
           }
           {
