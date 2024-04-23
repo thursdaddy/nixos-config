@@ -14,6 +14,10 @@ in
 
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
+      imports = [
+        inputs.hyprlock.homeManagerModules.hyprlock
+      ];
+
       programs.hyprlock = {
         enable = true;
         package = inputs.hyprlock.packages.${pkgs.system}.hyprlock;

@@ -22,9 +22,6 @@ in
   config = mkIf cfg.enable {
     home-manager.useUserPackages = true;
     home-manager.extraSpecialArgs = { inherit inputs; inherit user; inherit allowed-unfree-packages; };
-    home-manager.users.${user.name}.imports = [
-      inputs.hyprlock.homeManagerModules.hyprlock
-      ./home.nix
-    ];
+    home-manager.users.${user.name}.imports = [ ./home.nix ];
   };
 }
