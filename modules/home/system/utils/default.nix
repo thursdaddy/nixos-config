@@ -9,7 +9,7 @@ in
 {
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
-      home.packages = [ pkgs.nixpkgs-fmt ];
+      home.packages = with pkgs; [ nixpkgs-fmt ];
     };
   };
 }

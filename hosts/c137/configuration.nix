@@ -36,6 +36,7 @@ in
         };
         screenshots = enabled;
         swaync = enabled;
+        systemd = enabled;
         waybar = enabled;
       };
 
@@ -74,12 +75,14 @@ in
           enable = true;
           applet = true;
         };
+        fix-suspend = enabled;
         input-remapper = enabled;
         openssh = enabled;
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets.tailscale_auth_key.path;
           useRoutingFeatures = "client";
+          extraUpFlags = [ "--accept-dns=false" ];
         };
       };
 
