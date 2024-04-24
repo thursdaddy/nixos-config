@@ -48,6 +48,7 @@ in
         keybase = enabled;
         kitty = enabled;
         obsidian = enabled;
+        protonvpn = enabled;
         syncthing = {
           enable = true;
           isNix = true;
@@ -113,6 +114,7 @@ in
         neofetch = enabled;
         nixvim = enabled;
         ollama = disabled;
+        protonvpn = enabled;
         tmux = {
           enable = true;
           sessionizer = {

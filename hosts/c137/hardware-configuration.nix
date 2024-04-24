@@ -22,6 +22,7 @@
   };
 
   networking.hostId = "c8cf78d0";
+  networking.interfaces.enp6s0f1.wakeOnLan.enable = true;
 
   fileSystems."/" =
     {

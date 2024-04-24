@@ -35,6 +35,7 @@ in
       keybase = enabled;
       kitty = enabled;
       obsidian = enabled;
+      protonvpn = enabled;
       syncthing = enabled;
     };
 
