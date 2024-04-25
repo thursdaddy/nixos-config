@@ -12,7 +12,7 @@ in
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      protonvpn-cli
+      unstable.protonvpn-cli
     ];
   };
 }

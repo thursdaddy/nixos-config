@@ -77,6 +77,7 @@ in
         };
         fix-suspend = enabled;
         input-remapper = enabled;
+        keyring = enabled;
         openssh = enabled;
         tailscale = {
           enable = true;
