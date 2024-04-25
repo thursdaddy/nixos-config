@@ -18,6 +18,7 @@ in
       "ncdu"
       "ripgrep"
       "reattach-to-user-namespace"
+      "wakeonlan"
     ];
   };
 
