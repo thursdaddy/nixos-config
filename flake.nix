@@ -34,12 +34,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland/?ref=v0.38.0";
+    hyprland.url = "github:hyprwm/Hyprland/?ref=v0.39.1";
     hyprlock.url = "github:hyprwm/Hyprlock";
     hyprpaper.url = "github:hyprwm/Hyprpaper";
     hypridle.url = "github:hyprwm/Hypridle";
     hy3 = {
-      url = "github:outfoxxed/hy3/?ref=hl0.38.0";
+      url = "github:outfoxxed/hy3/?ref=hl0.39.1";
       inputs.hyprland.follows = "hyprland";
     };
   };
