@@ -101,7 +101,7 @@ in
           set -g pane-border-style fg='#6272a4'
           set -g message-style bg="$BG_HIGHLIGHT",fg="$ORANGE"
           set -g status-style bg='#44475a',fg='#bd93f9'
-          set -g status-interval 5
+          set -g status-interval 1
 
           set -g window-status-current-format "#[fg=$MAGENTA]      #I#[fg=$BLUE1] ❘#[fg=$GREEN]#W#[fg=$BLUE1]★  "
           set -g window-status-format "#[fg=$FG_DARK]      #I ❘#W  "
@@ -110,9 +110,8 @@ in
           set -g status-left "#[fg=$BG]#[bg=$BLUE5]#{?client_prefix,#[bg=$GREEN],}  "
           set -ga status-left "#[fg=$FG]#[bg=$BG_DARK]  #S  "
 
-          set -g status-right "#[fg=$BG]#[bg=$BLUE5]   #(git rev-parse --abbrev-ref HEAD) "
-          set -ga status-right " #[bg=$BG_DARK]#[fg=$MAGENTA] %a #[fg=$TEAL] #[fg=$GREEN]%l:%M:%S #[bg=$BG_DARK]#[fg=$FG_DARK]  %m-%d-%Y "
-          set -ga status-right "#[fg=$BG]#[bg=$BLUE5] #(hostname -s) "
+          set -g status-right " #(hostname -s) #[fg=$BG]#[bg=$BLUE5]   #(git rev-parse --abbrev-ref HEAD) "
+          set -ga status-right " #[bg=$BG_DARK]#[fg=$MAGENTA] %a #[fg=$TEAL] #[fg=$GREEN]%l:%M:%S #[bg=$BG_DARK]#[fg=$FG_DARK]  %m/%d"
 
           set -g mode-style "fg=$FG_DARK,bg=$TERMINAL_BLACK"
         '';
