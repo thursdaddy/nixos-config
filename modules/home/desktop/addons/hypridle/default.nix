@@ -36,6 +36,14 @@ in
 
           }
           {
+            timeout = 1500;
+            onTimeout = "wall \"ATTENTION: SYSTEM WITH SUSPEND IN 5 MINUTES\"";
+          }
+          {
+            timeout = 1740;
+            onTimeout = "wall \"ATTENTION: SYSTEM WITH SUSPEND IN 1 MINUTE\"";
+          }
+          {
             timeout = 1800;
             onTimeout = "${notify-message} \"HyprIdle: Suspending system..\" && systemctl suspend";
           }
