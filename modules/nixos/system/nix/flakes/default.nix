@@ -1,6 +1,7 @@
 { inputs, lib, config, ... }:
 with lib;
 let
+
   cfg = config.mine.system.nix.flakes;
 
 in
@@ -10,11 +11,15 @@ in
   };
 
   config = mkIf cfg.enable {
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
-    # https://discourse.nixos.org/t/problems-after-switching-to-flake-system/24093/8
-    nix.nixPath = [ "/etc/nix/path" ];
-    nix.registry.nixpkgs.flake = inputs.nixpkgs;
+    nix = {
+      settings.experimental-features = [ "nix-command" "flakes" ];
+      registry.nixpkgs.flake = inputs.nixpkgs;
+      # https://discourse.nixos.org/t/problems-after-switching-to-flake-system/24093/8
+      nixPath = [ "/etc/nix/path" ];
+      extraOptions = ''
+        warn-dirty = false
+      '';
+    };
     environment.etc."nix/path/nixpkgs".source = inputs.nixpkgs;
   };
-
 }
