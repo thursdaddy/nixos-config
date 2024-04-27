@@ -1,24 +1,11 @@
 { ... }: {
   programs.nixvim = {
     highlight = {
-      Comment.fg = "#708090";
-      Comment.bg = "none";
-      Comment.bold = true;
-
+      PMenu.bg = "none";
+      IncSearch.fg = "#ffffff";
+      IncSearch.bg = "#d65d0e";
+      SpecialKey.fg = "#d65d0e";
       Normal.bg = "none";
-      Normal.ctermbg = "none";
-      NonText.bg = "none";
-      NonText.ctermbg = "none";
-      NonText.fg = "#48494B";
-      SpecialKey.fg = "#48494B";
-      NvimTreeNormal.ctermbg = "none";
-      NvimTreeNormal.bg = "none";
-      NormalFloat.bg = "none";
-      NormalFloat.ctermbg = "none";
-      LineNr.bg = "none";
-      SignColumn.ctermbg = "none";
-      DiagnosticVirtualTextError.ctermbg = "none";
-      DiagnosticVirtualTextError.bg = "none";
     };
   };
 }

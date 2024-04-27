@@ -3,6 +3,9 @@
     globals.mapleader = " ";
 
     keymaps = [
+      # clear highlights
+      { mode = "n"; key = "<esc>"; action = "<CMD>noh<CR>"; }
+
       # keep things centered
       { mode = "n"; key = "<C-d>"; action = "<C-d>zz"; }
       { mode = "n"; key = "<C-u>"; action = "<C-u>zz"; }

@@ -1,4 +1,4 @@
-{ ... }: {
+{ pkgs, ... }: {
   programs.nixvim = {
     plugins = {
       barbecue.enable = true;
@@ -10,7 +10,9 @@
       endwise.enable = true;
       fugitive.enable = true;
       gitgutter.enable = true;
-      illuminate.enable = true;
+      # something happened, cant update the default behaviour which is to underline
+      # will revisit in the future
+      # illuminate.enable = true;
       indent-blankline.enable = true;
       lastplace.enable = true;
       lsp-format.enable = true;
@@ -41,6 +43,7 @@
             enable = true;
             settings.formatting.command = "nixpkgs-fmt";
           };
+
           nil_ls.enable = true;
           terraformls.enable = true;
         };
@@ -55,8 +58,9 @@
       notify = {
         enable = true;
         topDown = false;
-        backgroundColour = "#000000";
         fps = 200;
+        stages = "fade";
+        backgroundColour = "#000000";
       };
       nvim-cmp = {
         enable = true;
@@ -70,8 +74,39 @@
           { name = "path"; }
         ];
         mapping = {
-          # This needs to be updated, re-watch TJ's kickstart re-vamp video
           "<CR>" = "cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = true })";
+          "<Down>" = {
+            modes = [ "i" "s" ];
+            action =
+              # lua
+              ''
+                function(fallback)
+                if cmp.visible() then
+                  cmp.select_next_item()
+                    elseif require("luasnip").expand_or_jumpable() then
+                    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true), "")
+                else
+                  fallback()
+                    end
+                    end
+              '';
+          };
+          "<Up>" = {
+            modes = [ "i" "s" ];
+            action =
+              # lua
+              ''
+                function(fallback)
+                if cmp.visible() then
+                  cmp.select_prev_item()
+                    elseif require("luasnip").jumpable(-1) then
+                    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-jump-prev", true, true, true), "")
+                else
+                  fallback()
+                    end
+                    end
+              '';
+          };
           "<Tab>" = {
             modes = [ "i" "s" ];
             action =
@@ -151,6 +186,10 @@
       { mode = "n"; key = "<leader>gcb"; action = "<CMD>Git blame<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>g,"; action = "<CMD>diffget //2<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>g."; action = "<CMD>diffget //3<CR>"; options.noremap = true; }
+    ];
+
+    extraPlugins = with pkgs.unstable.vimPlugins; [
+      transparent-nvim
     ];
   };
 }

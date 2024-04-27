@@ -11,6 +11,7 @@ in
       nu = true;
 
       guicursor = "i-c-ci:hor10-iCursor-blinkwait300-blinkon200-blinkoff150,n:ver10-iCursor-blinkwait10-blinkon100-blinkoff150";
+      termguicolors = true;
 
       # tabs
       shiftwidth = 2;
@@ -33,7 +34,6 @@ in
       signcolumn = "auto";
       list = true;
       listchars = "trail:·,extends:+,precedes:+";
-
     };
   };
 }
