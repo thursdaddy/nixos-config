@@ -2,6 +2,7 @@
   programs.nixvim = {
     plugins = {
       barbecue.enable = true;
+      bufferline.enable = true;
       cmp-buffer.enable = true;
       cmp-emoji.enable = true;
       cmp-nvim-lsp.enable = true;
