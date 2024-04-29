@@ -119,10 +119,10 @@ in
               "$mod_SHIFT, Q, hy3:killactive"
               "$mod_SHIFT, X, exec, hyprlock"
               # Mouse Focus
-              "$mod, H, movefocus, l"
-              "$mod, L, movefocus, r"
-              "$mod, K, movefocus, u"
-              "$mod, J, movefocus, d"
+              "$mod, H, hy3:movefocus, l"
+              "$mod, L, hy3:movefocus, r"
+              "$mod, K, hy3:movefocus, u"
+              "$mod, J, hy3:movefocus, d"
               # Window Management
               "$mod_SHIFT, H, hy3:movewindow, l"
               "$mod_SHIFT, L, hy3:movewindow, r"
