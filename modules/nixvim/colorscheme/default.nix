@@ -1,5 +1,6 @@
-{ ... }: {
+{ pkgs, ... }: {
   programs.nixvim = {
-    colorschemes.gruvbox.enable = true;
+    extraPlugins = [ pkgs.vimPlugins.gruvbox-nvim ];
+    colorscheme = "gruvbox";
   };
 }

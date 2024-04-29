@@ -10,9 +10,7 @@
       endwise.enable = true;
       fugitive.enable = true;
       gitgutter.enable = true;
-      # something happened, cant update the default behaviour which is to underline
-      # will revisit in the future
-      # illuminate.enable = true;
+      illuminate.enable = true;
       indent-blankline.enable = true;
       lastplace.enable = true;
       lsp-format.enable = true;
@@ -43,7 +41,6 @@
             enable = true;
             settings.formatting.command = "nixpkgs-fmt";
           };
-
           nil_ls.enable = true;
           terraformls.enable = true;
         };
