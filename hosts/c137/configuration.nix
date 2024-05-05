@@ -65,8 +65,9 @@ in
         keymapp = enabled;
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/secrets.yaml");
+          defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/c137.yaml");
           ageKeyFile = "${user.homeDir}/.config/sops/age/keys.txt";
+          requiresUnlock = true;
         };
       };
 

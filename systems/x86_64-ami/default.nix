@@ -42,8 +42,9 @@ with lib.thurs;
         ssm-session-manager = enabled;
         sops = {
           enable = true;
-          requiresNetwork = true;
-          defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/tailscale_auth.yaml");
+          defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/aws.yaml");
+          ageKeyInSSM = true;
+          ageKeyFile = "/root/age.key";
         };
       };
     };
@@ -53,6 +54,5 @@ with lib.thurs;
       git
       awscli2
     ];
-
   };
 }

@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, pkgs, config, ... }:
 with lib;
 with lib.thurs;
 let
@@ -26,11 +26,13 @@ in
 
     sops.secrets.tailscale_auth_key = mkIf sops.enable { };
 
-    systemd.services.tailscaled-autoconnect-reload = mkIf sops.requiresNetwork {
+    systemd.services.tailscaled-autoconnect-reload = mkIf (sops.requiresNetwork || sops.ageKeyInSSM) {
       description = "Restart tailscaled-autoconnect after secrets have been decrypted";
       after = [ "decrypt-sops-after-network.service" ];
       partOf = [ "decrypt-sops-after-network.service" ];
       wantedBy = [ "multi-user.target" ];
+      preStart = "${pkgs.coreutils}/bin/sleep 1";
+      postStop = "${pkgs.coreutils}/bin/rm ${sops.ageKeyFile}";
       serviceConfig = {
         Type = "oneshot";
       };
