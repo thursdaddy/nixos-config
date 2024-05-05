@@ -2,7 +2,6 @@
   programs.nixvim = {
     plugins = {
       barbecue.enable = true;
-      bufferline.enable = true;
       cmp-buffer.enable = true;
       cmp-emoji.enable = true;
       cmp-nvim-lsp.enable = true;
@@ -16,13 +15,27 @@
       lastplace.enable = true;
       lsp-format.enable = true;
       luasnip.enable = true;
-      noice.enable = true;
       surround.enable = true;
       tmux-navigator.enable = true;
       undotree.enable = true;
       auto-save = {
         enable = true;
         triggerEvents = [ "BufLeave" ];
+      };
+      gitblame = {
+        enable = true;
+        delay = 2000;
+      };
+      noice = {
+        enable = true;
+        routes = [
+          {
+            view = "notify";
+            filter = {
+              event = "msg_showmode";
+            };
+          }
+        ];
       };
       nvim-tree = {
         enable = true;

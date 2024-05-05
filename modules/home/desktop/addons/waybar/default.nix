@@ -13,6 +13,12 @@ in
 
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
+
+      gtk.iconTheme = {
+        package = pkgs.gnome.adwaita-icon-theme;
+        name = "adwaita-icon-theme";
+      };
+
       programs.waybar = {
         enable = true;
 
