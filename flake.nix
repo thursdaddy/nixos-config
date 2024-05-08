@@ -25,8 +25,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    secrets = {
-      url = "github:thursdaddy/sops-secrets/main";
+    # private nixos configs
+    nixos-thurs = {
+      url = "github:thursdaddy/nixos-thurs/main";
+      # url = "git+file:///home/thurs/projects/nix/nixos-thurs/";
     };
 
     nixvim = {
@@ -34,17 +36,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland/?ref=v0.39.1";
+    hyprland.url = "github:hyprwm/Hyprland/?ref=v0.40.0";
     hyprlock.url = "github:hyprwm/Hyprlock";
     hyprpaper.url = "github:hyprwm/Hyprpaper";
     hypridle.url = "github:hyprwm/Hypridle";
-    hy3 = {
-      url = "github:outfoxxed/hy3/?ref=hl0.39.1";
-      inputs.hyprland.follows = "hyprland";
-    };
   };
 
-  outputs = { self, nixpkgs, unstable, nix-darwin, nixos-generators, home-manager, sops-nix, secrets, nixvim, hyprland, hypridle, hyprlock, hyprpaper, hy3, ... } @ inputs:
+  outputs = { self, nixpkgs, unstable, nix-darwin, nixos-generators, home-manager, sops-nix, nixos-thurs, nixvim, hyprland, hypridle, hyprlock, hyprpaper, ... } @ inputs:
     let
       lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
@@ -59,6 +57,7 @@
           system = "aarch64-darwin";
           modules = [
             ./hosts/mbp/configuration.nix
+            (import ./overlays/unstable)
           ];
         };
       };
@@ -113,19 +112,6 @@
         tf = pkgs.mkShell {
           buildInputs = [
             pkgs.opentofu
-            pkgs.awscli2
-          ];
-        };
-        kubectl = pkgs.mkShell {
-          buildInputs = [
-            pkgs.kubectl
-            pkgs.awscli2
-          ];
-        };
-        pulumi = pkgs.mkShell {
-          buildInputs = [
-            pkgs.pulumi-bin
-            pkgs.python311
             pkgs.awscli2
           ];
         };

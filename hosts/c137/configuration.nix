@@ -10,6 +10,7 @@ in
 
   imports = [
     ./hardware-configuration.nix
+    ../../overlays/unstable
     ../../modules/nixos/import.nix
     ../../modules/home/import.nix
   ];
@@ -65,9 +66,9 @@ in
         keymapp = enabled;
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/c137.yaml");
-          ageKeyFile = "${user.homeDir}/.config/sops/age/keys.txt";
           requiresUnlock = true;
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/c137.yaml");
+          ageKeyFile = "${user.homeDir}/.config/sops/age/keys.txt";
         };
       };
 
@@ -118,7 +119,7 @@ in
       cli-apps = {
         neofetch = enabled;
         nixvim = enabled;
-        ollama = disabled;
+        ollama = enabled;
         protonvpn = enabled;
         tmux = {
           enable = true;

@@ -5,16 +5,16 @@ let
 
   cfg = config.mine.tools.sops;
 
-  ssm_systemd_config = mkIf cfg.ageKeyInSSM {
-    Environment = "SOPS_AGE_KEY_FILE=${cfg.ageKeyFile}";
+  ssm_systemd_config = mkIf cfg.ageKeyFile.ageKeyInSSM.enable {
+    Environment = "SOPS_AGE_KEY_FILE=${cfg.ageKeyFile.path}";
     ExecStartPre = (ssm_systemd_script + "/bin/get-age-key-from-ssm");
   };
   ssm_systemd_script = pkgs.writeShellApplication {
     name = "get-age-key-from-ssm";
     runtimeInputs = with pkgs; [ awscli2 coreutils gnused ];
     text = ''
-      agekey=$(aws ssm get-parameter --no-cli-pager --name ${cfg.ageKeyFile} --with-decryption --query "Parameter.Value" | sed 's/\"//g')
-      echo "$agekey" > ${cfg.ageKeyFile}
+      AGE_KEY=$(aws ssm get-parameter --region ${cfg.ageKeyFile.ageKeyInSSM.region} --no-cli-pager --name ${cfg.ageKeyFile.ageKeyInSSM.paramName} --with-decryption --query "Parameter.Value" | sed 's/\"//g')
+      echo "$AGE_KEY" > ${cfg.ageKeyFile.path}
     '';
   };
 
@@ -22,15 +22,34 @@ in
 {
   options.mine.tools.sops = {
     enable = mkEnableOption "Enable sops";
-    ageKeyFile = mkOpt (types.nullOr types.path) null "Path to age key file used for sops decryption.";
-    ageKeyInSSM = mkEnableOption "Runs systemd service to pull key from SSM Parameter store";
-    requiresNetwork = mkOpt types.bool false "Decrypt after network is started, for network required keys like KMS.";
-    requiresUnlock = mkOpt types.bool false "Decrypt after logging in. ";
-    defaultSopsFile = mkOption {
-      type = types.path;
-      description = ''
-        Default sops file used for all secrets.
-      '';
+    defaultSopsFile = mkOpt_ types.path "Default sops file used for all secrets.";
+    ageKeyFile = mkOption {
+      type = types.submodule {
+        options = {
+          ageKeyInSSM = mkOption {
+            type = types.submodule {
+              options = {
+                enable = mkOpt types.bool false "Runs systemd service to pull key from SSM Parameter store";
+                paramName = mkOpt (types.nullOr types.path) null "SSM Parameter name containing age key";
+                region = mkOpt (types.enum [ "us-west-2" "us-east-1" ]) "us-east-1" "AWS region for SSM parameter";
+              };
+            };
+            default = { };
+            description = "If age.key is in SSM";
+          };
+          path = mkOpt (types.nullOr types.path) null "Path to age key file used for sops decryption.";
+        };
+      };
+    };
+    requires = mkOption {
+      type = types.submodule {
+        options = {
+          network = mkOpt types.bool false "Decrypt after network is started, for network required keys like KMS.";
+          unlock = mkOpt types.bool false "Decrypt after logging, or ZFS volumes have been decrypted";
+        };
+      };
+      default = { };
+      description = "Things that are needed for SOPS";
     };
   };
 
@@ -43,10 +62,10 @@ in
 
     sops = {
       defaultSopsFile = config.mine.tools.sops.defaultSopsFile;
-      age.keyFile = config.mine.tools.sops.ageKeyFile;
+      age.keyFile = config.mine.tools.sops.ageKeyFile.path;
     };
 
-    systemd.services.decrypt-sops-after-network = mkIf (cfg.requiresNetwork || cfg.ageKeyInSSM) {
+    systemd.services.decrypt-sops-after-network = mkIf (cfg.requires.network || cfg.ageKeyFile.ageKeyInSSM.enable) {
       description = "Decrypt SOPS secrets after network is established";
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
@@ -59,9 +78,10 @@ in
       script = config.system.activationScripts.setupSecrets.text;
     };
 
-    systemd.services.decrypt-sops-after-login = mkIf cfg.requiresUnlock {
+    systemd.services.decrypt-sops-after-login = mkIf cfg.requires.unlock {
       description = "Decrypt SOPS secrets after disk has been unlocked";
-      wantedBy = [ "default.target" ];
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network-online.target" ];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;

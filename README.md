@@ -16,11 +16,10 @@ Est, Feb 2024.
 | [nixos-generators](https://github.com/nix-community/nixos-generators) | Create NixOS configurations for various targets |
 | [NixVim](https://github.com/nix-community/nixvim/tree/nixos-23.11) | Fully configurable Neovim, imported via NixOS and Darwin modules |
 | [sops](https://github.com/Mic92/sops-nix) | Nix sops implementation|
-| [secrets](github:thursdaddy/sops-secrets/main) | My private repo that contains encrypted secrets|
+| [nixos-thurs](github:thursdaddy/nixos-thurs/main) | Private repo with config and sops secrets|
 | [hyprland](https://github.com/hyprwm/Hyprland) | Wayland tiling WM configured via home-manager|
 | [hyprlock](https://github.com/hyprwm/Hyprlock) | Lock screen for Hyprland configured via home-manager|
 | [hyprpaper](https://github.com/hyprwm/Hyprpaper) | Wallpaper manager for Hyprland configured via home-manager|
-| [hy3](https://github.com/outfoxxed/hy3) | i3 / sway like layout for hyprland|
 
 
 ## Structure

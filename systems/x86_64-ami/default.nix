@@ -3,8 +3,8 @@ with lib.thurs;
 {
 
   imports = [
-    ../../modules/nixos/import.nix
     (inputs.nixpkgs + "/nixos/modules/virtualisation/amazon-image.nix")
+    ../../modules/nixos/import.nix
   ];
 
   config = {
@@ -19,7 +19,6 @@ with lib.thurs;
       };
 
       services = {
-        ssm-agent = enabled;
         openssh = {
           enable = true;
           root = true;
@@ -39,20 +38,18 @@ with lib.thurs;
       };
 
       tools = {
-        ssm-session-manager = enabled;
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/aws.yaml");
-          ageKeyInSSM = true;
-          ageKeyFile = "/root/age.key";
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/aws.yaml");
+          ageKeyFile = {
+            path = "/root/age.key";
+            ageKeyInSSM = {
+              enable = true;
+              paramName = "/sops/age.key";
+            };
+          };
         };
       };
     };
-
-    environment.systemPackages = with pkgs; [
-      neovim
-      git
-      awscli2
-    ];
   };
 }

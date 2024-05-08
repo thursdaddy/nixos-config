@@ -23,23 +23,15 @@ with lib; {
   #@ Type -> Any -> String
   mkOpt' = type: default: mkOpt type default null;
 
-  ## Create a boolean NixOS module option.
+  ## Create a NixOS module option with no default
   ##
   ## ```nix
-  ## lib.mkBoolOpt true "Description of my option."
+  ## lib.mkOpt_ types.path "Description of my option"
   ## ```
   ##
   #@ Type -> Any -> String
-  mkBoolOpt = mkOpt types.bool;
-
-  ## Create a boolean NixOS module option without a description.
-  ##
-  ## ```nix
-  ## lib.mkBoolOpt true
-  ## ```
-  ##
-  #@ Type -> Any -> String
-  mkBoolOpt' = mkOpt' types.bool;
+  mkOpt_ = type: description:
+    mkOption { inherit type description; };
 
   enabled = {
     ## Quickly enable an option.
@@ -56,7 +48,7 @@ with lib; {
     ## Quickly disable an option.
     ##
     ## ```nix
-    ## services.nginx = enabled;
+    ## services.nginx = disabled;
     ## ```
     ##
     #@ false

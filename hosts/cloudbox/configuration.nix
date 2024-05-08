@@ -7,9 +7,10 @@ let
 
 in
 {
-
   imports = [
     (inputs.nixpkgs + "/nixos/modules/virtualisation/amazon-image.nix")
+    inputs.nixos-thurs.nixosModules.cloudboxContainers
+    ../../overlays/unstable
     ../../modules/nixos/import.nix
     ../../modules/home/import.nix
   ];
@@ -17,7 +18,9 @@ in
   config = {
     system.stateVersion = "23.11";
 
-    sops.secrets.tailscale_auth_key = { };
+    environment.systemPackages = with pkgs; [
+      awscli2
+    ];
 
     mine = {
       user = enabled;
@@ -25,9 +28,10 @@ in
       tools = {
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.secrets.packages.${pkgs.system}.secrets + "/encrypted/secrets.yaml");
-          # ageKeyFile = "/root/keys.txt";
-          ageKeyFile = "${user.homeDir}/.config/sops/age/keys.txt";
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/cloudbox.yaml");
+          ageKeyFile = {
+            path = "/root/age.key";
+          };
         };
       };
 
@@ -36,7 +40,6 @@ in
         r53-updater = enabled;
         tailscale = {
           enable = true;
-          authKeyFile = config.sops.secrets.tailscale_auth_key.path;
           useRoutingFeatures = "client";
           extraUpFlags = [ "--accept-routes" "--accept-dns=true" ];
         };
