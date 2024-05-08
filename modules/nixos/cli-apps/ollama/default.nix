@@ -26,12 +26,12 @@ in
       (self: super: {
         ollama = super.ollama.overrideAttrs
           (old: rec {
-            version = "0.1.29";
+            version = "0.1.31";
             src = super.fetchFromGitHub {
               owner = "jmorganca";
               repo = "ollama";
               rev = "v${version}";
-              hash = "sha256-M2G53DJF/22ZVCAb4jGjyErKO6q2argehHSV7AEef6w=";
+              hash = "sha256-Ip1zrhgGpeYo2zsN206/x+tcG/bmPJAq4zGatqsucaw=";
               fetchSubmodules = true;
             };
           });

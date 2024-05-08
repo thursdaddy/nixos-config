@@ -21,8 +21,8 @@ in
         userEmail = "${user.email}";
         includes = [
           {
-            path = "~/projects/nixos/secrets/.gitconfig";
-            condition = "gitdir:~/projects/nixos/secrets/";
+            path = "~/projects/nix/nixos-thurs/.gitconfig";
+            condition = "gitdir:~/projects/nix/nixos-thurs/";
           }
         ];
         extraConfig = {
@@ -62,5 +62,4 @@ in
       };
     };
   };
-
 }

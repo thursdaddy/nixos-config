@@ -23,7 +23,5 @@ in
     };
 
     programs.nm-applet.enable = mkIf cfg.applet true;
-
   };
-
 }

@@ -61,7 +61,7 @@
       };
       lualine = {
         enable = true;
-        theme = "onedark";
+        theme = "nord";
         sections = {
           lualine_c = [ "filename" ];
         };

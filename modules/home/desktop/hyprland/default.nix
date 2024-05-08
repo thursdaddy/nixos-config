@@ -23,7 +23,6 @@ in
       };
 
       wayland.windowManager.hyprland = {
-        plugins = [ inputs.hy3.packages.x86_64-linux.hy3 ];
         enable = true;
         package = inputs.hyprland.packages.${pkgs.system}.hyprland;
 
@@ -51,35 +50,21 @@ in
           windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
           windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
           windowrulev2 = size 90%, class:(chrome-youtube.com__-Default)
-
-          plugin {
-            hy3 {
-              no_gaps_when_only = 1
-              node_collapse_policy = 0
-              tabs {
-                rounding = 2
-                height = 12
-                padding = 5
-                col.active = 0xff3ac3dc
-                col.text.active = 0xff000000
-                col.text.inactive = 0xffffffff
-
-              }
-              autotile {
-                enable = true
-              }
-            }
-          }
         '';
 
         settings = {
           "$mod" = "SUPER";
 
           general = {
-            layout = "hy3";
+            layout = "dwindle";
             gaps_in = 5;
             gaps_out = 10;
           };
+
+          # group = {
+          #   col.border_active = "0xff3ac3dc";
+          #   col.border_inactive = "0xff000000";
+          # };
 
           master = {
             new_is_master = true;
@@ -116,25 +101,22 @@ in
               "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://deezer.com"
               "$mod_SHIFT, O, exec, obsidian"
               "$mod_SHIFT, P, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://192.168.20.80:32400"
-              "$mod_SHIFT, Q, hy3:killactive"
+              "$mod_SHIFT, Q, killactive"
               "$mod_SHIFT, X, exec, hyprlock"
               # Mouse Focus
-              "$mod, H, hy3:movefocus, l"
-              "$mod, L, hy3:movefocus, r"
-              "$mod, K, hy3:movefocus, u"
-              "$mod, J, hy3:movefocus, d"
+              "$mod, H, movefocus, l"
+              "$mod, L, movefocus, r"
+              "$mod, K, movefocus, u"
+              "$mod, J, movefocus, d"
               # Window Management
-              "$mod_SHIFT, H, hy3:movewindow, l"
-              "$mod_SHIFT, L, hy3:movewindow, r"
-              "$mod_SHIFT, K, hy3:movewindow, u"
-              "$mod_SHIFT, J, hy3:movewindow, d"
+              "$mod_SHIFT, H, movewindow, l"
+              "$mod_SHIFT, L, movewindow, r"
+              "$mod_SHIFT, K, movewindow, u"
+              "$mod_SHIFT, J, movewindow, d"
               # Workspace Switcher
               "$mod, TAB, workspace, previous"
-              # HY3 splits
-              "$mod, S, layoutmsg, togglesplit"
-              "$mod, T, hy3:makegroup, tab, force_empheral"
-              "$mod, V, hy3:makegroup, v, force_empheral"
-              "$mod, D, hy3:makegroup, h, force_empheral"
+              "$mod_SHIFT, T, togglegroup"
+              "$mod, T, changegroupactive"
             ]
             ++ (
               # workspaces
@@ -151,7 +133,7 @@ in
                   in
                   [
                     "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                    "$mod_SHIFT, ${ws}, hy3:movetoworkspace, ${toString (x + 1)}"
+                    "$mod_SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
                   ]
                 )
                 10)
