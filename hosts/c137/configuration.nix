@@ -66,9 +66,11 @@ in
         keymapp = enabled;
         sops = {
           enable = true;
-          requiresUnlock = true;
+          requires.unlock = true;
           defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/c137.yaml");
-          ageKeyFile = "${user.homeDir}/.config/sops/age/keys.txt";
+          ageKeyFile = {
+            path = "${user.homeDir}/.config/sops/age/keys.txt";
+          };
         };
       };
 
