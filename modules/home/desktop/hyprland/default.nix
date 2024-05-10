@@ -4,6 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.desktop.hyprland;
+  network = config.mine.system.networking;
   user = config.mine.user;
   chrome-flags = "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder --enable-features=UseOzonePlatform --ozone-platform=wayland";
 
@@ -21,6 +22,9 @@ in
         QT_QPA_PLATFORM = "wayland-egl";
         QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
       };
+
+      home.packages = mkIf network.applet [ pkgs.networkmanagerapplet ];
+      services.network-manager-applet.enable = mkIf network.applet true;
 
       wayland.windowManager.hyprland = {
         enable = true;
@@ -61,10 +65,16 @@ in
             gaps_out = 10;
           };
 
-          # group = {
-          #   col.border_active = "0xff3ac3dc";
-          #   col.border_inactive = "0xff000000";
-          # };
+          group = {
+            "col.border_active" = "0xffffffff";
+            "col.border_inactive" = "0xff000000";
+            groupbar = {
+              height = "8";
+              text_color = "0xff000000";
+              "col.active" = "0xff88c0d0";
+              "col.inactive" = "0xff4c566a";
+            };
+          };
 
           master = {
             new_is_master = true;
@@ -97,26 +107,27 @@ in
               "$mod_SHIFT, D, exec, discord"
               "$mod_SHIFT, F, fullscreen, 1"
               "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
-              "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
               "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://deezer.com"
               "$mod_SHIFT, O, exec, obsidian"
               "$mod_SHIFT, P, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://192.168.20.80:32400"
               "$mod_SHIFT, Q, killactive"
               "$mod_SHIFT, X, exec, hyprlock"
+              "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
               # Mouse Focus
               "$mod, H, movefocus, l"
               "$mod, L, movefocus, r"
               "$mod, K, movefocus, u"
               "$mod, J, movefocus, d"
               # Window Management
-              "$mod_SHIFT, H, movewindow, l"
-              "$mod_SHIFT, L, movewindow, r"
-              "$mod_SHIFT, K, movewindow, u"
-              "$mod_SHIFT, J, movewindow, d"
+              "$mod_SHIFT, H, movewindoworgroup, l"
+              "$mod_SHIFT, L, movewindoworgroup, r"
+              "$mod_SHIFT, K, movewindoworgroup, u"
+              "$mod_SHIFT, J, movewindoworgroup, d"
               # Workspace Switcher
               "$mod, TAB, workspace, previous"
-              "$mod_SHIFT, T, togglegroup"
-              "$mod, T, changegroupactive"
+              "$mod, T, togglegroup"
+              "$mod, C, changegroupactive, b"
+              "$mod, V, changegroupactive, f"
             ]
             ++ (
               # workspaces

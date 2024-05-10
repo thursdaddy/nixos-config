@@ -7,7 +7,11 @@
       cmp-nvim-lsp.enable = true;
       cmp-path.enable = true;
       comment-nvim.enable = true;
+      diffview = {
+        enable = true;
+      };
       endwise.enable = true;
+
       fugitive.enable = true;
       gitgutter.enable = true;
       illuminate.enable = true;
@@ -180,7 +184,13 @@
     };
     # plugin specific keymaps
     keymaps = [
+      # diff-view
+      { mode = "n"; key = "<leader>dv"; action = "<CMD>DiffviewOpen<CR>"; }
+      { mode = "n"; key = "<leader>dvh"; action = "<CMD>DiffviewFileHistory<CR>"; }
+      { mode = "n"; key = "<leader>dvc"; action = "<CMD>DiffviewClose<CR>"; }
+      # telescope
       { mode = "n"; key = "<leader>ff"; action = "<CMD>Telescope find_files find_command=rg,--no-ignore,--files,--hidden,--glob,!.git,--glob,!.terraform prompt_prefix=🔍<CR>"; }
+      # tmux-navigator
       { mode = "n"; key = "<C-h>"; action = "<CMD>TmuxNavigateLeft<CR>zz"; }
       { mode = "n"; key = "<C-j>"; action = "<CMD>TmuxNavigateDown<CR>zz"; }
       { mode = "n"; key = "<C-k>"; action = "<CMD>TmuxNavigateUp<CR>zz"; }
