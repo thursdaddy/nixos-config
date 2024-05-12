@@ -46,6 +46,7 @@ with lib.thurs;
             ageKeyInSSM = {
               enable = true;
               paramName = "/sops/age.key";
+              region = "us-west-2";
             };
           };
         };

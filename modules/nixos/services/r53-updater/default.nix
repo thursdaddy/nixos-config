@@ -84,7 +84,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    sops.secrets.domains_to_check = { };
+    sops.secrets."r53-updater/domains_to_check" = { };
 
     environment.systemPackages = [
       r53-updater
@@ -94,13 +94,12 @@ in
       description = "Route53 Updater - Check if Instance IP has changed and update Route53 accordingly";
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
-      preStart = "${pkgs.coreutils}/bin/sleep 5";
       serviceConfig = {
         Type = "oneshot";
         Restart = "on-failure";
         RestartSec = "5s";
       };
-      script = "/run/current-system/sw/bin/r53-updater $(cat /run/secrets/domains_to_check)";
+      script = "/run/current-system/sw/bin/r53-updater $(cat /run/secrets/r53-updater/domains_to_check)";
     };
   };
 }

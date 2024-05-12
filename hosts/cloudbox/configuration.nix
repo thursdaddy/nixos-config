@@ -1,15 +1,11 @@
 { lib, config, pkgs, inputs, ... }:
 with lib;
 with lib.thurs;
-let
-
-  user = config.mine.user;
-
-in
 {
   imports = [
     (inputs.nixpkgs + "/nixos/modules/virtualisation/amazon-image.nix")
     inputs.nixos-thurs.nixosModules.cloudboxContainers
+    ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
     ../../modules/home/import.nix
@@ -29,9 +25,6 @@ in
         sops = {
           enable = true;
           defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/cloudbox.yaml");
-          ageKeyFile = {
-            path = "/root/age.key";
-          };
         };
       };
 

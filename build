@@ -13,6 +13,10 @@ function c137 {
   sudo nixos-rebuild --flake .\#c137 switch #--option eval-cache false
 }
 
+function cloudbox {
+  nixos-rebuild --flake .\#cloudbox  --target-host thurs@cloudbox --use-remote-sudo switch
+}
+
 function mbp {
   darwin-rebuild switch --flake .\#mbp
 }
@@ -47,6 +51,7 @@ git add .
 case $target in
   ami) ami;;
   c137) c137;;
+  cloudbox) cloudbox;;
   mbp) mbp;;
   sd-aarch64) sd-aarch64;;
 esac

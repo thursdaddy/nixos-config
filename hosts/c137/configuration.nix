@@ -7,8 +7,8 @@ let
 
 in
 {
-
   imports = [
+    # inputs.nixos-thurs.nixosModules.c137Containers
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix

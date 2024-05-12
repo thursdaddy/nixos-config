@@ -24,9 +24,13 @@ in
     enable = mkEnableOption "Enable sops";
     defaultSopsFile = mkOpt_ types.path "Default sops file used for all secrets.";
     ageKeyFile = mkOption {
+      default = { };
+      description = "ageKeyFile config";
       type = types.submodule {
         options = {
           ageKeyInSSM = mkOption {
+            default = { };
+            description = "If age.key is in SSM";
             type = types.submodule {
               options = {
                 enable = mkOpt types.bool false "Runs systemd service to pull key from SSM Parameter store";
@@ -34,22 +38,20 @@ in
                 region = mkOpt (types.enum [ "us-west-2" "us-east-1" ]) "us-east-1" "AWS region for SSM parameter";
               };
             };
-            default = { };
-            description = "If age.key is in SSM";
           };
           path = mkOpt (types.nullOr types.path) null "Path to age key file used for sops decryption.";
         };
       };
     };
     requires = mkOption {
+      default = { };
+      description = "Things that are needed for SOPS";
       type = types.submodule {
         options = {
           network = mkOpt types.bool false "Decrypt after network is started, for network required keys like KMS.";
           unlock = mkOpt types.bool false "Decrypt after logging, or ZFS volumes have been decrypted";
         };
       };
-      default = { };
-      description = "Things that are needed for SOPS";
     };
   };
 

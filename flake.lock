@@ -432,11 +432,11 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1715210524,
-        "narHash": "sha256-+NsZsWEIMvJa6Eq7es8e2tFnnvyHb837WzxaSXjxez8=",
+        "lastModified": 1715489871,
+        "narHash": "sha256-cB5JFfOEnXdsAVZVUiHDTRaJwQrAouyrH78DOxbO7fA=",
         "owner": "thursdaddy",
         "repo": "nixos-thurs",
-        "rev": "b7f305acc6b23669a61e1c0c594154fade51e14e",
+        "rev": "287f5f1193bb95269d594acf11575a6497ddf7d6",
         "type": "github"
       },
       "original": {
