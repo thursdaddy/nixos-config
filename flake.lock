@@ -163,6 +163,7 @@
       },
       "original": {
         "owner": "hyprwm",
+        "ref": "v0.1.2",
         "repo": "Hypridle",
         "type": "github"
       }
@@ -313,15 +314,16 @@
         "systems": "systems_5"
       },
       "locked": {
-        "lastModified": 1714843107,
-        "narHash": "sha256-89WxndRGO3CGuWE5XCaHKnsV3IKBRdOWqScp6o8enT4=",
+        "lastModified": 1712587141,
+        "narHash": "sha256-rbzVe2WNdHynJrnyJsKOOrV8yuuJ7QIuah3ZHWERSnA=",
         "owner": "hyprwm",
         "repo": "Hyprlock",
-        "rev": "c87af3aa1f6e6bd06cffaabcc400bd45e26d565a",
+        "rev": "bc87adf9ec997090f15d9b662d6ca2f86e25f264",
         "type": "github"
       },
       "original": {
         "owner": "hyprwm",
+        "ref": "v0.3.0",
         "repo": "Hyprlock",
         "type": "github"
       }
@@ -333,15 +335,16 @@
         "systems": "systems_7"
       },
       "locked": {
-        "lastModified": 1714910693,
-        "narHash": "sha256-kkgjq8ZCnxYgqPX7O2kUHdzBm08bRlESCukSzE7XE2g=",
+        "lastModified": 1714339536,
+        "narHash": "sha256-l13c8ALA7ZKDgluYA1C1OfkDGYD6e1/GR6LJnxCLRhA=",
         "owner": "hyprwm",
         "repo": "Hyprpaper",
-        "rev": "1e1fc79d84c35a673c52cfa0be1ea9df1aed8442",
+        "rev": "d50f0eda6cb9be2a8419af21792195e54b285631",
         "type": "github"
       },
       "original": {
         "owner": "hyprwm",
+        "ref": "v0.7.0",
         "repo": "Hyprpaper",
         "type": "github"
       }
@@ -432,18 +435,16 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1715489871,
-        "narHash": "sha256-cB5JFfOEnXdsAVZVUiHDTRaJwQrAouyrH78DOxbO7fA=",
-        "owner": "thursdaddy",
-        "repo": "nixos-thurs",
-        "rev": "287f5f1193bb95269d594acf11575a6497ddf7d6",
-        "type": "github"
+        "dirtyRev": "522cd1a4d1172859d2b89ad8607cc21fddeb2560-dirty",
+        "dirtyShortRev": "522cd1a-dirty",
+        "lastModified": 1715506517,
+        "narHash": "sha256-dnk0j544js1mRvGkshHuls3fS5ar6OfiWJbRhOk14Xo=",
+        "type": "git",
+        "url": "file:///home/thurs/projects/nix/nixos-thurs/"
       },
       "original": {
-        "owner": "thursdaddy",
-        "ref": "main",
-        "repo": "nixos-thurs",
-        "type": "github"
+        "type": "git",
+        "url": "file:///home/thurs/projects/nix/nixos-thurs/"
       }
     },
     "nixpkgs": {

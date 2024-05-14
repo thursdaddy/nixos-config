@@ -5,6 +5,22 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    # private nixos configs
+    nixos-thurs = {
+      # url = "github:thursdaddy/nixos-thurs/main";
+      url = "git+file:///home/thurs/projects/nix/nixos-thurs/";
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager/release-23.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixvim = {
+      url = "github:nix-community/nixvim/nixos-23.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -15,31 +31,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    home-manager = {
-      url = "github:nix-community/home-manager/release-23.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # private nixos configs
-    nixos-thurs = {
-      url = "github:thursdaddy/nixos-thurs/main";
-      # url = "git+file:///home/thurs/projects/nix/nixos-thurs/";
-    };
-
-    nixvim = {
-      url = "github:nix-community/nixvim/nixos-23.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hyprland.url = "github:hyprwm/Hyprland/?ref=v0.40.0";
-    hyprlock.url = "github:hyprwm/Hyprlock";
-    hyprpaper.url = "github:hyprwm/Hyprpaper";
-    hypridle.url = "github:hyprwm/Hypridle";
+    hyprland.url = "github:hyprwm/Hyprland/?ref=v0.39.0";
+    hyprlock.url = "github:hyprwm/Hyprlock/?ref=v0.3.0";
+    hyprpaper.url = "github:hyprwm/Hyprpaper/?ref=v0.7.0";
+    hypridle.url = "github:hyprwm/Hypridle/?ref=v0.1.2";
   };
 
   outputs = { self, nixpkgs, unstable, nix-darwin, nixos-generators, home-manager, sops-nix, nixos-thurs, nixvim, hyprland, hypridle, hyprlock, hyprpaper, ... } @ inputs:
@@ -86,8 +86,15 @@
           system = "x86_64-linux";
           format = "iso";
           modules = [
-
             ./systems/x86_64-iso
+          ];
+        };
+        vm-nogui = nixos-generators.nixosGenerate {
+          specialArgs = { inherit inputs; inherit lib; };
+          system = "x86_64-linux";
+          format = "vm-nogui";
+          modules = [
+            ./systems/x86_64-vm-nogui
           ];
         };
         ami = nixos-generators.nixosGenerate {

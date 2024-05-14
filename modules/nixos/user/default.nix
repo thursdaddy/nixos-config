@@ -4,6 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.user;
+  sops = config.mine.tools.sops;
   home-directory = "/home/${cfg.name}";
 
 in
@@ -18,6 +19,10 @@ in
 
   config = mkIf cfg.enable {
     nix.settings.trusted-users = [ "${cfg.name}" ];
+
+    sops.secrets.github_token = mkIf sops.enable {
+      owner = cfg.name;
+    };
 
     environment.variables = {
       EDITOR = "nvim";

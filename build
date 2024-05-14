@@ -1,38 +1,45 @@
 #!/usr/bin/env bash
-
 # just a simple wrapper script for nix builds
 
-target=$1
+# ansi color codes
+BLUE='\033[1;34m'
+GREEN='\033[1;32m'
+ORANGE='\033[0;33m'
+WHITE='\033[1;37m'
+GREY='\033[4;39m'
+NC='\033[0m' # No Color
 
-function ami {
+TARGET=$1
+
+function build_ami {
   nix build .\#ami
   copy_artifact_path && cleanup
 }
 
-function c137 {
+function build_c137 {
   sudo nixos-rebuild --flake .\#c137 switch #--option eval-cache false
 }
 
-function cloudbox {
+function build_cloudbox {
   nixos-rebuild --flake .\#cloudbox  --target-host thurs@cloudbox --use-remote-sudo switch
 }
 
-function mbp {
+function build_mbp {
   darwin-rebuild switch --flake .\#mbp
 }
 
-function sd-aarch64 {
+function build_sd-aarch64 {
   nix build .\#sd-aarch64
   copy_artifact_path && cleanup
 }
 
 function copy_artifact_path {
   if [ -L ./result ]; then
-    artifact_path=$(readlink ./result)
+    ARTIFACT_PATH=$(readlink ./result)
     # vhd = ami, zst = sd-aarch64
-    artifact=$(find $artifact_path -type f \( -iname '*.vhd' -o -iname '*.zst' \))
-    printf "\nCopy $artifact to builds/\n\n"
-    sudo cp $artifact builds/
+    ARTIFACT=$(find $ARTIFACT_PATH -type f \( -iname '*.vhd' -o -iname '*.zst' \))
+    printf "\nCopy $ARTIFACT to builds/\n\n"
+    sudo cp $ARTIFACT builds/
   else
     exit 1
   fi
@@ -45,13 +52,48 @@ function cleanup {
   ls -lah builds/ | grep nixos
 }
 
+function check_hypr_version {
+  printf "\n${WHITE}HYPR TAGS:${NC}\n"
+  for repo in $(grep hyprwm flake.nix | awk -F "hyprwm/" '{ print $2 }' | sed -e 's/\/?ref//g' -e 's/";//g'); do
+    REPO_NAME=$(echo $repo | awk -F'=' '{ print tolower($1) }')
+    TAG_CURRENT=$(echo $repo | awk -F '=' '{ print $2 }')
+    TAG_LATEST=$(curl -s "https://api.github.com/repos/hyprwm/$REPO_NAME/releases/latest" --header "Authorization: Bearer $GH_TOKEN" --header "X-GitHub-Api-Version: 2022-11-28" | jq -r '.tag_name')
+    if [[ "$TAG_LATEST" == "null" ]]; then
+      printf "${BLUE}${REPO_NAME} ${ORANGE}failed to get tag"
+    elif [[ "$TAG_CURRENT" == "$TAG_LATEST" ]]; then
+      printf "${BLUE}$REPO_NAME\t${GREEN}($TAG_CURRENT)${NC}\n"
+    elif [[ "$TAG_CURRENT" != "$TAG_LATEST" ]]; then
+      printf "${BLUE}$REPO_NAME\t${GREEN}($TAG_CURRENT)${NC} ${WHITE}latest: ${ORANGE}${TAG_LATEST}${NC} - ${GREY}https://github.com/hyprwm/${REPO_NAME}/releases/${TAG_LATEST}${NC}\n"
+    fi
+  done
+  printf "\n"
+}
+
 # flakes are married to git
 git add .
 
-case $target in
-  ami) ami;;
-  c137) c137;;
-  cloudbox) cloudbox;;
-  mbp) mbp;;
-  sd-aarch64) sd-aarch64;;
+if [ -f "/run/secrets/github_token" ]; then
+ GH_TOKEN=$(cat /run/secrets/github_token)
+ export NIX_CONFIG="extra-access-tokens = ${GH_TOKEN}"
+else
+  GH_TOKEN=''
+fi
+
+case $TARGET in
+  ami)
+    build_ami
+    ;;
+  c137)
+    if [ "$2" == "--check" ]; then check_hypr_version; fi
+    # build_c137
+    ;;
+  cloudbox)
+    build_cloudbox
+    ;;
+  mbp)
+    build_mbp
+    ;;
+  sd-aarch64)
+    build_sd-aarch64
+    ;;
 esac
