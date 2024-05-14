@@ -85,7 +85,7 @@ case $TARGET in
     ;;
   c137)
     if [ "$2" == "--check" ]; then check_hypr_version; fi
-    # build_c137
+    build_c137
     ;;
   cloudbox)
     build_cloudbox
