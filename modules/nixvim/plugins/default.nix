@@ -7,11 +7,7 @@
       cmp-nvim-lsp.enable = true;
       cmp-path.enable = true;
       comment-nvim.enable = true;
-      diffview = {
-        enable = true;
-      };
       endwise.enable = true;
-
       fugitive.enable = true;
       gitgutter.enable = true;
       illuminate.enable = true;
@@ -26,9 +22,12 @@
         enable = true;
         triggerEvents = [ "BufLeave" ];
       };
+      diffview = {
+        enable = true;
+      };
       gitblame = {
         enable = true;
-        delay = 2000;
+        delay = 4000;
       };
       noice = {
         enable = true;
