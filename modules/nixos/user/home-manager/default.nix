@@ -1,24 +1,24 @@
 { lib, config, inputs, ... }:
 with lib;
+with lib.thurs;
 let
 
-  cfg = config.mine.tools.home-manager;
+  cfg = config.mine.user;
   user = config.mine.user;
-  allowed-unfree-packages = [ "discord" ];
+
+  # TODO: refactor this so its not randomly in user config
+  allowed-unfree-packages = [
+    "discord"
+  ];
 
 in
 {
-  options.mine.tools.home-manager = {
-    enable = mkEnableOption "Enable Home-Manager";
-  };
-
   imports = [
-    inputs.home-manager.darwinModules.home-manager
+    inputs.home-manager.nixosModules.home-manager
   ];
 
-  config = mkIf cfg.enable {
+  config = mkIf cfg.home-manager {
     home-manager.useUserPackages = true;
-    home-manager.useGlobalPkgs = true;
     home-manager.extraSpecialArgs = { inherit inputs; inherit user; inherit allowed-unfree-packages; };
     home-manager.users.${user.name}.imports = [ ./home.nix ];
   };

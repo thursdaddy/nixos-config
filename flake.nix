@@ -7,8 +7,9 @@
 
     # private nixos configs
     nixos-thurs = {
-      # url = "github:thursdaddy/nixos-thurs/main";
-      url = "git+file:///home/thurs/projects/nix/nixos-thurs/";
+      url = "github:thursdaddy/nixos-thurs/main";
+      # url = "git+file:///home/thurs/projects/nix/nixos-thurs/";
+      # url = "git+file:///Users/thurs/projects/nix/nixos-thurs/";
     };
 
     home-manager = {
@@ -67,7 +68,6 @@
           system = "x86_64-linux";
           modules = [
             ./hosts/c137/configuration.nix
-            (import ./overlays/unstable)
           ];
         };
       };
@@ -77,6 +77,24 @@
           system = "x86_64-linux";
           modules = [
             ./hosts/cloudbox/configuration.nix
+          ];
+        };
+      };
+      nixosConfigurations = {
+        "netpi1" = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; inherit lib; hostname = "netpi1"; };
+          system = "aarch64-linux";
+          modules = [
+            ./hosts/netpi/configuration.nix
+          ];
+        };
+      };
+      nixosConfigurations = {
+        "netpi2" = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; inherit lib; hostname = "netpi2"; };
+          system = "aarch64-linux";
+          modules = [
+            ./hosts/netpi/configuration.nix
           ];
         };
       };

@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, inputs, ... }:
 with lib;
 with lib.thurs;
 let
@@ -13,45 +13,56 @@ in
     ../../modules/home/import.nix
   ];
 
-  mine = {
-    user = enabled;
+  config = {
 
-    system = {
-      security.touchsudo = enabled;
-      utils = enabled;
-    };
-
-    tools = {
-      direnv = enabled;
-      git = enabled;
-      home-manager = enabled;
-      sops = enabled;
-    };
-
-    apps = {
-      chromium = enabled;
-      discord = enabled;
-      firefox = enabled;
-      keybase = enabled;
-      kitty = enabled;
-      obsidian = enabled;
-      protonvpn = enabled;
-      syncthing = enabled;
-    };
-
-    cli-apps = {
-      homebrew = enabled;
-      neofetch = enabled;
-      nixvim = enabled;
-      tmux = {
+    mine = {
+      user = {
         enable = true;
-        sessionizer = {
+        home-manager = true;
+      };
+
+      system = {
+        security.touchsudo = enabled;
+        utils = enabled;
+      };
+
+      tools = {
+        direnv = enabled;
+        git = enabled;
+        sops = {
           enable = true;
-          searchPaths = [
-            "${user.homeDir}/projects/nix"
-            "${user.homeDir}/projects/cloud"
-          ];
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/main.yaml");
+          ageKeyFile = {
+            path = "${user.homeDir}/.confg/sops/age/keys.txt";
+          };
         };
+        tmux = {
+          enable = true;
+          sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/projects/nix"
+              "${user.homeDir}/projects/cloud"
+            ];
+          };
+        };
+      };
+
+      apps = {
+        chromium = enabled;
+        discord = enabled;
+        firefox = enabled;
+        keybase = enabled;
+        kitty = enabled;
+        obsidian = enabled;
+        protonvpn = enabled;
+        syncthing = enabled;
+      };
+
+      cli-apps = {
+        homebrew = enabled;
+        neofetch = enabled;
+        nixvim = enabled;
       };
     };
   };

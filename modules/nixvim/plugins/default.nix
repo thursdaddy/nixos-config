@@ -210,6 +210,7 @@
 
     extraPlugins = with pkgs.unstable.vimPlugins; [
       transparent-nvim
+      vim-shellcheck
     ];
   };
 }

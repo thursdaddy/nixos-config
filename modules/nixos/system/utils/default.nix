@@ -25,6 +25,7 @@ in
       nmap
       pciutils
       ripgrep
+      shellcheck
       tree
       unzip
       usbutils

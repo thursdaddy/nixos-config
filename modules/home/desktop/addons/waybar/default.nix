@@ -34,7 +34,7 @@ in
             modules-center = [ "hyprland/window" ];
             modules-right =
               [ "pulseaudio" "cpu" "memory" "temperature" "clock" "custom/notification" "tray" ];
-            clock.format = "{:%Y-%m-%d %H:%M}";
+            clock.format = "{:%Y-%m-%d %I:%M%p}";
             "custom/notification" = {
               tooltip = false;
               format = "{icon}";
@@ -72,7 +72,7 @@ in
             modules-center = [ "hyprland/window" ];
             modules-right =
               [ "pulseaudio" "cpu" "memory" "temperature" "clock" "tray" ];
-            clock.format = "{:%Y-%m-%d %H:%M}";
+            clock.format = "{:%Y-%m-%d %I:%M%p}";
             "hyprland/workspaces" = {
               active-only = false;
               all-outputs = false;
@@ -90,7 +90,7 @@ in
             modules-center = [ "hyprland/window" ];
             modules-right =
               [ "pulseaudio" "cpu" "memory" "temperature" "clock" "tray" ];
-            clock.format = "{:%Y-%m-%d %H:%M}";
+            clock.format = "{:%Y-%m-%d %I:%M%p}";
             "hyprland/workspaces" = {
               active-only = false;
               all-outputs = false;

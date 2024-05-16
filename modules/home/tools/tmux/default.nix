@@ -1,19 +1,56 @@
 { lib, config, pkgs, ... }:
 with lib;
+with lib.thurs;
 let
 
-  cfg = config.mine.cli-apps.tmux;
+  cfg = config.mine.tools.tmux;
   user = config.mine.user;
+
+  tmuxs_paths = builtins.concatStringsSep " " cfg.sessionizer.searchPaths;
+  tmuxs = (pkgs.writeShellScriptBin "tmuxs" ''
+    #/usr/bin/env bash
+
+    if [ -z "$1" ]; then
+      exit 1
+    fi
+
+    tmux has-session -t $1 2>/dev/null
+
+    if [ $? != 0 ]; then
+      echo "tmux session $1 does not exist!"
+      path=$(find ${tmuxs_paths} -type d -name $1 -print -quit 2>&1)
+      cd $path
+      tmux new-session -d -s "$1" -n nvim 'nvim' \; \
+        new-window -n zsh \; \
+        select-window -t :nvim\;
+      tmux attach-session -t $1
+    else
+      tmux attach-session -t $1
+    fi
+  '');
 
 in
 {
-  options.mine.cli-apps.tmux = {
+  options.mine.tools.tmux = {
     enable = mkEnableOption "Enable tmux";
+    sessionizer = mkOption {
+      default = { };
+      description = "Tmux-sessionizer script";
+      type = types.submodule {
+        options = {
+          enable = mkOpt types.bool false "Enable tmuxs";
+          searchPaths = mkOpt (types.listOf types.str) [ ] "Paths to use for autocomplete";
+        };
+      };
+    };
   };
 
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
-      home.packages = with pkgs; [ tmux ];
+      home.packages = with pkgs; [
+        (mkIf cfg.sessionizer.enable tmuxs)
+        tmux
+      ];
 
       programs.tmux = {
         enable = true;
@@ -116,7 +153,34 @@ in
           set -g mode-style "fg=$FG_DARK,bg=$TERMINAL_BLACK"
         '';
       };
-    };
 
+      home.file = mkIf cfg.sessionizer.enable {
+        "${user.homeDir}/.local/bin/tmuxs_autocomplete.sh" = {
+          text = ''
+            #/usr/bin/env bash
+
+            _tmuxs_autocomplete() {
+              local cur="''${COMP_WORDS[COMP_CWORD]}"
+              local prev="''${COMP_WORDS[COMP_CWORD-1]}"
+              local dir=$(find ${tmuxs_paths} -maxdepth 1 -mindepth 1 -type d -not -path '*/.*')
+
+              if [[ $prev == "tmuxs" ]]; then
+                COMPREPLY=($(compgen -W "$(basename -a $dir)" -- "$cur"))
+              fi
+
+            }
+
+            complete -F _tmuxs_autocomplete tmuxs
+          '';
+        };
+      };
+
+      # source the autocomplete script in zsh
+      programs.zsh = mkIf cfg.sessionizer.enable {
+        initExtra = ''
+          source ~/.local/bin/tmuxs_autocomplete.sh
+        '';
+      };
+    };
   };
 }

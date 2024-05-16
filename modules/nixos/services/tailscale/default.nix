@@ -24,7 +24,7 @@ in
       extraUpFlags = config.mine.services.tailscale.extraUpFlags;
     };
 
-    sops.secrets.tailscale_auth_key = mkIf sops.enable { };
+    sops.secrets."tailscale/AUTH_KEY" = mkIf sops.enable { };
 
     systemd.services.tailscaled-autoconnect-reload = mkIf ((sops.requires.network) || sops.ageKeyFile.ageKeyInSSM.enable) {
       description = "Restart tailscaled-autoconnect after secrets have been decrypted";

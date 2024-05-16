@@ -13,7 +13,7 @@ with lib.thurs;
     mine = {
       services.tailscale = {
         enable = true;
-        authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+        authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
         useRoutingFeatures = "client";
         extraUpFlags = [ "--accept-routes" "--accept-dns=true" ];
       };
@@ -40,7 +40,7 @@ with lib.thurs;
       tools = {
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/aws.yaml");
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/ami.yaml");
           ageKeyFile = {
             path = "/root/age.key";
             ageKeyInSSM = {

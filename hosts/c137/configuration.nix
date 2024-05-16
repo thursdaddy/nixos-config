@@ -8,7 +8,7 @@ let
 in
 {
   imports = [
-    # inputs.nixos-thurs.nixosModules.c137Containers
+    inputs.nixos-thurs.nixosModules.c137Containers
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
@@ -18,8 +18,16 @@ in
   config = {
     system.stateVersion = "23.11";
 
+    # find a better place for this
+    sops.secrets."github/TOKEN" = mkIf config.mine.tools.sops.enable {
+      owner = "${user.name}";
+    };
+
     mine = {
-      user = enabled;
+      user = {
+        enable = true;
+        home-manager = true;
+      };
 
       desktop = {
         bitwarden = enabled;
@@ -62,14 +70,20 @@ in
         bottom = enabled;
         direnv = enabled;
         git = enabled;
-        home-manager = enabled;
         keymapp = enabled;
         sops = {
           enable = true;
           requires.unlock = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/c137.yaml");
-          ageKeyFile = {
-            path = "${user.homeDir}/.config/sops/age/keys.txt";
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + " /encrypted/main.yaml ");
+        };
+        tmux = {
+          enable = true;
+          sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/projects/nix"
+              "${user.homeDir}/projects/cloud"
+            ];
           };
         };
       };
@@ -85,7 +99,7 @@ in
         openssh = enabled;
         tailscale = {
           enable = true;
-          authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+          authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
           useRoutingFeatures = "client";
           extraUpFlags = [ "--accept-dns=false" ];
         };
@@ -113,7 +127,10 @@ in
         utils = enabled;
         video.amd = enabled;
         virtualisation = {
-          docker = enabled;
+          docker = {
+            enable = true;
+            scripts.check-versions = true;
+          };
           libvirtd = enabled;
         };
       };
@@ -123,17 +140,8 @@ in
         nixvim = enabled;
         ollama = enabled;
         protonvpn = enabled;
-        tmux = {
-          enable = true;
-          sessionizer = {
-            enable = true;
-            searchPaths = [
-              "${user.homeDir}/projects/nix"
-              "${user.homeDir}/projects/cloud"
-            ];
-          };
-        };
       };
     };
   };
 }
+

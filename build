@@ -21,11 +21,16 @@ function build_c137 {
 }
 
 function build_cloudbox {
-  nixos-rebuild --flake .\#cloudbox  --target-host thurs@cloudbox --use-remote-sudo switch
+  nixos-rebuild --flake .\#cloudbox --target-host thurs@cloudbox --use-remote-sudo switch
+}
+
+function build_netpi {
+  nixos-rebuild --flake .\#netpi1 --target-host thurs@192.168.20.35 --use-remote-sudo switch #--option eval-cache false
+  nixos-rebuild --flake .\#netpi2 --target-host thurs@192.168.20.51 --use-remote-sudo switch #--option eval-cache false
 }
 
 function build_mbp {
-  darwin-rebuild switch --flake .\#mbp
+  darwin-rebuild switch --flake .\#mbp --option eval-cache false
 }
 
 function build_sd-aarch64 {
@@ -69,6 +74,17 @@ function check_hypr_version {
   printf "\n"
 }
 
+function update_nixos_thurs_input {
+  # url = "github:thursdaddy/nixos-thurs/main";
+  echo "update"
+  sed -i 's/      url = "github:thursdaddy\/nixos-thurs\/main";/     # url = "github:thursdaddy\/nixos-thurs\/main";/g' flake.nix
+  sed -i 's/      # url = "git+file:\/\/\/home\/thurs\/projects\/nix\/nixos-thurs\/";/      url = "git+file:\/\/\/home\/thurs\/projects\/nix\/nixos-thurs\/";/g' flake.nix
+  nix flake lock --update-input nixos-thurs
+}
+
+
+if [ "$2" == "--update-input" ]; then update_nixos_thurs_input; fi
+
 # flakes are married to git
 git add .
 
@@ -92,6 +108,9 @@ case $TARGET in
     ;;
   mbp)
     build_mbp
+    ;;
+  netpi)
+    build_netpi
     ;;
   sd-aarch64)
     build_sd-aarch64
