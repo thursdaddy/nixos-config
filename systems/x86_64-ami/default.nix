@@ -40,7 +40,6 @@ with lib.thurs;
       tools = {
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/ami.yaml");
           ageKeyFile = {
             path = "/root/age.key";
             ageKeyInSSM = {

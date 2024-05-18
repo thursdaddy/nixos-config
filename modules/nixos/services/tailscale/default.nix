@@ -1,4 +1,4 @@
-{ lib, pkgs, config, ... }:
+{ lib, pkgs, config, inputs, ... }:
 with lib;
 with lib.thurs;
 let
@@ -24,7 +24,9 @@ in
       extraUpFlags = config.mine.services.tailscale.extraUpFlags;
     };
 
-    sops.secrets."tailscale/AUTH_KEY" = mkIf sops.enable { };
+    sops.secrets."tailscale/AUTH_KEY" = mkIf sops.enable {
+      sopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/tailscale.yaml");
+    };
 
     systemd.services.tailscaled-autoconnect-reload = mkIf ((sops.requires.network) || sops.ageKeyFile.ageKeyInSSM.enable) {
       description = "Restart tailscaled-autoconnect after secrets have been decrypted";
