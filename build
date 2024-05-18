@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2059
+
 # just a simple wrapper script for nix builds
 
 # ansi color codes
@@ -11,25 +13,26 @@ NC='\033[0m' # No Color
 
 TARGET=$1
 
+#--option eval-cache false
 function build_ami {
   nix build .\#ami
   copy_artifact_path && cleanup
 }
 
-function build_c137 {
-  sudo nixos-rebuild --flake .\#c137 switch #--option eval-cache false
+function rebuild_c137 {
+  sudo nixos-rebuild --flake .\#c137 switch
 }
 
-function build_cloudbox {
+function rebuild_cloudbox {
   nixos-rebuild --flake .\#cloudbox --target-host thurs@cloudbox --use-remote-sudo switch
 }
 
-function build_netpi {
-  nixos-rebuild --flake .\#netpi1 --target-host thurs@192.168.20.35 --use-remote-sudo switch #--option eval-cache false
-  nixos-rebuild --flake .\#netpi2 --target-host thurs@192.168.20.51 --use-remote-sudo switch #--option eval-cache false
+function rebuild_netpi {
+  nixos-rebuild --flake .\#netpi1 --target-host thurs@netpi1 --use-remote-sudo switch
+  nixos-rebuild --flake .\#netpi2 --target-host thurs@netpi2 --use-remote-sudo switch
 }
 
-function build_mbp {
+function rebuild_mbp {
   darwin-rebuild switch --flake .\#mbp --option eval-cache false
 }
 
@@ -42,8 +45,8 @@ function copy_artifact_path {
   if [ -L ./result ]; then
     ARTIFACT_PATH=$(readlink ./result)
     # vhd = ami, zst = sd-aarch64
-    ARTIFACT=$(find $ARTIFACT_PATH -type f \( -iname '*.vhd' -o -iname '*.zst' \))
-    printf "\nCopy $ARTIFACT to builds/\n\n"
+    ARTIFACT=$(find "$ARTIFACT_PATH" -type f \( -iname '*.vhd' -o -iname '*.zst' \))
+    printf "\nCopy ${ARTIFACT} to builds/\n\n"
     sudo cp $ARTIFACT builds/
   else
     exit 1
@@ -53,15 +56,15 @@ function copy_artifact_path {
 function cleanup {
   if [ -L ./result ]; then rm -v ./result; fi
   printf "Updating permissions in builds dir:\n"
-  sudo chown -R $(whoami):users builds/
+  sudo chown -R "$(whoami)":users builds/
   ls -lah builds/ | grep nixos
 }
 
 function check_hypr_version {
   printf "\n${WHITE}HYPR TAGS:${NC}\n"
   for repo in $(grep hyprwm flake.nix | awk -F "hyprwm/" '{ print $2 }' | sed -e 's/\/?ref//g' -e 's/";//g'); do
-    REPO_NAME=$(echo $repo | awk -F'=' '{ print tolower($1) }')
-    TAG_CURRENT=$(echo $repo | awk -F '=' '{ print $2 }')
+    REPO_NAME=$(echo "$repo" | awk -F'=' '{ print tolower($1) }')
+    TAG_CURRENT=$(echo "$repo" | awk -F '=' '{ print $2 }')
     TAG_LATEST=$(curl -s "https://api.github.com/repos/hyprwm/$REPO_NAME/releases/latest" --header "Authorization: Bearer $GH_TOKEN" --header "X-GitHub-Api-Version: 2022-11-28" | jq -r '.tag_name')
     if [[ "$TAG_LATEST" == "null" ]]; then
       printf "${BLUE}${REPO_NAME} ${ORANGE}failed to get tag"
@@ -76,7 +79,6 @@ function check_hypr_version {
 
 function update_nixos_thurs_input {
   # url = "github:thursdaddy/nixos-thurs/main";
-  echo "update"
   sed -i 's/      url = "github:thursdaddy\/nixos-thurs\/main";/     # url = "github:thursdaddy\/nixos-thurs\/main";/g' flake.nix
   sed -i 's/      # url = "git+file:\/\/\/home\/thurs\/projects\/nix\/nixos-thurs\/";/      url = "git+file:\/\/\/home\/thurs\/projects\/nix\/nixos-thurs\/";/g' flake.nix
   nix flake lock --update-input nixos-thurs
@@ -101,16 +103,16 @@ case $TARGET in
     ;;
   c137)
     if [ "$2" == "--check" ]; then check_hypr_version; fi
-    build_c137
+    rebuild_c137
     ;;
   cloudbox)
-    build_cloudbox
+    rebuild_cloudbox
     ;;
   mbp)
-    build_mbp
+    rebuild_mbp
     ;;
   netpi)
-    build_netpi
+    rebuild_netpi
     ;;
   sd-aarch64)
     build_sd-aarch64

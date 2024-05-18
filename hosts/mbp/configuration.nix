@@ -19,6 +19,7 @@ in
       user = {
         enable = true;
         home-manager = true;
+        ssh-config = enabled;
       };
 
       system = {

@@ -21,6 +21,7 @@ with lib.thurs;
       user = {
         enable = true;
         home-manager = true;
+        ssh-config = enabled;
       };
 
       tools = {

@@ -19,7 +19,10 @@ with lib.thurs;
     ];
 
     mine = {
-      user = enabled;
+      user = {
+        enable = true;
+        home-manager = true;
+      };
 
       tools = {
         sops = {
@@ -56,10 +59,6 @@ with lib.thurs;
         virtualisation = {
           docker = enabled;
         };
-      };
-
-      tools = {
-        home-manager = enabled;
       };
 
       cli-apps = {

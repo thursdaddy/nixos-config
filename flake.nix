@@ -7,9 +7,14 @@
 
     # private nixos configs
     nixos-thurs = {
-      url = "github:thursdaddy/nixos-thurs/main";
-      # url = "git+file:///home/thurs/projects/nix/nixos-thurs/";
+      # url = "github:thursdaddy/nixos-thurs/main";
+      url = "git+file:///home/thurs/projects/nix/nixos-thurs/";
       # url = "git+file:///Users/thurs/projects/nix/nixos-thurs/";
+    };
+
+    ssh-keys = {
+      url = "https://github.com/thursdaddy.keys";
+      flake = false;
     };
 
     home-manager = {
@@ -43,7 +48,7 @@
     hypridle.url = "github:hyprwm/Hypridle/?ref=v0.1.2";
   };
 
-  outputs = { self, nixpkgs, unstable, nix-darwin, nixos-generators, home-manager, sops-nix, nixos-thurs, nixvim, hyprland, hypridle, hyprlock, hyprpaper, ... } @ inputs:
+  outputs = { self, nixpkgs, unstable, nix-darwin, nixos-generators, home-manager, sops-nix, nixos-thurs, ssh-keys, nixvim, hyprland, hypridle, hyprlock, hyprpaper, ... } @ inputs:
     let
       lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];

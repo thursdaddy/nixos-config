@@ -435,17 +435,16 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
+        "dirtyRev": "341ca2e5e87ae2d6d3d56cda061fe58b1b69c16f-dirty",
+        "dirtyShortRev": "341ca2e-dirty",
         "lastModified": 1715892529,
-        "narHash": "sha256-VeJYzQ+myy6pE3jp67ZUNwFSWyyvyy0JPyJuSaZf9Mw=",
-        "ref": "refs/heads/main",
-        "rev": "341ca2e5e87ae2d6d3d56cda061fe58b1b69c16f",
-        "revCount": 9,
+        "narHash": "sha256-qYLQ8zK3zJCOQy4cudt3dVgW1pD881RZUfVi15Ua2m4=",
         "type": "git",
-        "url": "file:///Users/thurs/projects/nix/nixos-thurs/"
+        "url": "file:///home/thurs/projects/nix/nixos-thurs/"
       },
       "original": {
         "type": "git",
-        "url": "file:///Users/thurs/projects/nix/nixos-thurs/"
+        "url": "file:///home/thurs/projects/nix/nixos-thurs/"
       }
     },
     "nixpkgs": {
@@ -678,6 +677,7 @@
         "nixpkgs": "nixpkgs_7",
         "nixvim": "nixvim",
         "sops-nix": "sops-nix",
+        "ssh-keys": "ssh-keys",
         "unstable": "unstable"
       }
     },
@@ -700,6 +700,18 @@
         "owner": "Mic92",
         "repo": "sops-nix",
         "type": "github"
+      }
+    },
+    "ssh-keys": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-XJS36tf9Ft7PV1y2XJfIkiRIog7JO0nF/VBI8B7wTVo=",
+        "type": "file",
+        "url": "https://github.com/thursdaddy.keys"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/thursdaddy.keys"
       }
     },
     "systems": {

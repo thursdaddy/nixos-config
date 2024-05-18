@@ -27,6 +27,7 @@ in
       user = {
         enable = true;
         home-manager = true;
+        ssh-config = enabled;
       };
 
       desktop = {
@@ -74,7 +75,7 @@ in
         sops = {
           enable = true;
           requires.unlock = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + " /encrypted/main.yaml ");
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/main.yaml");
         };
         tmux = {
           enable = true;
@@ -101,7 +102,7 @@ in
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
           useRoutingFeatures = "client";
-          extraUpFlags = [ "--accept-dns=false" ];
+          extraUpFlags = [ "--accept-dns=true" ];
         };
       };
 
