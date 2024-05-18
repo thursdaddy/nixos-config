@@ -47,7 +47,7 @@ function copy_artifact_path {
     # vhd = ami, zst = sd-aarch64
     ARTIFACT=$(find "$ARTIFACT_PATH" -type f \( -iname '*.vhd' -o -iname '*.zst' \))
     printf "\nCopy ${ARTIFACT} to builds/\n\n"
-    sudo cp $ARTIFACT builds/
+    sudo cp "$ARTIFACT" builds/
   else
     exit 1
   fi
@@ -57,12 +57,12 @@ function cleanup {
   if [ -L ./result ]; then rm -v ./result; fi
   printf "Updating permissions in builds dir:\n"
   sudo chown -R "$(whoami)":users builds/
-  ls -lah builds/ | grep nixos
+  ls -lah builds/
 }
 
 function check_hypr_version {
   printf "\n${WHITE}HYPR TAGS:${NC}\n"
-  for repo in $(grep hyprwm flake.nix | awk -F "hyprwm/" '{ print $2 }' | sed -e 's/\/?ref//g' -e 's/";//g'); do
+  grep hyprwm flake.nix | awk -F "hyprwm/" '{ print $2 }' | sed -e 's/\/?ref//g' -e 's/";//g' | while read -r repo; do
     REPO_NAME=$(echo "$repo" | awk -F'=' '{ print tolower($1) }')
     TAG_CURRENT=$(echo "$repo" | awk -F '=' '{ print $2 }')
     TAG_LATEST=$(curl -s "https://api.github.com/repos/hyprwm/$REPO_NAME/releases/latest" --header "Authorization: Bearer $GH_TOKEN" --header "X-GitHub-Api-Version: 2022-11-28" | jq -r '.tag_name')
@@ -90,8 +90,8 @@ if [ "$2" == "--update-input" ]; then update_nixos_thurs_input; fi
 # flakes are married to git
 git add .
 
-if [ -f "/run/secrets/github_token" ]; then
- GH_TOKEN=$(cat /run/secrets/github_token)
+if [ -f "/run/secrets/github/TOKEN" ]; then
+ GH_TOKEN=$(cat /run/secrets/github/TOKEN)
  export NIX_CONFIG="extra-access-tokens = ${GH_TOKEN}"
 else
   GH_TOKEN=''
