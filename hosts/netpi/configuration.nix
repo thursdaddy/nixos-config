@@ -3,7 +3,6 @@ with lib;
 with lib.thurs;
 {
   imports = [
-    inputs.nixos-thurs.nixosModules.netpiContainers
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
@@ -25,6 +24,7 @@ with lib.thurs;
       };
 
       tools = {
+        bottom = enabled;
         sops = {
           enable = true;
           defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/netpi.yaml");

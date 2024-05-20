@@ -7,9 +7,7 @@
 
     # private nixos configs
     nixos-thurs = {
-      # url = "github:thursdaddy/nixos-thurs/main";
-      url = "git+file:///home/thurs/projects/nix/nixos-thurs/";
-      # url = "git+file:///Users/thurs/projects/nix/nixos-thurs/";
+      url = "github:thursdaddy/nixos-thurs/main";
     };
 
     ssh-keys = {
@@ -86,11 +84,23 @@
         };
       };
       nixosConfigurations = {
+        "monpi" = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; inherit lib; hostname = "monpi"; };
+          system = "aarch64-linux";
+          modules = [
+            ./hosts/netpi/configuration.nix
+            inputs.nixos-thurs.nixosModules.netpiContainers
+            inputs.nixos-thurs.nixosModules.monpiContainers
+          ];
+        };
+      };
+      nixosConfigurations = {
         "netpi1" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; hostname = "netpi1"; };
           system = "aarch64-linux";
           modules = [
             ./hosts/netpi/configuration.nix
+            inputs.nixos-thurs.nixosModules.netpiContainers
           ];
         };
       };
@@ -100,26 +110,11 @@
           system = "aarch64-linux";
           modules = [
             ./hosts/netpi/configuration.nix
+            inputs.nixos-thurs.nixosModules.netpiContainers
           ];
         };
       };
       packages.x86_64-linux = {
-        iso = nixos-generators.nixosGenerate {
-          specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
-          format = "iso";
-          modules = [
-            ./systems/x86_64-iso
-          ];
-        };
-        vm-nogui = nixos-generators.nixosGenerate {
-          specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
-          format = "vm-nogui";
-          modules = [
-            ./systems/x86_64-vm-nogui
-          ];
-        };
         ami = nixos-generators.nixosGenerate {
           specialArgs = { inherit inputs; inherit lib; };
           system = "x86_64-linux";
@@ -129,12 +124,28 @@
             ({ ... }: { amazonImage.sizeMB = 4 * 1024; })
           ];
         };
+        iso = nixos-generators.nixosGenerate {
+          specialArgs = { inherit inputs; inherit lib; };
+          system = "x86_64-linux";
+          format = "iso";
+          modules = [
+            ./systems/x86_64-iso
+          ];
+        };
         sd-aarch64 = nixos-generators.nixosGenerate {
           specialArgs = { inherit inputs; };
           system = "aarch64-linux";
           format = "sd-aarch64";
           modules = [
             ./systems/aarch64-sd
+          ];
+        };
+        vm-nogui = nixos-generators.nixosGenerate {
+          specialArgs = { inherit inputs; inherit lib; };
+          system = "x86_64-linux";
+          format = "vm-nogui";
+          modules = [
+            ./systems/x86_64-vm-nogui
           ];
         };
       };
