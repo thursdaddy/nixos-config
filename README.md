@@ -16,7 +16,7 @@ Est. Feb 2024
 | [nixos-generators](https://github.com/nix-community/nixos-generators) | Create NixOS configurations for various targets |
 | [nixvim](https://github.com/nix-community/nixvim/tree/nixos-23.11) | Fully configurable Neovim, imported via NixOS and Darwin modules |
 | [sops](https://github.com/Mic92/sops-nix) | Nix sops implementation|
-| [nixos-thurs](github:thursdaddy/nixos-thurs/main) | Private repo with config and sops secrets|
+| [nixos-thurs](github:thursdaddy/nixos-thurs/main) | Private repo with sops secrets and docker container configurations via nixosModules |
 | [hyprland](https://github.com/hyprwm/Hyprland) | Wayland tiling WM configured via home-manager|
 | [hyprlock](https://github.com/hyprwm/Hyprlock) | Lock screen for Hyprland configured via home-manager|
 | [hyprpaper](https://github.com/hyprwm/Hyprpaper) | Wallpaper manager for Hyprland configured via home-manager|
@@ -26,22 +26,23 @@ Est. Feb 2024
 ## Structure
 
 ```
-├── assets          # wallpapers, misc
-├── hosts
-    ├── mbp         # 2021 MBP M1
-    ├── c137        # AMD 5950x, 64GB DDR4, AMD 6600XT
-    ├── cloudbox    # AWS instance
+├── assets/          # wallpapers, misc
+├── hosts/
+    ├── mbp/         # 2021 MBP M1
+    ├── c137/        # AMD 5950x, 64GB DDR4, AMD 6600XT
+    ├── cloudbox/    # AWS instance
+    ├── netpi/       # Pi4's running pihole + tailscale
 ├── flake.nix
 ├── flake.lock
-├── lib             # extending lib with my own functions
-├── modules
-    ├── darwin      # darwin configurations
-    ├── home        # home-manager configurations
-    ├── nixos       # nixos configurations
-    ├── nixvim      # nixvim configurations
-├── overlays        # overlay configurations
-├── secrets         # encrypted secrets repo
-└── systems         # nixos-generator targets
+├── lib/             # extending lib with my own functions
+├── modules/
+    ├── darwin/      # darwin configurations
+    ├── home/        # home-manager configurations
+    ├── nixos/       # nixos configurations
+    ├── nixvim/      # nixvim configurations
+├── overlays/        # overlay configurations
+└── systems/         # nixos-generator targets
+└── build            # utility build script (im lazy)
 ```
 
 ## Notes
