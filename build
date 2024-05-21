@@ -4,10 +4,10 @@
 # just a simple wrapper script for nix builds
 
 # ansi color codes
-BLUE='\033[1;34m'
-GREEN='\033[1;32m'
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
 ORANGE='\033[0;33m'
-WHITE='\033[1;37m'
+WHITE='\033[0;37m'
 GREY='\033[4;39m'
 NC='\033[0m' # No Color
 
@@ -74,25 +74,37 @@ function check_hypr_version {
   printf "\n"
 }
 
-function update_local_input {
+update_local_input () {
   # set path based on machine
   # my projects dir is syncthing'd across multiple machines
+  printf "${BLUE}Setting input to local: ${WHITE}${INPUT}${NC}"
   if [[ $HOSTNAME =~ "c137" ]]; then
     local NIXOS_THURS_PATH="\/home\/thurs"
   elif [[ $HOSTNAME =~ "mbp" ]]; then
     local NIXOS_THURS_PATH="\/Users\/thurs"
   fi
   # if github url is set, replace it
-  sed -i 's/      url = "github:thursdaddy\/nixos-thurs\/main";/      url = "git+file:\/\/'"$NIXOS_THURS_PATH"'\/projects\/nix\/nixos-thurs\/";/g' flake.nix
+  sed -i 's/[[:space:]]\+url = "github:thursdaddy\/'"${INPUT}"'\/main";/      url = "git+file:\/\/'"${NIXOS_THURS_PATH}"'\/projects\/nix\/'"${INPUT}"'\/";/g' flake.nix
   # finally update
-  nix flake lock --update-input nixos-thurs
+  nix flake lock --update-input "${INPUT}"
 }
 
-function update_flake_input {
-  if [[ $input == "nixos-thurs" ]]; then
-    sed -i 's/      url = "git+file:.*";/      url = "github:thursdaddy\/nixos-thurs\/main";/g' flake.nix
+update_flake_input () {
+  printf "${BLUE}Updating input: ${WHITE}${INPUT}"
+  if [[ $INPUT == "nixos-thurs" ]]; then
+    sed -i 's/[[:space:]]\+url = "git+file:.*";/      url = "github:thursdaddy\/nixos-thurs\/main";/g' flake.nix
   fi
-  nix flake lock --update-input "$input"
+  nix flake lock --update-input "${INPUT}"
+}
+
+print_help () {
+  printf "${ORANGE}What did you forget..?${NC}\n"
+  printf "Usage: ${NC}./build ${WHITE}[target] ${GREEN}[options]${NC}\n"
+  printf "\nArguments:\n\t${WHITE}TARGET\t${NC}Target for build/rebuild, must be defined in rebuild and build function.\n"
+  printf "\nOptions:\n"
+  printf "\t${GREEN}-c --check-hypr\n\t\t${NC}Check Hypr* repos latest releases.${NC}\n\n"
+  printf "\t${GREEN}-u --update-input [name|local] {name-opt}\n\t\t${NC}Update flake input by name, local as first arg will update input to local path, defaults to 'nixos-thurs'.\n"
+  printf "\t\tIf input is already local, it will be updated to public github url.\n"
 }
 
 # set GH_TOKEN to pull private flake (and when checking hypr tags)
@@ -103,17 +115,18 @@ else
   GH_TOKEN=''
 fi
 
-# update flake to local paths: ./build c137 --update-input local
-# or update flakes individually: ./build c137 --update-input hyprland
-# or replace local path with remote github url: /build c137 --update-input nixos-thurs
-if [ "$2" == "--update-input" ]; then
+# update flake to local path:             ./build null --update-input local <input>
+# update flakes individually:             ./build c137 --update-input hyprland
+# replace local path with remote url:     ./build c137 --update-input nixos-thurs
+if [ "$2" == "--update-input" ] || [ "$2" == "-u" ]; then
   case $3 in
     local)
-      update_local_input
+      INPUT="${4:-nixos-thurs}"
+      update_local_input "${INPUT}"
       ;;
     *)
-      input="$3"
-      update_flake_input "$input"
+      INPUT="$3"
+      update_flake_input "${INPUT}"
       ;;
   esac
 fi
@@ -124,6 +137,13 @@ git add .
 # ./build <TARGET> --ARG
 TARGET=$1
 case $TARGET in
+  --help)
+    print_help
+    ;;
+  -*u*) # lol, jank skip -u and --update-input
+    ;;
+  -*c*) # lol, jank skip -c and --check-hypr
+    ;;
   iso)
     build "$TARGET"
     ;;
@@ -135,11 +155,10 @@ case $TARGET in
     ;;
   null)
     # placeholder when just wanting to --check-hypr or --update-input
-    if [ "$2" == "--check-hypr" ]; then check_hypr_version; fi
+    if [ "$2" == "--check-hypr" ] || [ "$2" == '-c' ]; then check_hypr_version; fi
     ;;
   *)
     # adhoc argument to check github for latest hypr* tags
-    if [ "$2" == "--check-hypr" ] && [ "$1" == "c137" ]; then check_hypr_version; fi
     rebuild "$TARGET"
     ;;
 esac
