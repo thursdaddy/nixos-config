@@ -430,16 +430,32 @@
         "type": "github"
       }
     },
+    "nixos-hardware": {
+      "locked": {
+        "lastModified": 1716173274,
+        "narHash": "sha256-FC21Bn4m6ctajMjiUof30awPBH/7WjD0M5yqrWepZbY=",
+        "owner": "NixOS",
+        "repo": "nixos-hardware",
+        "rev": "d9e0b26202fd500cf3e79f73653cce7f7d541191",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "master",
+        "repo": "nixos-hardware",
+        "type": "github"
+      }
+    },
     "nixos-thurs": {
       "inputs": {
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1716243682,
-        "narHash": "sha256-A/N7FiufHSVnXwUZI90uAKvmqbWTRzSZZKkV5x7pNK8=",
+        "lastModified": 1716351138,
+        "narHash": "sha256-jT61spfMH4rHBhziWSc1xdll/Pd5D8cVeTONWjDnxWY=",
         "owner": "thursdaddy",
         "repo": "nixos-thurs",
-        "rev": "b09cace29b55d5bc759c826e30997b53cf120c68",
+        "rev": "7ad91d2f6a4dfea2ab89825dd96c166bc7a09e24",
         "type": "github"
       },
       "original": {
@@ -675,6 +691,7 @@
         "hyprpaper": "hyprpaper",
         "nix-darwin": "nix-darwin",
         "nixos-generators": "nixos-generators",
+        "nixos-hardware": "nixos-hardware",
         "nixos-thurs": "nixos-thurs",
         "nixpkgs": "nixpkgs_7",
         "nixvim": "nixvim",

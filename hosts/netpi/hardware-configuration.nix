@@ -1,6 +1,7 @@
 { pkgs, lib, ... }: {
 
   hardware.enableRedistributableFirmware = true;
+  hardware.raspberry-pi."4".poe-plus-hat.enable = true;
 
   boot = {
     kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;

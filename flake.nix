@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # private nixos configs
     nixos-thurs = {
@@ -46,7 +47,7 @@
     hypridle.url = "github:hyprwm/Hypridle/?ref=v0.1.2";
   };
 
-  outputs = { self, nixpkgs, unstable, nix-darwin, nixos-generators, home-manager, sops-nix, nixos-thurs, ssh-keys, nixvim, hyprland, hypridle, hyprlock, hyprpaper, ... } @ inputs:
+  outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, home-manager, sops-nix, nixos-thurs, ssh-keys, nixvim, hyprland, hypridle, hyprlock, hyprpaper, ... } @ inputs:
     let
       lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];

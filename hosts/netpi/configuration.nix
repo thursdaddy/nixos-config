@@ -3,6 +3,7 @@ with lib;
 with lib.thurs;
 {
   imports = [
+    inputs.nixos-hardware.nixosModules.raspberry-pi-4
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
