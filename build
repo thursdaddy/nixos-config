@@ -13,17 +13,20 @@ NC='\033[0m' # No Color
 
 #--option eval-cache false
 build () {
-  printf "${ORANGE}Building: ${WHITE}${TARGET}${NC}\n"
+  printf "\n${ORANGE}Building: ${WHITE}${TARGET}${NC}\n"
   nix build .\#"${TARGET}" && copy_artifact_path && cleanup
 }
 
 rebuild () {
-  printf "${BLUE}Rebuilding: ${WHITE}${TARGET}${NC}\n"
+  printf "\n${BLUE}Rebuilding: ${WHITE}${TARGET}${NC}\n"
   if [[ "$TARGET" == "c137" ]]; then
     sudo nixos-rebuild --flake .\#c137 switch
   elif [[ "$TARGET" == "piholes" ]]; then
+    printf "${BLUE}Rebuilding: ${WHITE}netpi1${NC}\n"
     nixos-rebuild --flake .\#netpi1 --target-host thurs@netpi1 --use-remote-sudo switch
+    printf "${BLUE}Rebuilding: ${WHITE}netpi2${NC}\n"
     nixos-rebuild --flake .\#netpi2 --target-host thurs@netpi2 --use-remote-sudo switch
+    printf "${BLUE}Rebuilding: ${WHITE}monpi${NC}\n"
     nixos-rebuild --flake .\#monpi --target-host thurs@monpi --use-remote-sudo switch
   elif [[ "$TARGET" == "mbp" ]]; then
     darwin-rebuild switch --flake .\#mbp
