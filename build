@@ -20,18 +20,18 @@ build () {
 rebuild () {
   printf "\n${BLUE}Rebuilding: ${WHITE}${TARGET}${NC}\n"
   if [[ "$TARGET" == "c137" ]]; then
-    sudo nixos-rebuild --flake .\#c137 switch --option eval-cache false
+    sudo nixos-rebuild --flake .\#c137 switch
   elif [[ "$TARGET" == "piholes" ]]; then
     printf "${BLUE}Rebuilding: ${WHITE}netpi1${NC}\n"
-    nixos-rebuild --flake .\#netpi1 --target-host thurs@netpi1 --use-remote-sudo switch
+    nixos-rebuild --flake .\#netpi1 --target-host netpi1 --use-remote-sudo switch
     printf "${BLUE}Rebuilding: ${WHITE}netpi2${NC}\n"
-    nixos-rebuild --flake .\#netpi2 --target-host thurs@netpi2 --use-remote-sudo switch
+    nixos-rebuild --flake .\#netpi2 --target-host netpi2 --use-remote-sudo switch
     printf "${BLUE}Rebuilding: ${WHITE}monpi${NC}\n"
-    nixos-rebuild --flake .\#monpi --target-host thurs@monpi --use-remote-sudo switch
+    nixos-rebuild --flake .\#monpi --target-host monpi --use-remote-sudo switch
   elif [[ "$TARGET" == "mbp" ]]; then
-    darwin-rebuild switch --flake .\#mbp --option eval-cache false
+    darwin-rebuild --flake .\#mbp switch
   else
-    nixos-rebuild --flake .\#"${TARGET}" --target-host thurs@"${TARGET}" --use-remote-sudo switch
+    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-remote-sudo switch
   fi
 }
 

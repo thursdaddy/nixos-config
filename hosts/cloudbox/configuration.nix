@@ -20,7 +20,7 @@ with lib.thurs;
     mine = {
       user = {
         enable = true;
-        home-manager = true;
+        home-manager = enabled;
       };
 
       cli-tools = {
