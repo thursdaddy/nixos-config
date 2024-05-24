@@ -18,6 +18,7 @@ in
   config = mkIf cfg.enable {
     services.tailscale = {
       enable = true;
+      package = pkgs.unstable.tailscale;
       openFirewall = true;
       authKeyFile = config.mine.services.tailscale.authKeyFile;
       useRoutingFeatures = config.mine.services.tailscale.useRoutingFeatures;
