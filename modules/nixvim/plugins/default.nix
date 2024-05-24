@@ -198,6 +198,7 @@
       { mode = "n"; key = "<leader>e"; action = "<CMD>NvimTreeToggle<CR>"; }
       { mode = "n"; key = "<leader>E"; action = "<CMD>NvimTreeFocus<CR>"; }
       # fugitive
+      { mode = "n"; key = "<leader>gaa"; action = "<CMD>Git add .<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>gs"; action = "<CMD>below Git<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>gc"; action = "<CMD>below Git commit<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>gb"; action = "<CMD>GBranches<CR>"; options.noremap = true; }
