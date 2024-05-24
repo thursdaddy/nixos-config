@@ -7,34 +7,45 @@ let
 
 in
 {
-
   imports = [
+    ../../overlays/unstable
     ../../modules/darwin/import.nix
     ../../modules/home/import.nix
   ];
 
   config = {
-
     mine = {
       user = {
         enable = true;
-        home-manager = true;
+        home-manager = enabled;
         ssh-config = enabled;
       };
 
-      system = {
-        security.touchsudo = enabled;
-        utils = enabled;
+      apps = {
+        chromium = enabled;
+        discord = enabled;
+        firefox = enabled;
+        keybase = enabled;
+        kitty = enabled;
+        obsidian = enabled;
+        protonvpn = enabled;
+        syncthing = enabled;
       };
 
-      tools = {
+      cli-tools = {
         direnv = enabled;
-        git = enabled;
+        git = {
+          enable = true;
+          ghToken = true;
+        };
+        homebrew = enabled;
+        neofetch = enabled;
+        nixvim = enabled;
         sops = {
           enable = true;
           defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/main.yaml");
           ageKeyFile = {
-            path = "${user.homeDir}/.confg/sops/age/keys.txt";
+            path = "${user.homeDir}/.config/sops/age/keys.txt";
           };
         };
         tmux = {
@@ -49,21 +60,9 @@ in
         };
       };
 
-      apps = {
-        chromium = enabled;
-        discord = enabled;
-        firefox = enabled;
-        keybase = enabled;
-        kitty = enabled;
-        obsidian = enabled;
-        protonvpn = enabled;
-        syncthing = enabled;
-      };
-
-      cli-apps = {
-        homebrew = enabled;
-        neofetch = enabled;
-        nixvim = enabled;
+      system = {
+        security.touchsudo = enabled;
+        utils = enabled;
       };
     };
   };

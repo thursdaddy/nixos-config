@@ -20,7 +20,7 @@ build () {
 rebuild () {
   printf "\n${BLUE}Rebuilding: ${WHITE}${TARGET}${NC}\n"
   if [[ "$TARGET" == "c137" ]]; then
-    sudo nixos-rebuild --flake .\#c137 switch
+    sudo nixos-rebuild --flake .\#c137 switch --option eval-cache false
   elif [[ "$TARGET" == "piholes" ]]; then
     printf "${BLUE}Rebuilding: ${WHITE}netpi1${NC}\n"
     nixos-rebuild --flake .\#netpi1 --target-host thurs@netpi1 --use-remote-sudo switch
@@ -29,7 +29,7 @@ rebuild () {
     printf "${BLUE}Rebuilding: ${WHITE}monpi${NC}\n"
     nixos-rebuild --flake .\#monpi --target-host thurs@monpi --use-remote-sudo switch
   elif [[ "$TARGET" == "mbp" ]]; then
-    darwin-rebuild switch --flake .\#mbp
+    darwin-rebuild switch --flake .\#mbp --option eval-cache false
   else
     nixos-rebuild --flake .\#"${TARGET}" --target-host thurs@"${TARGET}" --use-remote-sudo switch
   fi
@@ -118,12 +118,13 @@ fi
 # set GH_TOKEN to pull private flake (and when checking hypr tags)
 if [ -f "/run/secrets/github/TOKEN" ] || [ -f "/Users/thurs/.gh_token" ]; then
   if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
-    GH_TOKEN=$(cat ~/.gh_token)
+    GH_TOKEN=$(cat ~/.config/sops-nix/secrets/github/TOKEN)
   else
     GH_TOKEN=$(cat /run/secrets/github/TOKEN)
   fi
   export NIX_CONFIG="extra-access-tokens = github.com=${GH_TOKEN}"
 else
+  printf "${ORANGE}No GH token set.${NC}"
   GH_TOKEN=''
 fi
 

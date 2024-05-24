@@ -1,7 +1,7 @@
 {
   description = "It's all coming together..";
-  
-    inputs = {
+
+  inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -62,7 +62,6 @@
           system = "aarch64-darwin";
           modules = [
             ./hosts/mbp/configuration.nix
-            (import ./overlays/unstable)
           ];
         };
       };
@@ -82,6 +81,7 @@
           system = "x86_64-linux";
           modules = [
             ./hosts/cloudbox/configuration.nix
+            inputs.nixos-thurs.nixosModules.cloudboxContainers
           ];
         };
       };
@@ -116,6 +116,7 @@
           ];
         };
       };
+
       packages.x86_64-linux = {
         ami = nixos-generators.nixosGenerate {
           specialArgs = { inherit inputs; inherit lib; };
@@ -151,6 +152,7 @@
           ];
         };
       };
+
       devShells = forEachSupportedSystem ({ pkgs }: {
         tf = pkgs.mkShell {
           buildInputs = [

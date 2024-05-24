@@ -24,7 +24,7 @@ with lib.thurs;
         ssh-config = enabled;
       };
 
-      tools = {
+      cli-tools = {
         bottom = enabled;
         sops = {
           enable = true;
@@ -34,7 +34,6 @@ with lib.thurs;
       };
 
       services = {
-        openssh = enabled;
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
@@ -55,6 +54,9 @@ with lib.thurs;
           flakes = enabled;
         };
         security.sudonopass = enabled;
+        services = {
+          openssh = enabled;
+        };
         shell.zsh = enabled;
         utils = enabled;
         virtualisation = {

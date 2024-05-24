@@ -2,12 +2,12 @@
 with lib;
 let
 
-  cfg = config.mine.services.bluetooth;
+  cfg = config.mine.system.services.bluetooth;
   user = config.mine.user;
 
 in
 {
-  options.mine.services.bluetooth = {
+  options.mine.system.services.bluetooth = {
     applet = mkEnableOption "Enable bluetooth applet";
   };
 

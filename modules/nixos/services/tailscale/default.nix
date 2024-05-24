@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.services.tailscale;
-  sops = config.mine.tools.sops;
+  sops = config.mine.cli-tools.sops;
 
 in
 {

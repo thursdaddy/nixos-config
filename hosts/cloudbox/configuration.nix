@@ -4,7 +4,6 @@ with lib.thurs;
 {
   imports = [
     (inputs.nixpkgs + "/nixos/modules/virtualisation/amazon-image.nix")
-    inputs.nixos-thurs.nixosModules.cloudboxContainers
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
@@ -24,15 +23,17 @@ with lib.thurs;
         home-manager = true;
       };
 
-      tools = {
+      cli-tools = {
+        neofetch = enabled;
+        nixvim = enabled;
         sops = {
           enable = true;
           defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/cloudbox.yaml");
         };
+        tmux = enabled;
       };
 
       services = {
-        openssh = enabled;
         r53-updater = enabled;
         tailscale = {
           enable = true;
@@ -53,17 +54,15 @@ with lib.thurs;
           unfree = enabled;
           flakes = enabled;
         };
+        services = {
+          openssh = enabled;
+        };
         security.sudonopass = enabled;
         shell.zsh = enabled;
         utils = enabled;
         virtualisation = {
           docker = enabled;
         };
-      };
-
-      cli-apps = {
-        neofetch = enabled;
-        nixvim = enabled;
       };
     };
   };

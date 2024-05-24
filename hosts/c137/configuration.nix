@@ -17,16 +17,55 @@ in
   config = {
     system.stateVersion = "23.11";
 
-    # find a better place for this
-    sops.secrets."github/TOKEN" = mkIf config.mine.tools.sops.enable {
-      owner = "${user.name}";
-    };
-
     mine = {
       user = {
         enable = true;
-        home-manager = true;
+        home-manager = enabled;
         ssh-config = enabled;
+      };
+
+      apps = {
+        brave = enabled;
+        chromium = enabled;
+        discord = enabled;
+        gthumb = enabled;
+        firefox = enabled;
+        keybase = enabled;
+        kitty = enabled;
+        obsidian = enabled;
+        protonvpn = enabled;
+        syncthing = {
+          enable = true;
+          isNix = true;
+        };
+        vlc = enabled;
+      };
+
+      cli-tools = {
+        bottom = enabled;
+        direnv = enabled;
+        git = {
+          enable = true;
+          ghToken = true;
+        };
+        neofetch = enabled;
+        nixvim = enabled;
+        protonvpn = enabled;
+        sops = {
+          enable = true;
+          requires.unlock = true;
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/main.yaml");
+        };
+        tmux = {
+          enable = true;
+          sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/projects/nix"
+              "${user.homeDir}/projects/cloud"
+            ];
+          };
+        };
       };
 
       desktop = {
@@ -49,54 +88,8 @@ in
         waybar = enabled;
       };
 
-      apps = {
-        brave = enabled;
-        chromium = enabled;
-        discord = enabled;
-        gthumb = enabled;
-        firefox = enabled;
-        keybase = enabled;
-        kitty = enabled;
-        obsidian = enabled;
-        protonvpn = enabled;
-        syncthing = {
-          enable = true;
-          isNix = true;
-        };
-        vlc = enabled;
-      };
-
-      tools = {
-        bottom = enabled;
-        direnv = enabled;
-        git = enabled;
-        keymapp = enabled;
-        sops = {
-          enable = true;
-          requires.unlock = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/main.yaml");
-        };
-        tmux = {
-          enable = true;
-          sessionizer = {
-            enable = true;
-            searchPaths = [
-              "${user.homeDir}/projects/nix"
-              "${user.homeDir}/projects/cloud"
-            ];
-          };
-        };
-      };
-
       services = {
-        bluetooth = {
-          enable = true;
-          applet = true;
-        };
-        fix-suspend = enabled;
-        input-remapper = enabled;
-        keyring = enabled;
-        openssh = enabled;
+        ollama = enabled;
         prometheus = {
           enable = true;
           exporters = {
@@ -131,6 +124,16 @@ in
           flakes = enabled;
         };
         security.sudonopass = enabled;
+        services = {
+          bluetooth = {
+            enable = true;
+            applet = true;
+          };
+          fix-suspend = enabled;
+          input-remapper = enabled;
+          keyring = enabled;
+          openssh = enabled;
+        };
         shell.zsh = enabled;
         utils = enabled;
         video.amd = enabled;
@@ -143,11 +146,8 @@ in
         };
       };
 
-      cli-apps = {
-        neofetch = enabled;
-        nixvim = enabled;
-        ollama = enabled;
-        protonvpn = enabled;
+      tools = {
+        keymapp = enabled;
       };
     };
   };

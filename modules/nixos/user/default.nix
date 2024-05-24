@@ -14,7 +14,7 @@ in
     alias = mkOpt types.str "thursdaddy" "Full alias";
     email = mkOpt types.str "thursdaddy@pm.me" "My Email";
     homeDir = mkOpt types.str "${home-directory}" "Home Directory Path";
-    home-manager = mkOpt types.bool false "Enable home-manager";
+    home-manager.enable = mkOpt types.bool false "Enable home-manager";
   };
 
   config = mkIf cfg.enable {

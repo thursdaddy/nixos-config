@@ -1,7 +1,9 @@
-{ config, user, pkgs, lib, inputs, ... }:
+{ user, pkgs, lib, inputs, ... }:
+with lib;
 {
-
-  imports = [ inputs.sops-nix.homeManagerModules.sops ];
+  imports = [
+    inputs.sops-nix.homeManagerModules.sops
+  ];
 
   config = {
     programs.home-manager.enable = true;
@@ -23,6 +25,5 @@
       toDir="$HOME/Applications/Home Manager Trampolines"
       sync_trampolines "$fromDir" "$toDir"
     '';
-
   };
 }
