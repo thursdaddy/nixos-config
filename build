@@ -113,7 +113,6 @@ print_help () {
 # gnu-sed fix on MBP
 if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
   PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
-  echo $PATH
 fi
 
 # set GH_TOKEN to pull private flake (and when checking hypr tags)
