@@ -78,16 +78,16 @@ function check_hypr_version {
 }
 
 update_local_input () {
-  # set path based on machine
+  # set path based on target
   # my projects dir is syncthing'd across multiple machines
   printf "${BLUE}Setting input to local: ${WHITE}${INPUT}${NC}"
-  if [[ $HOSTNAME =~ "c137" ]]; then
-    local NIXOS_THURS_PATH="\/home\/thurs"
-  elif [[ $HOSTNAME =~ "mbp" ]]; then
+  if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
     local NIXOS_THURS_PATH="\/Users\/thurs"
+  else
+    local NIXOS_THURS_PATH="\/home\/thurs"
   fi
   # if github url is set, replace it
-  sed -i 's/[[:space:]]\+url = "github:thursdaddy\/'"${INPUT}"'\/main";/      url = "git+file:\/\/'"${NIXOS_THURS_PATH}"'\/projects\/nix\/'"${INPUT}"'\/";/g' flake.nix
+  sed -i'' -e 's/      url = ".*'"${INPUT}"'.*/      url = "git+file:\/\/'"${NIXOS_THURS_PATH}"'\/projects\/nix\/'"${INPUT}"'\/";/g' flake.nix
   # finally update
   nix flake lock --update-input "${INPUT}"
 }
@@ -95,7 +95,7 @@ update_local_input () {
 update_flake_input () {
   printf "${BLUE}Updating input: ${WHITE}${INPUT}"
   if [[ $INPUT == "nixos-thurs" ]]; then
-    sed -i 's/[[:space:]]\+url = "git+file:.*";/      url = "github:thursdaddy\/nixos-thurs\/main";/g' flake.nix
+    sed -i'' -e 's/      url = ".*'"${INPUT}"'.*/      url = "github:thursdaddy\/'"${INPUT}"'\/main";/g' flake.nix
   fi
   nix flake lock --update-input "${INPUT}"
 }
@@ -111,8 +111,12 @@ print_help () {
 }
 
 # set GH_TOKEN to pull private flake (and when checking hypr tags)
-if [ -f "/run/secrets/github/TOKEN" ]; then
-  GH_TOKEN=$(cat /run/secrets/github/TOKEN)
+if [ -f "/run/secrets/github/TOKEN" ] || [ -f "/Users/thurs/.gh_token" ]; then
+  if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
+    GH_TOKEN=$(cat ~/.gh_token)
+  else
+    GH_TOKEN=$(cat /run/secrets/github/TOKEN)
+  fi
   export NIX_CONFIG="extra-access-tokens = github.com=${GH_TOKEN}"
 else
   GH_TOKEN=''
