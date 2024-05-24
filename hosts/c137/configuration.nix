@@ -8,7 +8,6 @@ let
 in
 {
   imports = [
-    inputs.nixos-thurs.nixosModules.c137Containers
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
@@ -98,6 +97,14 @@ in
         input-remapper = enabled;
         keyring = enabled;
         openssh = enabled;
+        prometheus = {
+          enable = true;
+          exporters = {
+            node = {
+              enable = true;
+            };
+          };
+        };
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;

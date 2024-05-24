@@ -1,7 +1,7 @@
 {
   description = "It's all coming together..";
-
-  inputs = {
+  
+    inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -72,6 +72,7 @@
           system = "x86_64-linux";
           modules = [
             ./hosts/c137/configuration.nix
+            inputs.nixos-thurs.nixosModules.c137Containers
           ];
         };
       };
