@@ -41,7 +41,7 @@ function copy_artifact_path {
   if [ -L ./result ]; then
     ARTIFACT_PATH=$(readlink ./result)
     # vhd = ami, zst = sd-aarch64
-    ARTIFACT=$(find "$ARTIFACT_PATH" -type f \( -iname '*.vhd' -o -iname '*.zst' -iname '*iso' \))
+    ARTIFACT=$(find "$ARTIFACT_PATH" -type f \( -iname '*.vhd' -o -iname '*.zst' -o -iname '*.iso' \))
     printf "\nCopy ${ARTIFACT} to builds/\n\n"
     sudo cp "$ARTIFACT" builds/
   else
@@ -53,9 +53,9 @@ function copy_artifact_path {
 function cleanup {
   printf "${GREEN}Cleaning up..${NC}\n"
   if [ -L ./result ]; then rm -v ./result; fi
-  printf "${WHITE}Updating permissions in builds dir:${NC}\n"
+  printf "\n${GREEN}Updating permissions in builds dir:${NC}\n"
   sudo chown -R "$(whoami)":users builds/
-  printf "${GREEN}Builds:${NC}\n"
+  printf "${WHITE}Builds:${NC}\n"
   ls -lah builds/
 }
 

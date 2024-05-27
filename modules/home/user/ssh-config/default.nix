@@ -20,6 +20,12 @@ in
           "*" = {
             identityFile = "~/.ssh/id_ed25519";
           };
+          "192.168.20.222" = {
+            identityFile = "~/.ssh/id_ed25519";
+            extraOptions = {
+              "StrictHostKeyChecking" = "no";
+            };
+          };
           "cloudbox" = {
             hostname = "100.92.141.104";
             identitiesOnly = true;
