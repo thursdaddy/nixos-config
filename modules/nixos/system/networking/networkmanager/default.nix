@@ -3,11 +3,11 @@ with lib;
 with lib.thurs;
 let
 
-  cfg = config.mine.system.networking;
+  cfg = config.mine.system.networking.networkmanager;
 
 in
 {
-  options.mine.system.networking = {
+  options.mine.system.networking.networkmanager = {
     enable = mkEnableOption "Enable NetworkManager";
     hostname = mkOpt types.str "" "Hostname";
     applet = mkEnableOption "Enable desktop applet";

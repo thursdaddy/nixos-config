@@ -12,8 +12,6 @@ in
 
   config = mkIf cfg.enable {
     boot.loader.systemd-boot.enable = true;
-    boot.supportedFilesystems = [ "zfs" ];
     boot.loader.systemd-boot.consoleMode = "auto";
-    boot.loader.efi.canTouchEfiVariables = true;
   };
 }

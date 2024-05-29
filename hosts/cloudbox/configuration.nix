@@ -44,7 +44,7 @@ with lib.thurs;
 
       system = {
         networking = {
-          enable = true;
+          networkmanager = enabled;
           firewall = enabled;
           hostname = "cloudbox";
           forwarding.ipv4 = true;

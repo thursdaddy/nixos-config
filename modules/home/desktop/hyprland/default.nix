@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.desktop.hyprland;
-  network = config.mine.system.networking;
+  network = config.mine.system.networking.networkmanager;
   user = config.mine.user;
   chrome-flags = "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder --enable-features=UseOzonePlatform --ozone-platform=wayland";
 

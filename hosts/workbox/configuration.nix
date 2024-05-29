@@ -3,38 +3,15 @@ with lib;
 with lib.thurs;
 {
   imports = [
-    inputs.lanzaboote.nixosModules.lanzaboote
     ./hardware-configuration.nix
+    ./stage1-boot.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
     ../../modules/home/import.nix
-    ./boot.nix
-    ./filesystem.nix
-    ./initrd-tailscale.nix
   ];
 
   config = {
     system.stateVersion = "23.11";
-
-    networking.hostId = "5cdce191";
-
-    environment.systemPackages = [
-      pkgs.cryptsetup
-      pkgs.sbctl
-      pkgs.tpm2-tss
-    ];
-
-    systemd.network.enable = true;
-    systemd.network.networks."10-lan" = {
-      matchConfig.Name = "enp1s0";
-      networkConfig.DHCP = "yes";
-    };
-
-    networking = {
-      useDHCP = false;
-      useNetworkd = true;
-      hostName = "workbox";
-    };
 
     mine = {
       user = {
@@ -66,8 +43,10 @@ with lib.thurs;
           systemd = enabled;
         };
         networking = {
-          # enable = true;
-          hostname = "workbox";
+          networkd = {
+            enable = true;
+            hostname = "workbox";
+          };
           firewall = enabled;
           forwarding.ipv4 = true;
           resolved = enabled;

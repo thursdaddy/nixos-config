@@ -114,10 +114,12 @@ in
         };
         fonts = enabled;
         networking = {
-          enable = true;
+          networkmanager = {
+            enable = true;
+            applet = true;
+            hostname = "c137";
+          };
           firewall = enabled;
-          hostname = "c137";
-          applet = true;
         };
         nix = {
           unfree = enabled;
