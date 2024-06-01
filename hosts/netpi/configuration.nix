@@ -44,9 +44,11 @@ with lib.thurs;
 
       system = {
         networking = {
-          enable = true;
+          networkmanager = {
+            enable = true;
+            hostname = "${hostname}";
+          };
           firewall = enabled;
-          hostname = "${hostname}";
           forwarding.ipv4 = true;
         };
         nix = {

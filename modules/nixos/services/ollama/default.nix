@@ -11,6 +11,8 @@ in
   };
 
   config = mkIf cfg.enable {
+    networking.firewall.allowedTCPPorts = [ 11434 ];
+
     services.ollama = {
       enable = true;
       package = pkgs.unstable.ollama;
@@ -20,7 +22,5 @@ in
         HSA_OVERRIDE_GFX_VERSION = "10.3.0";
       };
     };
-
-    networking.firewall.allowedTCPPorts = [ 11434 ];
   };
 }

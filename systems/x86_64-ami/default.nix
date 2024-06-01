@@ -10,6 +10,8 @@ with lib.thurs;
   config = {
     system.stateVersion = "23.11";
 
+    ec2.hvm = true;
+
     mine = {
       services.tailscale = {
         enable = true;
@@ -26,7 +28,6 @@ with lib.thurs;
       };
 
       system = {
-        ami = true;
         networking = {
           resolved = enabled;
           forwarding.ipv4 = true;

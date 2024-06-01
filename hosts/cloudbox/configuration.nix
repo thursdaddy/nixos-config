@@ -44,24 +44,29 @@ with lib.thurs;
 
       system = {
         networking = {
-          networkmanager = enabled;
           firewall = enabled;
-          hostname = "cloudbox";
           forwarding.ipv4 = true;
+          networkmanager = {
+            enable = true;
+            hostname = "cloudbox";
+          };
           resolved = enabled;
         };
         nix = {
           unfree = enabled;
           flakes = enabled;
         };
+        security.sudonopass = enabled;
         services = {
           openssh = enabled;
         };
-        security.sudonopass = enabled;
         shell.zsh = enabled;
         utils = enabled;
         virtualisation = {
-          docker = enabled;
+          docker = {
+            enable = true;
+            scripts.check-versions = true;
+          };
         };
       };
     };

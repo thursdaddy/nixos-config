@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2059
 
-# rough script to check currently deployed verions of scripts and compare against the latest version
+# really really rough script to check currently deployed verions of containers and
+# compare against the latest version in the containers gh repo
+# should be refactored if script ultimately becomes useful/utilized
 
 # ansi color codes
 BLUE='\033[1;34m'
@@ -44,15 +46,28 @@ for container in $CONTAINERS; do
   # ex: https://api.github.com/repos/$OWNER/$NAME
   GH_API_URL=$(echo "${SOURCE}" | sed -e 's/:\/\//:\/\/api./g' -e 's/.com/.com\/repos/')
 
+  # some repos dont do releases, just tags
+  RELEASE_OR_TAG="releases"
+  if [[ ${container} =~ "gitlab" ]]; then
+    RELEASE_OR_TAG="tags"
+  fi
+
   # if github api token is present, authorize github api calls
-  if [ -f "/run/secrets/github_token" ]; then
+  if [ -f "/run/secrets/github/TOKEN" ]; then
     # sed result to a valid api url
     # ex: https://api.github.com/repos/$OWNER/$NAME/releases/latest
-    GH_TOKEN=$(cat /run/secrets/github_token)
-    CURL_ARGS="--header \"Authorization: Bearer ${GH_TOKEN}\" --header \"X-GitHub-Api-Version: 2022-11-28\""
-    VERSION_LATEST=$(curl -s "${GH_API_URL}/releases/latest" "${CURL_ARGS}" | jq '.tag_name' | sed -e 's/"//g' -e 's/v//g')
+    GH_TOKEN=$(cat /run/secrets/github/TOKEN)
+    if [[ $RELEASE_OR_TAG =~ "tags" ]]; then
+      VERSION_LATEST=$(curl -s "${GH_API_URL}/${RELEASE_OR_TAG}" --header "Authorization: Bearer ${GH_TOKEN}" --header "X-GitHub-Api-Version: 2022-11-28" | grep '"name":' | head -1 | sed 's/.* "\(.*\)",/\1/' | sed 's/v//g')
+    else
+    VERSION_LATEST=$(curl -s "${GH_API_URL}/${RELEASE_OR_TAG}/latest" --header "Authorization: Bearer ${GH_TOKEN}" --header "X-GitHub-Api-Version: 2022-11-28" | jq '.tag_name' | sed -e 's/"//g' -e 's/v//g')
+    fi
   else
-    VERSION_LATEST=$(curl -s "${GH_API_URL}/releases/latest" | jq '.tag_name' | sed -e 's/"//g' -e 's/v//g')
+    if [[ $RELEASE_OR_TAG =~ "tags" ]]; then
+      VERSION_LATEST=$(curl -s "${GH_API_URL}/${RELEASE_OR_TAG}" | grep '"name":' | head -1 | sed 's/.* "\(.*\)",/\1/' | sed 's/v//g')
+    else
+    VERSION_LATEST=$(curl -s "${GH_API_URL}/${RELEASE_OR_TAG}/latest" | jq '.tag_name' | sed -e 's/"//g' -e 's/v//g')
+    fi
   fi
 
   # get current container version
@@ -60,11 +75,15 @@ for container in $CONTAINERS; do
   # print container versions
   # - if latest version is newer, print version number in orange and link release notes
   # - if latest version is null, print null but do not link release notes
-  printf "\n${BLUE}${container}${NC}\t ${GREEN}(${VERSION_CURRENT})${NC} "
+  printf "\n\n${BLUE}${container}:${NC}\n${GREEN}(${VERSION_CURRENT})${NC} "
   if [[ "${VERSION_CURRENT}" != "${VERSION_LATEST}" ]]; then
     printf "${WHITE}latest: ${ORANGE}v${VERSION_LATEST}${NC}"
     if [[ "${VERSION_CURRENT}" != "null" ]]; then
-      printf " - ${GREY}${SOURCE}/releases/v${VERSION_LATEST}${NC} "
+      if [[ $RELEASE_OR_TAG =~ "tags" ]]; then
+        printf " - ${GREY}${SOURCE}/releases/tag/v${VERSION_LATEST}${NC} "
+      else
+        printf " - ${GREY}${SOURCE}/${RELEASE_OR_TAG}/v${VERSION_LATEST}${NC} "
+      fi
     fi
   fi
 done

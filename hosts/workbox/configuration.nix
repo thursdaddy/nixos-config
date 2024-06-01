@@ -20,6 +20,11 @@ with lib.thurs;
       };
 
       cli-tools = {
+        bottom = enabled;
+        git = {
+          enable = true;
+          ghToken = true;
+        };
         neofetch = enabled;
         nixvim = enabled;
         sops = {
@@ -34,12 +39,12 @@ with lib.thurs;
           enable = true;
           useRoutingFeatures = "client";
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
-          # extraUpFlags = [ ];
         };
       };
 
       system = {
         boot = {
+          binfmt = enabled;
           systemd = enabled;
         };
         networking = {
@@ -47,7 +52,7 @@ with lib.thurs;
             enable = true;
             hostname = "workbox";
           };
-          firewall = enabled;
+          firewall = disabled;
           forwarding.ipv4 = true;
           resolved = enabled;
         };
@@ -62,7 +67,10 @@ with lib.thurs;
         shell.zsh = enabled;
         utils = enabled;
         virtualisation = {
-          docker = enabled;
+          docker = {
+            enable = true;
+            scripts.check-versions = true;
+          };
         };
       };
     };

@@ -96,6 +96,7 @@
           system = "x86_64-linux";
           modules = [
             ./hosts/workbox/configuration.nix
+            inputs.nixos-thurs.nixosModules.workboxContainers
           ];
         };
       };

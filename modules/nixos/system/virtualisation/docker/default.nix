@@ -28,13 +28,13 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    virtualisation.docker.enable = true;
-    virtualisation.oci-containers.backend = "docker";
+    users.users.${user.name}.extraGroups = mkIf user.enable [ "docker" ];
 
     environment.systemPackages = with pkgs; [
       (mkIf cfg.scripts.check-versions check-versions-script)
     ];
 
-    users.users.${user.name}.extraGroups = mkIf user.enable [ "docker" ];
+    virtualisation.docker.enable = true;
+    virtualisation.oci-containers.backend = "docker";
   };
 }
