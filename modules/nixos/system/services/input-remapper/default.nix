@@ -22,7 +22,6 @@ in
       documentation = [ "https://github.com/sezanzeb/input-remapper" ];
       enable = true;
       after = [ "input-remapper.service" ];
-      requires = [ "input-remapper.service" ];
       partOf = [ "desktop.service" ];
       wantedBy = [ "desktop.service" ];
       serviceConfig = {
