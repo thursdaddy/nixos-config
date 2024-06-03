@@ -3,8 +3,8 @@ with lib;
 with lib.thurs;
 let
 
-  cfg = config.mine.user;
-  home-directory = "/Users/${cfg.name}";
+  user = config.mine.user;
+  home-directory = "/Users/${user.name}";
 
 in
 {
@@ -15,12 +15,13 @@ in
     email = mkOpt types.str "thursdaddy@pm.me" "My Email";
     homeDir = mkOpt types.str "${home-directory}" "Home Directory Path";
     home-manager.enable = mkOpt types.bool false "Enable home-manager";
+    ghToken.enable = mkEnableOption "deploy ghToken used with build script";
   };
 
-  config = mkIf cfg.enable {
-    users.users.${cfg.name} = {
-      name = "${cfg.name}";
-      home = "${cfg.homeDir}";
+  config = mkIf user.enable {
+    users.users.${user.name} = {
+      name = "${user.name}";
+      home = "${user.homeDir}";
       isHidden = false;
       shell = pkgs.zsh;
     };

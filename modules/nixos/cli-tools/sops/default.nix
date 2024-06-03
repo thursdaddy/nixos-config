@@ -72,9 +72,9 @@ in
       # this is defined in here because I use home-manager to mange git config but
       # do not want to use the sops home-manager implementation with nixos systems.
       # TODO: fix it, this breaks ami builds and its gross
-      secrets."github/TOKEN" = mkIf (config.mine.cli-tools.git.ghToken) {
-        owner = "${user.name}";
-      };
+      # secrets."github/TOKEN" = mkIf (config.mine.cli-tools.git.ghToken) {
+      #   owner = "${user.name}";
+      # };
     };
 
     systemd.services.decrypt-sops-after-network = mkIf (cfg.requires.network || cfg.ageKeyFile.ageKeyInSSM.enable) {

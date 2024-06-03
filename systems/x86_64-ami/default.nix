@@ -1,4 +1,4 @@
-{ lib, pkgs, inputs, config, ... }:
+{ lib, inputs, config, ... }:
 with lib.thurs;
 {
 
@@ -7,7 +7,6 @@ with lib.thurs;
     ../../modules/nixos/import.nix
     ../../overlays/unstable
   ];
-
 
   config = {
     system.stateVersion = "24.05";
@@ -28,7 +27,7 @@ with lib.thurs;
           forwarding.ipv4 = true;
           networkd = {
             enable = true;
-            hostname = "null";
+            hostname = "nixos";
           };
         };
         nix = {

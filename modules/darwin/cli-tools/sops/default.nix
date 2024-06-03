@@ -30,7 +30,7 @@ in
 
         # this is defined in here because I use home-manager to mange git config and
         # only want to use the sop home-manager implementation on my darwin system.
-        secrets."github/TOKEN" = mkIf (config.mine.cli-tools.git.ghToken) { };
+        secrets."github/TOKEN" = mkIf (user.ghToken.enable) { };
       };
     };
   };

@@ -4,6 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.system.networking.networkmanager;
+  user = config.mine.user;
 
 in
 {
@@ -22,6 +23,7 @@ in
       ];
     };
 
+    users.users.${user.name}.extraGroups = [ "networkmanager" ];
     systemd.services.NetworkManager-wait-online.enable = lib.mkForce false;
     programs.nm-applet.enable = mkIf cfg.applet true;
   };

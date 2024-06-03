@@ -778,7 +778,7 @@
     "ssh-keys": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-XJS36tf9Ft7PV1y2XJfIkiRIog7JO0nF/VBI8B7wTVo=",
+        "narHash": "sha256-NJxHmQA5yyhhQg20Q6NUZxmBm6u8t9BqedDPyuJNFho=",
         "type": "file",
         "url": "https://github.com/thursdaddy.keys"
       },

@@ -21,6 +21,7 @@ in
         enable = true;
         home-manager = enabled;
         ssh-config = enabled;
+        ghToken = enabled;
       };
 
       apps = {
@@ -43,10 +44,7 @@ in
       cli-tools = {
         bottom = enabled;
         direnv = enabled;
-        git = {
-          enable = true;
-          ghToken = true;
-        };
+        git = enabled;
         neofetch = enabled;
         nixvim = enabled;
         protonvpn = enabled;

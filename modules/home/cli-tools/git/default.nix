@@ -10,7 +10,6 @@ in
 {
   options.mine.cli-tools.git = {
     enable = mkEnableOption "Git";
-    ghToken = mkOpt types.bool false "Deploy GH token via SOPS.";
   };
 
   config = mkIf cfg.enable {
