@@ -11,11 +11,15 @@ with lib.thurs;
   ];
 
   config = {
-    system.stateVersion = "23.11";
+    system.stateVersion = "24.05";
 
     environment.systemPackages = with pkgs; [
       awscli2
     ];
+
+    services.journald.extraConfig = ''
+      SystemMaxUse=1G
+    '';
 
     mine = {
       user = {
@@ -46,7 +50,7 @@ with lib.thurs;
         networking = {
           firewall = enabled;
           forwarding.ipv4 = true;
-          networkmanager = {
+          networkd = {
             enable = true;
             hostname = "cloudbox";
           };

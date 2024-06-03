@@ -71,6 +71,7 @@ in
 
       # this is defined in here because I use home-manager to mange git config but
       # do not want to use the sops home-manager implementation with nixos systems.
+      # TODO: fix it, this breaks ami builds and its gross
       secrets."github/TOKEN" = mkIf (config.mine.cli-tools.git.ghToken) {
         owner = "${user.name}";
       };
@@ -80,6 +81,7 @@ in
       description = "Decrypt SOPS secrets after network is established";
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
+      requires = [ "network-online.target" ];
       serviceConfig = (ssm_systemd_config // {
         Type = "oneshot";
         RemainAfterExit = true;
@@ -93,6 +95,7 @@ in
       description = "Decrypt SOPS secrets after disk has been unlocked";
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
+      requires = [ "network-online.target" ];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;

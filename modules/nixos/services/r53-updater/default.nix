@@ -94,6 +94,7 @@ in
       description = "Route53 Updater - Check if Instance IP has changed and update Route53 accordingly";
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
+      requires = [ "network-online.target" ];
       serviceConfig = {
         Type = "oneshot";
         Restart = "on-failure";

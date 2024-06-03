@@ -27,7 +27,7 @@ in
             };
           };
           "cloudbox" = {
-            hostname = "100.92.141.104";
+            hostname = "100.114.203.99";
             identitiesOnly = true;
           };
           "github.com" = {

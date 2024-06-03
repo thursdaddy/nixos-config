@@ -10,7 +10,7 @@ with lib;
 
     home.username = "${user.name}";
     home.homeDirectory = "${user.homeDir}";
-    home.stateVersion = "23.11";
+    home.stateVersion = "24.05";
 
     home.extraActivationPath = with pkgs; [
       rsync

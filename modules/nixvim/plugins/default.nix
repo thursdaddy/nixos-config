@@ -6,7 +6,7 @@
       cmp-emoji.enable = true;
       cmp-nvim-lsp.enable = true;
       cmp-path.enable = true;
-      comment-nvim.enable = true;
+      comment.enable = true;
       endwise.enable = true;
       fugitive.enable = true;
       gitgutter.enable = true;
@@ -54,11 +54,12 @@
             enable = true;
             settings.telemetry.enable = false;
           };
-          nixd = {
+          nil_ls = {
             enable = true;
-            settings.formatting.command = "nixpkgs-fmt";
+            settings = {
+              formatting.command = [ "nixpkgs-fmt" ];
+            };
           };
-          nil_ls.enable = true;
           terraformls.enable = true;
         };
       };
@@ -76,95 +77,42 @@
         stages = "fade";
         backgroundColour = "#000000";
       };
-      nvim-cmp = {
+      cmp = {
         enable = true;
         autoEnableSources = true;
-        snippet = { expand = "luasnip"; };
-        sources = [
-          { name = "nvim_lsp"; }
-          { name = "luasnip"; }
-          { name = "buffer"; }
-          { name = "nvim_lua"; }
-          { name = "path"; }
-        ];
-        mapping = {
-          "<CR>" = "cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = true })";
-          "<Down>" = {
-            modes = [ "i" "s" ];
-            action =
-              # lua
-              ''
-                function(fallback)
-                if cmp.visible() then
-                  cmp.select_next_item()
-                    elseif require("luasnip").expand_or_jumpable() then
-                    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true), "")
-                else
-                  fallback()
-                    end
-                    end
-              '';
-          };
-          "<Up>" = {
-            modes = [ "i" "s" ];
-            action =
-              # lua
-              ''
-                function(fallback)
-                if cmp.visible() then
-                  cmp.select_prev_item()
-                    elseif require("luasnip").jumpable(-1) then
-                    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-jump-prev", true, true, true), "")
-                else
-                  fallback()
-                    end
-                    end
-              '';
-          };
-          "<Tab>" = {
-            modes = [ "i" "s" ];
-            action =
-              # lua
-              ''
-                function(fallback)
-                if cmp.visible() then
-                  cmp.select_next_item()
-                    elseif require("luasnip").expand_or_jumpable() then
-                    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true), "")
-                else
-                  fallback()
-                    end
-                    end
-              '';
-          };
-          "<S-Tab>" = {
-            modes = [ "i" "s" ];
-            action =
-              # lua
-              ''
-                function(fallback)
-                if cmp.visible() then
-                  cmp.select_prev_item()
-                    elseif require("luasnip").jumpable(-1) then
-                    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-jump-prev", true, true, true), "")
-                else
-                  fallback()
-                    end
-                    end
-              '';
+        settings = {
+          sources = [
+            { name = "nvim_lsp"; }
+            { name = "luasnip"; }
+            { name = "buffer"; }
+            { name = "nvim_lua"; }
+            { name = "path"; }
+          ];
+          snippet = { expand = "luasnip"; };
+          mapping = {
+            "<CR>" = "cmp.mapping.confirm({ select = true })";
+            "<Down>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
+            "<Up>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
+            "<Tab>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
+            "<S-Tab>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
+            "<C-d>" = "cmp.mapping.scroll_docs(-4)";
+            "<C-f>" = "cmp.mapping.scroll_docs(4)";
+            "<C-Space>" = "cmp.mapping.complete()";
           };
         };
       };
       telescope = {
         enable = true;
         highlightTheme = "ivy";
-        defaults = {
-          ## these dont seem to be working but arent breaking anything
-          layout_strategy = "horizontal";
-          layout_config = {
-            height = 0.85;
-            width = 0.75;
-            prompt_position = "bottom";
+        settings = {
+          defaults = {
+            ## these dont seem to be working but arent breaking anything
+            layout_strategy = "horizontal";
+            layout_config = {
+              height = 0.85;
+              width = 0.75;
+              prompt_position = "bottom";
+            };
           };
         };
         keymaps = {

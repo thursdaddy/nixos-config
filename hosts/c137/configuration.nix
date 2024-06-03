@@ -1,5 +1,4 @@
 { lib, config, pkgs, inputs, ... }:
-with lib;
 with lib.thurs;
 let
 
@@ -15,7 +14,7 @@ in
   ];
 
   config = {
-    system.stateVersion = "23.11";
+    system.stateVersion = "24.05";
 
     mine = {
       user = {

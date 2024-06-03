@@ -5,7 +5,7 @@ let
 in
 {
   programs.nixvim = {
-    options = {
+    opts = {
       # numbers
       relativenumber = true;
       nu = true;

@@ -11,7 +11,7 @@ in
     home-manager.users.${user.name} = {
       programs.zsh = {
         enable = true;
-        enableAutosuggestions = true;
+        autosuggestion.enable = true;
 
         initExtra = mkIf pkgs.stdenv.hostPlatform.isDarwin ''
           eval "$(/opt/homebrew/bin/brew shellenv)"

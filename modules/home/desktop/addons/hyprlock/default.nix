@@ -1,4 +1,4 @@
-{ lib, config, pkgs, inputs, ... }:
+{ lib, config, ... }:
 with lib;
 with lib.thurs;
 let
@@ -14,48 +14,46 @@ in
 
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
-      imports = [
-        inputs.hyprlock.homeManagerModules.hyprlock
-      ];
-
       programs.hyprlock = {
         enable = true;
-        package = inputs.hyprlock.packages.${pkgs.system}.hyprlock;
+        settings = {
+          general = {
+            grace = 3;
+            ignore_empty_input = true;
+          };
 
-        general.grace = 1;
+          background = [{
+            path = "$HOME/pictures/wallpapers/blue_astronaut_in_space.png";
+          }];
 
-        input-fields = [{
-          size.width = 250;
-          size.height = 60;
-          outline_thickness = 2;
-          dots_size = 0.2;
-          dots_spacing = 0.2;
-          dots_center = true;
-          outer_color = "rgba(0, 0, 0, 0)";
-          inner_color = "rgba(0, 0, 0, 0.5)";
-          font_color = "rgb(200, 200, 200)";
-          fade_on_empty = false;
-          placeholder_text = "<i>Input Password...</i>";
-          position.x = 0;
-          position.y = -120;
-        }];
+          input-field = [{
+            size = "300, 60";
+            outline_thickness = 2;
+            monitor = "";
+            dots_size = 0.05;
+            dots_spacing = 0.05;
+            dots_center = true;
+            outer_color = "rgba(0, 0, 0, 0)";
+            inner_color = "rgba(0, 0, 0, 0.5)";
+            font_color = "rgb(200, 200, 200)";
+            fade_on_empty = true;
+            fade_timeout = 5000;
+            placeholder_text = "PASSWORD";
+            position = "0, -120";
+          }];
 
-        backgrounds = [{
-          path = "$HOME/pictures/wallpapers/blue_astronaut_in_space.png";
-        }];
-
-        labels = [
-          {
-            text = ''cmd[update:100] echo "<b>$(date +'%_I:%M:%S')</b>"'';
-            position = {
-              x = 0;
-              y = 30;
-            };
-            font_family = "Hack Nerd Fonts";
-            font_size = 60;
+          label = {
+            monitor = "";
+            text = ''cmd[update:10] echo "<b>$(date +'%_I:%M:%S')</b>"'';
+            text_align = "center";
             color = "rgba(255, 255, 255, 1.0)";
-          }
-        ];
+            font_size = "80";
+            font_family = "Hack Nerd Fonts";
+            position = "0, 80";
+            halign = "center";
+            valign = "center";
+          };
+        };
       };
     };
   };

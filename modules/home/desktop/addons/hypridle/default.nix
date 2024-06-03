@@ -10,44 +10,47 @@ let
 in
 {
   options.mine.desktop.hypridle = {
-    enable = mkOpt types.bool false "Enable hypridle";
+    enable = mkEnableOption "Enable hypridle";
   };
 
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
-      imports = [ inputs.hypridle.homeManagerModules.hypridle ];
-
       services.hypridle = {
         enable = true;
-        ignoreDbusInhibit = true;
-        lockCmd = "pidof hyprlock || ${inputs.hyprlock.packages.${pkgs.system}.hyprlock}/bin/hyprlock";
-        afterSleepCmd = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on";
-        beforeSleepCmd = "loginctl lock-session";
-        listeners = [
-          {
-            timeout = 600;
-            onTimeout = "${notify-message} \"HyprIdle: Locking Screen...\" && loginctl lock-session";
-            onResume = "${notify-message} \"HyprIdle: Screen Unlocked!\"";
-          }
-          {
-            timeout = 900;
-            onTimeout = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms off";
-            onResume = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on";
+        settings = {
+          general = {
+            before_sleep_cmd = "loginctl lock-session";
+            after_sleep_cmd = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on";
+            ignore_dbus_inhibit = true;
+            lock_cmd = "pidof hyprlock || hyprlock";
+          };
 
-          }
-          {
-            timeout = 1500;
-            onTimeout = "wall \"ATTENTION: SYSTEM WITH SUSPEND IN 5 MINUTES\"";
-          }
-          {
-            timeout = 1740;
-            onTimeout = "wall \"ATTENTION: SYSTEM WITH SUSPEND IN 1 MINUTE\"";
-          }
-          {
-            timeout = 1800;
-            onTimeout = "${notify-message} \"HyprIdle: Suspending system..\" && systemctl suspend";
-          }
-        ];
+          listener = [
+            {
+              timeout = 1200;
+              on-timeout = "${notify-message} \"HyprIdle: Locking Screen...\" && loginctl lock-session";
+              on-resume = "${notify-message} \"HyprIdle: Screen Unlocked!\"";
+            }
+            {
+              timeout = 1500;
+              on-timeout = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms off";
+              on-resume = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on";
+
+            }
+            {
+              timeout = 2100;
+              on-timeout = "wall \"ATTENTION: SYSTEM WITH SUSPEND IN 5 MINUTES\"";
+            }
+            {
+              timeout = 2340;
+              on-timeout = "wall \"ATTENTION: SYSTEM WITH SUSPEND IN 1 MINUTE\"";
+            }
+            {
+              timeout = 2430;
+              on-timeout = "${notify-message} \"HyprIdle: Suspending system..\" && systemctl suspend";
+            }
+          ];
+        };
       };
     };
   };

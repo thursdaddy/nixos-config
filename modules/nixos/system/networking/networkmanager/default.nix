@@ -22,6 +22,7 @@ in
       ];
     };
 
+    systemd.services.NetworkManager-wait-online.enable = lib.mkForce false;
     programs.nm-applet.enable = mkIf cfg.applet true;
   };
 }
