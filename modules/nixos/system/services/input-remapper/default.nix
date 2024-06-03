@@ -21,8 +21,9 @@ in
       description = "Run input-remapper-control autoload command";
       documentation = [ "https://github.com/sezanzeb/input-remapper" ];
       enable = true;
-      partOf = [ "desktop.service" ];
       after = [ "input-remapper.service" ];
+      requires = [ "input-remapper.service" ];
+      partOf = [ "desktop.service" ];
       wantedBy = [ "desktop.service" ];
       serviceConfig = {
         Type = "oneshot";

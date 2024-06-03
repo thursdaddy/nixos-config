@@ -77,10 +77,7 @@ in
           home = true;
         };
         hyprlock = enabled;
-        hyprpaper = {
-          enable = true;
-          home = true;
-        };
+        hyprpaper = enabled;
         screenshots = enabled;
         swaync = enabled;
         systemd = enabled;

@@ -47,12 +47,9 @@
     };
 
     hyprland.url = "github:hyprwm/Hyprland/?ref=v0.40.0";
-    hyprlock.url = "github:hyprwm/Hyprlock/?ref=v0.3.0";
-    hyprpaper.url = "github:hyprwm/Hyprpaper/?ref=v0.7.0";
-    hypridle.url = "github:hyprwm/Hypridle/?ref=v0.1.2";
   };
 
-  outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, home-manager, sops-nix, lanzaboote, nixos-thurs, ssh-keys, nixvim, hyprland, hypridle, hyprlock, hyprpaper, ... } @ inputs:
+  outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, home-manager, sops-nix, lanzaboote, nixos-thurs, ssh-keys, nixvim, hyprland, ... } @ inputs:
     let
       lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
