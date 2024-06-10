@@ -21,6 +21,8 @@ with lib.thurs;
       SystemMaxUse=1G
     '';
 
+    nix.settings.trusted-users = [ "ssm-user" "@wheel" ];
+
     mine = {
       user = {
         enable = true;

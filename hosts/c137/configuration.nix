@@ -34,6 +34,8 @@ in
         kitty = enabled;
         obsidian = enabled;
         protonvpn = enabled;
+        puddletag = enabled;
+        steam = enabled;
         syncthing = {
           enable = true;
           isNix = true;
@@ -42,6 +44,7 @@ in
       };
 
       cli-tools = {
+        ncmpcpp = enabled;
         bottom = enabled;
         direnv = enabled;
         git = enabled;
@@ -83,15 +86,9 @@ in
       };
 
       services = {
+        mpd = enabled;
         ollama = enabled;
-        prometheus = {
-          enable = true;
-          exporters = {
-            node = {
-              enable = true;
-            };
-          };
-        };
+        prometheus = enabled;
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
@@ -129,6 +126,7 @@ in
           input-remapper = enabled;
           keyring = enabled;
           openssh = enabled;
+          sleep-on-lan = enabled;
         };
         shell.zsh = enabled;
         utils = enabled;

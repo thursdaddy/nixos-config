@@ -22,6 +22,10 @@ in
           dbnc = "docker build --no-cache -t $(whoami)/$(basename $(pwd)):dev .";
           dr = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev bash";
           drs = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev sh";
+          _ds = "sudo systemctl status";
+          _dstop = "sudo systemctl stop";
+          _drestart = "sudo systemctl restart";
+          _dstart = "sudo systemctl start";
           ll = "ls -larth";
           kssh = "kitty +kitten ssh";
         };

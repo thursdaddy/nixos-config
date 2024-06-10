@@ -562,11 +562,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1717387708,
-        "narHash": "sha256-CBC5LU/vgwTe4OZ14x7aMsd+KliCmpe2hyYitPjxcqM=",
+        "lastModified": 1718057833,
+        "narHash": "sha256-crSdO3M8fBuWTkcUS4B9i/vpNSS5n77PAvYOUPyxkJk=",
         "owner": "thursdaddy",
         "repo": "nixos-thurs",
-        "rev": "b2c7aba3b85f167e30c0866306443e746e7d83d6",
+        "rev": "f3bca9c4293b012038c8f3468d8f4daf2ba6d5d0",
         "type": "github"
       },
       "original": {
@@ -626,10 +626,10 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1714272655,
-        "narHash": "sha256-3/ghIWCve93ngkx5eNPdHIKJP/pMzSr5Wc4rNKE1wOc=",
-        "path": "/nix/store/4x11z78x84bvvx740jx16d312bvz82pv-source",
-        "rev": "12430e43bd9b81a6b4e79e64f87c624ade701eaf",
+        "lastModified": 1717144377,
+        "narHash": "sha256-F/TKWETwB5RaR8owkPPi+SPJh83AQsm6KrQAlJ8v/uA=",
+        "path": "/nix/store/i1aw9jjgxcvyd642s12kw3iasmarwd42-source",
+        "rev": "805a384895c696f802a9bf5bf4720f37385df547",
         "type": "path"
       },
       "original": {

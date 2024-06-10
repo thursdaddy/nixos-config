@@ -26,6 +26,7 @@ in
       pciutils
       ripgrep
       shellcheck
+      smartmontools
       tree
       unzip
       usbutils

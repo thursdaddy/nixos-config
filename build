@@ -20,7 +20,9 @@ build () {
 rebuild () {
   printf "\n${BLUE}Rebuilding: ${WHITE}${TARGET}${NC}\n"
   if [[ "$TARGET" == "c137" ]]; then
-    sudo nixos-rebuild --flake .\#c137 switch --option eval-cache false
+    sudo nixos-rebuild --flake .\#c137 switch
+  elif [[ "$TARGET" == "workbox" ]] && [[ "$HOST" == "workbox" ]]; then
+    sudo nixos-rebuild --flake .\#workbox switch
   elif [[ "$TARGET" == "mbp" ]]; then
     darwin-rebuild --flake .\#mbp switch
   elif [[ "$TARGET" == "piholes" ]]; then
