@@ -31,6 +31,9 @@ in
         package = inputs.hyprland.packages.${pkgs.system}.hyprland;
 
         extraConfig = ''
+          exec-once = steam
+          exec-once = discord && kitty btm --color gruvbox
+
           # MONITORS AND WORKSPACES
           monitor=DP-1, 2560x1440@165, 90x0, 1
           monitor=DP-2, 3840x1600@144, 0x1440, 1
@@ -47,8 +50,10 @@ in
           workspace = 10, monitor:DP-1
 
           # RULES
+          windowrulev2 = workspace 3 silent, class:(Steam)
           windowrulev2 = workspace 4 silent, class:(Bitwarden)
           windowrulev2 = workspace 5 silent, class:(discord)
+          windowrulev2 = workspace 5 silent, title:(btm --color gruvbox)
           windowrulev2 = workspace 6 silent, class:(chrome-deezer.com__-Default)
           windowrulev2 = workspace 7 silent, class:(obsidian)
           windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
@@ -62,7 +67,7 @@ in
           general = {
             layout = "dwindle";
             gaps_in = 5;
-            gaps_out = 10;
+            gaps_out = 5;
           };
 
           group = {
@@ -86,7 +91,7 @@ in
 
           decoration = {
             dim_inactive = true;
-            dim_strength = 0.1;
+            dim_strength = 0.2;
             rounding = 5;
           };
 
@@ -99,6 +104,7 @@ in
           bind =
             [
               "$mod, space, exec, fuzzel"
+              "$mod_SHIFT, space, togglefloating"
               "$mod, return, exec, kitty"
               "$mod_SHIFT, return, exec, [float;noanim] kitty"
               "$mod, F, fullscreen"
