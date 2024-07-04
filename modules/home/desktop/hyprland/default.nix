@@ -38,7 +38,7 @@ in
           monitor=DP-1, 2560x1440@165, 90x0, 1
           monitor=DP-2, 3840x1600@144, 0x1440, 1
           monitor=DP-3, 2560x1440@120, 3840x480, 1, transform, 3
-          workspace = 1, monitor:DP-2
+          workspace = 1, monitor:DP-2, gapsin:0, gapsout:0
           workspace = 2, monitor:DP-2
           workspace = 3, monitor:DP-2
           workspace = 4, monitor:DP-2
@@ -58,6 +58,7 @@ in
           windowrulev2 = workspace 7 silent, class:(obsidian)
           windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
           windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
+          windowrulev2 = nodim, class:(chrome-youtube.com__-Default)
           windowrulev2 = size 90%, class:(chrome-youtube.com__-Default)
         '';
 
@@ -91,7 +92,7 @@ in
 
           decoration = {
             dim_inactive = true;
-            dim_strength = 0.2;
+            dim_strength = 0.35;
             rounding = 5;
           };
 
