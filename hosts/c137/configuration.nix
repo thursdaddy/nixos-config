@@ -34,6 +34,7 @@ in
         kitty = enabled;
         obsidian = enabled;
         protonvpn = enabled;
+        prusa-slicer = enabled;
         puddletag = enabled;
         steam = enabled;
         syncthing = {
@@ -88,7 +89,12 @@ in
       services = {
         mpd = enabled;
         ollama = enabled;
-        prometheus = enabled;
+        prometheus = {
+          enable = true;
+          exporters.node = enabled;
+          exporters.smartctl = enabled;
+          exporters.zfs = enabled;
+        };
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;

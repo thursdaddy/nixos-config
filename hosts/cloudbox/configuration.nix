@@ -1,4 +1,4 @@
-{ lib, config, pkgs, inputs, ... }:
+{ lib, pkgs, inputs, ... }:
 with lib;
 with lib.thurs;
 {
@@ -41,6 +41,10 @@ with lib.thurs;
 
       services = {
         r53-updater = enabled;
+        prometheus = {
+          enable = true;
+          exporters.node = enabled;
+        };
         tailscale = {
           enable = true;
           useRoutingFeatures = "client";

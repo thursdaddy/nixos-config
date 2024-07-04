@@ -49,6 +49,12 @@ in
 
       services = {
         mpd = enabled;
+        prometheus = {
+          enable = true;
+          exporters.node = enabled;
+          exporters.smartctl = enabled;
+          exporters.zfs = enabled;
+        };
         tailscale = {
           enable = true;
           useRoutingFeatures = "client";

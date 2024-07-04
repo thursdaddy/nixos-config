@@ -40,6 +40,10 @@ with lib.thurs;
           useRoutingFeatures = "client";
           extraUpFlags = [ "--advertise-routes=192.168.20.0/24" ];
         };
+        prometheus = {
+          enable = true;
+          exporters.node = enabled;
+        };
       };
 
       system = {

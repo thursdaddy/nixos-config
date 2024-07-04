@@ -8,7 +8,7 @@
 
     # private nixos configs
     nixos-thurs = {
-      url = "github:thursdaddy/nixos-thurs/main";
+      url = "git+file:///home/thurs/projects/nix/nixos-thurs/";
     };
 
     ssh-keys = {
