@@ -1,4 +1,4 @@
-{ lib, config, pkgs, inputs, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 with lib.thurs;
 let
@@ -28,7 +28,6 @@ in
 
       wayland.windowManager.hyprland = {
         enable = true;
-        package = inputs.hyprland.packages.${pkgs.system}.hyprland;
 
         extraConfig = ''
           exec-once = steam

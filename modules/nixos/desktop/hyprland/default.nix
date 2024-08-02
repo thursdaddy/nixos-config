@@ -10,14 +10,9 @@ in
     enable = mkEnableOption "Enable Hyprland Window Manager";
   };
 
-  imports = [
-    inputs.hyprland.nixosModules.default
-  ];
-
   config = mkIf cfg.enable {
     programs.hyprland = {
       enable = true;
-      package = inputs.hyprland.packages.${pkgs.system}.hyprland;
       xwayland.enable = true;
     };
 

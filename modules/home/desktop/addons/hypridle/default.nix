@@ -20,7 +20,7 @@ in
         settings = {
           general = {
             before_sleep_cmd = "loginctl lock-session";
-            after_sleep_cmd = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on";
+            after_sleep_cmd = "${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
             ignore_dbus_inhibit = true;
             lock_cmd = "pidof hyprlock || hyprlock";
           };
@@ -33,8 +33,8 @@ in
             }
             {
               timeout = 1500;
-              on-timeout = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms off";
-              on-resume = "${inputs.hyprland.packages.${pkgs.system}.hyprland}/bin/hyprctl dispatch dpms on";
+              on-timeout = "${pkgs.hyprland}/bin/hyprctl dispatch dpms off";
+              on-resume = "${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
 
             }
             {
