@@ -54,7 +54,7 @@
             enable = true;
             settings.telemetry.enable = false;
           };
-          nil_ls = {
+          nil-ls = {
             enable = true;
             settings = {
               formatting.command = [ "nixpkgs-fmt" ];
