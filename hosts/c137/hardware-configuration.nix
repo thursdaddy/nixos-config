@@ -22,7 +22,13 @@
   };
 
   networking.hostId = "c8cf78d0";
-  networking.interfaces.enp6s0f1.wakeOnLan.enable = true;
+  networking.interfaces.enp5s0.wakeOnLan.enable = true;
+  networking.interfaces.br0.useDHCP = true;
+  networking.bridges = {
+    "br0" = {
+      interfaces = [ "enp5s0" ];
+    };
+  };
 
   fileSystems."/" =
     {

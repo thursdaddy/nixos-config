@@ -45,6 +45,7 @@ in
       };
 
       cli-tools = {
+        ansible = enabled;
         ncmpcpp = enabled;
         bottom = enabled;
         direnv = enabled;
