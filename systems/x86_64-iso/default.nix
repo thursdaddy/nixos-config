@@ -1,4 +1,4 @@
-{ lib, pkgs, inputs, ... }:
+{ lib, pkgs, ... }:
 with lib;
 with lib.thurs; {
 
@@ -13,8 +13,6 @@ with lib.thurs; {
     };
 
     hardware.cpu.amd.updateMicrocode = true;
-    # boot.kernelPackages = pkgs.linuxPackages_latest;
-    # boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_7;
     boot.supportedFilesystems = [ "zfs" ];
     boot.zfs.forceImportRoot = false;
 
