@@ -16,6 +16,7 @@ in
 
     environment.systemPackages = with pkgs; [
       virt-manager
+      vagrant
     ];
 
     virtualisation.libvirtd = {
