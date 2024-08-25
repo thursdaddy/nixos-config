@@ -96,17 +96,6 @@
         };
       };
       nixosConfigurations = {
-        "monpi" = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; inherit lib; hostname = "monpi"; };
-          system = "aarch64-linux";
-          modules = [
-            ./hosts/netpi/configuration.nix
-            inputs.nixos-thurs.nixosModules.netpiContainers
-            inputs.nixos-thurs.nixosModules.monpiContainers
-          ];
-        };
-      };
-      nixosConfigurations = {
         "netpi1" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; hostname = "netpi1"; };
           system = "aarch64-linux";
@@ -126,7 +115,26 @@
           ];
         };
       };
-
+      nixosConfigurations = {
+        "netpi3" = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; inherit lib; hostname = "netpi3"; };
+          system = "aarch64-linux";
+          modules = [
+            ./hosts/netpi/configuration.nix
+            inputs.nixos-thurs.nixosModules.netpiContainers
+          ];
+        };
+      };
+      nixosConfigurations = {
+        "travelpi" = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; inherit lib; };
+          system = "aarch64-linux";
+          modules = [
+            ./hosts/travelpi/configuration.nix
+            inputs.nixos-thurs.nixosModules.travelpiContainers
+          ];
+        };
+      };
       packages.x86_64-linux = {
         ami = nixos-generators.nixosGenerate {
           specialArgs = { inherit inputs; inherit lib; };
