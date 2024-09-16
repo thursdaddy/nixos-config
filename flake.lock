@@ -399,10 +399,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "dirtyRev": "8d6db49c97afb1f7c9fd9b176149d38d4aec6a71-dirty",
-        "dirtyShortRev": "8d6db49-dirty",
-        "lastModified": 1724786702,
+        "lastModified": 1726522375,
         "narHash": "sha256-vmevmkGUl5hQ+WcyESKVWGwFco9U25yN9BTjkg+7G7k=",
+        "ref": "refs/heads/main",
+        "rev": "4e4ef73505996e33c6e5411110acc88d3ba7a79e",
+        "revCount": 24,
         "type": "git",
         "url": "file:///home/thurs/projects/nix/nixos-thurs/"
       },

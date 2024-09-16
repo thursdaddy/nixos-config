@@ -1,4 +1,4 @@
-{ lib, config, inputs, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 let
 
@@ -12,6 +12,7 @@ in
 
   config = mkIf cfg.enable {
     programs.hyprland = {
+      package = pkgs.unstable.hyprland;
       enable = true;
       xwayland.enable = true;
     };
