@@ -28,7 +28,7 @@ with lib.thurs;
         bottom = enabled;
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/netpi.yaml");
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml");
         };
         tmux = enabled;
       };

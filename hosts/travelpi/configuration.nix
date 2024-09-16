@@ -26,9 +26,10 @@ with lib.thurs;
 
       cli-tools = {
         bottom = enabled;
+        nixvim = enabled;
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/netpi.yaml");
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml");
         };
         tmux = enabled;
       };

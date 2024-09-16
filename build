@@ -31,7 +31,7 @@ rebuild () {
     printf "${BLUE}Rebuilding: ${WHITE}netpi2${NC}\n"
     nixos-rebuild --flake .\#netpi2 --target-host netpi2 --use-remote-sudo switch
     printf "${BLUE}Rebuilding: ${WHITE}netpi3${NC}\n"
-    nixos-rebuild --flake .\#monpi --target-host monpi --use-remote-sudo switch
+    nixos-rebuild --flake .\#netpi3 --target-host netpi3 --use-remote-sudo switch
   else
     nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-remote-sudo switch
   fi

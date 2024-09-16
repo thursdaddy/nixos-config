@@ -2,12 +2,12 @@
 with lib;
 let
 
-  cfg = config.mine.desktop.bitwarden;
+  cfg = config.mine.apps.bitwarden;
 
 in
 {
-  options.mine.desktop.bitwarden = {
-    enable = mkEnableOption "Install Bitwarden desktop";
+  options.mine.apps.bitwarden = {
+    enable = mkEnableOption "Install Bitwarden desktop app";
   };
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [

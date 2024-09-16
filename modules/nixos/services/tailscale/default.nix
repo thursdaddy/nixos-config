@@ -26,7 +26,7 @@ in
     };
 
     sops.secrets."tailscale/AUTH_KEY" = mkIf sops.enable {
-      sopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/tailscale.yaml");
+      sopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml");
     };
 
     systemd.services.tailscaled-autoconnect-reload = mkIf ((sops.requires.network) || sops.ageKeyFile.ageKeyInSSM.enable) {

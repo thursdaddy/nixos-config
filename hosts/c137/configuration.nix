@@ -25,6 +25,7 @@ in
       };
 
       apps = {
+        bitwarden = enabled;
         brave = enabled;
         chromium = enabled;
         discord = enabled;
@@ -56,7 +57,7 @@ in
         sops = {
           enable = true;
           requires.unlock = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/main.yaml");
+          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml");
         };
         tmux = {
           enable = true;
@@ -71,7 +72,6 @@ in
       };
 
       desktop = {
-        bitwarden = enabled;
         cursor = enabled;
         fuzzel = enabled;
         hypridle = enabled;
