@@ -61,24 +61,6 @@ function cleanup {
   ls -lah builds/
 }
 
-# loop through hypr repos and check if newer tag exists
-function check_hypr_version {
-  printf "\n${WHITE}HYPR TAGS:${NC}\n"
-  grep hyprwm flake.nix | awk -F "hyprwm/" '{ print $2 }' | sed -e 's/\/?ref//g' -e 's/";//g' | while read -r repo; do
-    REPO_NAME=$(echo "$repo" | awk -F'=' '{ print tolower($1) }')
-    TAG_CURRENT=$(echo "$repo" | awk -F '=' '{ print $2 }')
-    TAG_LATEST=$(curl -s "https://api.github.com/repos/hyprwm/$REPO_NAME/releases/latest" --header "Authorization: Bearer $GH_TOKEN" --header "X-GitHub-Api-Version: 2022-11-28" | jq -r '.tag_name')
-    if [[ "$TAG_LATEST" == "null" ]]; then
-      printf "${BLUE}${REPO_NAME} ${ORANGE}failed to get tag"
-    elif [[ "$TAG_CURRENT" == "$TAG_LATEST" ]]; then
-      printf "${BLUE}$REPO_NAME\t${GREEN}($TAG_CURRENT)${NC}\n"
-    elif [[ "$TAG_CURRENT" != "$TAG_LATEST" ]]; then
-      printf "${BLUE}$REPO_NAME\t${GREEN}($TAG_CURRENT)${NC} ${WHITE}latest: ${ORANGE}${TAG_LATEST}${NC} - ${GREY}https://github.com/hyprwm/${REPO_NAME}/releases/${TAG_LATEST}${NC}\n"
-    fi
-  done
-  printf "\n"
-}
-
 update_local_input () {
   # set path based on target
   # my projects dir is syncthing'd across multiple machines
@@ -167,10 +149,6 @@ case $TARGET in
     ;;
   sd-aarch64)
     build "$TARGET"
-    ;;
-  null)
-    # placeholder when just wanting to --check-hypr or --update-input
-    if [ "$2" == "--check-hypr" ] || [ "$2" == '-c' ]; then check_hypr_version; fi
     ;;
   *)
     # adhoc argument to check github for latest hypr* tags
