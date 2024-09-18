@@ -399,17 +399,18 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1726522375,
-        "narHash": "sha256-vmevmkGUl5hQ+WcyESKVWGwFco9U25yN9BTjkg+7G7k=",
-        "ref": "refs/heads/main",
-        "rev": "4e4ef73505996e33c6e5411110acc88d3ba7a79e",
-        "revCount": 24,
-        "type": "git",
-        "url": "file:///home/thurs/projects/nix/nixos-thurs/"
+        "lastModified": 1726692691,
+        "narHash": "sha256-aF0/SpQdwaYCxIvaVa8hKDdv2VucwQybpX8DKObATj8=",
+        "owner": "thursdaddy",
+        "repo": "nixos-thurs",
+        "rev": "b29f998b3de8cd1035b756a4ab905130c000ac9c",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/thurs/projects/nix/nixos-thurs/"
+        "owner": "thursdaddy",
+        "ref": "main",
+        "repo": "nixos-thurs",
+        "type": "github"
       }
     },
     "nixpkgs": {
