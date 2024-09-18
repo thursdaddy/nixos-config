@@ -37,7 +37,7 @@ in
           monitor=DP-1, 2560x1440@165, 90x0, 1
           monitor=DP-2, 3840x1600@144, 0x1440, 1
           monitor=DP-3, 2560x1440@120, 3840x480, 1, transform, 3
-          workspace = 1, monitor:DP-2, gapsin:0, gapsout:0
+          workspace = 1, monitor:DP-2, gapsin:3, gapsout:3
           workspace = 2, monitor:DP-2
           workspace = 3, monitor:DP-2
           workspace = 4, monitor:DP-2
