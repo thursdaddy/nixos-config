@@ -89,7 +89,6 @@ print_help () {
   printf "Usage: ${NC}./build ${WHITE}[target] ${GREEN}[options]${NC}\n"
   printf "\nArguments:\n\t${WHITE}TARGET\t${NC}Target for build/rebuild, must be defined in rebuild and build function.\n"
   printf "\nOptions:\n"
-  printf "\t${GREEN}-c --check-hypr\n\t\t${NC}Check Hypr* repos latest releases.${NC}\n\n"
   printf "\t${GREEN}-u --update-input [name|local] {name-opt}\n\t\t${NC}Update flake input by name, local as first arg will update input to local path, defaults to 'nixos-thurs'.\n"
   printf "\t\tIf input is already local, it will be updated to public github url.\n"
 }
@@ -99,7 +98,7 @@ if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
   PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
 fi
 
-# set GH_TOKEN to pull private flake (and when checking hypr tags)
+# set GH_TOKEN to pull private flake
 if [ -f "/run/secrets/github/TOKEN" ] || [ -f "/Users/thurs/.gh_token" ]; then
   if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
     GH_TOKEN=$(cat ~/.config/sops-nix/secrets/github/TOKEN)
@@ -113,7 +112,7 @@ else
 fi
 
 # update flake to local path:             ./build null --update-input local <input>
-# update flakes individually:             ./build c137 --update-input hyprland
+# update flakes individually:             ./build c137 --update-input unstable
 # replace local path with remote url:     ./build c137 --update-input nixos-thurs
 if [ "$2" == "--update-input" ] || [ "$2" == "-u" ]; then
   case $3 in
@@ -137,15 +136,13 @@ case $TARGET in
   --help)
     print_help
     ;;
-  -*u*) # lol, jank skip -u and --update-input
-    ;;
-  -*c*) # lol, jank skip -c and --check-hypr
+  ami)
+    build "$TARGET"
     ;;
   iso)
     build "$TARGET"
     ;;
-  ami)
-    build "$TARGET"
+  null)
     ;;
   sd-aarch64)
     build "$TARGET"
