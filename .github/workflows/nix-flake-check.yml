@@ -1,0 +1,13 @@
+name: Nix-Flake-Checker
+
+on: [push]
+
+jobs:
+  nix-build:
+    name: Check Flake.lock
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        # https://determinate.systems/posts/flake-checker/
+      - name: Check Nix flake inputs
+        uses: DeterminateSystems/flake-checker-action@v5

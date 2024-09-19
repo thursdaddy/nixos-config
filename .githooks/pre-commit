@@ -1,0 +1,6 @@
+#!/run/current-system/sw/bin/bash
+
+# To enable custom, git-tracked hooks:
+# git config --local include.path ../.gitconfig
+
+./.githooks/local-flake-check.sh
