@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, pkgs, config, ... }:
 with lib;
 with lib.thurs;
 let
@@ -13,7 +13,11 @@ in
   };
 
   config = mkIf cfg.enable {
-    services.xserver.displayManager.sddm.enable = true;
-    #   services.xserver.displayManager.sddm.theme = "${ import ./themes/sugar-dark/theme.nix }";
+    services.displayManager.sddm.enable = true;
+    services.displayManager.sddm.theme = "Elegant";
+
+    environment.systemPackages = with pkgs; [
+      elegant-sddm
+    ];
   };
 }

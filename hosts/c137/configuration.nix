@@ -82,6 +82,7 @@ in
         hyprlock = enabled;
         hyprpaper = enabled;
         screenshots = enabled;
+        sddm = enabled;
         swaync = enabled;
         systemd = enabled;
         waybar = enabled;
