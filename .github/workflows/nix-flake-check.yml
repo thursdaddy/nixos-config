@@ -1,0 +1,12 @@
+name: Build-Nix-Targets
+
+on: [push]
+
+jobs:
+  nix-build:
+    name: Build Nix targets
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check Nix flake inputs
+        uses: DeterminateSystems/flake-checker-action@v5
