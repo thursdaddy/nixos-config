@@ -31,6 +31,7 @@ in
       unzip
       usbutils
       wget
+      yt-dlp
     ];
   };
 }

@@ -43,6 +43,7 @@ in
           isNix = true;
         };
         vlc = enabled;
+        vscodium = enabled;
       };
 
       cli-tools = {
