@@ -31,7 +31,7 @@ in
 
         extraConfig = ''
           exec-once = steam
-          exec-once = discord && kitty btm --color gruvbox
+          exec-once = discord
 
           # MONITORS AND WORKSPACES
           monitor=DP-1, 2560x1440@165, 90x0, 1
@@ -51,6 +51,7 @@ in
           # RULES
           windowrulev2 = workspace 3 silent, class:(Steam)
           windowrulev2 = workspace 4 silent, class:(Bitwarden)
+          windowrulev2 = workspace 4 silent, class:(Proton Mail)
           windowrulev2 = workspace 5 silent, class:(discord)
           windowrulev2 = workspace 5 silent, title:(btm --color gruvbox)
           windowrulev2 = workspace 6 silent, class:(chrome-deezer.com__-Default)

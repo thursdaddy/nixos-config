@@ -34,7 +34,7 @@ in
         keybase = enabled;
         kitty = enabled;
         obsidian = enabled;
-        protonvpn = enabled;
+        proton = enabled;
         prusa-slicer = enabled;
         puddletag = enabled;
         steam = enabled;
@@ -54,7 +54,6 @@ in
         git = enabled;
         neofetch = enabled;
         nixvim = enabled;
-        protonvpn = enabled;
         sops = {
           enable = true;
           requires.unlock = true;

@@ -29,7 +29,7 @@ in
         keybase = enabled;
         kitty = enabled;
         obsidian = enabled;
-        protonvpn = enabled;
+        proton = enabled;
         syncthing = enabled;
       };
 
