@@ -84,6 +84,12 @@ update_flake_input () {
   nix flake lock --update-input "${INPUT}"
 }
 
+# update flake.lock: ./build update
+update_flake () {
+  printf "${BLUE}Updating flake.lock! ${WHITE}${INPUT}"
+  nix flake update
+}
+
 print_help () {
   printf "${ORANGE}What did you forget..?${NC}\n"
   printf "Usage: ${NC}./build ${WHITE}[target] ${GREEN}[options]${NC}\n"
@@ -101,8 +107,10 @@ fi
 # set GH_TOKEN to pull private flake
 if [ -f "/run/secrets/github/TOKEN" ] || [ -f "/Users/thurs/.gh_token" ]; then
   if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
+    printf "${ORANGE}GitHub token found!${NC}"
     GH_TOKEN=$(cat ~/.config/sops-nix/secrets/github/TOKEN)
   else
+    printf "${ORANGE}GitHub token found!${NC}"
     GH_TOKEN=$(cat /run/secrets/github/TOKEN)
   fi
   export NIX_CONFIG="extra-access-tokens = github.com=${GH_TOKEN}"
@@ -111,9 +119,9 @@ else
   GH_TOKEN=''
 fi
 
-# update flake to local path:             ./build null --update-input local <input>
-# update flakes individually:             ./build c137 --update-input unstable
-# replace local path with remote url:     ./build c137 --update-input nixos-thurs
+# update flake.nix to local path:             ./build null --update-input local <input>
+# update flake inputs individually:           ./build c137 -u unstable
+# replace local path with remote url:         ./build c137 -u nixos-thurs
 if [ "$2" == "--update-input" ] || [ "$2" == "-u" ]; then
   case $3 in
     local)
@@ -146,6 +154,9 @@ case $TARGET in
     ;;
   sd-aarch64)
     build "$TARGET"
+    ;;
+  update)
+    update_flake
     ;;
   *)
     # adhoc argument to check github for latest hypr* tags
