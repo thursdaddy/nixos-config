@@ -14,6 +14,8 @@ in
   ];
 
   config = {
+    system.stateVersion = 5;
+
     mine = {
       user = {
         enable = true;

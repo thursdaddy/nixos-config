@@ -2,11 +2,11 @@
 with lib;
 let
 
-  cfg = config.mine.apps.protonvpn;
+  cfg = config.mine.apps.proton;
 
 in
 {
-  options.mine.apps.protonvpn = {
+  options.mine.apps.proton = {
     enable = mkEnableOption "protonvpn";
   };
 
