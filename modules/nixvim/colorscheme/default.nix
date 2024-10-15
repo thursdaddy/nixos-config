@@ -1,6 +1,12 @@
 { pkgs, ... }: {
   programs.nixvim = {
     extraPlugins = [ pkgs.vimPlugins.gruvbox-nvim ];
-    colorscheme = "gruvbox";
+    extraConfigLua = ''
+      require("gruvbox").setup({
+          transparent_mode = true,
+      })
+      vim.cmd("colorscheme gruvbox")
+    '';
+    # colorscheme = "gruvbox";
   };
 }
