@@ -135,6 +135,15 @@
           ];
         };
       };
+      nixosConfigurations = {
+        "printpi" = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; inherit lib; };
+          system = "aarch64-linux";
+          modules = [
+            ./hosts/printpi/configuration.nix
+          ];
+        };
+      };
       packages.x86_64-linux = {
         ami = nixos-generators.nixosGenerate {
           specialArgs = { inherit inputs; inherit lib; };
