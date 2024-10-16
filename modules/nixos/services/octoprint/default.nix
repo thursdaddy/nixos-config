@@ -42,11 +42,23 @@ in
       };
       script = ''
         #!/usr/bin/env bash
+
+        # mount /opt/configs
         ${pkgs.sudo}/bin/sudo /run/wrappers/bin/mount /opt/configs
-        ${pkgs.coreutils}/bin/rm -rfv /var/lib/octoprint/data/SpoolManager/spoolmanager.db /var/lib/octoprint/data/PrintJobHistory
-        ${pkgs.coreutils}/bin/ln -s /opt/configs/octoprint/plugins/SpoolManager/spoolmanager.db /var/lib/octoprint/data/SpoolManager/spoolmanager.db
-        ${pkgs.coreutils}/bin/ln -s /opt/configs/octoprint/plugins/PrintJobHistory /var/lib/octoprint/data/
-        ${pkgs.coreutils}/bin/chown -Rv octoprint:octoprint /var/lib/octoprint/data/PrintJobHistory
+
+        # symlink plugin data from /opt/configs
+        source_path='
+        SpoolManager
+        PrintJobHistory
+        prusaslicerthumbnails
+        octolapse
+        '
+
+        for path in $source_path; do
+          ${pkgs.coreutils}/bin/rm -rfv /var/lib/octoprint/data/$path
+          ${pkgs.coreutils}/bin/ln -s /opt/configs/octoprint/plugins/$path /var/lib/octoprint/data/
+          ${pkgs.coreutils}/bin/chown -Rv octoprint:octoprint /var/lib/octoprint/data/$path
+        done
       '';
     };
 
@@ -102,8 +114,8 @@ in
             heatedBed = true;
             heatedChamber = false;
             id = "_default";
-            model = "Prusa MK3S+";
-            name = "Prusa MK3S+";
+            model = "Prusa MK3S";
+            name = "Prusa MK3S";
             volume = {
               custom_box = {
                 x_max = 250.0;
