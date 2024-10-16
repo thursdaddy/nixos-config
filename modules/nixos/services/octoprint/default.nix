@@ -21,6 +21,7 @@ in
       after = [ "network-online.target" ];
       requires = [ "network-online.target" ];
     };
+
     # TODO: only allow certain commands
     security.sudo.extraRules = [{
       users = [ "octoprint" ];
@@ -31,20 +32,24 @@ in
     }];
 
     systemd.services.mount-configs = {
-      description = "mount nfs that contains models and timelapse videos";
+      description = "mount nfs containing model files, timelapse and plugin files";
       wantedBy = [ "multi-user.target" ];
+      after = [ "network-online.target" ];
       requires = [ "network-online.target" ];
       serviceConfig = {
         Type = "oneshot";
+        ExecStartPre = "${pkgs.coreutils}/bin/sleep 5";
       };
       script = ''
         #!/usr/bin/env bash
-        ${pkgs.coreutils}/bin/sleep 3
         ${pkgs.sudo}/bin/sudo /run/wrappers/bin/mount /opt/configs
+        ${pkgs.coreutils}/bin/rm /var/lib/octoprint/data/SpoolManager/spoolmanager.db
+        ${pkgs.coreutils}/bin/ln -s /opt/configs/octoprint/spoolmanager.db /var/lib/octoprint/data/SpoolManager/spoolmanager.db
       '';
     };
 
     systemd.services.octoprint = {
+      after = [ "mount-configs.service" ];
       requires = [ "mount-configs.service" ];
       path = [ pkgs.python3Packages.pip pkgs.v4l-utils ];
       serviceConfig.AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
