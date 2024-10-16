@@ -43,8 +43,10 @@ in
       script = ''
         #!/usr/bin/env bash
         ${pkgs.sudo}/bin/sudo /run/wrappers/bin/mount /opt/configs
-        ${pkgs.coreutils}/bin/rm /var/lib/octoprint/data/SpoolManager/spoolmanager.db
-        ${pkgs.coreutils}/bin/ln -s /opt/configs/octoprint/spoolmanager.db /var/lib/octoprint/data/SpoolManager/spoolmanager.db
+        ${pkgs.coreutils}/bin/rm -rfv /var/lib/octoprint/data/SpoolManager/spoolmanager.db /var/lib/octoprint/data/PrintJobHistory
+        ${pkgs.coreutils}/bin/ln -s /opt/configs/octoprint/plugins/SpoolManager/spoolmanager.db /var/lib/octoprint/data/SpoolManager/spoolmanager.db
+        ${pkgs.coreutils}/bin/ln -s /opt/configs/octoprint/plugins/PrintJobHistory /var/lib/octoprint/data/
+        ${pkgs.coreutils}/bin/chown -Rv octoprint:octoprint /var/lib/octoprint/data/PrintJobHistory
       '';
     };
 
