@@ -13,10 +13,12 @@ with lib.thurs;
   config = {
     system.stateVersion = "24.05";
 
+    services.rpcbind.enable = true;
+
     fileSystems."/opt/configs" = {
       device = "192.168.20.12:/fast/configs";
       fsType = "nfs";
-      options = [ "auto" "rw" "defaults" "_netdev" ];
+      options = [ "auto" "rw" "defaults" "_netdev" "x-systemd.automount" ];
     };
 
     environment.systemPackages = with pkgs; [
