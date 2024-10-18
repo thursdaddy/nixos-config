@@ -190,6 +190,9 @@
         python = pkgs.mkShell {
           buildInputs = [
             pkgs.python311
+            (pkgs.python3.withPackages (ps: with ps; with pkgs.python3Packages; [
+              requests
+            ]))
           ];
         };
       });
