@@ -5,12 +5,16 @@ let
   cfg = config.mine.system.virtualisation.docker;
   user = config.mine.user;
 
-  check-versions-script = pkgs.writeShellApplication {
-    name = "_docker-check-versions";
-    runtimeInputs = with pkgs; [ coreutils gnused ];
-    excludeShellChecks = [ "SC2059" ];
-    text = (builtins.readFile ./scripts/check-container-versions.sh);
-  };
+  container-version-check-env = (pkgs.python311.withPackages (p:
+    with p; [ pkgs.python311Packages.requests ]));
+
+  container-version-check = pkgs.substituteAll ({
+    name = "_container-check";
+    src = ./scripts/container-version-check.py;
+    dir = "/bin";
+    isExecutable = true;
+    py = "${container-version-check-env}/bin/python";
+  });
 
 in
 {
@@ -31,7 +35,7 @@ in
     users.users.${user.name}.extraGroups = mkIf user.enable [ "docker" ];
 
     environment.systemPackages = with pkgs; [
-      (mkIf cfg.scripts.check-versions check-versions-script)
+      (mkIf cfg.scripts.check-versions container-version-check)
     ];
 
     virtualisation.docker.enable = true;
