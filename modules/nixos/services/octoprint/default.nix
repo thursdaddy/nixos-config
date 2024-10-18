@@ -147,13 +147,13 @@ in
             event_on_startup_monitoring = true;
             event_on_upload_monitoring = true;
             event_on_upload_monitoring_always = true;
-            idleTimeout = "15";
+            idleTimeout = "20";
             idleTimeoutWaitTemp = "35";
             pollingEnabled = true;
-            pollingInterval = "5";
+            pollingInterval = "1";
             powerOffWhenIdle = true;
-            thermal_runaway_max_bed = "120";
-            thermal_runaway_max_extruder = "290";
+            thermal_runaway_max_bed = "180";
+            thermal_runaway_max_extruder = "320";
             thermal_runaway_monitoring = true;
             # this part breaks the plugin :(
             # arrSmartplugs = [{
