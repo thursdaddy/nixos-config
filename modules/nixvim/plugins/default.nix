@@ -65,7 +65,7 @@
           pylsp = {
             enable = true;
             settings.plugins = {
-              black.enabled = false; # code formatter
+              black.enabled = true; # code formatter
               # code style enforcement
               flake8 = {
                 enabled = true;

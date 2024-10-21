@@ -128,7 +128,6 @@ def main(discord_flag):
 
     discord_up_to_date_containers = []
     discord_outdated_containers = []
-    discord_missing_label_containers = []
 
     for container_id, container_name in containers:
         # Get the repository URL from the label
