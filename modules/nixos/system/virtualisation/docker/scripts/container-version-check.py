@@ -1,12 +1,14 @@
 #!@py@
 
-import subprocess
-import json
-import requests
-import re
-import os
-import socket
 import argparse
+import json
+import os
+import re
+import socket
+import subprocess
+
+import requests
+
 
 def run_command(cmd):
     """Run a shell command and return the output"""
@@ -244,4 +246,3 @@ if __name__ == "__main__":
 
     # Pass the flag to the main function
     main(discord_flag=args.discord)
-

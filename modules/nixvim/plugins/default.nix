@@ -50,17 +50,43 @@
         enable = true;
         servers = {
           bashls.enable = true;
+          jsonls.enable = true;
           lua-ls = {
             enable = true;
             settings.telemetry.enable = false;
           };
+          marksman.enable = true;
           nil-ls = {
             enable = true;
             settings = {
               formatting.command = [ "nixpkgs-fmt" ];
             };
           };
+          pylsp = {
+            enable = true;
+            settings.plugins = {
+              black.enabled = false; # code formatter
+              # code style enforcement
+              flake8 = {
+                enabled = true;
+                ignore = [ "E302" "E305" "E501" ];
+              };
+              isort.enabled = true; # import sort
+              jedi.enabled = true; # autocompletion
+              mccabe.enabled = true; # code complexity checker
+              pycodestyle = {
+                enabled = true;
+                ignore = [ "E302" "E305" "E501" ];
+              };
+              pydocstyle = {
+                enabled = true;
+                ignore = [ "D400" "D415" ];
+              };
+              pylint.enabled = true;
+            };
+          };
           terraformls.enable = true;
+          yamlls.enable = true;
         };
       };
       lualine = {
@@ -101,6 +127,7 @@
           };
         };
       };
+      # render-markdown.enable = true; # not ready atm
       telescope = {
         enable = true;
         highlightTheme = "ivy";
