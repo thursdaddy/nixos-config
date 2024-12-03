@@ -20,7 +20,9 @@
       undotree.enable = true;
       auto-save = {
         enable = true;
-        triggerEvents = [ "BufLeave" ];
+        triggerEvents = {
+          immediate_save = [ "BufLeave" ];
+        };
       };
       diffview = {
         enable = true;

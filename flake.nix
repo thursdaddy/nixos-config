@@ -2,7 +2,7 @@
   description = "It's all coming together..";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -17,12 +17,12 @@
     };
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixvim = {
-      url = "github:nix-community/nixvim/nixos-24.05";
+      url = "github:nix-community/nixvim/nixos-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -116,34 +116,16 @@
         };
       };
       nixosConfigurations = {
-        "netpi3" = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; inherit lib; hostname = "netpi3"; };
-          system = "aarch64-linux";
-          modules = [
-            ./hosts/netpi/configuration.nix
-            inputs.nixos-thurs.nixosModules.netpiContainers
-          ];
-        };
-      };
-      nixosConfigurations = {
-        "travelpi" = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; inherit lib; };
-          system = "aarch64-linux";
-          modules = [
-            ./hosts/travelpi/configuration.nix
-            inputs.nixos-thurs.nixosModules.travelpiContainers
-          ];
-        };
-      };
-      nixosConfigurations = {
         "printpi" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
           system = "aarch64-linux";
           modules = [
             ./hosts/printpi/configuration.nix
+            inputs.nixos-thurs.nixosModules.printpiContainers
           ];
         };
       };
+
       packages.x86_64-linux = {
         ami = nixos-generators.nixosGenerate {
           specialArgs = { inherit inputs; inherit lib; };

@@ -54,7 +54,6 @@ in
           windowrulev2 = workspace 4 silent, class:(Proton Mail)
           windowrulev2 = workspace 5 silent, class:(discord)
           windowrulev2 = workspace 5 silent, title:(btm --color gruvbox)
-          windowrulev2 = workspace 6 silent, class:(chrome-deezer.com__-Default)
           windowrulev2 = workspace 7 silent, class:(obsidian)
           windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
           windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
@@ -119,6 +118,7 @@ in
               "$mod_SHIFT, P, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://192.168.20.80:32400"
               "$mod_SHIFT, Q, killactive"
               "$mod_SHIFT, X, exec, hyprlock"
+              "$mod_SHIFT, Z, exec, loginctl lock-session && sleep 10 && systemctl suspend"
               "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
               # Mouse Focus
               "$mod, H, movefocus, l"

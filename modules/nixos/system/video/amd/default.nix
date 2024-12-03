@@ -13,8 +13,6 @@ in
   config = mkIf cfg.enable {
     hardware.opengl = {
       enable = true;
-      driSupport = true;
-      driSupport32Bit = true;
       extraPackages = with pkgs; [
         amdvlk
         vulkan-loader

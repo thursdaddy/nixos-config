@@ -11,7 +11,7 @@ with lib.thurs;
   ];
 
   config = {
-    system.stateVersion = "24.05";
+    system.stateVersion = "24.11";
 
     services.rpcbind.enable = true;
 
@@ -46,9 +46,6 @@ with lib.thurs;
       };
 
       system = {
-        desktop = {
-          kde = enabled;
-        };
         networking = {
           networkmanager = {
             enable = true;

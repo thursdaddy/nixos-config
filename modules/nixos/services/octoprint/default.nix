@@ -11,6 +11,9 @@ in
   };
 
   config = mkIf cfg.enable {
+    environment.systemPackages = [
+      pkgs.ffmpeg
+    ];
     networking.firewall.allowedTCPPorts = [ 8080 ];
 
     systemd.services.octostream = {
@@ -51,7 +54,7 @@ in
         SpoolManager
         PrintJobHistory
         prusaslicerthumbnails
-        octolapse
+        timelapse
         '
 
         for path in $source_path; do
@@ -193,7 +196,7 @@ in
       };
       plugins = plugins: with plugins; [
         camerasettings
-        octolapse
+        timelapse
         octoprint-cancelobject
         octoprint-costestimation
         octoprint-dashboard
@@ -271,12 +274,12 @@ in
 
             octoprint-costestimation = pyself.buildPythonPackage rec {
               pname = "OctoPrint-CostEstimation";
-              version = "3.5.0";
+              version = "3.5.2";
               src = self.fetchFromGitHub {
-                owner = "OllisGit";
+                owner = "Hillshum";
                 repo = "Octoprint-CostEstimation";
                 rev = "${version}";
-                sha256 = "sha256-zlUXg+UHx3DOo8RJXlt1tMoXJZPwFydkKMds/z1ZnQY=";
+                sha256 = "sha256-SdVPVWCzw+PYmitkOF4fTc9GpQoH+maT8lvES//Fk4Y=";
               };
               propagatedBuildInputs = [ pysuper.octoprint ];
               doCheck = false;
@@ -308,6 +311,25 @@ in
               doCheck = false;
             };
 
+            timelapse = pyself.buildPythonPackage rec {
+              pname = "OctoPrint-TimeLapsePlus";
+              version = "1.4.1";
+              src = self.fetchFromGitHub {
+                owner = "cmuche";
+                repo = "octoprint-timelapseplus";
+                rev = "v${version}";
+                sha256 = "sha256-myyeM1wUYo0yrvkmnV6Xl5ThIl71olSlkOliYT/Rg/E=";
+              };
+              propagatedBuildInputs = [
+                pysuper.octoprint
+                pkgs.python312Packages.pillow
+                pkgs.python312Packages.deepdiff
+              ];
+              doCheck = false;
+            };
+
+            # TODO: this is broken in 24.11 due to missing distutils since python 3.12 no longer packages by default
+            # https://github.com/FormerLurker/Octolapse/issues/957
             octolapse = pyself.buildPythonPackage rec {
               pname = "Octolapse";
               version = "0.4.5";
@@ -319,13 +341,13 @@ in
               };
               propagatedBuildInputs = [
                 pysuper.octoprint
-                pkgs.python311Packages.pillow
-                pkgs.python311Packages.sarge
-                pkgs.python311Packages.six
-                pkgs.python311Packages.psutil
-                pkgs.python311Packages.file-read-backwards
-                pkgs.python311Packages.setuptools
-                pkgs.python311Packages.awesome-slugify
+                pkgs.python312Packages.pillow
+                pkgs.python312Packages.sarge
+                pkgs.python312Packages.six
+                pkgs.python312Packages.psutil
+                pkgs.python312Packages.file-read-backwards
+                pkgs.python312Packages.setuptools
+                pkgs.python312Packages.awesome-slugify
               ];
               doCheck = false;
             };
@@ -405,10 +427,10 @@ in
                 sha256 = "sha256-hstzXlrDTOButqfyn7qDX9ZAT4DjhfMMhfUp1EuBAmw=";
               };
               propagatedBuildInputs = [
-                pkgs.python311Packages.peewee
-                pkgs.python311Packages.qrcode
-                pkgs.python311Packages.pillow
                 pysuper.octoprint
+                pkgs.python312Packages.peewee
+                pkgs.python312Packages.qrcode
+                pkgs.python312Packages.pillow
               ];
               doCheck = false;
             };
@@ -452,7 +474,7 @@ in
               };
               propagatedBuildInputs = [
                 pysuper.octoprint
-                pkgs.python311Packages.uptime
+                pkgs.python312Packages.uptime
               ];
               doCheck = false;
             };

@@ -30,10 +30,10 @@ rebuild () {
     nixos-rebuild --flake .\#netpi1 --target-host netpi1 --use-remote-sudo switch
     printf "${BLUE}Rebuilding: ${WHITE}netpi2${NC}\n"
     nixos-rebuild --flake .\#netpi2 --target-host netpi2 --use-remote-sudo switch
-    printf "${BLUE}Rebuilding: ${WHITE}netpi3${NC}\n"
-    nixos-rebuild --flake .\#netpi3 --target-host netpi3 --use-remote-sudo switch
+    printf "${BLUE}Rebuilding: ${WHITE}printpi${NC}\n"
+    nixos-rebuild --flake .\#printpi --target-host printpi --use-remote-sudo switch
   else
-    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-remote-sudo switch
+    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-remote-sudo switch --show-trace
   fi
 }
 
@@ -73,7 +73,7 @@ update_local_input () {
   # if github url is set, replace it
   sed -i 's/      url = ".*'"${INPUT}"'.*/      url = "git+file:\/\/'"${NIXOS_THURS_PATH}"'\/projects\/nix\/'"${INPUT}"'\/";/g' flake.nix
   # finally update
-  nix flake lock --update-input "${INPUT}"
+  nix flake update "${INPUT}"
 }
 
 update_flake_input () {
@@ -81,7 +81,7 @@ update_flake_input () {
   if [[ $INPUT == "nixos-thurs" ]]; then
     sed -i 's/      url = ".*'"${INPUT}"'.*/      url = "github:thursdaddy\/'"${INPUT}"'\/main";/g' flake.nix
   fi
-  nix flake lock --update-input "${INPUT}"
+  nix flake update "${INPUT}"
 }
 
 # update flake.lock: ./build update
