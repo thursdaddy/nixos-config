@@ -30,7 +30,7 @@ in
         bottom = enabled;
         git = enabled;
         neofetch = enabled;
-        nixvim = enabled;
+        # nixvim = enabled;
         sops = {
           enable = true;
           defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml");

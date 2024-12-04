@@ -30,16 +30,19 @@ in
     boot.initrd = {
       kernelModules = [ "tpm_crb" "r8169" ];
       availableKernelModules = [ "ext4" "igb" "tun" "nft_chain_nat" ];
+      services = {
+        resolved.enable = true;
+      };
       systemd = {
         enable = true;
         extraBin.ping = "${pkgs.iputils}/bin/ping";
-        additionalUpstreamUnits = [ "systemd-resolved.service" ];
+        # additionalUpstreamUnits = [ "systemd-resolved.service" ];
         emergencyAccess = "$6$LqrW7LCddFgpEu5P$YKQFUh96sq2RfB7VSxG041STkM.ZipEaJbC5cGkiCAR6dfQEUcbzqNyAb1Fqu5MHYJPuHSfpxiKcUli.Hff8Z.";
         packages = [ pkgs.tailscale ];
         initrdBin = [ pkgs.iptables pkgs.iproute2 pkgs.tailscale ];
         users.systemd-resolve = { };
         groups.systemd-resolve = { };
-        storePaths = [ "${config.boot.initrd.systemd.package}/lib/systemd/systemd-resolved" ];
+        # storePaths = [ "${config.boot.initrd.systemd.package}/lib/systemd/systemd-resolved" ];
       };
 
       # Enable and configure network for SSH connectivity
@@ -80,8 +83,8 @@ in
           C /etc/ssh/ssh_host_ed25519_key 0600 - - - /tpm2vpn/etc/ssh/ssh_host_ed25519_key
           C /etc/ssh/ssh_host_rsa_key 0600 - - - /tpm2vpn/etc/ssh/ssh_host_rsa_key
         '';
-        "/etc/hostname".source = config.environment.etc.hostname.source;
-        "/etc/systemd/resolved.conf".source = config.environment.etc."systemd/resolved.conf".source;
+        "/etc/hostname".source = lib.mkDefault config.environment.etc.hostname.source;
+        # "/etc/systemd/resolved.conf".source = config.environment.etc."systemd/resolved.conf".source;
         "/etc/tmpfiles.d/50-tailscale.conf".text = ''
           L /var/run - - - - /run
         '';
@@ -138,10 +141,10 @@ in
             ''"FLAGS=--tun ${lib.escapeShellArg tailscale.interfaceName}"''
           ];
         };
-        systemd-resolved = {
-          wantedBy = [ "initrd.target" ];
-          serviceConfig.ExecStartPre = "-+/bin/ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf";
-        };
+        # systemd-resolved = {
+        #   wantedBy = [ "initrd.target" ];
+        #   serviceConfig.ExecStartPre = "-+/bin/ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf";
+        # };
       };
     };
   };
