@@ -29,6 +29,7 @@ in
         brave = enabled;
         chromium = enabled;
         discord = enabled;
+        element = enabled;
         gthumb = enabled;
         firefox = enabled;
         keybase = enabled;
