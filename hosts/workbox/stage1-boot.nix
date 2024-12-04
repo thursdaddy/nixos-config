@@ -36,13 +36,24 @@ in
       systemd = {
         enable = true;
         extraBin.ping = "${pkgs.iputils}/bin/ping";
-        # additionalUpstreamUnits = [ "systemd-resolved.service" ];
         emergencyAccess = "$6$LqrW7LCddFgpEu5P$YKQFUh96sq2RfB7VSxG041STkM.ZipEaJbC5cGkiCAR6dfQEUcbzqNyAb1Fqu5MHYJPuHSfpxiKcUli.Hff8Z.";
         packages = [ pkgs.tailscale ];
         initrdBin = [ pkgs.iptables pkgs.iproute2 pkgs.tailscale ];
         users.systemd-resolve = { };
         groups.systemd-resolve = { };
-        # storePaths = [ "${config.boot.initrd.systemd.package}/lib/systemd/systemd-resolved" ];
+        tmpfiles.settings."50-tailscale" = {
+          "/var/run"."L".argument = "/run";
+        };
+        tmpfiles.settings."50-ssh-host-keys" = {
+          "/etc/ssh/ssh_host_ed25519_key"."C" = {
+            argument = "/tpm2vpn/etc/ssh/ssh_host_ed25519_key";
+            mode = "0600";
+          };
+          "/etc/ssh/ssh_host_rsa_key"."C" = {
+            argument = "/tpm2vpn/etc/ssh/ssh_host_rsa_key";
+            mode = "0600";
+          };
+        };
       };
 
       # Enable and configure network for SSH connectivity
@@ -78,15 +89,6 @@ in
           /tpm2vpn/var/lib/tailscale /var/lib/tailscale none bind,x-systemd.requires-mounts-for=/tpm2vpn/var/lib/tailscale
           # nofail so it doesn't order before local-fs.target and therefore systemd-tmpfiles-setup
           /dev/mapper/keystore /keystore ext4 defaults,nofail,x-systemd.device-timeout=0,ro 0 2
-        '';
-        "/etc/tmpfiles.d/50-ssh-host-keys.conf".text = ''
-          C /etc/ssh/ssh_host_ed25519_key 0600 - - - /tpm2vpn/etc/ssh/ssh_host_ed25519_key
-          C /etc/ssh/ssh_host_rsa_key 0600 - - - /tpm2vpn/etc/ssh/ssh_host_rsa_key
-        '';
-        "/etc/hostname".source = lib.mkDefault config.environment.etc.hostname.source;
-        # "/etc/systemd/resolved.conf".source = config.environment.etc."systemd/resolved.conf".source;
-        "/etc/tmpfiles.d/50-tailscale.conf".text = ''
-          L /var/run - - - - /run
         '';
       };
 
@@ -141,11 +143,9 @@ in
             ''"FLAGS=--tun ${lib.escapeShellArg tailscale.interfaceName}"''
           ];
         };
-        # systemd-resolved = {
-        #   wantedBy = [ "initrd.target" ];
-        #   serviceConfig.ExecStartPre = "-+/bin/ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf";
-        # };
       };
     };
   };
 }
+
+
