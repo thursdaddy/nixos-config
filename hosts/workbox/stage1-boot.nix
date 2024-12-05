@@ -33,6 +33,7 @@ in
       services = {
         resolved.enable = true;
       };
+
       # Enable and configure network for SSH connectivity
       network = {
         enable = true;
@@ -42,6 +43,7 @@ in
           authorizedKeys = config.users.users.${user.name}.openssh.authorizedKeys.keys;
         };
       };
+
       # Luks volume with nix root dataset zfs key
       luks.devices.keystore = {
         device = "/dev/disk/by-uuid/a9b17587-91b8-42bd-8029-53487520ffe3";
@@ -61,6 +63,44 @@ in
         initrdBin = [ pkgs.iptables pkgs.iproute2 pkgs.tailscale ];
         users.systemd-resolve = { };
         groups.systemd-resolve = { };
+
+        network = {
+          enable = true;
+          networks."50-tailscale" = {
+            matchConfig = {
+              Name = tailscale.interfaceName;
+            };
+            linkConfig = {
+              Unmanaged = true;
+              ActivationPolicy = "manual";
+            };
+          };
+        };
+
+        # Populate /etc/fstab and ssh host keys
+        contents = {
+          "/etc/fstab".text = ''
+            /dev/mapper/tpm2vpn /tpm2vpn ext4 defaults 0 2
+            /tpm2vpn/var/lib/tailscale /var/lib/tailscale none bind,x-systemd.requires-mounts-for=/tpm2vpn/var/lib/tailscale
+            # nofail so it doesn't order before local-fs.target and therefore systemd-tmpfiles-setup
+            /dev/mapper/keystore /keystore ext4 defaults,nofail,x-systemd.device-timeout=0,ro 0 2
+          '';
+        };
+
+        tmpfiles.settings."50-tailscale" = {
+          "/var/run"."L".argument = "/run";
+        };
+        tmpfiles.settings."50-ssh-host-keys" = {
+          "/etc/ssh/ssh_host_ed25519_key"."C" = {
+            argument = "/tpm2vpn/etc/ssh/ssh_host_ed25519_key";
+            mode = "0600";
+          };
+          "/etc/ssh/ssh_host_rsa_key"."C" = {
+            argument = "/tpm2vpn/etc/ssh/ssh_host_rsa_key";
+            mode = "0600";
+          };
+        };
+
         services = {
           # Do not start SSH until the systemd.contents have been created
           systemd-tmpfiles-setup.before = [ "sshd.service" ];
@@ -102,42 +142,6 @@ in
               "PORT=${toString tailscale.port}"
               ''"FLAGS=--tun ${lib.escapeShellArg tailscale.interfaceName}"''
             ];
-          };
-        };
-        # Populate /etc/fstab and ssh host keys
-        contents = {
-          "/etc/fstab".text = ''
-            /dev/mapper/tpm2vpn /tpm2vpn ext4 defaults 0 2
-            /tpm2vpn/var/lib/tailscale /var/lib/tailscale none bind,x-systemd.requires-mounts-for=/tpm2vpn/var/lib/tailscale
-            # nofail so it doesn't order before local-fs.target and therefore systemd-tmpfiles-setup
-            /dev/mapper/keystore /keystore ext4 defaults,nofail,x-systemd.device-timeout=0,ro 0 2
-          '';
-        };
-
-        tmpfiles.settings."50-tailscale" = {
-          "/var/run"."L".argument = "/run";
-        };
-        tmpfiles.settings."50-ssh-host-keys" = {
-          "/etc/ssh/ssh_host_ed25519_key"."C" = {
-            argument = "/tpm2vpn/etc/ssh/ssh_host_ed25519_key";
-            mode = "0600";
-          };
-          "/etc/ssh/ssh_host_rsa_key"."C" = {
-            argument = "/tpm2vpn/etc/ssh/ssh_host_rsa_key";
-            mode = "0600";
-          };
-        };
-
-        network = {
-          enable = true;
-          networks."50-tailscale" = {
-            matchConfig = {
-              Name = tailscale.interfaceName;
-            };
-            linkConfig = {
-              Unmanaged = true;
-              ActivationPolicy = "manual";
-            };
           };
         };
       };
