@@ -23,7 +23,7 @@ in
       wdisplays
       wl-clipboard
       xdg-utils
-      gnome.adwaita-icon-theme
+      adwaita-icon-theme
       hicolor-icon-theme
     ];
 

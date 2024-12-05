@@ -15,7 +15,7 @@ in
     home-manager.users.${user.name} = {
       programs.kitty = {
         enable = true;
-        theme = "Hardcore";
+        themeFile = "Hardcore";
         font = {
           name = "Hack Nerd Font";
         };
