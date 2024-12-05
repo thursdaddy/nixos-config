@@ -9,8 +9,8 @@ Est. Feb 2024
 
 | Name | Details |
 |:-----------| :------|
-| [nixpkgs](https://github.com/NixOS/nixpkgs/tree/nixos-24.05) | 24.05 |
-| [unstable](https://github.com/NixOS/nixos-unstable) | Unstable |
+| [nixpkgs](https://github.com/NixOS/nixpkgs/tree/nixos-24.11) | 24.11 |
+| [unstable](https://github.com/NixOS/nixos-unstable) | Unstable nixpkgs |
 | [nixos-thurs](github:thursdaddy/nixos-thurs/main) | Private repo with sops secrets and docker container configurations via nixosModules |
 | [home-manager](https://github.com/nix-community/home-manager/tree/release-24.05) | Manage apps and configs via nix! Importing as NixOS and Darwin modules (Not standalone) |
 | [lanzaboote](https://github.com/nix-community/lanzaboote) | Wallpaper manager for Hyprland configured via home-manager|
