@@ -15,13 +15,16 @@
       lastplace.enable = true;
       lsp-format.enable = true;
       luasnip.enable = true;
-      surround.enable = true;
       tmux-navigator.enable = true;
       undotree.enable = true;
+      vim-surround.enable = true;
+      web-devicons.enable = true;
       auto-save = {
         enable = true;
-        triggerEvents = {
-          immediate_save = [ "BufLeave" ];
+        settings = {
+          triggerEvents = {
+            immediate_save = [ "BufLeave" ];
+          };
         };
       };
       diffview = {
@@ -29,18 +32,22 @@
       };
       gitblame = {
         enable = true;
-        delay = 4000;
+        settings = {
+          delay = 4000;
+        };
       };
       noice = {
         enable = true;
-        routes = [
-          {
-            view = "notify";
-            filter = {
-              event = "msg_showmode";
-            };
-          }
-        ];
+        settings = {
+          routes = [
+            {
+              view = "notify";
+              filter = {
+                event = "msg_showmode";
+              };
+            }
+          ];
+        };
       };
       nvim-tree = {
         enable = true;
@@ -53,12 +60,12 @@
         servers = {
           bashls.enable = true;
           jsonls.enable = true;
-          lua-ls = {
+          lua_ls = {
             enable = true;
             settings.telemetry.enable = false;
           };
           marksman.enable = true;
-          nil-ls = {
+          nil_ls = {
             enable = true;
             settings = {
               formatting.command = [ "nixpkgs-fmt" ];
@@ -93,9 +100,11 @@
       };
       lualine = {
         enable = true;
-        theme = "nord";
-        sections = {
-          lualine_c = [ "filename" ];
+        settings = {
+          options.theme = "nord";
+          sections = {
+            lualine_c = [ "filename" ];
+          };
         };
       };
       notify = {
