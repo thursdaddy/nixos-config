@@ -15,6 +15,7 @@
       lastplace.enable = true;
       lsp-format.enable = true;
       luasnip.enable = true;
+      markdown-preview.enable = true;
       tmux-navigator.enable = true;
       undotree.enable = true;
       vim-surround.enable = true;
