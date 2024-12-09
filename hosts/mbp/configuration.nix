@@ -39,6 +39,7 @@ in
         direnv = enabled;
         git = enabled;
         homebrew = enabled;
+        just = enabled;
         neofetch = enabled;
         nixvim = enabled;
         sops = {

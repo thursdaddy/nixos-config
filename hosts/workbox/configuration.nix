@@ -29,6 +29,7 @@ in
       cli-tools = {
         bottom = enabled;
         git = enabled;
+        just = enabled;
         neofetch = enabled;
         nixvim = enabled;
         sops = {

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2059
-
+#
+set -oeu pipefail
 # just a simple wrapper script for nix builds
 
 # ansi color codes
@@ -8,33 +9,25 @@ BLUE='\033[0;34m'
 GREEN='\033[0;32m'
 ORANGE='\033[0;33m'
 WHITE='\033[0;37m'
-GREY='\033[4;39m'
 NC='\033[0m' # No Color
 
 #--option eval-cache false
+rebuild () {
+  if [[ "${HOSTNAME:-$HOST}" == "$TARGET" ]]; then
+    printf "\n${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
+    sudo nixos-rebuild --flake .\#"$TARGET" switch
+  elif [[ "$TARGET" == "mbp" ]]; then
+    printf "\n${BLUE}Rebuidling... ${GREEN}${TARGET} (local)${NC}\n"
+    darwin-rebuild --flake .\#mbp switch
+  else
+    printf "\n${BLUE}Rebuidling... ${ORANGE}${TARGET} (remote)${NC}\n"
+    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-remote-sudo switch
+  fi
+}
+
 build () {
   printf "\n${ORANGE}Building: ${WHITE}${TARGET}${NC}\n"
   nix build .\#"${TARGET}" && copy_artifact_path && cleanup
-}
-
-rebuild () {
-  printf "\n${BLUE}Rebuilding: ${WHITE}${TARGET}${NC}\n"
-  if [[ "$TARGET" == "c137" ]]; then
-    sudo nixos-rebuild --flake .\#c137 switch
-  elif [[ "$TARGET" == "workbox" ]] && [[ "$HOST" == "workbox" ]]; then
-    sudo nixos-rebuild --flake .\#workbox switch
-  elif [[ "$TARGET" == "mbp" ]]; then
-    darwin-rebuild --flake .\#mbp switch
-  elif [[ "$TARGET" == "piholes" ]]; then
-    printf "${BLUE}Rebuilding: ${WHITE}netpi1${NC}\n"
-    nixos-rebuild --flake .\#netpi1 --target-host netpi1 --use-remote-sudo switch
-    printf "${BLUE}Rebuilding: ${WHITE}netpi2${NC}\n"
-    nixos-rebuild --flake .\#netpi2 --target-host netpi2 --use-remote-sudo switch
-    printf "${BLUE}Rebuilding: ${WHITE}printpi${NC}\n"
-    nixos-rebuild --flake .\#printpi --target-host printpi --use-remote-sudo switch
-  else
-    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-remote-sudo switch --show-trace
-  fi
 }
 
 # copy result to builds/
@@ -61,10 +54,9 @@ function cleanup {
   ls -lah builds/
 }
 
-update_local_input () {
+update_to_local_input () {
   # set path based on target
-  # my projects dir is syncthing'd across multiple machines
-  printf "${BLUE}Setting input to local: ${WHITE}${INPUT}${NC}"
+  printf "\n${BLUE}Setting input to local: ${WHITE}${INPUT}${NC}\n\n"
   if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
     local NIXOS_THURS_PATH="\/Users\/thurs"
   else
@@ -72,22 +64,41 @@ update_local_input () {
   fi
   # if github url is set, replace it
   sed -i 's/      url = ".*'"${INPUT}"'.*/      url = "git+file:\/\/'"${NIXOS_THURS_PATH}"'\/projects\/nix\/'"${INPUT}"'\/";/g' flake.nix
+
   # finally update
   nix flake update "${INPUT}"
 }
 
+check_gh_token () {
+  # set GH_TOKEN to pull private flake from private repo
+  if [ -f "/run/secrets/github/TOKEN" ] || [ -f "/Users/thurs/.gh_token" ]; then
+    if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
+      printf "${ORANGE}GitHub token found!${NC}"
+      GH_TOKEN=$(cat ~/.config/sops-nix/secrets/github/TOKEN)
+    else
+      printf "${ORANGE}GitHub token found!${NC}"
+      GH_TOKEN=$(cat /run/secrets/github/TOKEN)
+    fi
+    export NIX_CONFIG="extra-access-tokens = github.com=${GH_TOKEN}"
+  else
+    printf "${ORANGE}No GH token set.${NC}"
+    GH_TOKEN=''
+  fi
+}
+
 update_flake_input () {
-  printf "${BLUE}Updating input: ${WHITE}${INPUT}"
+  check_gh_token
   if [[ $INPUT == "nixos-thurs" ]]; then
     sed -i 's/      url = ".*'"${INPUT}"'.*/      url = "github:thursdaddy\/'"${INPUT}"'\/main";/g' flake.nix
   fi
-  nix flake update "${INPUT}"
-}
 
-# update flake.lock: ./build update
-update_flake () {
-  printf "${BLUE}Updating flake.lock! ${WHITE}${INPUT}"
-  nix flake update
+  if [ "${INPUT}" == "all" ]; then
+    printf "\n${GREEN}Updating flake.nix...${NC}\n\n"
+    nix flake update
+  else
+    printf "\n${GREEN}Updating flake.nix input: ${WHITE}${INPUT}${NC}\n\n"
+    nix flake update "${INPUT}"
+  fi
 }
 
 print_help () {
@@ -104,61 +115,26 @@ if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
   PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
 fi
 
-# set GH_TOKEN to pull private flake
-if [ -f "/run/secrets/github/TOKEN" ] || [ -f "/Users/thurs/.gh_token" ]; then
-  if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
-    printf "${ORANGE}GitHub token found!${NC}"
-    GH_TOKEN=$(cat ~/.config/sops-nix/secrets/github/TOKEN)
-  else
-    printf "${ORANGE}GitHub token found!${NC}"
-    GH_TOKEN=$(cat /run/secrets/github/TOKEN)
-  fi
-  export NIX_CONFIG="extra-access-tokens = github.com=${GH_TOKEN}"
-else
-  printf "${ORANGE}No GH token set.${NC}"
-  GH_TOKEN=''
-fi
-
-# update flake.nix to local path:             ./build null --update-input local <input>
-# update flake inputs individually:           ./build c137 -u unstable
-# replace local path with remote url:         ./build c137 -u nixos-thurs
-if [ "$2" == "--update-input" ] || [ "$2" == "-u" ]; then
-  case $3 in
-    local)
-      INPUT="${4:-nixos-thurs}"
-      update_local_input "${INPUT}"
-      ;;
-    *)
-      INPUT="$3"
-      update_flake_input "${INPUT}"
-      ;;
-  esac
-fi
-
 # flakes are married to git
 git add .
 
-# ./build <TARGET> --ARG
-TARGET=$1
-case $TARGET in
+TARGET=$2
+INPUT=$2
+
+case $1 in
   --help)
     print_help
     ;;
-  ami)
+  build)
     build "$TARGET"
     ;;
-  iso)
-    build "$TARGET"
-    ;;
-  null)
-    ;;
-  sd-aarch64)
-    build "$TARGET"
+  local)
+    update_to_local_input "${INPUT}"
     ;;
   update)
-    update_flake
+    update_flake_input "${INPUT}"
     ;;
-  *)
+  rebuild)
     # adhoc argument to check github for latest hypr* tags
     rebuild "$TARGET"
     ;;
