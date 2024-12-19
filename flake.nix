@@ -169,10 +169,10 @@
             pkgs.awscli2
           ];
         };
-        python = pkgs.mkShell {
+        python312 = pkgs.mkShell {
           buildInputs = [
-            pkgs.python311
-            (pkgs.python3.withPackages (ps: with ps; with pkgs.python3Packages; [
+            pkgs.python312Full
+            (pkgs.python312.withPackages (ps: with ps; with pkgs.python312Packages; [
               requests
             ]))
           ];
