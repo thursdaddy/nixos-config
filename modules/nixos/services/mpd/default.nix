@@ -26,6 +26,7 @@ in
       XDG_RUNTIME_DIR = "/run/user/${toString config.users.users.${user.name}.uid}";
     };
 
+    networking.firewall.allowedTCPPorts = [ 6600 ];
     services.mpd = {
       enable = true;
       user = "${user.name}";

@@ -18,6 +18,12 @@ in
   config = {
     system.stateVersion = "24.05";
 
+    services.pipewire = {
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
+
     mine = {
       user = {
         enable = true;
