@@ -30,8 +30,10 @@ in
         chromium = enabled;
         discord = enabled;
         element = enabled;
-        gthumb = enabled;
         firefox = enabled;
+        gimp = enabled;
+        gthumb = enabled;
+        inkscape = enabled;
         keybase = enabled;
         kitty = enabled;
         obsidian = enabled;
