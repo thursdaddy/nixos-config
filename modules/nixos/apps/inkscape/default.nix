@@ -6,7 +6,7 @@ let
 
 in
 {
-  options.mine.apps.gimp = {
+  options.mine.apps.inkscape = {
     enable = mkEnableOption "Install Inkscape";
   };
   config = mkIf cfg.enable {
