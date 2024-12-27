@@ -11,10 +11,10 @@ in
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [
-      pkgs.ffmpeg
+    environment.systemPackages = with pkgs; [
+      ffmpeg
+      v4l-utils #camera control
     ];
-    networking.firewall.allowedTCPPorts = [ 8080 ];
 
     systemd.services.octostream = {
       serviceConfig = {
@@ -24,6 +24,7 @@ in
       after = [ "network-online.target" ];
       requires = [ "network-online.target" ];
     };
+    networking.firewall.allowedTCPPorts = [ 8080 ];
 
     # TODO: only allow certain commands
     security.sudo.extraRules = [{
@@ -33,6 +34,10 @@ in
         options = [ "NOPASSWD" ];
       }];
     }];
+
+    users.users.octoprint.extraGroups = [
+      "video"
+    ];
 
     systemd.services.mount-configs = {
       description = "mount nfs containing model files, timelapse and plugin files";
