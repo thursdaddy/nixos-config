@@ -11,7 +11,9 @@ let
     #/usr/bin/env bash
 
     if [ -z "$1" ]; then
-      exit 1
+      SESSION=$(basename $PWD)
+    else
+      SESSION=$1
     fi
 
     tmux has-session -t $1 2>/dev/null
@@ -20,12 +22,12 @@ let
       echo "tmux session $1 does not exist!"
       path=$(find ${tmuxs_paths} -type d -name $1 -print -quit 2>&1)
       cd $path
-      tmux new-session -d -s "$1" -n nvim 'nvim' \; \
+      tmux new-session -d -s "$SESSION" -n nvim 'nvim' \; \
         new-window -n zsh \; \
         select-window -t :nvim\;
-      tmux attach-session -t $1
+      tmux attach-session -t $SESSION
     else
-      tmux attach-session -t $1
+      tmux attach-session -t $SESSION
     fi
   '');
 
@@ -68,6 +70,8 @@ in
         plugins = with pkgs; [
           tmuxPlugins.vim-tmux-navigator
           tmuxPlugins.tmux-fzf
+          tmuxPlugins.copy-toolkit
+          tmuxPlugins.yank
         ];
         extraConfig = ''
           bind | split-window -h -c "#{pane_current_path}"
@@ -130,7 +134,10 @@ in
           TEAL="#1abc9c"
           RED="#f7768e"
 
-          # CUSTOM THEME/LOOK
+          set-option -g automatic-rename on
+          set-option -g automatic-rename-format '#{b:pane_current_path}'
+
+          # riced tmux session picker
           bind-key Space choose-window -w -O name -F '#{?pane_format,#[fg=colour209]#{pane_current_command} #[fg=colour209]#{pane_title},#{?window_format,#[fg=colour209]#{window_name}#{window_flags}#{?#{==:#{window_panes},1}, #{?#{!=:#{window_name},#{pane_current_command}},#[fg=colour112]#{pane_current_command} ,}#[fg=colour39]#{pane_title},},#[fg=colour112]#{?session_grouped, (group #{session_group}: #{session_group_list}),}#{?session_attached,(attached),#[fg=colour9](unattached)}}}'
 
           set -g status-justify left
