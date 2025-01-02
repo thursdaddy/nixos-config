@@ -16,6 +16,7 @@ in
       programs.ssh = {
         enable = true;
         forwardAgent = true;
+        addKeysToAgent = "yes";
         matchBlocks = {
           "*" = {
             identityFile = "~/.ssh/id_ed25519";

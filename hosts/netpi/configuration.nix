@@ -59,7 +59,6 @@ with lib.thurs;
           unfree = enabled;
           flakes = enabled;
         };
-        security.sudonopass = enabled;
         services = {
           openssh = enabled;
         };

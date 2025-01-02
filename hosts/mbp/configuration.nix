@@ -28,6 +28,7 @@ in
         chromium = enabled;
         discord = enabled;
         firefox = enabled;
+        ghostty = enabled;
         keybase = enabled;
         kitty = enabled;
         obsidian = enabled;

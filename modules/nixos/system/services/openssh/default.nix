@@ -16,6 +16,7 @@ in
 
     # Passwordless sudo when SSH'ing with keys
     security.pam.sshAgentAuth.enable = true;
+    programs.ssh.startAgent = true;
 
     services.openssh = {
       enable = true;

@@ -16,7 +16,7 @@ in
   ];
 
   config = {
-    system.stateVersion = "24.05";
+    system.stateVersion = "24.11";
 
     services.pipewire = {
       alsa.enable = true;
@@ -30,6 +30,10 @@ in
         home-manager = enabled;
         ssh-config = enabled;
         ghToken = enabled;
+      };
+
+      apps = {
+        ghostty = enabled;
       };
 
       cli-tools = {
@@ -91,7 +95,6 @@ in
         services = {
           openssh = enabled;
         };
-        security.sudonopass = enabled;
         shell.zsh = enabled;
         utils = enabled;
         virtualisation = {
