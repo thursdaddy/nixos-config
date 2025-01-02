@@ -12,7 +12,7 @@ in
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      element-desktop-wayland
+      element-desktop
     ];
 
     systemd.user.services.element-desktop = {
@@ -24,7 +24,7 @@ in
       };
 
       serviceConfig = {
-        ExecStart = "${pkgs.element-desktop-wayland}/bin/element-desktop";
+        ExecStart = "${pkgs.element-desktop}/bin/element-desktop";
         ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
         Restart = "on-failure";
         RestartSec = "2s";

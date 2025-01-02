@@ -53,7 +53,7 @@ in
           windowrulev2 = workspace 4 silent, class:(Bitwarden)
           windowrulev2 = workspace 4 silent, class:(Proton Mail)
           windowrulev2 = workspace 5 silent, class:(discord)
-          windowrulev2 = workspace 5 silent, title:(btm --color gruvbox)
+          windowrulev2 = workspace 5 silent, title:(btm --theme gruvbox)
           windowrulev2 = workspace 7 silent, class:(obsidian)
           windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
           windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
