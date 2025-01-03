@@ -38,6 +38,7 @@ in
 
       cli-tools = {
         bottom = enabled;
+        direnv = enabled;
         git = enabled;
         just = enabled;
         neofetch = enabled;

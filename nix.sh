@@ -13,6 +13,7 @@ NC='\033[0m' # No Color
 
 #--option eval-cache false
 rebuild () {
+  check_gh_token
   if [[ "${HOSTNAME:-$HOST}" == "$TARGET" ]]; then
     printf "\n${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
     sudo nixos-rebuild --flake .\#"$TARGET" switch
@@ -21,11 +22,13 @@ rebuild () {
     darwin-rebuild --flake .\#mbp switch
   else
     printf "\n${BLUE}Rebuidling... ${ORANGE}${TARGET} (remote)${NC}\n"
+    eval "$(ssh-agent -s)" && ssh-add "${HOME}/.ssh/id_ed25519"
     nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-remote-sudo switch
   fi
 }
 
 build () {
+  check_gh_token
   printf "\n${ORANGE}Building: ${WHITE}${TARGET}${NC}\n"
   nix build .\#"${TARGET}" && copy_artifact_path && cleanup
 }
@@ -95,9 +98,11 @@ update_flake_input () {
   if [ "${INPUT}" == "all" ]; then
     printf "\n${GREEN}Updating flake.nix...${NC}\n\n"
     nix flake update
+    nix flake archive
   else
     printf "\n${GREEN}Updating flake.nix input: ${WHITE}${INPUT}${NC}\n\n"
     nix flake update "${INPUT}"
+    nix flake archive
   fi
 }
 

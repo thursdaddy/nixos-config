@@ -4,7 +4,7 @@
 
     keymaps = [
       # close panes
-      { mode = "n"; key = "<leader>o"; action = "<CMD>only<CR>"; }
+      { mode = "n"; key = "<leader><C-o>"; action = "<CMD>only<CR>"; }
       # clear highlights
       { mode = "n"; key = "<esc>"; action = "<CMD>noh<CR>"; }
 

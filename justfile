@@ -40,3 +40,10 @@ piholes:
   ./nix.sh rebuild netpi2
   ./nix.sh rebuild printpi
 
+all:
+  ./nix sh rebuild c137
+  ./nix sh rebuild workbox
+  ./nix sh rebuild cloudbox
+  ./nix sh rebuild netpi1
+  ./nix sh rebuild netpi2
+  ./nix sh rebuild printpi
