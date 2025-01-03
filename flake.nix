@@ -16,6 +16,10 @@
       flake = false;
     };
 
+    ghostty = {
+      url = "github:ghostty-org/ghostty";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -47,7 +51,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, home-manager, sops-nix, lanzaboote, nixos-thurs, ssh-keys, nixvim, ... } @ inputs:
+  outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, ghostty, home-manager, sops-nix, lanzaboote, nixos-thurs, ssh-keys, nixvim, ... } @ inputs:
     let
       lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
