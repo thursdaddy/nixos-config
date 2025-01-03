@@ -1,4 +1,4 @@
-{ lib, config, inputs, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 let
 
@@ -12,7 +12,7 @@ in
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [
-      inputs.ghostty.packages.x86_64-linux.default
+      pkgs.unstable.ghostty
     ];
   };
 }

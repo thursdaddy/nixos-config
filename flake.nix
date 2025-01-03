@@ -16,10 +16,6 @@
       flake = false;
     };
 
-    ghostty = {
-      url = "github:ghostty-org/ghostty";
-    };
-
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -51,7 +47,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, ghostty, home-manager, sops-nix, lanzaboote, nixos-thurs, ssh-keys, nixvim, ... } @ inputs:
+  outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, home-manager, sops-nix, lanzaboote, nixos-thurs, ssh-keys, nixvim, ... } @ inputs:
     let
       lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
@@ -130,41 +126,52 @@
         };
       };
 
-      packages.x86_64-linux = {
-        ami = nixos-generators.nixosGenerate {
-          specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
-          format = "amazon";
-          modules = [
-            ./systems/x86_64-ami
-            ({ ... }: { amazonImage.sizeMB = 4 * 1024; })
-          ];
-        };
-        iso = nixos-generators.nixosGenerate {
-          specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
-          format = "iso";
-          modules = [
-            ./systems/x86_64-iso
-          ];
-        };
-        sd-aarch64 = nixos-generators.nixosGenerate {
-          specialArgs = { inherit inputs; };
-          system = "aarch64-linux";
-          format = "sd-aarch64";
-          modules = [
-            ./systems/aarch64-sd
-          ];
-        };
-        vm-nogui = nixos-generators.nixosGenerate {
-          specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
-          format = "vm-nogui";
-          modules = [
-            ./systems/x86_64-vm-nogui
-          ];
-        };
-      };
+      packages = forEachSupportedSystem
+        ({ pkgs }: {
+          wallpapers = pkgs.stdenv.mkDerivation {
+            name = "wallpapers";
+            src = ./.;
+            installPhase = ''
+              mkdir -p $out/
+              cp -Rf ./assets/wallpapers/ $out/
+            '';
+          };
+          ami = nixos-generators.nixosGenerate {
+            specialArgs = {
+              inherit inputs; inherit lib;
+            };
+            system = "x86_64-linux";
+            format = "amazon";
+            modules = [
+              ./systems/x86_64-ami
+              ({ ... }: { amazonImage.sizeMB = 4 * 1024; })
+            ];
+          };
+          iso = nixos-generators.nixosGenerate {
+            specialArgs = { inherit inputs; inherit lib; };
+            system = "x86_64-linux";
+            format = "iso";
+            modules = [
+              ./systems/x86_64-iso
+            ];
+          };
+          sd-aarch64 = nixos-generators.nixosGenerate {
+            specialArgs = { inherit inputs; };
+            system = "aarch64-linux";
+            format = "sd-aarch64";
+            modules = [
+              ./systems/aarch64-sd
+            ];
+          };
+          vm-nogui = nixos-generators.nixosGenerate {
+            specialArgs = { inherit inputs; inherit lib; };
+            system = "x86_64-linux";
+            format = "vm-nogui";
+            modules = [
+              ./systems/x86_64-vm-nogui
+            ];
+          };
+        });
 
       devShells = forEachSupportedSystem ({ pkgs }: {
         tf = pkgs.mkShell {
