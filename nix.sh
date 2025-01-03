@@ -71,7 +71,7 @@ update_to_local_input () {
 
 check_gh_token () {
   # set GH_TOKEN to pull private flake from private repo
-  if [ -f "/run/secrets/github/TOKEN" ] || [ -f "/Users/thurs/.gh_token" ]; then
+  if [ -f "/run/secrets/github/TOKEN" ] || [ -f "$HOME/.config/sops-nix/secrets/github/TOKEN" ]; then
     if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
       printf "${ORANGE}GitHub token found!${NC}"
       GH_TOKEN=$(cat ~/.config/sops-nix/secrets/github/TOKEN)
