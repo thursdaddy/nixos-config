@@ -107,12 +107,17 @@ update_flake_input () {
 }
 
 print_help () {
-  printf "${ORANGE}What did you forget..?${NC}\n"
-  printf "Usage: ${NC}./build ${WHITE}[target] ${GREEN}[options]${NC}\n"
-  printf "\nArguments:\n\t${WHITE}TARGET\t${NC}Target for build/rebuild, must be defined in rebuild and build function.\n"
-  printf "\nOptions:\n"
-  printf "\t${GREEN}-u --update-input [name|local] {name-opt}\n\t\t${NC}Update flake input by name, local as first arg will update input to local path, defaults to 'nixos-thurs'.\n"
-  printf "\t\tIf input is already local, it will be updated to public github url.\n"
+  printf "${NC}DESCRIPTION:\n  Nix wrapper script to help with nixos-rebuilds, flip-flopping nixos-thurs input between local and remote urls,\n  setting github tokens when pulling from private inputs and building packages/nixos-generators targets from flake.nix${NC}\n\n"
+  printf "${NC}SYNOPSIS:\n ./nix.sh ${WHITE}[build|rebuild|local|update] ${GREEN}target${NC}\n"
+  printf "\n${NC}OPTIONS:\n \
+ ${WHITE}build${NC}\t\t  nix build --flake #.${GREEN}<target>\n\n \
+ ${WHITE}rebuild${NC}\t  nixos-rebuild flake #.${GREEN}<target>\n\n \
+ ${WHITE}local${NC}\t\t  update flake.nix input url for nixos-thurs to local path (my private nixos configuration repo)\n\n \
+ ${WHITE}update${NC}\t  nix flake update ${GREEN}<target>${NC}\n \
+ \t\t  if target is nixos-thurs and current url is local path it will update to github:thursdaddy\n \
+ \t\t  if target is \`all\` it will udpate all flake.nix inputs\n\n \
+ "
+   printf "${GREEN}target\t  ${NC}nixosConfigurations, darwinConfigurations or packages (derivations/nixos-generators) found in flake.nix\n"
 }
 
 # gnu-sed fix on MBP
@@ -123,11 +128,11 @@ fi
 # flakes are married to git
 git add .
 
-TARGET=$2
-INPUT=$2
+TARGET=${2:-null}
+INPUT=${2:-null}
 
 case $1 in
-  --help)
+  help)
     print_help
     ;;
   build)
