@@ -1,52 +1,54 @@
 host := ```
    echo $(hostname)
 ```
+statix:
+  @statix check
 
 rebuild:
-  ./nix.sh rebuild {{host}}
+  @./nix.sh rebuild {{host}}
 
 build target:
-  ./nix.sh build {{target}}
+  @./nix.sh build {{target}}
 
 local input:
-  ./nix.sh local {{input}}
+  @./nix.sh local {{input}}
 
 update input:
-  ./nix.sh update {{input}}
+  @./nix.sh update {{input}}
 
 c137:
-  ./nix.sh rebuild c137
+  @./nix.sh rebuild c137
 
 cloudbox:
-  ./nix.sh rebuild cloudbox
+  @./nix.sh rebuild cloudbox
 
 workbox:
-  ./nix.sh rebuild workbox
+  @./nix.sh rebuild workbox
 
 printpi:
-  ./nix.sh rebuild printpi
+  @./nix.sh rebuild printpi
 
 mbp:
-  ./nix.sh rebuild mbp
+  @./nix.sh rebuild mbp
 
 netpi1:
-  ./nix.sh rebuild netpi1
+  @./nix.sh rebuild netpi1
 
 netpi2:
-  ./nix.sh rebuild netpi2
+  @./nix.sh rebuild netpi2
 
 piholes:
-  ./nix.sh rebuild netpi1
-  ./nix.sh rebuild netpi2
-  ./nix.sh rebuild printpi
+  @./nix.sh rebuild netpi1
+  @./nix.sh rebuild netpi2
+  @./nix.sh rebuild printpi
 
 all:
-  ./nix.sh rebuild c137
-  ./nix.sh rebuild workbox
-  ./nix.sh rebuild cloudbox
-  ./nix.sh rebuild netpi1
-  ./nix.sh rebuild netpi2
-  ./nix.sh rebuild printpi
+  @./nix.sh rebuild c137
+  @./nix.sh rebuild workbox
+  @./nix.sh rebuild cloudbox
+  @./nix.sh rebuild netpi1
+  @./nix.sh rebuild netpi2
+  @./nix.sh rebuild printpi
 
 help:
-  ./nix.sh help
+  @./nix.sh help

@@ -144,7 +144,6 @@
             format = "amazon";
             modules = [
               ./systems/x86_64-ami
-              ({ ... }: { amazonImage.sizeMB = 4 * 1024; })
             ];
           };
           iso = nixos-generators.nixosGenerate {

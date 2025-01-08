@@ -22,7 +22,6 @@ rebuild () {
     darwin-rebuild --flake .\#mbp switch
   else
     printf "\n${BLUE}Rebuidling... ${ORANGE}${TARGET} (remote)${NC}\n"
-    eval "$(ssh-agent -s)" && ssh-add "${HOME}/.ssh/id_ed25519"
     nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-remote-sudo switch
   fi
 }
@@ -59,7 +58,7 @@ function cleanup {
 
 update_to_local_input () {
   # set path based on target
-  printf "\n${BLUE}Setting input to local: ${WHITE}${INPUT}${NC}\n\n"
+  printf "${BLUE}Setting input to local: ${WHITE}${INPUT}${NC}\n"
   if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
     local NIXOS_THURS_PATH="\/Users\/thurs"
   else
@@ -96,28 +95,28 @@ update_flake_input () {
   fi
 
   if [ "${INPUT}" == "all" ]; then
-    printf "\n${GREEN}Updating flake.nix...${NC}\n\n"
+    printf "\n${GREEN}Updating flake.nix...${NC}\n"
     nix flake update
     nix flake archive
   else
-    printf "\n${GREEN}Updating flake.nix input: ${WHITE}${INPUT}${NC}\n\n"
+    printf "\n${GREEN}Updating flake.nix input: ${WHITE}${INPUT}${NC}\n"
     nix flake update "${INPUT}"
     nix flake archive
   fi
 }
 
 print_help () {
-  printf "${NC}DESCRIPTION:\n  Nix wrapper script to help with nixos-rebuilds, flip-flopping nixos-thurs input between local and remote urls,\n  setting github tokens when pulling from private inputs and building packages/nixos-generators targets from flake.nix${NC}\n\n"
-  printf "${NC}SYNOPSIS:\n ./nix.sh ${WHITE}[build|rebuild|local|update] ${GREEN}target${NC}\n"
-  printf "\n${NC}OPTIONS:\n \
- ${WHITE}build${NC}\t\t  nix build --flake #.${GREEN}<target>\n\n \
- ${WHITE}rebuild${NC}\t  nixos-rebuild flake #.${GREEN}<target>\n\n \
- ${WHITE}local${NC}\t\t  update flake.nix input url for nixos-thurs to local path (my private nixos configuration repo)\n\n \
- ${WHITE}update${NC}\t  nix flake update ${GREEN}<target>${NC}\n \
- \t\t  if target is nixos-thurs and current url is local path it will update to github:thursdaddy\n \
- \t\t  if target is \`all\` it will udpate all flake.nix inputs\n\n \
- "
-   printf "${GREEN}target\t  ${NC}nixosConfigurations, darwinConfigurations or packages (derivations/nixos-generators) found in flake.nix\n"
+  printf "${NC}NAME:\n\n  nix.sh\n \
+\n${NC}DESCRIPTION:\n\n  Nix wrapper script to help with nixos-rebuilds, flip-flopping nixos-thurs input between local and remote urls,\n  setting github tokens when pulling from private inputs and building packages/nixos-generators targets from flake.nix${NC}\n\n\
+${NC}SYNOPSIS:\n\n  ./nix.sh ${WHITE}[build|rebuild|local|update] ${GREEN}target${NC}\n\n\
+${NC}OPTIONS:\n\n\
+  ${WHITE}build${NC}\t\tnix build --flake #.${GREEN}<target>\n\n\
+  ${WHITE}rebuild${NC}\tnixos-rebuild flake #.${GREEN}<target>\n\n\
+  ${WHITE}local${NC}\t\tupdate flake.nix input url for nixos-thurs to local path (my private nixos configuration repo)\n\n\
+  ${WHITE}update${NC}\tnix flake update ${GREEN}<target>${NC}\n\
+\t\tif target is nixos-thurs and current url is local path it will update to github:thursdaddy\n\
+\t\tif target is \`all\` it will udpate all flake.nix inputs\n
+  ${GREEN}target\t${NC}nixosConfigurations, darwinConfigurations or packages (derivations/nixos-generators) found in flake.nix\n"
 }
 
 # gnu-sed fix on MBP
