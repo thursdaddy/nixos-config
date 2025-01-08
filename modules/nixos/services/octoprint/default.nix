@@ -16,13 +16,53 @@ in
       v4l-utils #camera control
     ];
 
-    systemd.services.octostream = {
-      serviceConfig = {
-        ExecStart = "${pkgs.mjpg-streamer}/bin/mjpg_streamer -i \"input_uvc.so -r 1920x1080 -d /dev/video0 -f 30 -n\" -o \"output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www\"";
+    systemd.services = {
+      octostream = {
+        serviceConfig = {
+          ExecStart = "${pkgs.mjpg-streamer}/bin/mjpg_streamer -i \"input_uvc.so -r 1920x1080 -d /dev/video0 -f 30 -n\" -o \"output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www\"";
+        };
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network-online.target" ];
+        requires = [ "network-online.target" ];
       };
-      wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" ];
-      requires = [ "network-online.target" ];
+
+      octoprint = {
+        after = [ "mount-configs.service" ];
+        requires = [ "mount-configs.service" ];
+        path = [ pkgs.python3Packages.pip pkgs.v4l-utils ];
+        serviceConfig.AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
+      };
+
+      mount-configs = {
+        description = "mount nfs containing model files, timelapse and plugin files";
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network-online.target" ];
+        requires = [ "network-online.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStartPre = "${pkgs.coreutils}/bin/sleep 5";
+        };
+        script = ''
+          #!/usr/bin/env bash
+
+          # mount /opt/configs
+          ${pkgs.sudo}/bin/sudo /run/wrappers/bin/mount /opt/configs
+
+          # symlink plugin data from /opt/configs
+          source_path='
+          SpoolManager
+          PrintJobHistory
+          prusaslicerthumbnails
+          timelapse
+          '
+
+          for path in $source_path; do
+            ${pkgs.coreutils}/bin/rm -rfv /var/lib/octoprint/data/$path
+            ${pkgs.coreutils}/bin/ln -s /opt/configs/octoprint/plugins/$path /var/lib/octoprint/data/
+            ${pkgs.coreutils}/bin/chown -Rv octoprint:octoprint /var/lib/octoprint/data/$path
+          done
+        '';
+      };
     };
     networking.firewall.allowedTCPPorts = [ 8080 ];
 
@@ -38,44 +78,6 @@ in
     users.users.octoprint.extraGroups = [
       "video"
     ];
-
-    systemd.services.mount-configs = {
-      description = "mount nfs containing model files, timelapse and plugin files";
-      wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" ];
-      requires = [ "network-online.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStartPre = "${pkgs.coreutils}/bin/sleep 5";
-      };
-      script = ''
-        #!/usr/bin/env bash
-
-        # mount /opt/configs
-        ${pkgs.sudo}/bin/sudo /run/wrappers/bin/mount /opt/configs
-
-        # symlink plugin data from /opt/configs
-        source_path='
-        SpoolManager
-        PrintJobHistory
-        prusaslicerthumbnails
-        timelapse
-        '
-
-        for path in $source_path; do
-          ${pkgs.coreutils}/bin/rm -rfv /var/lib/octoprint/data/$path
-          ${pkgs.coreutils}/bin/ln -s /opt/configs/octoprint/plugins/$path /var/lib/octoprint/data/
-          ${pkgs.coreutils}/bin/chown -Rv octoprint:octoprint /var/lib/octoprint/data/$path
-        done
-      '';
-    };
-
-    systemd.services.octoprint = {
-      after = [ "mount-configs.service" ];
-      requires = [ "mount-configs.service" ];
-      path = [ pkgs.python3Packages.pip pkgs.v4l-utils ];
-      serviceConfig.AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
-    };
 
     services.octoprint = {
       enable = true;

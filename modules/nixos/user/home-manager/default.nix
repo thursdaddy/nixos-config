@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.user.home-manager;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
   # TODO: refactor this so its not randomly in user config
   allowed-unfree-packages = [
@@ -18,8 +18,10 @@ in
   ];
 
   config = mkIf cfg.enable {
-    home-manager.useUserPackages = true;
-    home-manager.extraSpecialArgs = { inherit inputs; inherit user; inherit allowed-unfree-packages; };
-    home-manager.users.${user.name}.imports = [ ./home.nix ];
+    home-manager = {
+      useUserPackages = true;
+      extraSpecialArgs = { inherit inputs; inherit user; inherit allowed-unfree-packages; };
+      users.${user.name}.imports = [ ./home.nix ];
+    };
   };
 }

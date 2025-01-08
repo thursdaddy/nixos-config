@@ -2,8 +2,9 @@
 
   programs.home-manager.enable = true;
 
-  home.username = "${user.name}";
-  home.homeDirectory = "${user.homeDir}";
-  home.stateVersion = "24.05";
-
+  home = {
+    username = "${user.name}";
+    stateVersion = "24.11";
+    homeDirectory = "${user.homeDir}";
+  };
 }

@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.home.alacritty;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {
@@ -17,20 +17,19 @@ in
 
       programs.alacritty = {
         enable = true;
-
         settings = {
           window.opacity = 0.9;
-          cursor.style.shape = "Underline";
-          cursor.style.blinking = "Always";
-          cursor.thickness = 0.20;
-
+          cursor = {
+            style = {
+              shape = "Underline";
+              blinking = "Always";
+            };
+            thickness = 0.20;
+          };
           selection.save_to_clipboard = true;
-
           decorations = "none";
         };
       };
-
     };
   };
-
 }

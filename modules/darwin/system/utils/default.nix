@@ -19,6 +19,7 @@ in
       "ripgrep"
       "reattach-to-user-namespace"
       "wakeonlan"
+      "statix"
     ];
   };
 }

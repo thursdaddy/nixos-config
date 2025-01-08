@@ -26,6 +26,7 @@ in
       pciutils
       ripgrep
       shellcheck
+      statix
       smartmontools
       tree
       unzip

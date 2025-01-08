@@ -23,7 +23,7 @@ in
       settings = {
         PasswordAuthentication = false;
         PermitRootLogin =
-          if (cfg.root)
+          if cfg.root
           then "prohibit-password"
           else mkDefault "no";
       };

@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.desktop.hypridle;
-  user = config.mine.user;
+  inherit (config.mine) user;
   notify-message = "notify-send \"$(date '+%A %I:%M:%S')\"";
 
 in

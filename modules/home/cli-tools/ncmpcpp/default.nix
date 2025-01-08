@@ -3,7 +3,7 @@ with lib;
 let
 
   cfg = config.mine.cli-tools.ncmpcpp;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {
@@ -15,7 +15,7 @@ in
     home-manager.users.${user.name} = {
       programs.ncmpcpp = {
         enable = true;
-        package = (pkgs.ncmpcpp.override { visualizerSupport = true; });
+        package = pkgs.ncmpcpp.override { visualizerSupport = true; };
         mpdMusicDir = "/music";
         settings = {
           mpd_host = "127.0.0.1";

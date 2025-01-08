@@ -3,18 +3,18 @@ with lib;
 let
 
   cfg = config.mine.system.virtualisation.docker;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
-  container-version-check-env = (pkgs.python311.withPackages (p:
-    with p; [ pkgs.python311Packages.requests ]));
+  container-version-check-env = pkgs.python311.withPackages (p:
+    with p; [ pkgs.python311Packages.requests ]);
 
-  container-version-check = pkgs.substituteAll ({
+  container-version-check = pkgs.substituteAll {
     name = "_container-check";
     src = ./scripts/container-version-check.py;
     dir = "/bin";
     isExecutable = true;
     py = "${container-version-check-env}/bin/python";
-  });
+  };
 
 in
 {

@@ -3,7 +3,7 @@ with lib;
 with lib.thurs;
 let
 
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {
@@ -45,7 +45,7 @@ in
         nixvim = enabled;
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml");
+          defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
           ageKeyFile = {
             path = "${user.homeDir}/.config/sops/age/keys.txt";
           };

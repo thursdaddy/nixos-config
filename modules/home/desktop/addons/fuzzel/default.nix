@@ -3,7 +3,7 @@ with lib;
 let
 
   cfg = config.mine.desktop.fuzzel;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {

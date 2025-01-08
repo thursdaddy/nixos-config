@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.cli-tools.sops;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {
@@ -25,12 +25,12 @@ in
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
       sops = {
-        defaultSopsFile = cfg.defaultSopsFile;
+        inherit (cfg) defaultSopsFile;
         age.keyFile = cfg.ageKeyFile.path;
 
         # this is defined in here because I use home-manager to mange git config and
         # only want to use the sop home-manager implementation on my darwin system.
-        secrets."github/TOKEN" = mkIf (user.ghToken.enable) { };
+        secrets."github/TOKEN" = mkIf user.ghToken.enable { };
       };
     };
   };

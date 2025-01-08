@@ -3,7 +3,7 @@ with lib;
 with lib.thurs;
 let
 
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {
@@ -45,7 +45,7 @@ in
         nixvim = enabled;
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml");
+          defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
         };
         tmux = {
           enable = true;
@@ -63,9 +63,11 @@ in
         mpd = enabled;
         prometheus = {
           enable = true;
-          exporters.node = enabled;
-          exporters.smartctl = enabled;
-          exporters.zfs = enabled;
+          exporters = {
+            node = enabled;
+            smartctl = enabled;
+            zfs = enabled;
+          };
         };
         tailscale = {
           enable = true;

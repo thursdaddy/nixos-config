@@ -9,9 +9,10 @@ with lib.thurs;
   ];
 
   config = {
-    system.stateVersion = "24.05";
+    system.stateVersion = "24.11";
 
     ec2.hvm = true;
+    amazonImage.sizeMB = 4 * 1024;
 
     mine = {
       services.tailscale = {

@@ -3,7 +3,7 @@ with lib;
 let
 
   cfg = config.mine.cli-tools.direnv;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {
@@ -17,6 +17,5 @@ in
         enable = true;
       };
     };
-
   };
 }

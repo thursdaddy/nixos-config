@@ -4,10 +4,10 @@ with lib.thurs;
 let
 
   cfg = config.mine.cli-tools.tmux;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
   tmuxs_paths = builtins.concatStringsSep " " cfg.sessionizer.searchPaths;
-  tmuxs = (pkgs.writeShellScriptBin "tmuxs" ''
+  tmuxs = pkgs.writeShellScriptBin "tmuxs" ''
     #/usr/bin/env bash
 
     if [ -z "$1" ]; then
@@ -29,7 +29,7 @@ let
     else
       tmux attach-session -t $SESSION
     fi
-  '');
+  '';
 
 in
 {

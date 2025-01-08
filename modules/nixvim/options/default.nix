@@ -1,7 +1,7 @@
 { lib, config, ... }:
 with lib;
 let
-  user = config.mine.user;
+  inherit (config.mine) user;
 in
 {
   programs.nixvim = {
@@ -25,7 +25,7 @@ in
       swapfile = false;
       backup = false;
       undofile = true;
-      undodir = mkIf (user.enable) "${user.homeDir}/.vim/undodir";
+      undodir = mkIf user.enable "${user.homeDir}/.vim/undodir";
 
       hlsearch = true;
       incsearch = true;

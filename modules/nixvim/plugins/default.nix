@@ -200,6 +200,7 @@
       transparent-nvim
       vim-shellcheck
       vim-just
+      vim-rhubarb
     ];
   };
 }

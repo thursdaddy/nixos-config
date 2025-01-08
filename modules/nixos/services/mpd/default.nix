@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.services.mpd;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {

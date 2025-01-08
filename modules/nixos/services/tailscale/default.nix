@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.services.tailscale;
-  sops = config.mine.cli-tools.sops;
+  inherit (config.mine.cli-tools) sops;
 
 in
 {
@@ -21,15 +21,15 @@ in
       package = pkgs.unstable.tailscale;
       openFirewall = true;
       authKeyFile = mkIf sops.enable config.sops.secrets."tailscale/AUTH_KEY".path;
-      useRoutingFeatures = config.mine.services.tailscale.useRoutingFeatures;
-      extraUpFlags = config.mine.services.tailscale.extraUpFlags;
+      inherit (config.mine.services.tailscale) useRoutingFeatures;
+      inherit (config.mine.services.tailscale) extraUpFlags;
     };
 
     sops.secrets."tailscale/AUTH_KEY" = mkIf sops.enable {
-      sopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml");
+      sopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
     };
 
-    systemd.services.tailscaled-autoconnect-reload = mkIf ((sops.requires.network) || sops.ageKeyFile.ageKeyInSSM.enable) {
+    systemd.services.tailscaled-autoconnect-reload = mkIf (sops.requires.network || sops.ageKeyFile.ageKeyInSSM.enable) {
       description = "Restart tailscaled-autoconnect after secrets have been decrypted";
       after = [ "decrypt-sops-after-network.service" ];
       partOf = [ "decrypt-sops-after-network.service" ];

@@ -3,7 +3,7 @@ with lib;
 with lib.thurs;
 let
 
-  user = config.mine.user;
+  inherit (config.mine) user;
   home-directory = "/home/${user.name}";
 
 in

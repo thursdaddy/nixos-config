@@ -4,7 +4,7 @@ with lib.thurs;
 let
 
   cfg = config.mine.desktop.hyprlock;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {

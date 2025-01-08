@@ -4,11 +4,11 @@ with lib.thurs;
 let
 
   cfg = config.mine.cli-tools.sops;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
   ssm_systemd_config = mkIf cfg.ageKeyFile.ageKeyInSSM.enable {
     Environment = "SOPS_AGE_KEY_FILE=${cfg.ageKeyFile.path}";
-    ExecStartPre = (ssm_systemd_script + "/bin/get-age-key-from-ssm");
+    ExecStartPre = ssm_systemd_script + "/bin/get-age-key-from-ssm";
   };
   ssm_systemd_script = pkgs.writeShellApplication {
     name = "get-age-key-from-ssm";
@@ -66,7 +66,7 @@ in
     ];
 
     sops = {
-      defaultSopsFile = config.mine.cli-tools.sops.defaultSopsFile;
+      inherit (config.mine.cli-tools.sops) defaultSopsFile;
       age.keyFile = config.mine.cli-tools.sops.ageKeyFile.path;
 
       # this is defined in here because I use home-manager to mange git config but
@@ -82,12 +82,12 @@ in
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
       requires = [ "network-online.target" ];
-      serviceConfig = (ssm_systemd_config // {
+      serviceConfig = ssm_systemd_config // {
         Type = "oneshot";
         RemainAfterExit = true;
         Restart = "on-failure";
         RestartSec = "3s";
-      });
+      };
       script = config.system.activationScripts.setupSecrets.text;
     };
 

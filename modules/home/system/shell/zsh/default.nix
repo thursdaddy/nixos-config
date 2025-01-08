@@ -3,7 +3,7 @@ with lib;
 let
 
   cfg = config.mine.system.shell.zsh;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {

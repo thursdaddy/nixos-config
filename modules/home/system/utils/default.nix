@@ -3,7 +3,7 @@ with lib;
 let
 
   cfg = config.mine.system.utils;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {

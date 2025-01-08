@@ -3,7 +3,7 @@ with lib;
 let
 
   cfg = config.mine.apps.brave;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {

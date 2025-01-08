@@ -3,7 +3,7 @@ with lib;
 let
 
   cfg = config.mine.desktop.waybar;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
   custom_modules = {
     "mpd" = {

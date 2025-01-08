@@ -4,8 +4,8 @@ with lib.thurs;
 let
 
   cfg = config.mine.desktop.hyprpaper;
-  user = config.mine.user;
-  wallpapers = inputs.self.packages.${pkgs.system}.wallpapers;
+  inherit (config.mine) user;
+  inherit (inputs.self.packages.${pkgs.system}) wallpapers;
 
 in
 {

@@ -3,7 +3,7 @@ with lib;
 let
 
   cfg = config.mine.services.flameshot;
-  user = config.mine.user;
+  inherit (config.mine) user;
 
 in
 {

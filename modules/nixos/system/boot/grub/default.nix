@@ -11,10 +11,12 @@ in
   };
 
   config = mkIf cfg.enable {
-    boot.loader.grub.enable = true;
-    boot.loader.grub.useOSProber = false;
-    boot.loader.grub.efiSupport = true;
-    boot.loader.grub.efiInstallAsRemovable = true;
-    boot.loader.grub.device = "nodev";
+    boot.loader.grub = {
+      enable = true;
+      useOSProber = false;
+      efiSupport = true;
+      efiInstallAsRemovable = true;
+      device = "nodev";
+    };
   };
 }

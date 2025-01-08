@@ -4,4 +4,5 @@
 # git config -f .gitconfig core.hooksPath .githooks
 # git config --local include.path ../.gitconfig
 
+./.githooks/statix.sh
 ./.githooks/local-flake-check.sh

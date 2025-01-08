@@ -11,7 +11,7 @@ with lib.thurs;
   ];
 
   config = {
-    system.stateVersion = "24.05";
+    system.stateVersion = "24.11";
 
     environment.systemPackages = with pkgs; [
       awscli2
@@ -34,7 +34,7 @@ with lib.thurs;
         nixvim = enabled;
         sops = {
           enable = true;
-          defaultSopsFile = (inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml");
+          defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
         };
         tmux = enabled;
       };
