@@ -74,8 +74,6 @@
             inputs.nixos-thurs.nixosModules.c137Containers
           ];
         };
-      };
-      nixosConfigurations = {
         "cloudbox" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
           system = "x86_64-linux";
@@ -84,8 +82,6 @@
             inputs.nixos-thurs.nixosModules.cloudboxContainers
           ];
         };
-      };
-      nixosConfigurations = {
         "workbox" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
           system = "x86_64-linux";
@@ -94,8 +90,6 @@
             inputs.nixos-thurs.nixosModules.workboxContainers
           ];
         };
-      };
-      nixosConfigurations = {
         "netpi1" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; hostname = "netpi1"; };
           system = "aarch64-linux";
@@ -104,8 +98,6 @@
             inputs.nixos-thurs.nixosModules.netpiContainers
           ];
         };
-      };
-      nixosConfigurations = {
         "netpi2" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; hostname = "netpi2"; };
           system = "aarch64-linux";
@@ -114,8 +106,6 @@
             inputs.nixos-thurs.nixosModules.netpiContainers
           ];
         };
-      };
-      nixosConfigurations = {
         "printpi" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
           system = "aarch64-linux";
@@ -126,51 +116,48 @@
         };
       };
 
-      packages = forEachSupportedSystem
-        ({ pkgs }: {
-          wallpapers = pkgs.stdenv.mkDerivation {
-            name = "wallpapers";
-            src = ./.;
-            installPhase = ''
-              mkdir -p $out/
-              cp -Rf ./assets/wallpapers/ $out/
-            '';
-          };
-          ami = nixos-generators.nixosGenerate {
-            specialArgs = {
-              inherit inputs; inherit lib;
-            };
-            system = "x86_64-linux";
-            format = "amazon";
-            modules = [
-              ./systems/x86_64-ami
-            ];
-          };
-          iso = nixos-generators.nixosGenerate {
-            specialArgs = { inherit inputs; inherit lib; };
-            system = "x86_64-linux";
-            format = "iso";
-            modules = [
-              ./systems/x86_64-iso
-            ];
-          };
-          sd-aarch64 = nixos-generators.nixosGenerate {
-            specialArgs = { inherit inputs; };
-            system = "aarch64-linux";
-            format = "sd-aarch64";
-            modules = [
-              ./systems/aarch64-sd
-            ];
-          };
-          vm-nogui = nixos-generators.nixosGenerate {
-            specialArgs = { inherit inputs; inherit lib; };
-            system = "x86_64-linux";
-            format = "vm-nogui";
-            modules = [
-              ./systems/x86_64-vm-nogui
-            ];
-          };
-        });
+      packages = forEachSupportedSystem ({ pkgs }: {
+        wallpapers = pkgs.stdenv.mkDerivation {
+          name = "wallpapers";
+          src = ./.;
+          installPhase = ''
+            mkdir -p $out/
+            cp -Rf ./assets/wallpapers/ $out/
+          '';
+        };
+        ami = nixos-generators.nixosGenerate {
+          specialArgs = { inherit inputs; inherit lib; };
+          system = "x86_64-linux";
+          format = "amazon";
+          modules = [
+            ./systems/x86_64-ami
+          ];
+        };
+        iso = nixos-generators.nixosGenerate {
+          specialArgs = { inherit inputs; inherit lib; };
+          system = "x86_64-linux";
+          format = "iso";
+          modules = [
+            ./systems/x86_64-iso
+          ];
+        };
+        sd-aarch64 = nixos-generators.nixosGenerate {
+          specialArgs = { inherit inputs; inherit lib; };
+          system = "aarch64-linux";
+          format = "sd-aarch64";
+          modules = [
+            ./systems/aarch64-sd
+          ];
+        };
+        vm-nogui = nixos-generators.nixosGenerate {
+          specialArgs = { inherit inputs; inherit lib; };
+          system = "x86_64-linux";
+          format = "vm-nogui";
+          modules = [
+            ./systems/x86_64-vm-nogui
+          ];
+        };
+      });
 
       devShells = forEachSupportedSystem ({ pkgs }: {
         tf = pkgs.mkShell {
