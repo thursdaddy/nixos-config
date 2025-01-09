@@ -1,6 +1,12 @@
-name: Nix-Flake-Checker
+name: Flake ❄️ Checker ✅
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 1 * * 6'
+  workflow_dispatch:
 
 jobs:
   nix-build:
@@ -8,6 +14,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-        # https://determinate.systems/posts/flake-checker/
+        with:
+          fetch-depth: 0
       - name: Check Nix flake inputs
         uses: DeterminateSystems/flake-checker-action@v5
