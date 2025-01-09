@@ -1,4 +1,16 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+let
+  fzf-checkout = pkgs.vimUtils.buildVimPlugin {
+    name = "fzf-checkout";
+    src = pkgs.fetchFromGitHub {
+      owner = "stsewd";
+      repo = "fzf-checkout.vim";
+      rev = "db0289a6c8e77b08a0150627733722fd07d5fa62";
+      hash = "sha256-lM5vv0ucgxvoc8ZtJwShDoY7ji6BYl6VZA2bYN0UU2s=";
+    };
+  };
+in
+{
   programs.nixvim = {
     plugins = {
       barbecue.enable = true;
@@ -22,11 +34,7 @@
       web-devicons.enable = true;
       auto-save = {
         enable = true;
-        settings = {
-          triggerEvents = {
-            immediate_save = [ "BufLeave" ];
-          };
-        };
+        settings = { triggerEvents = { immediate_save = [ "BufLeave" ]; }; };
       };
       diffview = {
         enable = true;
@@ -40,14 +48,11 @@
       noice = {
         enable = true;
         settings = {
-          routes = [
-            {
-              view = "notify";
-              filter = {
-                event = "msg_showmode";
-              };
-            }
-          ];
+          presets = {
+            bottom_search = true;
+            long_message_to_split = true;
+          };
+          routes = [{ view = "notify"; filter = { event = "msg_showmode"; }; }];
         };
       };
       nvim-tree = {
@@ -68,9 +73,7 @@
           marksman.enable = true;
           nil_ls = {
             enable = true;
-            settings = {
-              formatting.command = [ "nixpkgs-fmt" ];
-            };
+            settings = { formatting.command = [ "nixpkgs-fmt" ]; };
           };
           pylsp = {
             enable = true;
@@ -139,7 +142,6 @@
           };
         };
       };
-      # render-markdown.enable = true; # not ready atm
       telescope = {
         enable = true;
         highlightTheme = "ivy";
@@ -181,6 +183,9 @@
       { mode = "n"; key = "<C-j>"; action = "<CMD>TmuxNavigateDown<CR>zz"; }
       { mode = "n"; key = "<C-k>"; action = "<CMD>TmuxNavigateUp<CR>zz"; }
       { mode = "n"; key = "<C-l>"; action = "<CMD>TmuxNavigateRight<CR>zz"; }
+      # markdown-preview
+      { mode = "n"; key = "<leader>md"; action = "<CMD>MarkdownPreview<CR>"; }
+      { mode = "n"; key = "<leader>mds"; action = "<CMD>MarkdownPreviewStop<CR>"; }
       # nvim-tree
       { mode = "n"; key = "<leader>e"; action = "<CMD>NvimTreeToggle<CR>"; }
       { mode = "n"; key = "<leader>E"; action = "<CMD>NvimTreeFocus<CR>"; }
@@ -196,11 +201,13 @@
       { mode = "n"; key = "<leader>g."; action = "<CMD>diffget //3<CR>"; options.noremap = true; }
     ];
 
-    extraPlugins = with pkgs.unstable.vimPlugins; [
-      transparent-nvim
-      vim-shellcheck
-      vim-just
-      vim-rhubarb
+    extraPlugins = with pkgs; [
+      fzf-checkout
+      unstable.vimPlugins.transparent-nvim
+      unstable.vimPlugins.vim-shellcheck
+      unstable.vimPlugins.vim-just
+      unstable.vimPlugins.vim-rhubarb
+      vimPlugins.fzfWrapper
     ];
   };
 }
