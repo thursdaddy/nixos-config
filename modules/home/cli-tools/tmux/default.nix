@@ -74,6 +74,7 @@ in
           tmuxPlugins.yank
         ];
         extraConfig = ''
+          TMUX_FZF_LAUNCH_KEY="C-Space"
           bind | split-window -h -c "#{pane_current_path}"
           bind _ split-window -v -c "#{pane_current_path}"
 

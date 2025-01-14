@@ -3,6 +3,7 @@ with lib;
 let
 
   cfg = config.mine.services.ollama;
+  host_c137 = config.mine.system.networking.networkmanager.hostname == "c137";
 
 in
 {
@@ -22,7 +23,7 @@ in
       host = "0.0.0.0";
       port = 11434;
       acceleration = "rocm";
-      environmentVariables = {
+      environmentVariables = mkIf host_c137 {
         HSA_OVERRIDE_GFX_VERSION = "10.3.0";
       };
     };

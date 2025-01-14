@@ -61,6 +61,7 @@ in
 
       services = {
         mpd = enabled;
+        ollama = enabled;
         prometheus = {
           enable = true;
           exporters = {
