@@ -75,6 +75,7 @@ in
           useRoutingFeatures = "client";
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
         };
+        upsnap = enabled;
       };
 
       system = {
