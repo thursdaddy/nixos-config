@@ -19,7 +19,7 @@ in
     systemd.services = {
       octostream = {
         serviceConfig = {
-          ExecStart = "${pkgs.mjpg-streamer}/bin/mjpg_streamer -i \"input_uvc.so -r 1920x1080 -d /dev/video0 -f 30 -n\" -o \"output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www\"";
+          ExecStart = "${pkgs.mjpg-streamer}/bin/mjpg_streamer -i \"input_uvc.so -r 1280x720 -d /dev/video0 -f 30 -n\" -o \"output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www\"";
         };
         wantedBy = [ "multi-user.target" ];
         after = [ "network-online.target" ];

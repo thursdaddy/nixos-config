@@ -60,6 +60,10 @@ in
           windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
           windowrulev2 = nodim, class:(chrome-youtube.com__-Default)
           windowrulev2 = size 90%, class:(chrome-youtube.com__-Default)
+          windowrulev2 = workspace 8 silent, class:(chrome-music.youtube.com__-Default)
+          windowrulev2 = maximize, class:(chrome-music.youtube.com__-Default)
+          windowrulev2 = nodim, class:(chrome-music.youtube.com__-Default)
+          windowrulev2 = size 90%, class:(chrome-music.youtube.com__-Default)
         '';
 
         settings = {
@@ -119,6 +123,7 @@ in
             "$mod_SHIFT, X, exec, hyprlock"
             "$mod_SHIFT, Z, exec, loginctl lock-session && sleep 10 && systemctl suspend"
             "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
+            "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://music.youtube.com"
             # Mouse Focus
             "$mod, H, movefocus, l"
             "$mod, L, movefocus, r"

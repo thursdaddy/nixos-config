@@ -34,7 +34,7 @@ in
       web-devicons.enable = true;
       auto-save = {
         enable = true;
-        settings = { triggerEvents = { immediate_save = [ "BufLeave" ]; }; };
+        settings = { triggerEvents = { immediate_save = [ "FocusLost" ]; }; };
       };
       diffview = {
         enable = true;

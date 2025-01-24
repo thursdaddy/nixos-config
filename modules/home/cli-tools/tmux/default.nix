@@ -8,7 +8,7 @@ let
 
   tmuxs_paths = builtins.concatStringsSep " " cfg.sessionizer.searchPaths;
   tmuxs = pkgs.writeShellScriptBin "tmuxs" ''
-    #/usr/bin/env bash
+    # tmuxs, like tmux + sessions
 
     if [ -z "$1" ]; then
       SESSION=$(basename $PWD)
@@ -74,7 +74,7 @@ in
           tmuxPlugins.yank
         ];
         extraConfig = ''
-          TMUX_FZF_LAUNCH_KEY="C-Space"
+          TMUX_FZF_LAUNCH_KEY="C-space"
           bind | split-window -h -c "#{pane_current_path}"
           bind _ split-window -v -c "#{pane_current_path}"
 

@@ -11,8 +11,9 @@ in
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [
-      pkgs.unstable.keymapp
+    environment.systemPackages = with pkgs; [
+      unstable.keymapp
     ];
+    hardware.keyboard.zsa.enable = true;
   };
 }
