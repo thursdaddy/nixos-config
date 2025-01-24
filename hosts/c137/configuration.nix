@@ -31,6 +31,7 @@ in
         discord = enabled;
         element = enabled;
         firefox = enabled;
+        freecad = enabled;
         ghostty = enabled;
         gimp = enabled;
         gthumb = enabled;
