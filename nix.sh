@@ -13,23 +13,23 @@ NC='\033[0m' # No Color
 
 #--option eval-cache false
 rebuild () {
-  check_gh_token
   if [[ "${HOSTNAME:-$HOST}" == "$TARGET" ]]; then
-    printf "\n${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
+    printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
     sudo nixos-rebuild --flake .\#"$TARGET" switch
   elif [[ "$TARGET" == "mbp" ]]; then
-    printf "\n${BLUE}Rebuidling... ${GREEN}${TARGET} (local)${NC}\n"
+    printf "${BLUE}Rebuidling... ${GREEN}${TARGET} (local)${NC}\n"
     darwin-rebuild --flake .\#mbp switch
   else
-    printf "\n${BLUE}Rebuidling... ${ORANGE}${TARGET} (remote)${NC}\n"
+    printf "${BLUE}Rebuidling... ${ORANGE}${TARGET} (remote)${NC}\n"
     nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-remote-sudo switch
   fi
 }
 
 build () {
-  check_gh_token
   printf "\n${ORANGE}Building: ${WHITE}${TARGET}${NC}\n"
-  nix build .\#"${TARGET}" && copy_artifact_path && cleanup
+  nix build .\#"${TARGET}" &&\
+    copy_artifact_path &&\
+    cleanup
 }
 
 # copy result to builds/
@@ -71,43 +71,24 @@ update_to_local_input () {
   nix flake update "${INPUT}"
 }
 
-check_gh_token () {
-  # set GH_TOKEN to pull private flake from private repo
-  if [ -f "/run/secrets/github/TOKEN" ] || [ -f "$HOME/.config/sops-nix/secrets/github/TOKEN" ]; then
-    if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
-      printf "${ORANGE}GitHub token found!${NC}"
-      GH_TOKEN=$(cat ~/.config/sops-nix/secrets/github/TOKEN)
-    else
-      printf "${ORANGE}GitHub token found!${NC}"
-      GH_TOKEN=$(cat /run/secrets/github/TOKEN)
-    fi
-    export NIX_CONFIG="extra-access-tokens = github.com=${GH_TOKEN}"
-  else
-    printf "${ORANGE}No GH token set.${NC}"
-    GH_TOKEN=''
-  fi
-}
-
 update_flake_input () {
-  check_gh_token
   if [[ $INPUT == "nixos-thurs" ]]; then
     sed -i 's/      url = ".*'"${INPUT}"'.*/      url = "github:thursdaddy\/'"${INPUT}"'\/main";/g' flake.nix
   fi
 
   if [ "${INPUT}" == "all" ]; then
-    printf "\n${GREEN}Updating flake.nix...${NC}\n"
+    printf "${GREEN}Updating flake.nix...${NC}\n"
     nix flake update
-    nix flake archive
   else
-    printf "\n${GREEN}Updating flake.nix input: ${WHITE}${INPUT}${NC}\n"
+    printf "${GREEN}Updating flake.nix input: ${WHITE}${INPUT}${NC}\n"
     nix flake update "${INPUT}"
-    nix flake archive
   fi
+  nix flake archive
 }
 
 print_help () {
   printf "${NC}NAME:\n\n  nix.sh\n \
-\n${NC}DESCRIPTION:\n\n  Nix wrapper script to help with nixos-rebuilds, flip-flopping nixos-thurs input between local and remote urls,\n  setting github tokens when pulling from private inputs and building packages/nixos-generators targets from flake.nix${NC}\n\n\
+\n${NC}DESCRIPTION:\n\n  Nix wrapper script to help with nixos-rebuilds, flip-flopping nixos-thurs input between local and remote urls,\n and building packages/nixos-generators targets from flake.nix${NC}\n\n\
 ${NC}SYNOPSIS:\n\n  ./nix.sh ${WHITE}[build|rebuild|local|update] ${GREEN}target${NC}\n\n\
 ${NC}OPTIONS:\n\n\
   ${WHITE}build${NC}\t\tnix build --flake #.${GREEN}<target>\n\n\
@@ -144,7 +125,6 @@ case $1 in
     update_flake_input "${INPUT}"
     ;;
   rebuild)
-    # adhoc argument to check github for latest hypr* tags
     rebuild "$TARGET"
     ;;
 esac

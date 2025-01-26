@@ -15,7 +15,7 @@ in
     email = mkOpt types.str "thursdaddy@pm.me" "My Email";
     homeDir = mkOpt types.str "${home-directory}" "Home Directory Path";
     home-manager.enable = mkOpt types.bool false "Enable home-manager";
-    ghToken.enable = mkEnableOption "deploy ghToken used with build script";
+    ghToken.enable = mkEnableOption "Include GitHub access-tokens in nix.conf";
   };
 
   config = mkIf user.enable {
@@ -26,9 +26,6 @@ in
       VISUAL = "nvim";
     };
 
-    sops.secrets."github/TOKEN" = mkIf (user.ghToken.enable && config.mine.cli-tools.sops.enable) {
-      owner = "${user.name}";
-    };
 
     systemd.user.extraConfig = ''
       DefaultEnvironment="PATH=/run/current-system/sw/bin"

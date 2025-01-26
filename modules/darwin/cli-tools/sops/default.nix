@@ -27,10 +27,6 @@ in
       sops = {
         inherit (cfg) defaultSopsFile;
         age.keyFile = cfg.ageKeyFile.path;
-
-        # this is defined in here because I use home-manager to mange git config and
-        # only want to use the sop home-manager implementation on my darwin system.
-        secrets."github/TOKEN" = mkIf user.ghToken.enable { };
       };
     };
   };
