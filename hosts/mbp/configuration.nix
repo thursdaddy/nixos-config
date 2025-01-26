@@ -30,9 +30,9 @@ in
         firefox = enabled;
         ghostty = enabled;
         keybase = enabled;
-        kitty = enabled;
         obsidian = enabled;
         proton = enabled;
+        prusa-slicer = enabled;
         syncthing = enabled;
       };
 

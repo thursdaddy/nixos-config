@@ -7,10 +7,10 @@ let
 in
 {
   options.mine.apps.proton = {
-    enable = mkEnableOption "protonvpn";
+    enable = mkEnableOption "proton app suite";
   };
 
   config = lib.mkIf cfg.enable {
-    homebrew.casks = [ "protonvpn" ];
+    homebrew.casks = [ "protonvpn" "proton-mail" ];
   };
 }
