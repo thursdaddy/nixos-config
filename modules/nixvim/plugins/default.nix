@@ -32,10 +32,6 @@ in
       undotree.enable = true;
       vim-surround.enable = true;
       web-devicons.enable = true;
-      auto-save = {
-        enable = true;
-        settings = { triggerEvents = { immediate_save = [ "FocusLost" ]; }; };
-      };
       diffview = {
         enable = true;
       };
