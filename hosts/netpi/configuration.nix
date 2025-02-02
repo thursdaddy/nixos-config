@@ -34,6 +34,10 @@ with lib.thurs;
       };
 
       services = {
+        beszel = {
+          enable = true;
+          isAgent = true;
+        };
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;

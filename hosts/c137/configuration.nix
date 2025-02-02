@@ -94,6 +94,10 @@ in
       };
 
       services = {
+        beszel = {
+          enable = true;
+          isAgent = true;
+        };
         mpd = enabled;
         ollama = enabled;
         prometheus = {

@@ -63,6 +63,7 @@ in
       };
 
       system = {
+        fonts = enabled;
         security.touchsudo = enabled;
         utils = enabled;
       };

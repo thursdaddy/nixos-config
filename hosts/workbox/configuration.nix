@@ -60,6 +60,11 @@ in
       };
 
       services = {
+        beszel = {
+          enable = true;
+          isHub = true;
+          isAgent = true;
+        };
         mpd = enabled;
         ollama = enabled;
         prometheus = {

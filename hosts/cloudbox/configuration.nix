@@ -30,6 +30,7 @@ with lib.thurs;
       };
 
       cli-tools = {
+        bottom = enabled;
         neofetch = enabled;
         nixvim = enabled;
         sops = {
@@ -40,11 +41,15 @@ with lib.thurs;
       };
 
       services = {
-        r53-updater = enabled;
+        beszel = {
+          enable = true;
+          isAgent = true;
+        };
         prometheus = {
           enable = true;
           exporters.node = enabled;
         };
+        r53-updater = enabled;
         tailscale = {
           enable = true;
           useRoutingFeatures = "client";

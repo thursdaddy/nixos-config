@@ -42,6 +42,10 @@ with lib.thurs;
       };
 
       services = {
+        beszel = {
+          enable = true;
+          isAgent = true;
+        };
         octoprint = enabled;
       };
 

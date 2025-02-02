@@ -12,12 +12,6 @@ in
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [ font-manager ];
-
-    environment.variables = {
-      LOG_ICONS = "true";
-    };
-
     fonts.packages = with pkgs; [
       monaspace
       noto-fonts
