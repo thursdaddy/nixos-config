@@ -17,11 +17,11 @@ rebuild () {
     printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
     sudo nixos-rebuild --flake .\#"$TARGET" switch
   elif [[ "$TARGET" == "mbp" ]]; then
-    printf "${BLUE}Rebuidling... ${GREEN}${TARGET} (local)${NC}\n"
+    printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
     darwin-rebuild --flake .\#mbp switch
   else
-    printf "${BLUE}Rebuidling... ${ORANGE}${TARGET} (remote)${NC}\n"
-    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-remote-sudo switch
+    printf "${BLUE}Rebuilding... ${ORANGE}${TARGET} (remote)${NC}\n"
+    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-substitutes --use-remote-sudo switch
   fi
 }
 
