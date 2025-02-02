@@ -4,7 +4,6 @@ let
 
   pname = "upsnap";
   version = "4.6.0";
-
   src = fetchFromGitHub {
     owner = "seriousm4x";
     repo = "UpSnap";
@@ -29,11 +28,19 @@ let
     sourceRoot = "${finalAttrs.src.name}/frontend";
 
     buildPhase = ''
+      runHook preBuild
+
       pnpm run build
+
+      runHook postBuild
     '';
 
     installPhase = ''
+      runHook preInstall
+
       cp -r ./build $out
+
+      runHook postInstall
     '';
 
     meta = with lib; {
