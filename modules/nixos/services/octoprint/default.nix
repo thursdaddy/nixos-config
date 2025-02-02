@@ -19,7 +19,7 @@ in
     systemd.services = {
       octostream = {
         serviceConfig = {
-          ExecStart = "${pkgs.mjpg-streamer}/bin/mjpg_streamer -i \"input_uvc.so -r 1280x720 -d /dev/video0 -f 30 -n\" -o \"output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www\"";
+          ExecStart = "${pkgs.mjpg-streamer}/bin/mjpg_streamer -i \"input_uvc.so -r 1280x720 -d /dev/video0 -f 60 -n\" -o \"output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www\"";
         };
         wantedBy = [ "multi-user.target" ];
         after = [ "network-online.target" ];
@@ -361,12 +361,12 @@ in
 
             octoprint-slicerestimator = pyself.buildPythonPackage rec {
               pname = "OctoPrint-SlicerEstimator";
-              version = "1.6.7";
+              version = "1.6.8";
               src = self.fetchFromGitHub {
                 owner = "NilsRo";
                 repo = "OctoPrint-SlicerEstimator";
                 rev = "${version}";
-                sha256 = "sha256-teN1W0dowM36cz7F18J32I+YCYAVdqrOpqTtTTppAeI=";
+                sha256 = "sha256-dftgYxyLb05mWGuAri63ocHWnoDHvjxFGcWcnW3x/ks=";
               };
               propagatedBuildInputs = [ pysuper.octoprint ];
               doCheck = false;
@@ -413,25 +413,26 @@ in
 
             octoprint-printtimegenius = pyself.buildPythonPackage rec {
               pname = "OctoPrint-PrintTimeGenius";
-              version = "2.3.3";
+              version = "2.3.4";
               src = self.fetchFromGitHub {
                 owner = "eyal0";
                 repo = "OctoPrint-PrintTimeGenius";
                 rev = "${version}";
-                sha256 = "sha256-hqm8RShCNpsVbrVXquat5VXqcVc7q5tn5+7Ipqmaw4U=";
+                sha256 = "sha256-dWBhP2QiOVJaeyE1v8tpbxD88Ox5Z2NxVzJkcpto2W0=";
               };
               propagatedBuildInputs = [ pysuper.octoprint ];
               doCheck = false;
             };
 
+            # https://github.com/WildRikku/OctoPrint-SpoolManager/releases
             octoprint-spoolmanager = pyself.buildPythonPackage rec {
               pname = "OctoPrint-SpoolManager";
-              version = "1.7.4";
+              version = "1.7.7";
               src = self.fetchFromGitHub {
                 owner = "WildRikku";
                 repo = "OctoPrint-SpoolManager";
                 rev = "${version}";
-                sha256 = "sha256-hstzXlrDTOButqfyn7qDX9ZAT4DjhfMMhfUp1EuBAmw=";
+                sha256 = "sha256-FsBI2Gzd/sYuU6rfaI0zJGk6k/YvmYirYXJivBSC474=";
               };
               propagatedBuildInputs = [
                 pysuper.octoprint
@@ -455,7 +456,6 @@ in
               propagatedBuildInputs = [ pysuper.octoprint ];
               doCheck = false;
             };
-
 
             octoprint-prusaslicerthumbnails = pyself.buildPythonPackage rec {
               pname = "OctoPrint-PrusaSlicerThumbnails";
