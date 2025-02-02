@@ -9,13 +9,13 @@ in
 {
   options.mine.services.beszel = {
     enable = mkEnableOption "Enable Beszel, a lightweight server monitoring platform";
-    listenAddress = mkOpt types.str "0.0.0.0" "Address on which to start webserver.";
     dataDir = mkOpt types.path "/opt/configs/beszel-hub" "Path for stored data.";
     isHub = mkEnableOption "Run as Beszel Hub";
-    hubPort = mkOpt types.port 8890 "Port of which to start webserver.";
-    hubPubKey = mkOpt types.str "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACtKZg/D2PNYeYZfJ6jCCHtxaW12T7k/83xqwV8KJzC" "Hub Public Key";
+    listenAddress = mkOpt types.str "0.0.0.0" "Address on which to start Beszel Hub webserver.";
+    hubPort = mkOpt types.port 8890 "Port for Beszel Hub webserver.";
+    hubPubKey = mkOpt types.str "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACtKZg/D2PNYeYZfJ6jCCHtxaW12T7k/83xqwV8KJzC" "Hub Public Key.";
     isAgent = mkEnableOption "Run as Beszel Agent";
-    agentPort = mkOpt types.port 45876 "Port of which to start webserver.";
+    agentPort = mkOpt types.port 45876 "Port the Agent runs on.";
   };
 
   config = mkIf cfg.enable {
@@ -23,7 +23,10 @@ in
       unstable.beszel
     ];
 
-    networking.firewall.allowedTCPPorts = [ (mkIf cfg.isHub cfg.hubPort) (mkIf cfg.isAgent cfg.agentPort) ];
+    networking.firewall.allowedTCPPorts = [
+      (mkIf cfg.isHub cfg.hubPort)
+      (mkIf cfg.isAgent cfg.agentPort)
+    ];
 
     systemd.services.beszel-hub = mkIf cfg.isHub {
       description = "Beszel-Hub";
@@ -31,7 +34,7 @@ in
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
       serviceConfig = {
-        ExecStart = "${pkgs.unstable.beszel}/bin/beszel-hub serve --http ${cfg.listenAddress}:${builtins.toString cfg.hubPort}  --dir ${cfg.dataDir}";
+        ExecStart = "${pkgs.unstable.beszel}/bin/beszel-hub serve --http ${cfg.listenAddress}:${builtins.toString cfg.hubPort} --dir ${cfg.dataDir}";
         Type = "simple";
         Restart = "always";
         RestartSec = "5s";
