@@ -18,12 +18,6 @@ in
   config = {
     system.stateVersion = "24.11";
 
-    services.pipewire = {
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
-
     mine = {
       user = {
         enable = true;
@@ -65,7 +59,6 @@ in
           isHub = true;
           isAgent = true;
         };
-        mpd = enabled;
         ollama = enabled;
         prometheus = {
           enable = true;
@@ -107,6 +100,7 @@ in
         };
         shell.zsh = enabled;
         utils = enabled;
+        video.amd = enabled;
         virtualisation = {
           docker = {
             enable = true;
