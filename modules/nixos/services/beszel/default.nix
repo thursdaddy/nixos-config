@@ -46,6 +46,7 @@ in
       enable = true;
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
+      path = mkIf config.mine.system.video.amd.enable [ pkgs.rocmPackages.rocm-smi ];
       environment = {
         PORT = "${builtins.toString cfg.agentPort}";
         KEY = "${cfg.hubPubKey}";
