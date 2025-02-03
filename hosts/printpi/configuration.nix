@@ -1,4 +1,4 @@
-{ pkgs, lib, config, inputs, hostname, ... }:
+{ pkgs, lib, inputs, ... }:
 with lib;
 with lib.thurs;
 {
