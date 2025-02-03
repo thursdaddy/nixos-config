@@ -9,11 +9,10 @@ let
 in
 {
   config = mkIf cfg.enable {
-    nixpkgs.config.allowBroken = true;
     home-manager.users.${user.name} = {
       programs.ghostty = {
         enable = true;
-        package = mkIf pkgs.stdenv.isDarwin pkgs.tree;
+        package = mkIf pkgs.stdenv.isDarwin pkgs.emptyDirectory; # ghostty is wip on darwin, installing via homebrew, hacky workaround to use home-manager for config
         settings = {
           confirm-close-surface = false;
           background-opacity = "0.95";
