@@ -1,9 +1,9 @@
 { lib, config, ... }:
-with lib;
 let
 
-  cfg = config.mine.system.security.sudonopass;
+  inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.system.security.sudonopass;
 
 in
 {

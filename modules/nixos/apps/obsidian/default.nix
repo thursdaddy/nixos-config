@@ -1,7 +1,7 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.apps.obsidian;
 
 in
@@ -10,7 +10,7 @@ in
     enable = mkEnableOption "obsidian";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = mkIf cfg.enable {
     nixpkgs.config.permittedInsecurePackages = [
       "electron-25.9.0"
     ];

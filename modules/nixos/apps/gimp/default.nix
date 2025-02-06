@@ -1,7 +1,7 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.apps.gimp;
 
 in

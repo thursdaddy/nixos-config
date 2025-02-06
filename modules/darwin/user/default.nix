@@ -1,9 +1,10 @@
 { lib, config, pkgs, ... }:
-with lib;
-with lib.thurs;
 let
 
+  inherit (lib) mkEnableOption mkIf types;
+  inherit (lib.thurs) mkOpt;
   inherit (config.mine) user;
+
   home-directory = "/Users/${user.name}";
 
 in

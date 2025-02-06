@@ -1,10 +1,10 @@
 { lib, config, pkgs, ... }:
-with lib;
-with lib.thurs;
 let
 
-  cfg = config.mine.cli-tools.tmux;
+  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib.thurs) mkOpt;
   inherit (config.mine) user;
+  cfg = config.mine.cli-tools.tmux;
 
   tmuxs_paths = builtins.concatStringsSep " " cfg.sessionizer.searchPaths;
   tmuxs = pkgs.writeShellScriptBin "tmuxs" ''

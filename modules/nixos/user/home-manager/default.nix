@@ -1,10 +1,9 @@
 { lib, config, inputs, ... }:
-with lib;
-with lib.thurs;
 let
 
-  cfg = config.mine.user.home-manager;
+  inherit (lib) mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.user.home-manager;
 
   # TODO: refactor this so its not randomly in user config
   allowed-unfree-packages = [

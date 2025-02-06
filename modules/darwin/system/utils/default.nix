@@ -1,7 +1,7 @@
 { lib, config, ... }:
-with lib;
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.system.utils;
 
 in

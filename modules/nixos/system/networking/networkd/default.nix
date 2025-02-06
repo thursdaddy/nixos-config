@@ -1,8 +1,8 @@
-{ lib, config, pkgs, ... }:
-with lib;
-with lib.thurs;
+{ lib, config, ... }:
 let
 
+  inherit (lib) mkEnableOption mkIf types;
+  inherit (lib.thurs) mkOpt;
   cfg = config.mine.system.networking.networkd;
 
 in

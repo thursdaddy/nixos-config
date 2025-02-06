@@ -1,10 +1,10 @@
 { lib, config, pkgs, ... }:
-with lib;
-with lib.thurs;
 let
 
-  cfg = config.mine.apps.discord;
+  inherit (lib) mkIf types;
+  inherit (lib.thurs) mkOpt;
   inherit (config.mine) user;
+  cfg = config.mine.apps.discord;
 
 in
 {

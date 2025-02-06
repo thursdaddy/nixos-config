@@ -1,9 +1,9 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
 
-  cfg = config.mine.apps.chromium;
+  inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.apps.chromium;
 
 in
 {

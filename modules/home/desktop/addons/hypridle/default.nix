@@ -1,10 +1,10 @@
-{ lib, config, pkgs, inputs, ... }:
-with lib;
-with lib.thurs;
+{ lib, config, pkgs, ... }:
 let
 
-  cfg = config.mine.desktop.hypridle;
+  inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.desktop.hypridle;
+
   notify-message = "notify-send \"$(date '+%A %I:%M:%S')\"";
 
 in

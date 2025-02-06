@@ -1,9 +1,9 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
 
-  cfg = config.mine.system.virtualisation.libvirtd;
+  inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.system.virtualisation.libvirtd;
 
 in
 {
@@ -11,7 +11,7 @@ in
     enable = mkEnableOption "libvirtd";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = mkIf cfg.enable {
     users.users.${user.name}.extraGroups = mkIf user.enable [ "libvirtd" ];
 
     environment.systemPackages = with pkgs; [

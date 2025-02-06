@@ -1,10 +1,9 @@
-{ lib, pkgs, config, ... }:
-with lib;
-with lib.thurs;
+{ lib, config, ... }:
 let
 
-  cfg = config.mine.services.mpd;
+  inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.services.mpd;
 
 in
 {

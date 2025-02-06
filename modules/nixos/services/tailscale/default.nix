@@ -1,10 +1,10 @@
 { lib, pkgs, config, inputs, ... }:
-with lib;
-with lib.thurs;
 let
 
-  cfg = config.mine.services.tailscale;
+  inherit (lib) mkEnableOption mkIf types;
+  inherit (lib.thurs) mkOpt;
   inherit (config.mine.cli-tools) sops;
+  cfg = config.mine.services.tailscale;
 
 in
 {

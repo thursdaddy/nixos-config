@@ -1,7 +1,7 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.services.r53-updater;
 
   r53-updater = pkgs.writeShellApplication {

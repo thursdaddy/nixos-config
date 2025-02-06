@@ -1,9 +1,9 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
 
-  cfg = config.mine.system.virtualisation.docker;
+  inherit (lib) mkEnableOption mkIf mkOption types;
   inherit (config.mine) user;
+  cfg = config.mine.system.virtualisation.docker;
 
   container-version-check-env = pkgs.python311.withPackages (p:
     with p; [ pkgs.python311Packages.requests ]);

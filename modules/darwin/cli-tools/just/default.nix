@@ -1,8 +1,7 @@
 { lib, config, ... }:
-with lib;
-with lib.thurs;
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.cli-tools.just;
 
 in

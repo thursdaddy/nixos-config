@@ -1,8 +1,8 @@
 { lib, config, ... }:
-with lib;
-with lib.thurs;
 let
 
+  inherit (lib) mkIf types;
+  inherit (lib.thurs) mkOpt;
   cfg = config.mine.system.shell.zsh;
 
 in

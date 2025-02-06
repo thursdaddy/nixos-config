@@ -1,8 +1,8 @@
 { lib, pkgs, config, ... }:
-with lib;
-with lib.thurs;
 let
 
+  inherit (lib) mkEnableOption mkIf types;
+  inherit (lib.thurs) mkOpt;
   cfg = config.mine.services.beszel;
 
 in

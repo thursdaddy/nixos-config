@@ -1,10 +1,9 @@
 { lib, config, pkgs, ... }:
-with lib;
-with lib.thurs;
 let
 
-  cfg = config.mine.cli-tools.git;
+  inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.cli-tools.git;
 
 in
 {

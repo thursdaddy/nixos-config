@@ -1,7 +1,7 @@
 { lib, config, inputs, ... }:
-with lib;
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.cli-tools.nixvim;
 
 in

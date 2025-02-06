@@ -1,7 +1,7 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.apps.keybase;
 
 in
@@ -10,7 +10,7 @@ in
     enable = mkEnableOption "keybase";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       keybase
       keybase-gui

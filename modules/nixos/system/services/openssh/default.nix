@@ -1,7 +1,7 @@
 { lib, config, inputs, ... }:
-with lib;
 let
 
+  inherit (lib) mkEnableOption mkDefault mkIf;
   cfg = config.mine.system.services.openssh;
 
 in

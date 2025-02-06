@@ -1,10 +1,9 @@
 { pkgs, lib, config, inputs, ... }:
-with lib;
-with lib.thurs;
 let
 
+  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib.thurs) mkOpt mkOpt_;
   cfg = config.mine.cli-tools.sops;
-  inherit (config.mine) user;
 
   ssm_systemd_config = mkIf cfg.ageKeyFile.ageKeyInSSM.enable {
     Environment = "SOPS_AGE_KEY_FILE=${cfg.ageKeyFile.path}";
@@ -68,13 +67,6 @@ in
     sops = {
       inherit (config.mine.cli-tools.sops) defaultSopsFile;
       age.keyFile = config.mine.cli-tools.sops.ageKeyFile.path;
-
-      # this is defined in here because I use home-manager to mange git config but
-      # do not want to use the sops home-manager implementation with nixos systems.
-      # TODO: fix it, this breaks ami builds and its gross
-      # secrets."github/TOKEN" = mkIf (config.mine.cli-tools.git.ghToken) {
-      #   owner = "${user.name}";
-      # };
     };
 
     systemd.services.decrypt-sops-after-network = mkIf (cfg.requires.network || cfg.ageKeyFile.ageKeyInSSM.enable) {

@@ -1,11 +1,10 @@
 { lib, config, inputs, pkgs, ... }:
-with lib;
-with lib.thurs;
 let
 
-  cfg = config.mine.desktop.hyprpaper;
+  inherit (lib) mkIf mkEnableOption;
   inherit (config.mine) user;
   inherit (inputs.self.packages.${pkgs.system}) wallpapers;
+  cfg = config.mine.desktop.hyprpaper;
 
 in
 {
@@ -20,7 +19,6 @@ in
         settings = {
           splash = false;
           preload = [
-            # TODO: install these via derivation
             "${wallpapers}/wallpapers/blue_astronaut_in_space.png"
             "${wallpapers}/wallpapers/Kurzgesagt_Galaxies.png"
           ];

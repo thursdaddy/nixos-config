@@ -1,7 +1,9 @@
 { lib, config, ... }:
-with lib;
 let
+
   inherit (config.mine) user;
+  inherit (lib) mkIf;
+
 in
 {
   programs.nixvim = {

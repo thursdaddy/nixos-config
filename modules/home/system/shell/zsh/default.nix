@@ -1,9 +1,9 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
 
-  cfg = config.mine.system.shell.zsh;
+  inherit (lib) mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.system.shell.zsh;
 
 in
 {

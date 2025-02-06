@@ -1,7 +1,7 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.apps.ghostty;
 
 in
@@ -10,7 +10,7 @@ in
     enable = mkEnableOption "Ghostty";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = mkIf cfg.enable {
     environment.systemPackages = [
       pkgs.unstable.ghostty
     ];

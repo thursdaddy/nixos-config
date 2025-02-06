@@ -1,7 +1,7 @@
 { lib, config, ... }:
-with lib;
 let
 
+  inherit (lib) mkEnableOption;
   cfg = config.mine.apps.obsidian;
 
 in

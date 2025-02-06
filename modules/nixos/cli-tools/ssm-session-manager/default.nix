@@ -1,7 +1,9 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
+
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.cli-tools.ssm-session-manager;
+
 in
 {
   options.mine.cli-tools.ssm-session-manager = {

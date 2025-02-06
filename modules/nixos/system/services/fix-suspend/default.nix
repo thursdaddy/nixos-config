@@ -1,7 +1,9 @@
 { lib, config, ... }:
-with lib;
 let
+
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.system.services.fix-suspend;
+
 in
 {
   options.mine.system.services.fix-suspend = {

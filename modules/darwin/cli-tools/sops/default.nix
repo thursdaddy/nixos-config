@@ -1,10 +1,10 @@
 { lib, config, ... }:
-with lib;
-with lib.thurs;
 let
 
-  cfg = config.mine.cli-tools.sops;
+  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib.thurs) mkOpt mkOpt_;
   inherit (config.mine) user;
+  cfg = config.mine.cli-tools.sops;
 
 in
 {

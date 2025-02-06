@@ -1,11 +1,11 @@
 { lib, config, pkgs, ... }:
-with lib;
-with lib.thurs;
 let
 
+  inherit (lib) mkEnableOption mkIf;
+  inherit (config.mine) user;
   cfg = config.mine.desktop.hyprland;
   network = config.mine.system.networking.networkmanager;
-  inherit (config.mine) user;
+
   chrome-flags = "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder --enable-features=UseOzonePlatform --ozone-platform=wayland";
 
 in

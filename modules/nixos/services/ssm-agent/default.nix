@@ -1,7 +1,9 @@
 { lib, config, ... }:
-with lib;
 let
+
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.services.ssm-agent;
+
 in
 {
   options.mine.services.ssm-agent = {

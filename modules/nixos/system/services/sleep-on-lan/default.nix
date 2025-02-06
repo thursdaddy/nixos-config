@@ -1,7 +1,9 @@
 { lib, config, pkgs, ... }:
-with lib;
 let
+
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.system.services.sleep-on-lan;
+
 in
 {
   options.mine.system.services.sleep-on-lan = {

@@ -1,7 +1,9 @@
 { lib, config, ... }:
-with lib;
 let
+
+  inherit (lib) mkIf;
   inherit (config.mine) user;
+
 in
 {
   config = mkIf user.ghToken.enable {

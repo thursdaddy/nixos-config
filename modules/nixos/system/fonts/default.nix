@@ -1,14 +1,13 @@
 { lib, config, pkgs, ... }:
-with lib;
-with lib.thurs;
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.system.fonts;
 
 in
 {
   options.mine.system.fonts = {
-    enable = mkOpt types.bool false "Enable Fonts";
+    enable = mkEnableOption "Enable Fonts";
   };
 
   config = mkIf cfg.enable {

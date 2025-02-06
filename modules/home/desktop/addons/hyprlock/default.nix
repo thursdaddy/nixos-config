@@ -1,15 +1,14 @@
 { lib, config, ... }:
-with lib;
-with lib.thurs;
 let
 
-  cfg = config.mine.desktop.hyprlock;
+  inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.desktop.hyprlock;
 
 in
 {
   options.mine.desktop.hyprlock = {
-    enable = mkOpt types.bool false "Enable hyprlock";
+    enable = mkEnableOption "Enable hyprlock";
   };
 
   config = mkIf cfg.enable {

@@ -1,7 +1,7 @@
 { pkgs, lib, config, ... }:
-with lib;
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.cli-tools.bottom;
 
 in

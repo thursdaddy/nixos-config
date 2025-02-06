@@ -1,8 +1,9 @@
-{ lib, config, pkgs, inputs, ... }:
-with lib;
+{ lib, config, inputs, ... }:
 let
 
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.services.ollama;
+
   host_c137 = config.mine.system.networking.networkmanager.hostname == "c137";
 
 in

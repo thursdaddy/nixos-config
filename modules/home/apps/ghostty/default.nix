@@ -1,10 +1,9 @@
 { lib, config, pkgs, ... }:
-with lib;
-with lib.thurs;
 let
 
-  cfg = config.mine.apps.ghostty;
+  inherit (lib) mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.apps.ghostty;
 
 in
 {

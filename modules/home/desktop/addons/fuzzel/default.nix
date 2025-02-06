@@ -1,9 +1,9 @@
 { lib, config, ... }:
-with lib;
 let
 
-  cfg = config.mine.desktop.fuzzel;
+  inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.desktop.fuzzel;
 
 in
 {

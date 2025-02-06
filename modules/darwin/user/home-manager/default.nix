@@ -1,9 +1,9 @@
 { lib, config, inputs, ... }:
-with lib;
 let
 
-  cfg = config.mine.user.home-manager;
+  inherit (lib) mkIf;
   inherit (config.mine) user;
+  cfg = config.mine.user.home-manager;
 
   allowed-unfree-packages = [ "discord" ];
 
