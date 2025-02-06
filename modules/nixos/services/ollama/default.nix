@@ -1,4 +1,4 @@
-{ lib, config, inputs, ... }:
+{ lib, config, ... }:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -12,15 +12,11 @@ in
     enable = mkEnableOption "Enable Ollama";
   };
 
-  disabledModules = [ "services/misc/ollama.nix" ];
-  imports = [ (inputs.unstable + "/nixos/modules/services/misc/ollama.nix") ];
-
   config = mkIf cfg.enable {
     networking.firewall.allowedTCPPorts = [ 11434 ];
 
     services.ollama = {
       enable = true;
-      # package = pkgs.unstable.ollama;
       host = "0.0.0.0";
       port = 11434;
       acceleration = "rocm";
