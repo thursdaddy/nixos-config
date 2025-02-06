@@ -34,6 +34,7 @@ in
         proton = enabled;
         prusa-slicer = enabled;
         syncthing = enabled;
+        vivaldi = enabled;
       };
 
       cli-tools = {
@@ -57,6 +58,8 @@ in
             searchPaths = [
               "${user.homeDir}/projects/nix"
               "${user.homeDir}/projects/cloud"
+              "${user.homeDir}/projects/homelab"
+              "${user.homeDir}/projects/personal"
             ];
           };
         };

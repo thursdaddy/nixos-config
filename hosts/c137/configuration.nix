@@ -47,6 +47,7 @@ in
           enable = true;
           isNix = true;
         };
+        vivaldi = enabled;
         vlc = enabled;
         vscodium = enabled;
       };
@@ -72,6 +73,8 @@ in
             searchPaths = [
               "${user.homeDir}/projects/nix"
               "${user.homeDir}/projects/cloud"
+              "${user.homeDir}/projects/homelab"
+              "${user.homeDir}/projects/personal"
             ];
           };
         };

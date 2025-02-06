@@ -48,6 +48,8 @@ in
             searchPaths = [
               "${user.homeDir}/projects/nix"
               "${user.homeDir}/projects/cloud"
+              "${user.homeDir}/projects/homelab"
+              "${user.homeDir}/projects/personal"
             ];
           };
         };
