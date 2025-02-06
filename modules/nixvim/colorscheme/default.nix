@@ -7,6 +7,5 @@
       })
       vim.cmd("colorscheme gruvbox")
     '';
-    # colorscheme = "gruvbox";
   };
 }

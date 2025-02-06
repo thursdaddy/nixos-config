@@ -9,6 +9,15 @@ let
       hash = "sha256-lM5vv0ucgxvoc8ZtJwShDoY7ji6BYl6VZA2bYN0UU2s=";
     };
   };
+  vgit = pkgs.vimUtils.buildVimPlugin {
+    name = "vgit";
+    src = pkgs.fetchFromGitHub {
+      owner = "tanvirtin";
+      repo = "vgit.nvim";
+      rev = "v1.0.3";
+      hash = "sha256-v9Ar2lh1BG4qipjksTy7foFagOR/c1ED/f7507n08Oo=";
+    };
+  };
 in
 {
   programs.nixvim = {
@@ -21,7 +30,6 @@ in
       comment.enable = true;
       endwise.enable = true;
       fugitive.enable = true;
-      gitgutter.enable = true;
       illuminate.enable = true;
       indent-blankline.enable = true;
       lastplace.enable = true;
@@ -32,6 +40,30 @@ in
       undotree.enable = true;
       vim-surround.enable = true;
       web-devicons.enable = true;
+      cmp = {
+        enable = true;
+        autoEnableSources = true;
+        settings = {
+          sources = [
+            { name = "nvim_lsp"; }
+            { name = "luasnip"; }
+            { name = "buffer"; }
+            { name = "nvim_lua"; }
+            { name = "path"; }
+          ];
+          snippet = { expand = "luasnip"; };
+          mapping = {
+            "<CR>" = "cmp.mapping.confirm({ select = true })";
+            "<Down>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
+            "<Up>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
+            "<Tab>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
+            "<S-Tab>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
+            "<C-d>" = "cmp.mapping.scroll_docs(-4)";
+            "<C-f>" = "cmp.mapping.scroll_docs(4)";
+            "<C-Space>" = "cmp.mapping.complete()";
+          };
+        };
+      };
       diffview = {
         enable = true;
       };
@@ -114,48 +146,21 @@ in
         stages = "fade";
         backgroundColour = "#000000";
       };
-      cmp = {
-        enable = true;
-        autoEnableSources = true;
-        settings = {
-          sources = [
-            { name = "nvim_lsp"; }
-            { name = "luasnip"; }
-            { name = "buffer"; }
-            { name = "nvim_lua"; }
-            { name = "path"; }
-          ];
-          snippet = { expand = "luasnip"; };
-          mapping = {
-            "<CR>" = "cmp.mapping.confirm({ select = true })";
-            "<Down>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
-            "<Up>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
-            "<Tab>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
-            "<S-Tab>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
-            "<C-d>" = "cmp.mapping.scroll_docs(-4)";
-            "<C-f>" = "cmp.mapping.scroll_docs(4)";
-            "<C-Space>" = "cmp.mapping.complete()";
-          };
-        };
-      };
       telescope = {
         enable = true;
         highlightTheme = "ivy";
-        settings = {
-          defaults = {
-            ## these dont seem to be working but arent breaking anything
-            layout_strategy = "horizontal";
-            layout_config = {
-              height = 0.85;
-              width = 0.75;
-              prompt_position = "bottom";
-            };
-          };
+        extensions = {
+          fzf-native.enable = true;
+          frecency.enable = true;
+          undo.enable = true;
         };
         keymaps = {
           "<leader>fb" = "buffers";
-          "<leader>fs" = "grep_string";
+          "<leader>fd" = "diagnostics";
           "<leader>fh" = "oldfiles";
+          "<leader>fs" = "grep_string";
+          "<leader>fu" = "undo";
+
           "<C-f>" = "live_grep";
 
           "<leader>fg" = "git_files";
@@ -189,21 +194,30 @@ in
       { mode = "n"; key = "<leader>gaa"; action = "<CMD>Git add .<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>gs"; action = "<CMD>below Git<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>gc"; action = "<CMD>below Git commit<CR>"; options.noremap = true; }
-      { mode = "n"; key = "<leader>gb"; action = "<CMD>GBranches<CR>"; options.noremap = true; }
+      { mode = "n"; key = "<leader>gb"; action = "<CMD>GBranches<CR>"; options.noremap = true; } #fzf-checkout
       { mode = "n"; key = "<leader>gp"; action = "<CMD>Git push<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>gl"; action = "<CMD>Git pull<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>gcb"; action = "<CMD>Git blame<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>g,"; action = "<CMD>diffget //2<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>g."; action = "<CMD>diffget //3<CR>"; options.noremap = true; }
+      # vGit
+      { mode = "n"; key = "<leader>gdv"; action = "<CMD>VGit project_diff_preview<CR>"; options.noremap = true; }
     ];
+
+    extraConfigLua = ''
+      require('vgit').setup()
+      local async = require "plenary.async"
+    '';
 
     extraPlugins = with pkgs; [
       fzf-checkout
+      unstable.vimPlugins.plenary-nvim
       unstable.vimPlugins.transparent-nvim
       unstable.vimPlugins.vim-shellcheck
       unstable.vimPlugins.vim-just
       unstable.vimPlugins.vim-rhubarb
       vimPlugins.fzfWrapper
+      vgit
     ];
   };
 }
