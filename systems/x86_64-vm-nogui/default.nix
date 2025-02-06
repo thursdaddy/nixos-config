@@ -1,25 +1,30 @@
-{ lib, pkgs, inputs, config, ... }:
+{ lib, pkgs, ... }:
 with lib.thurs;
 {
 
   imports = [
     ../../modules/nixos/import.nix
     ../../modules/nixvim/import.nix
+    ../../modules/home/import.nix
   ];
 
   config = {
     system.stateVersion = "24.11";
 
-    mine = {
-      user = enabled;
+    users.users.thurs.initialPassword = "changeme";
 
-      services = {
-        openssh = enabled;
+    mine = {
+      user = {
+        enable = true;
+        home-manager = enabled;
       };
 
       system = {
         networking = {
-          enable = true;
+          networkd = {
+            enable = true;
+            hostname = "nixos";
+          };
           forwarding.ipv4 = true;
           resolved = enabled;
         };

@@ -28,19 +28,20 @@ rebuild () {
 build () {
   printf "\n${ORANGE}Building: ${WHITE}${TARGET}${NC}\n"
   nix build .\#"${TARGET}" &&\
-    copy_artifact_path &&\
-    cleanup
+    copy_artifact_path
 }
 
 # copy result to builds/
 function copy_artifact_path {
-  printf "${GREEN}Copying file..${NC}\n"
   if [ -L ./result ]; then
     ARTIFACT_PATH=$(readlink ./result)
     # vhd = ami, zst = sd-aarch64
     ARTIFACT=$(find "$ARTIFACT_PATH" -type f \( -iname '*.vhd' -o -iname '*.zst' -o -iname '*.iso' \))
-    printf "\nCopy ${ARTIFACT} to builds/\n\n"
-    sudo cp "$ARTIFACT" builds/
+    if [ ! -z "${ARTIFACT}" ]; then
+      printf "\nCopy ${ARTIFACT} to builds/\n\n"
+      sudo cp "$ARTIFACT" builds/
+      cleanup
+    fi
   else
     exit 1
   fi

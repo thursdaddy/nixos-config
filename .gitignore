@@ -2,3 +2,4 @@ result
 .stfolder
 builds/
 secrets/
+nixos.qcow
