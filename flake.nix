@@ -50,7 +50,7 @@
   outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, home-manager, sops-nix, lanzaboote, nixos-thurs, ssh-keys, nixvim, ... } @ inputs:
     let
       lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+      supportedSystems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
       forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
         pkgs = import nixpkgs { inherit system; };
       });
@@ -59,8 +59,8 @@
       darwinConfigurations = {
         "mbp" = nix-darwin.lib.darwinSystem {
           specialArgs = { inherit inputs; inherit lib; };
-          system = "aarch64-darwin";
           modules = [
+            { nixpkgs.hostPlatform = "aarch64-darwin"; }
             ./hosts/mbp/configuration.nix
           ];
         };
@@ -68,48 +68,48 @@
       nixosConfigurations = {
         "c137" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
           modules = [
+            { nixpkgs.hostPlatform = "x86_64-linux"; }
             ./hosts/c137/configuration.nix
             inputs.nixos-thurs.nixosModules.c137Containers
           ];
         };
         "cloudbox" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
           modules = [
+            { nixpkgs.hostPlatform = "x86_64-linux"; }
             ./hosts/cloudbox/configuration.nix
             inputs.nixos-thurs.nixosModules.cloudboxContainers
           ];
         };
         "workbox" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
           modules = [
+            { nixpkgs.hostPlatform = "x86_64-linux"; }
             ./hosts/workbox/configuration.nix
             inputs.nixos-thurs.nixosModules.workboxContainers
           ];
         };
         "netpi1" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; hostname = "netpi1"; };
-          system = "aarch64-linux";
           modules = [
+            { nixpkgs.hostPlatform = "aarch64-linux"; }
             ./hosts/netpi/configuration.nix
             inputs.nixos-thurs.nixosModules.netpiContainers
           ];
         };
         "netpi2" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; hostname = "netpi2"; };
-          system = "aarch64-linux";
           modules = [
+            { nixpkgs.hostPlatform = "aarch64-linux"; }
             ./hosts/netpi/configuration.nix
             inputs.nixos-thurs.nixosModules.netpiContainers
           ];
         };
         "printpi" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
-          system = "aarch64-linux";
           modules = [
+            { nixpkgs.hostPlatform = "aarch64-linux"; }
             ./hosts/printpi/configuration.nix
             inputs.nixos-thurs.nixosModules.printpiContainers
           ];
