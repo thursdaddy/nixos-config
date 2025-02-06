@@ -12,32 +12,37 @@ import requests
 
 def run_command(cmd):
     """Run a shell command and return the output"""
-    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    result = subprocess.run(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
     if result.returncode != 0:
         print(f"Error running command {' '.join(cmd)}: {result.stderr}")
         return None
     return result.stdout.strip()
 
+
 def get_containers():
     """Get a list of running container IDs and names"""
-    output = run_command(['docker', 'ps', '--format', '{{.ID}} {{.Names}}'])
+    output = run_command(["docker", "ps", "--format", "{{.ID}} {{.Names}}"])
     if not output:
         return []
 
     containers = [line.split() for line in output.splitlines()]
     return containers
 
+
 def get_label_value(container_id, label):
     """Get the value of a specific label from docker inspect"""
-    output = run_command(['docker', 'inspect', container_id])
+    output = run_command(["docker", "inspect", container_id])
     if not output:
         return None
 
     inspect_data = json.loads(output)
     try:
-        return inspect_data[0]['Config']['Labels'].get(label, None)
+        return inspect_data[0]["Config"]["Labels"].get(label, None)
     except (KeyError, IndexError):
         return None
+
 
 def convert_to_api_url(repo_url, container_name):
     """Convert a GitHub repository URL to an API URL for querying the latest release or tags"""
@@ -51,16 +56,23 @@ def convert_to_api_url(repo_url, container_name):
     else:
         return None
 
+
 def get_latest_release(api_url):
     """Query the API to get the latest release or tag"""
     headers = {}
 
     # Read GitHub token if available
-    token_path = '/run/secrets/github/TOKEN'
+    token_path = "/run/secrets/github/TOKEN"
     if os.path.exists(token_path):
-        with open(token_path, 'r') as f:
-            token = f.read().strip()
-            headers['Authorization'] = f'token {token}'
+        with open(token_path, "r") as f:
+            content = f.read().strip()
+            # Extract the GitHub PAT using regex
+            match = re.search(r"github\.com=(github_pat_\S+)$", content)
+        if match:
+            token = match.group(1)
+            headers["Authorization"] = f"token {token}"
+        else:
+            print("GitHub PAT not found in the expected format")
 
     try:
         response = requests.get(api_url, headers=headers)
@@ -68,12 +80,12 @@ def get_latest_release(api_url):
         data = response.json()
 
         # Check if this is a GitHub release API response
-        if isinstance(data, dict) and 'tag_name' in data:  # GitHub
-            return data['tag_name']
+        if isinstance(data, dict) and "tag_name" in data:  # GitHub
+            return data["tag_name"]
 
         # Check if this is a GitLab tag list response
-        elif isinstance(data, list) and len(data) > 0 and 'name' in data[0]:  # GitLab
-            return data[0]['name']
+        elif isinstance(data, list) and len(data) > 0 and "name" in data[0]:  # GitLab
+            return data[0]["name"]
 
         else:
             print(f"Unexpected API response format: {data}")
@@ -83,20 +95,22 @@ def get_latest_release(api_url):
         print(f"Error fetching latest release from {api_url}: {e}")
         return None
 
+
 def normalize_version(version):
     """Strip leading 'v' from version strings and return the normalized version"""
-    return re.sub(r'^v', '', version)
+    return re.sub(r"^v", "", version)
+
 
 def send_to_discord(embed_data):
     """Send the message to a Discord webhook"""
-    webhook_url = os.getenv('DISCORD_WEBHOOK_URL')
+    webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
     if not webhook_url:
-        print("No Discord webhook URL found in environment variable DISCORD_WEBHOOK_URL.")
+        print(
+            "No Discord webhook URL found in environment variable DISCORD_WEBHOOK_URL."
+        )
         return
 
-    data = {
-        "embeds": embed_data
-    }
+    data = {"embeds": embed_data}
 
     try:
         response = requests.post(webhook_url, json=data)
@@ -104,9 +118,11 @@ def send_to_discord(embed_data):
     except requests.RequestException as e:
         print(f"Failed to send message to Discord: {e}")
 
+
 def get_hostname():
     """Get the system's hostname"""
     return socket.gethostname()
+
 
 def main(discord_flag):
     containers = get_containers()
@@ -135,7 +151,7 @@ def main(discord_flag):
 
         # Check if the container is enabled for version checking
         enable_version_check = get_label_value(container_id, "enable.versions.check")
-        if enable_version_check == 'false':
+        if enable_version_check == "false":
             continue  # Skip this container if version check is disabled
 
         if not repo_url:
@@ -155,7 +171,9 @@ def main(discord_flag):
         latest_release_version = normalize_version(latest_release_tag)
 
         # Get the running container's version from the label
-        container_version_label = get_label_value(container_id, "org.opencontainers.image.version")
+        container_version_label = get_label_value(
+            container_id, "org.opencontainers.image.version"
+        )
         if not container_version_label:
             missing_label_containers.append(container_name)
             continue
@@ -167,13 +185,19 @@ def main(discord_flag):
             # Add to stdout list
             up_to_date_containers.append(f"{container_name:<20} {container_version}")
             # Add to Discord embed list
-            discord_up_to_date_containers.append(f"{container_name}: _{container_version}_")
+            discord_up_to_date_containers.append(
+                f"{container_name}: _{container_version}_"
+            )
         else:
             # Add to stdout list for outdated containers
-            outdated_containers.append(f"{container_name:<20} {container_version}  ->  {latest_release_version}")
+            outdated_containers.append(
+                f"{container_name:<20} {container_version}  ->  {latest_release_version}"
+            )
             outdated_containers.append(f"  Latest release: {repo_url}/releases/latest")
             # Add to Discord embed list for outdated containers
-            discord_outdated_containers.append(f"{container_name}: _{container_version}_ -> **[{latest_release_version}]({repo_url}/releases/latest)**")
+            discord_outdated_containers.append(
+                f"{container_name}: _{container_version}_ -> **[{latest_release_version}]({repo_url}/releases/latest)**"
+            )
 
     # Print stdout results
     print("\n✅  Up-to-date Containers:")
@@ -204,42 +228,61 @@ def main(discord_flag):
     # Only send to Discord if the flag is passed
     if discord_flag:
         # Create Discord embed message
-        embed_data = [{
-            "title": "Container Version Status",
-            "description": f"**Hostname:** {hostname}",
-            "color": 3066993,  # Green color for embed
-            "fields": []
-        }]
+        embed_data = [
+            {
+                "title": "Container Version Status",
+                "description": f"**Hostname:** {hostname}",
+                "color": 3066993,  # Green color for embed
+                "fields": [],
+            }
+        ]
 
         if discord_up_to_date_containers:
-            embed_data[0]['fields'].append({
-                "name": "✅ Up-to-date Containers",
-                "value": "\n".join(discord_up_to_date_containers),
-                "inline": False
-            })
+            embed_data[0]["fields"].append(
+                {
+                    "name": "✅ Up-to-date Containers",
+                    "value": "\n".join(discord_up_to_date_containers),
+                    "inline": False,
+                }
+            )
 
         if discord_outdated_containers:
-            embed_data[0]['fields'].append({
-                "name": "⏩ Outdated Containers",
-                "value": "\n".join(discord_outdated_containers),
-                "inline": False
-            })
+            embed_data[0]["fields"].append(
+                {
+                    "name": "⏩ Outdated Containers",
+                    "value": "\n".join(discord_outdated_containers),
+                    "inline": False,
+                }
+            )
 
         if missing_label_containers:
-            embed_data[0]['fields'].append({
-                "name": "❌ Missing Labels",
-                "value": "\n".join([f"{name}" for name in missing_label_containers]),
-                "inline": False
-            })
+            embed_data[0]["fields"].append(
+                {
+                    "name": "❌ Missing Labels",
+                    "value": "\n".join(
+                        [f"{name}" for name in missing_label_containers]
+                    ),
+                    "inline": False,
+                }
+            )
 
         # Send message to Discord if there are any relevant containers
-        if discord_up_to_date_containers or discord_outdated_containers or missing_label_containers:
+        if (
+            discord_up_to_date_containers
+            or discord_outdated_containers
+            or missing_label_containers
+        ):
             send_to_discord(embed_data)
+
 
 if __name__ == "__main__":
     # Parse command-line arguments
-    parser = argparse.ArgumentParser(description="Check container versions and optionally send to Discord.")
-    parser.add_argument('--discord', action='store_true', help="Send results to Discord")
+    parser = argparse.ArgumentParser(
+        description="Check container versions and optionally send to Discord."
+    )
+    parser.add_argument(
+        "--discord", action="store_true", help="Send results to Discord"
+    )
 
     args = parser.parse_args()
 
