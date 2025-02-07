@@ -12,7 +12,7 @@ in
       relativenumber = true;
       nu = true;
 
-      guicursor = "i-c-ci:hor10-iCursor-blinkwait300-blinkon200-blinkoff150,n:ver10-iCursor-blinkwait10-blinkon100-blinkoff150";
+      guicursor = "c-ci:hor10-iCursor-blinkwait300-blinkon200-blinkoff150,i:ver50-iCursor-blinkwait300-blinkon200-blinkoff150,n:ver10-block-blinkwait10-blinkon100-blinkoff150";
       termguicolors = true;
 
       # tabs

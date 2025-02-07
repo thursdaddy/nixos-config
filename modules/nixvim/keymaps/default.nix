@@ -4,9 +4,9 @@ _: {
 
     keymaps = [
       # close panes
-      { mode = "n"; key = "<leader><C-o>"; action = "<CMD>only<CR>"; }
+      { mode = "n"; key = "<leader>o"; action = "<CMD>only<CR>"; }
       # clear highlights
-      { mode = "n"; key = "<esc>"; action = "<CMD>noh<CR>"; }
+      { mode = "n"; key = "<leader>c"; action = "<CMD>noh<CR>"; }
 
       # keep things centered
       { mode = "n"; key = "<C-d>"; action = "<C-d>zz"; }

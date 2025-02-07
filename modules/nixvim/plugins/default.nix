@@ -80,7 +80,10 @@ in
             bottom_search = true;
             long_message_to_split = true;
           };
-          routes = [{ view = "notify"; filter = { event = "msg_showmode"; }; }];
+          routes = [
+            { view = "notify"; filter = { event = "msg_showmode"; }; }
+            { view = "cmdline_output"; filter = { event = "msg_show"; min_height = 15; }; }
+          ];
         };
       };
       nvim-tree = {
