@@ -60,7 +60,6 @@
         "mbp" = nix-darwin.lib.darwinSystem {
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
-            { nixpkgs.hostPlatform = "aarch64-darwin"; }
             ./hosts/mbp/configuration.nix
           ];
         };
@@ -69,7 +68,6 @@
         "c137" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
-            { nixpkgs.hostPlatform = "x86_64-linux"; }
             ./hosts/c137/configuration.nix
             inputs.nixos-thurs.nixosModules.c137Containers
           ];
@@ -77,7 +75,6 @@
         "cloudbox" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
-            { nixpkgs.hostPlatform = "x86_64-linux"; }
             ./hosts/cloudbox/configuration.nix
             inputs.nixos-thurs.nixosModules.cloudboxContainers
           ];
@@ -85,7 +82,6 @@
         "workbox" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
-            { nixpkgs.hostPlatform = "x86_64-linux"; }
             ./hosts/workbox/configuration.nix
             inputs.nixos-thurs.nixosModules.workboxContainers
           ];
@@ -93,7 +89,6 @@
         "netpi1" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; hostname = "netpi1"; };
           modules = [
-            { nixpkgs.hostPlatform = "aarch64-linux"; }
             ./hosts/netpi/configuration.nix
             inputs.nixos-thurs.nixosModules.netpiContainers
           ];
@@ -101,7 +96,6 @@
         "netpi2" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; hostname = "netpi2"; };
           modules = [
-            { nixpkgs.hostPlatform = "aarch64-linux"; }
             ./hosts/netpi/configuration.nix
             inputs.nixos-thurs.nixosModules.netpiContainers
           ];
@@ -109,7 +103,6 @@
         "printpi" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
-            { nixpkgs.hostPlatform = "aarch64-linux"; }
             ./hosts/printpi/configuration.nix
             inputs.nixos-thurs.nixosModules.printpiContainers
           ];

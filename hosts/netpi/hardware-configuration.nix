@@ -3,6 +3,8 @@
   hardware.enableRedistributableFirmware = true;
   hardware.raspberry-pi."4".poe-plus-hat.enable = true;
 
+  nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
+
   boot = {
     kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
     initrd.availableKernelModules = [ "xhci_pci" "usbhid" "usb_storage" ];
