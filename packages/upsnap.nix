@@ -1,14 +1,12 @@
-{ lib, stdenv, buildGoModule, fetchFromGitHub, nodejs, pnpm_9, pkgs, unstable }:
+{ lib, stdenv, buildGoModule, fetchFromGitHub, nodejs, pnpm_9 }:
 let
-  latest = unstable.legacyPackages.${pkgs.system};
-
   pname = "upsnap";
-  version = "4.6.0";
+  version = "4.6.1";
   src = fetchFromGitHub {
     owner = "seriousm4x";
     repo = "UpSnap";
-    rev = "65be53bd3c32c2505847f557dbf0bc8bfd31ae81";
-    hash = "sha256-9/YRFMp3lIk/n39O9G16dCwZ11jzXxtPLjm9ZFwIob0=";
+    rev = "e72dbb762144b3f9c40ccd186daa33d413f24c39";
+    hash = "sha256-euGAMyG3ysKr0WLrd9P6t+/gAdWRvi3RJYSTkWS18Os=";
   };
 
   frontend = stdenv.mkDerivation (finalAttrs: {
@@ -22,7 +20,7 @@ let
     pnpmDeps = pnpm_9.fetchDeps {
       inherit (finalAttrs) pname version src;
       sourceRoot = "${finalAttrs.src.name}/frontend";
-      hash = "sha256-2mG+V/6rzxUHi3UJPNpqhbhcFirlp3q0EabDCgJBqHk";
+      hash = "sha256-kHFqSNdpSbGTbX4Fqcj6zNlWOIMhHvFF+DXMWCE0rkc=";
     };
 
     sourceRoot = "${finalAttrs.src.name}/frontend";
@@ -51,18 +49,22 @@ let
     };
   });
 
-in
-buildGoModule.override { go = latest.go; } {
-  inherit pname version src;
-  vendorHash = "sha256-HPrzXzHjaaYzABP5u+gzbgPHIkuplkazepvF9Q5M8NU=";
+  goMod = buildGoModule {
+    inherit pname version src;
+    vendorHash = "sha256-HPrzXzHjaaYzABP5u+gzbgPHIkuplkazepvF9Q5M8NU=";
+    modRoot = "./backend";
+    doCheck = false;
+  };
 
+in
+goMod.overrideAttrs (oldAttrs: {
   preBuild = ''
     cp -r ${frontend}/* ./pb_public
   '';
 
-  modRoot = "./backend";
-
-  doCheck = false;
+  ldflags = [
+    "-s -w -X github.com/seriousm4x/upsnap/pb.Version=${version}"
+  ];
 
   meta = with lib; {
     description = "One-Click Device Wake-Up Dashboard";
@@ -70,4 +72,4 @@ buildGoModule.override { go = latest.go; } {
     license = licenses.mit; # Replace with the actual license
     maintainers = with maintainers; [ ]; # Add maintainers if applicable
   };
-}
+})

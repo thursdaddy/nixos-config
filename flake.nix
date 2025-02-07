@@ -110,7 +110,7 @@
       };
 
       packages = forEachSupportedSystem ({ pkgs }: {
-        upSnap = pkgs.callPackage ./packages/upsnap.nix { inherit unstable; };
+        upSnap = pkgs.callPackage ./packages/upsnap.nix { };
         wallpapers = pkgs.stdenv.mkDerivation {
           name = "wallpapers";
           src = ./.;
