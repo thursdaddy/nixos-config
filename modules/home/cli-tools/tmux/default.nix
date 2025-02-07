@@ -20,7 +20,7 @@ let
 
     if [ $? != 0 ]; then
       echo "tmux session $1 does not exist!"
-      path=$(find ${tmuxs_paths} -type d -depth -maxdepth 1 -name $1 -print -quit 2>&1)
+      path=$(find ${tmuxs_paths} -depth -maxdepth 1 -type d -name $1 -print -quit 2>&1)
       cd $path
       tmux new-session -d -s "$SESSION" -n nvim 'nvim' \; \
         new-window -n zsh \; \
