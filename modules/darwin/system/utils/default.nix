@@ -12,14 +12,14 @@ in
 
   config = mkIf cfg.enable {
     homebrew.brews = [
-      "fzf"
       "bind"
+      "fzf"
       "jq"
       "ncdu"
       "ripgrep"
       "reattach-to-user-namespace"
-      "wakeonlan"
       "statix"
+      "wakeonlan"
     ];
   };
 }

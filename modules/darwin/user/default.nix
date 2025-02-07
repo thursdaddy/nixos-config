@@ -1,4 +1,4 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, pkgs, inputs, ... }:
 let
 
   inherit (lib) mkEnableOption mkIf types;
@@ -25,6 +25,8 @@ in
       home = "${user.homeDir}";
       isHidden = false;
       shell = pkgs.zsh;
+      openssh.authorizedKeys.keyFiles = [ inputs.ssh-keys.outPath ];
+      openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMsmsLubwu6s0wkeKTsM2EIuJRKFsg2nZdRCVtQHk9LT thurs" ];
     };
   };
 }

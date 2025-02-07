@@ -14,8 +14,14 @@ in
   ];
 
   config = {
-    system.stateVersion = 5;
     nixpkgs.hostPlatform = "aarch64-darwin";
+
+    system.stateVersion = 5;
+
+    system.keyboard = {
+      enableKeyMapping = true;
+      remapCapsLockToControl = true;
+    };
 
     mine = {
       user = {
@@ -26,15 +32,19 @@ in
       };
 
       apps = {
+        aldente = enabled;
         chromium = enabled;
         discord = enabled;
         firefox = enabled;
         ghostty = enabled;
         keybase = enabled;
         obsidian = enabled;
+        ollama = enabled;
         proton = enabled;
         prusa-slicer = enabled;
+        steam = enabled;
         syncthing = enabled;
+        tailscale = enabled;
         vivaldi = enabled;
       };
 
@@ -67,6 +77,7 @@ in
       };
 
       system = {
+        defaults = enabled;
         fonts = enabled;
         security.touchsudo = enabled;
         utils = enabled;
