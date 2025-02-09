@@ -156,7 +156,7 @@ in
             event_on_shutdown_monitoring = true;
             event_on_startup_monitoring = true;
             event_on_upload_monitoring = true;
-            event_on_upload_monitoring_always = true;
+            event_on_upload_monitoring_always = false;
             idleTimeout = "20";
             idleTimeoutWaitTemp = "35";
             pollingEnabled = true;
