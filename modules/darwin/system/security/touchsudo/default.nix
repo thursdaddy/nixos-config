@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -13,5 +13,8 @@ in
   config = mkIf cfg.enable {
     # Add ability to use TouchID for sudo authentication
     security.pam.enableSudoTouchIdAuth = true;
+    environment.systemPackages = [
+      pkgs.pam-reattach
+    ];
   };
 }

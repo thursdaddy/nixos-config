@@ -31,6 +31,7 @@ in
     systemd.services.beszel-hub = mkIf cfg.isHub {
       description = "Beszel-Hub";
       enable = true;
+      wantedBy = [ "default.target" ];
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
       serviceConfig = {
@@ -44,6 +45,7 @@ in
     systemd.services.beszel-agent = mkIf cfg.isAgent {
       description = "Beszel-Agent";
       enable = true;
+      wantedBy = [ "default.target" ];
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
       path = mkIf config.mine.system.video.amd.enable [ pkgs.rocmPackages.rocm-smi ];

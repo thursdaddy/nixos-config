@@ -3,11 +3,11 @@ let
 
   inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
-  cfg = config.mine.user.ssh-config;
+  cfg = config.mine.home-manager.ssh-config;
 
 in
 {
-  options.mine.user.ssh-config = {
+  options.mine.home-manager.ssh-config = {
     enable = mkEnableOption "SSH config";
   };
 
@@ -20,6 +20,8 @@ in
         matchBlocks = {
           "*" = {
             identityFile = "~/.ssh/id_ed25519";
+            sendEnv = [ "TERM" ];
+            setEnv = { TERM = "xterm-256color"; };
           };
           "192.168.20.222" = {
             identityFile = "~/.ssh/id_ed25519";

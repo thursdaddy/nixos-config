@@ -1,10 +1,15 @@
-{ user, ... }: {
+{ user, inputs, ... }: {
+  imports = [
+    inputs.sops-nix.homeManagerModules.sops
+  ];
 
-  programs.home-manager.enable = true;
+  config = {
+    programs.home-manager.enable = true;
 
-  home = {
-    username = "${user.name}";
-    stateVersion = "24.11";
-    homeDirectory = "${user.homeDir}";
+    home = {
+      username = "${user.name}";
+      stateVersion = "24.11";
+      homeDirectory = "${user.homeDir}";
+    };
   };
 }

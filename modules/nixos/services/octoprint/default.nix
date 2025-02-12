@@ -83,6 +83,9 @@ in
       enable = true;
       openFirewall = true;
       extraConfig = {
+        # plugins = {
+        #   _disabled = [ "plugin_softwareupdate" ];
+        # };
         folder = {
           timelapse = "/opt/configs/octoprint/timelapse/";
           uploads = "/opt/configs/octoprint/uploads/";

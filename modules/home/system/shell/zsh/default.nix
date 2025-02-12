@@ -1,17 +1,24 @@
 { lib, config, pkgs, ... }:
 let
 
-  inherit (lib) mkIf;
+  inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
-  cfg = config.mine.system.shell.zsh;
+  cfg = config.mine.home-manager.zsh;
 
 in
 {
+  options.mine.home-manager.zsh = {
+    enable = mkEnableOption "Enable Zsh";
+  };
+
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
       programs.zsh = {
         enable = true;
-        autosuggestion.enable = true;
+        # this is required for 'tmuxs' script as it provides the "complete" command ¯\_(ツ)_/¯
+        oh-my-zsh.enable = true;
+
+        syntaxHighlighting.enable = true;
 
         initExtra = mkIf pkgs.stdenv.hostPlatform.isDarwin ''
           eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -27,12 +34,6 @@ in
           _drestart = "sudo systemctl restart";
           _dstart = "sudo systemctl start";
           ll = "ls -larth";
-          kssh = "kitty +kitten ssh";
-        };
-
-        oh-my-zsh = {
-          enable = true;
-          plugins = [ "man" "history-substring-search" "history" ];
         };
 
         plugins = [

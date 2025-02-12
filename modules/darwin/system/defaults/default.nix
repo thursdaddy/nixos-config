@@ -11,6 +11,11 @@ in
   };
 
   config = mkIf cfg.enable {
+    system.keyboard = {
+      enableKeyMapping = true;
+      remapCapsLockToControl = true;
+    };
+
     system.defaults = {
       CustomUserPreferences = {
         "com.apple.desktopservices" = {

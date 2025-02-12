@@ -113,7 +113,7 @@ in
             "$mod_SHIFT, return, exec, [float;noanim] ghostty"
             "$mod, F, fullscreen"
             "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
-            "$mod_SHIFT, B, exec, firefox"
+            "$mod_SHIFT, B, exec, vivaldi"
             "$mod_SHIFT, D, exec, discord"
             "$mod_SHIFT, F, fullscreen, 1"
             "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"

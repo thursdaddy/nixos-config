@@ -1,7 +1,7 @@
 { lib, config, pkgs, inputs, ... }:
-with lib.thurs;
 let
 
+  inherit (lib.thurs) enabled;
   inherit (config.mine) user;
 
 in
@@ -10,6 +10,7 @@ in
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
+    ../../modules/shared/import.nix
     ../../modules/home/import.nix
   ];
 
@@ -20,8 +21,25 @@ in
       user = {
         enable = true;
         home-manager = enabled;
-        ssh-config = enabled;
         ghToken = enabled;
+        shell.package = pkgs.fish;
+      };
+
+      home-manager = {
+        git = enabled;
+        ssh-config = enabled;
+        tmux = {
+          enable = true;
+          sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/projects/nix"
+              "${user.homeDir}/projects/cloud"
+              "${user.homeDir}/projects/homelab"
+              "${user.homeDir}/projects/personal"
+            ];
+          };
+        };
       };
 
       apps = {
@@ -37,7 +55,7 @@ in
         gthumb = enabled;
         inkscape = enabled;
         keybase = enabled;
-        kitty = enabled;
+        keymapp = enabled;
         obsidian = enabled;
         proton = enabled;
         prusa-slicer = enabled;
@@ -54,29 +72,17 @@ in
 
       cli-tools = {
         ansible = enabled;
-        ncmpcpp = enabled;
+        charm-freeze = enabled;
         bottom = enabled;
         direnv = enabled;
-        git = enabled;
         just = enabled;
+        ncmpcpp = enabled;
         neofetch = enabled;
         nixvim = enabled;
         sops = {
           enable = true;
           requires.unlock = true;
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
-        };
-        tmux = {
-          enable = true;
-          sessionizer = {
-            enable = true;
-            searchPaths = [
-              "${user.homeDir}/projects/nix"
-              "${user.homeDir}/projects/cloud"
-              "${user.homeDir}/projects/homelab"
-              "${user.homeDir}/projects/personal"
-            ];
-          };
         };
       };
 
@@ -150,7 +156,6 @@ in
           openssh = enabled;
           sleep-on-lan = enabled;
         };
-        shell.zsh = enabled;
         utils = enabled;
         video.amd = enabled;
         virtualisation = {
@@ -160,10 +165,6 @@ in
           };
           libvirtd = enabled;
         };
-      };
-
-      tools = {
-        keymapp = enabled;
       };
     };
   };

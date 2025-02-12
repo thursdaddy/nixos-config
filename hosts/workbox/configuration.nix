@@ -12,6 +12,7 @@ in
     ./stage1-boot.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
+    ../../modules/shared/import.nix
     ../../modules/home/import.nix
   ];
 
@@ -22,25 +23,13 @@ in
       user = {
         enable = true;
         home-manager = enabled;
-        ssh-config = enabled;
         ghToken = enabled;
+        shell.package = pkgs.fish;
       };
 
-      apps = {
-        ghostty = enabled;
-      };
-
-      cli-tools = {
-        bottom = enabled;
-        direnv = enabled;
+      home-manager = {
         git = enabled;
-        just = enabled;
-        neofetch = enabled;
-        nixvim = enabled;
-        sops = {
-          enable = true;
-          defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
-        };
+        ssh-config = enabled;
         tmux = {
           enable = true;
           sessionizer = {
@@ -52,6 +41,19 @@ in
               "${user.homeDir}/projects/personal"
             ];
           };
+        };
+        # zsh = enabled;
+      };
+
+      cli-tools = {
+        bottom = enabled;
+        direnv = enabled;
+        just = enabled;
+        neofetch = enabled;
+        nixvim = enabled;
+        sops = {
+          enable = true;
+          defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
         };
       };
 
@@ -79,7 +81,6 @@ in
       };
 
       system = {
-        audio.pipewire = enabled;
         boot = {
           binfmt = enabled;
           systemd = enabled;
@@ -100,7 +101,6 @@ in
         services = {
           openssh = enabled;
         };
-        shell.zsh = enabled;
         utils = enabled;
         video.amd = enabled;
         virtualisation = {

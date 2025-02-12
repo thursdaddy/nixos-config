@@ -21,7 +21,7 @@ rebuild () {
     darwin-rebuild --flake .\#mbp switch
   else
     printf "${BLUE}Rebuilding... ${ORANGE}${TARGET} (remote)${NC}\n"
-    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --use-substitutes --fast --use-remote-sudo switch
+    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --fast --use-substitutes --option eval-cache false --show-trace --use-remote-sudo switch
   fi
 }
 

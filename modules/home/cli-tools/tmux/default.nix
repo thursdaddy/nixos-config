@@ -1,10 +1,10 @@
 { lib, config, pkgs, ... }:
 let
 
-  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib) mkEnableOption mkDefault mkIf mkOption types;
   inherit (lib.thurs) mkOpt;
   inherit (config.mine) user;
-  cfg = config.mine.cli-tools.tmux;
+  cfg = config.mine.home-manager.tmux;
 
   tmuxs_paths = builtins.concatStringsSep " " cfg.sessionizer.searchPaths;
   tmuxs = pkgs.writeShellScriptBin "tmuxs" ''
@@ -33,7 +33,7 @@ let
 
 in
 {
-  options.mine.cli-tools.tmux = {
+  options.mine.home-manager.tmux = {
     enable = mkEnableOption "Enable tmux";
     sessionizer = mkOption {
       default = { };
@@ -66,7 +66,7 @@ in
         escapeTime = 0;
         baseIndex = 1;
         historyLimit = 20000;
-        terminal = "screen-256color";
+        terminal = "xterm-256color";
         plugins = with pkgs; [
           tmuxPlugins.vim-tmux-navigator
           tmuxPlugins.tmux-fzf
@@ -155,14 +155,16 @@ in
           set -g status-left "#[fg=$BG]#[bg=$BLUE5]#{?client_prefix,#[bg=$GREEN],}  "
           set -ga status-left "#[fg=$FG]#[bg=$BG_DARK]  #S  "
 
-          set -g status-right " #(hostname -s) #[fg=$BG]#[bg=$BLUE5]   #(git rev-parse --abbrev-ref HEAD) "
-          set -ga status-right " #[bg=$BG_DARK]#[fg=$MAGENTA] %a #[fg=$TEAL] #[fg=$GREEN]%l:%M:%S #[bg=$BG_DARK]#[fg=$FG_DARK]  %m/%d"
+          set -g status-right-length 500
+          set -g status-right "#[fg=$BLUE5]#(hostname -s) #[fg=$BG]#[bg=$BLUE5]   #(git rev-parse --abbrev-ref HEAD) "
+          set -ga status-right " #[bg=$BG_DARK]#[fg=$MAGENTA] %a #[bg=$BG_DARK]#[fg=$FG_DARK] %b %d #[fg=$TEAL] #[fg=$GREEN]%l:%M:%S "
 
           set -g mode-style "fg=$FG_DARK,bg=$TERMINAL_BLACK"
         '';
       };
 
       home.file = mkIf cfg.sessionizer.enable {
+        # requires oh-my-zsh to be enabled
         "${user.homeDir}/.local/bin/tmuxs_autocomplete.sh" = {
           text = ''
             #/usr/bin/env bash

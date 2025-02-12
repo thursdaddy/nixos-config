@@ -14,8 +14,8 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "tanvirtin";
       repo = "vgit.nvim";
-      rev = "v1.0.3";
-      hash = "sha256-v9Ar2lh1BG4qipjksTy7foFagOR/c1ED/f7507n08Oo=";
+      rev = "v1.0.6";
+      hash = "sha256-2GkAs8f/jwKGsabhr1Ik90wh19QRBEwvsn5fVGTmBaQ=";
     };
   };
 in
@@ -207,20 +207,20 @@ in
       { mode = "n"; key = "<leader>gdv"; action = "<CMD>VGit project_diff_preview<CR>"; options.noremap = true; }
     ];
 
-    extraConfigLua = ''
-      require('vgit').setup()
-      local async = require "plenary.async"
-    '';
+    # extraConfigLua = ''
+    #   require('vgit').setup()
+    #   local async = require "plenary.async"
+    # '';
 
     extraPlugins = with pkgs; [
       fzf-checkout
-      unstable.vimPlugins.plenary-nvim
+      # unstable.vimPlugins.plenary-nvim
       unstable.vimPlugins.transparent-nvim
       unstable.vimPlugins.vim-shellcheck
       unstable.vimPlugins.vim-just
       unstable.vimPlugins.vim-rhubarb
       vimPlugins.fzfWrapper
-      vgit
+      # vgit
     ];
   };
 }

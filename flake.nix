@@ -31,6 +31,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -47,7 +53,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, home-manager, sops-nix, lanzaboote, nixos-thurs, ssh-keys, nixvim, ... } @ inputs:
+  outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, nix-index-database, home-manager, sops-nix, lanzaboote, nixos-thurs, ssh-keys, nixvim, ... } @ inputs:
     let
       lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
@@ -70,6 +76,7 @@
           modules = [
             ./hosts/c137/configuration.nix
             inputs.nixos-thurs.nixosModules.c137Containers
+            nix-index-database.nixosModules.nix-index
           ];
         };
         "cloudbox" = nixpkgs.lib.nixosSystem {
@@ -77,6 +84,7 @@
           modules = [
             ./hosts/cloudbox/configuration.nix
             inputs.nixos-thurs.nixosModules.cloudboxContainers
+            nix-index-database.nixosModules.nix-index
           ];
         };
         "workbox" = nixpkgs.lib.nixosSystem {
@@ -84,6 +92,7 @@
           modules = [
             ./hosts/workbox/configuration.nix
             inputs.nixos-thurs.nixosModules.workboxContainers
+            nix-index-database.nixosModules.nix-index
           ];
         };
         "netpi1" = nixpkgs.lib.nixosSystem {
@@ -91,6 +100,7 @@
           modules = [
             ./hosts/netpi/configuration.nix
             inputs.nixos-thurs.nixosModules.netpiContainers
+            nix-index-database.nixosModules.nix-index
           ];
         };
         "netpi2" = nixpkgs.lib.nixosSystem {
@@ -98,6 +108,7 @@
           modules = [
             ./hosts/netpi/configuration.nix
             inputs.nixos-thurs.nixosModules.netpiContainers
+            nix-index-database.nixosModules.nix-index
           ];
         };
         "printpi" = nixpkgs.lib.nixosSystem {
@@ -105,6 +116,7 @@
           modules = [
             ./hosts/printpi/configuration.nix
             inputs.nixos-thurs.nixosModules.printpiContainers
+            nix-index-database.nixosModules.nix-index
           ];
         };
       };
@@ -149,6 +161,7 @@
           format = "vm-nogui";
           modules = [
             ./systems/x86_64-vm-nogui
+            nix-index-database.nixosModules.nix-index
           ];
         };
       });

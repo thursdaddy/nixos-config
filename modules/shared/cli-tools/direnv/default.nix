@@ -1,8 +1,7 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 let
 
   inherit (lib) mkEnableOption mkIf;
-  inherit (config.mine) user;
   cfg = config.mine.cli-tools.direnv;
 
 in
@@ -12,10 +11,8 @@ in
   };
 
   config = mkIf cfg.enable {
-    home-manager.users.${user.name} = {
-      programs.direnv = {
-        enable = true;
-      };
-    };
+    environment.systemPackages = with pkgs; [
+      direnv
+    ];
   };
 }

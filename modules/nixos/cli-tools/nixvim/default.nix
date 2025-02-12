@@ -1,4 +1,4 @@
-{ lib, config, pkgs, inputs, ... }:
+{ lib, config, inputs, ... }:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -21,5 +21,4 @@ in
       vimAlias = true;
     };
   };
-
 }

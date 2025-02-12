@@ -7,7 +7,7 @@ with lib.thurs;
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
-    ../../modules/home/import.nix
+    ../../modules/shared/import.nix
   ];
 
   config = {
@@ -28,8 +28,7 @@ with lib.thurs;
     mine = {
       user = {
         enable = true;
-        home-manager = enabled;
-        ssh-config = enabled;
+        shell.package = pkgs.fish;
       };
 
       cli-tools = {
@@ -38,7 +37,6 @@ with lib.thurs;
           enable = true;
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
         };
-        tmux = enabled;
       };
 
       services = {
@@ -66,7 +64,6 @@ with lib.thurs;
         services = {
           openssh = enabled;
         };
-        shell.zsh = enabled;
         utils = enabled;
         virtualisation = {
           docker = {

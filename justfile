@@ -9,6 +9,7 @@ rebuild:
 
 build target:
   @./nix.sh build {{target}}
+  @if [[ {{target}} == "vm-nogui" ]]; then tmux new-window -n {{target}} ./result/bin/run-nixos-vm; fi
 
 local input:
   @./nix.sh local {{input}}

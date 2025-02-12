@@ -2,17 +2,17 @@
 let
 
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.mine.cli-tools.protonvpn;
+  cfg = config.mine.apps.firefox;
 
 in
 {
-  options.mine.cli-tools.protonvpn = {
-    enable = mkEnableOption "Enable ProtonVPN";
+  options.mine.apps.firefox = {
+    enable = mkEnableOption "Install Firefox";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      unstable.protonvpn-cli
+      firefox
     ];
   };
 }

@@ -1,12 +1,16 @@
 { lib, config, pkgs, ... }:
 let
 
-  inherit (lib) mkIf;
+  inherit (lib) mkEnableOption mkIf mkForce;
   inherit (config.mine) user;
   cfg = config.mine.apps.ghostty;
 
 in
 {
+  options.mine.home-manager.ghostty = {
+    enable = mkEnableOption "Ghostty home-manager configs";
+  };
+
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
       programs.ghostty = {
@@ -22,10 +26,19 @@ in
           gtk-adwaita = true;
           adw-toolbar-style = "raised-border";
 
-          font-size = "11";
+          font-size =
+            if pkgs.stdenv.isDarwin then
+              "12"
+            else
+              "11";
+
           font-feature = [ "-liga" "-calt" "-dlig" ];
           font-family = "\"Monaspace Neon\"";
         };
+      };
+
+      programs.tmux = {
+        terminal = mkForce "xterm-ghostty";
       };
     };
   };

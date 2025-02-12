@@ -9,7 +9,9 @@ let
 
 in
 {
-  imports = [ inputs.home-manager.darwinModules.home-manager ];
+  imports = [
+    inputs.home-manager.darwinModules.home-manager
+  ];
 
   config = mkIf cfg.enable {
     home-manager = {

@@ -25,6 +25,7 @@ in
       xdg-utils
       adwaita-icon-theme
       hicolor-icon-theme
+      hyprpicker
     ];
 
     xdg.portal = {

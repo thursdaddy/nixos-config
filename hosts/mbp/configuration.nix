@@ -1,8 +1,7 @@
 { lib, config, pkgs, inputs, ... }:
-with lib;
-with lib.thurs;
 let
 
+  inherit (lib.thurs) enabled;
   inherit (config.mine) user;
 
 in
@@ -10,6 +9,7 @@ in
   imports = [
     ../../overlays/unstable
     ../../modules/darwin/import.nix
+    ../../modules/shared/import.nix
     ../../modules/home/import.nix
   ];
 
@@ -18,24 +18,36 @@ in
 
     system.stateVersion = 5;
 
-    system.keyboard = {
-      enableKeyMapping = true;
-      remapCapsLockToControl = true;
-    };
-
     mine = {
       user = {
         enable = true;
         home-manager = enabled;
-        ssh-config = enabled;
         ghToken = enabled;
+        shell.package = pkgs.fish;
+      };
+
+      home-manager = {
+        ghostty = enabled;
+        git = enabled;
+        ssh-config = enabled;
+        tmux = {
+          enable = true;
+          sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/projects/nix"
+              "${user.homeDir}/projects/cloud"
+              "${user.homeDir}/projects/homelab"
+              "${user.homeDir}/projects/personal"
+            ];
+          };
+        };
       };
 
       apps = {
         aldente = enabled;
         chromium = enabled;
         discord = enabled;
-        firefox = enabled;
         ghostty = enabled;
         keybase = enabled;
         obsidian = enabled;
@@ -49,8 +61,10 @@ in
       };
 
       cli-tools = {
+        awscli = enabled;
+        ansible = enabled;
+        charm-freeze = enabled;
         direnv = enabled;
-        git = enabled;
         homebrew = enabled;
         just = enabled;
         neofetch = enabled;
@@ -60,18 +74,6 @@ in
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
           ageKeyFile = {
             path = "${user.homeDir}/.config/sops/age/keys.txt";
-          };
-        };
-        tmux = {
-          enable = true;
-          sessionizer = {
-            enable = true;
-            searchPaths = [
-              "${user.homeDir}/projects/nix"
-              "${user.homeDir}/projects/cloud"
-              "${user.homeDir}/projects/homelab"
-              "${user.homeDir}/projects/personal"
-            ];
           };
         };
       };

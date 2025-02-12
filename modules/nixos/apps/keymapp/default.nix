@@ -2,11 +2,11 @@
 let
 
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.mine.tools.keymapp;
+  cfg = config.mine.apps.keymapp;
 
 in
 {
-  options.mine.tools.keymapp = {
+  options.mine.apps.keymapp = {
     enable = mkEnableOption "Enable keymapp, ZSA keyboard flashing utility";
   };
 

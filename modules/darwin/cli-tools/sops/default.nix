@@ -22,6 +22,7 @@ in
     };
   };
 
+  # sops does not have official darwin support, but works through home-manager
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
       sops = {

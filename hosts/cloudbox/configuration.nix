@@ -1,21 +1,18 @@
 { lib, pkgs, inputs, ... }:
-with lib;
-with lib.thurs;
+let
+  inherit (lib.thurs) enabled;
+in
 {
   imports = [
     (inputs.nixpkgs + "/nixos/modules/virtualisation/amazon-image.nix")
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
-    ../../modules/home/import.nix
+    ../../modules/shared/import.nix
   ];
 
   config = {
     system.stateVersion = "24.11";
-
-    environment.systemPackages = with pkgs; [
-      awscli2
-    ];
 
     services.journald.extraConfig = ''
       SystemMaxUse=1G
@@ -26,10 +23,11 @@ with lib.thurs;
     mine = {
       user = {
         enable = true;
-        home-manager = enabled;
+        shell.package = pkgs.fish;
       };
 
       cli-tools = {
+        awscli = enabled;
         bottom = enabled;
         neofetch = enabled;
         nixvim = enabled;
@@ -37,7 +35,7 @@ with lib.thurs;
           enable = true;
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
         };
-        tmux = enabled;
+        ssm-session-manager = enabled;
       };
 
       services = {
@@ -74,7 +72,6 @@ with lib.thurs;
         services = {
           openssh = enabled;
         };
-        shell.zsh = enabled;
         utils = enabled;
         virtualisation = {
           docker = {

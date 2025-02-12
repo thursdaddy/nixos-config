@@ -3,15 +3,18 @@ let
 
   inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
-  cfg = config.mine.cli-tools.git;
+  cfg = config.mine.home-manager.git;
+  aliases = import ../../../shared/cli-tools/git/aliases.nix;
 
 in
 {
-  options.mine.cli-tools.git = {
-    enable = mkEnableOption "Git";
+  options.mine.home-manager.git = {
+    enable = mkEnableOption "Git configs";
   };
 
   config = mkIf cfg.enable {
+    mine.cli-tools.git.enable = true;
+
     home-manager.users.${user.name} = {
       home.packages = with pkgs; [ git gh ];
       programs.git = {
@@ -31,34 +34,7 @@ in
           core = { editor = "nvim"; };
         };
       };
-
-      programs.zsh.shellAliases = {
-        "ga" = "git add";
-        "gaa" = "git add .";
-        "gc" = "git commit";
-        "gca" = "git commit --amend";
-        "gcg" = "git --no-pager log --graph --topo-order --abbrev-commit --date=short --decorate --all --boundary";
-        "gcl" = "git --no-pager log --topo-order --abbrev-commit --date=short --decorate --all --boundary --reverse";
-        "gco" = "git checkout";
-        "gcob" = "git checkout -b";
-        "gcom" = "git checkout main";
-        "gcm" = "git commit --message";
-        "gd" = "git --no-pager diff";
-        "gD" = "git diff";
-        "gds" = "git --no-pager diff --staged";
-        "gf" = "git fetch";
-        "gfo" = "git fetch --origin";
-        "gfp" = "git push --set-upstream origin `git symbolic-ref --short HEAD`";
-        "gl" = "git pull";
-        "gp" = "git push";
-        "grsh" = "git reset --soft HEAD^";
-        "grh" = "git reset";
-        "grhh" = "git reset --hard";
-        "gru" = "git reset --";
-        "grset" = "git remote set-url";
-        "gsa" = "git stash --all";
-        "gst" = "git --no-pager status";
-      };
+      programs.zsh.shellAliases = mkIf (config.mine.home-manager.zsh.enable || user.shell.package == pkgs.zsh || config.mine.system.shell.zsh.enable) aliases.git_aliases;
     };
   };
 }
