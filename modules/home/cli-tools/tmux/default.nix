@@ -1,13 +1,17 @@
 { lib, config, pkgs, ... }:
 let
 
-  inherit (lib) mkEnableOption mkDefault mkIf mkOption types;
+  inherit (lib) mkEnableOption mkIf mkOption types;
   inherit (lib.thurs) mkOpt;
   inherit (config.mine) user;
   cfg = config.mine.home-manager.tmux;
 
   tmuxs_paths = builtins.concatStringsSep " " cfg.sessionizer.searchPaths;
-  tmuxs = pkgs.writeShellScriptBin "tmuxs" ''
+  tmuxs_fish = pkgs.writers.writeFishBin "tmuxs" ''
+    set tmuxs_paths ${tmuxs_paths}
+    ${builtins.readFile ./tmuxs.fish}
+  '';
+  tmuxs_zsh = pkgs.writeShellScriptBin "tmuxs" ''
     # tmuxs, like tmux + sessions
 
     if [ -z "$1" ]; then
@@ -50,7 +54,8 @@ in
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
       home.packages = with pkgs; [
-        (mkIf cfg.sessionizer.enable tmuxs)
+        (mkIf (cfg.sessionizer.enable && user.shell.package == pkgs.fish) tmuxs_fish)
+        (mkIf (cfg.sessionizer.enable && user.shell.package == pkgs.zsh) tmuxs_zsh)
         tmux
       ];
 
@@ -136,7 +141,7 @@ in
           RED="#f7768e"
 
           set-option -g automatic-rename on
-          set-option -g automatic-rename-format '#{b:pane_current_path}'
+          set-option -g automatic-rename-format '#{b:pane_current_command}'
 
           # riced tmux session picker
           bind-key Space choose-window -w -O name -F '#{?pane_format,#[fg=colour209]#{pane_current_command} #[fg=colour209]#{pane_title},#{?window_format,#[fg=colour209]#{window_name}#{window_flags}#{?#{==:#{window_panes},1}, #{?#{!=:#{window_name},#{pane_current_command}},#[fg=colour112]#{pane_current_command} ,}#[fg=colour39]#{pane_title},},#[fg=colour112]#{?session_grouped, (group #{session_group}: #{session_group_list}),}#{?session_attached,(attached),#[fg=colour9](unattached)}}}'
@@ -163,30 +168,45 @@ in
         '';
       };
 
-      home.file = mkIf cfg.sessionizer.enable {
+      home.file = mkIf (cfg.sessionizer.enable && user.shell.package == pkgs.zsh) {
         # requires oh-my-zsh to be enabled
         "${user.homeDir}/.local/bin/tmuxs_autocomplete.sh" = {
           text = ''
-            #/usr/bin/env bash
+            function _tmuxs_autocomplete
+              set -l cur "$COMP_WORDS[$COMP_CWORD]"
 
-            _tmuxs_autocomplete() {
-              local cur="''${COMP_WORDS[COMP_CWORD]}"
-              local prev="''${COMP_WORDS[COMP_CWORD-1]}"
-              local dir=$(find ${tmuxs_paths} -maxdepth 1 -mindepth 1 -type d -not -path '*/.*')
+              # Convert $COMP_CWORD to a number, handling empty string
+              set -l cword_num (echo "$COMP_CWORD" | tr -d '[:alpha:]')
 
-              if [[ $prev == "tmuxs" ]]; then
-                COMPREPLY=($(compgen -W "$(basename -a $dir)" -- "$cur"))
-              fi
+              if [ -z "$cword_num" ] # Check if cword_num is empty
+                set cword_num 0 # Default to 0 if empty
+              end
 
-            }
+              if [ "$cword_num" -gt 1 ]
+                set -l prev "$COMP_WORDS[$COMP_CWORD - 1]"
+              else
+                set -l prev ""
+              end
 
-            complete -F _tmuxs_autocomplete tmuxs
+              set -l dir (find $tmuxs_paths -maxdepth 1 -mindepth 1 -type d -not -path '*/.*')
+
+              if [ "$prev" = "tmuxs" ]
+                set -l completions (basename -a $dir)
+                for completion in $completions
+                  if string match -q -- "$cur" "$completion"
+                    echo "$completion"
+                  end
+                end
+              end
+            end
+
+            complete -f -c tmuxs -a "(_tmuxs_autocomplete)"
           '';
         };
       };
 
       # source the autocomplete script in zsh
-      programs.zsh = mkIf cfg.sessionizer.enable {
+      programs.zsh = mkIf (cfg.sessionizer.enable && user.shell.package == pkgs.zsh) {
         initExtra = ''
           source ~/.local/bin/tmuxs_autocomplete.sh
         '';
