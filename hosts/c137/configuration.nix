@@ -40,6 +40,7 @@ in
             ];
           };
         };
+        zsh = enabled;
       };
 
       apps = {
@@ -77,13 +78,14 @@ in
         direnv = enabled;
         just = enabled;
         ncmpcpp = enabled;
-        neofetch = enabled;
+        fastfetch = enabled;
         nixvim = enabled;
         sops = {
           enable = true;
           requires.unlock = true;
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
         };
+        vagrant = enabled;
       };
 
       desktop = {

@@ -29,7 +29,7 @@ in
       cli-tools = {
         awscli = enabled;
         bottom = enabled;
-        neofetch = enabled;
+        fastfetch = enabled;
         nixvim = enabled;
         sops = {
           enable = true;

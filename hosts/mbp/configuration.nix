@@ -18,6 +18,8 @@ in
 
     system.stateVersion = 5;
 
+    nixpkgs.config.allowUnfree = true;
+
     mine = {
       user = {
         enable = true;
@@ -67,7 +69,7 @@ in
         direnv = enabled;
         homebrew = enabled;
         just = enabled;
-        neofetch = enabled;
+        fastfetch = enabled;
         nixvim = enabled;
         sops = {
           enable = true;

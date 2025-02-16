@@ -2,17 +2,17 @@
 let
 
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.mine.cli-tools.neofetch;
+  cfg = config.mine.cli-tools.fastfetch;
 
 in
 {
-  options.mine.cli-tools.neofetch = {
-    enable = mkEnableOption "Enable Neofetch";
+  options.mine.cli-tools.fastfetch = {
+    enable = mkEnableOption "Enable fastfetch";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = [
-      pkgs.neofetch
+      pkgs.fastfetch
     ];
   };
 }

@@ -42,14 +42,13 @@ in
             ];
           };
         };
-        # zsh = enabled;
       };
 
       cli-tools = {
         bottom = enabled;
         direnv = enabled;
         just = enabled;
-        neofetch = enabled;
+        fastfetch = enabled;
         nixvim = enabled;
         sops = {
           enable = true;
