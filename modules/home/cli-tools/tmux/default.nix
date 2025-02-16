@@ -172,35 +172,16 @@ in
         # requires oh-my-zsh to be enabled
         "${user.homeDir}/.local/bin/tmuxs_autocomplete.sh" = {
           text = ''
-            function _tmuxs_autocomplete
-              set -l cur "$COMP_WORDS[$COMP_CWORD]"
-
-              # Convert $COMP_CWORD to a number, handling empty string
-              set -l cword_num (echo "$COMP_CWORD" | tr -d '[:alpha:]')
-
-              if [ -z "$cword_num" ] # Check if cword_num is empty
-                set cword_num 0 # Default to 0 if empty
-              end
-
-              if [ "$cword_num" -gt 1 ]
-                set -l prev "$COMP_WORDS[$COMP_CWORD - 1]"
-              else
-                set -l prev ""
-              end
-
-              set -l dir (find $tmuxs_paths -maxdepth 1 -mindepth 1 -type d -not -path '*/.*')
-
-              if [ "$prev" = "tmuxs" ]
-                set -l completions (basename -a $dir)
-                for completion in $completions
-                  if string match -q -- "$cur" "$completion"
-                    echo "$completion"
-                  end
-                end
-              end
-            end
-
-            complete -f -c tmuxs -a "(_tmuxs_autocomplete)"
+            #!/usr/bin/env bash
+            _tmuxs_autocomplete() {
+              local cur="''${COMP_WORDS[COMP_CWORD]}"
+              local prev="''${COMP_WORDS[COMP_CWORD-1]}"
+              local dir=$(find ${tmuxs_paths} -maxdepth 1 -mindepth 1 -type d -not -path '*/.*')
+              if [[ $prev == "tmuxs" ]]; then
+                COMPREPLY=($(compgen -W "$(basename -a $dir)" -- "$cur"))
+              fi
+            }
+            complete -F _tmuxs_autocomplete tmuxs
           '';
         };
       };
