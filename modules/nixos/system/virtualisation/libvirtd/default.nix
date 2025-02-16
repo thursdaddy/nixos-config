@@ -16,11 +16,11 @@ in
 
     environment.systemPackages = with pkgs; [
       virt-manager
-      # vagrant
     ];
 
     virtualisation.libvirtd = {
       enable = true;
+      allowedBridges = [ "br0" ];
       qemu = {
         package = pkgs.qemu_kvm;
         runAsRoot = true;
