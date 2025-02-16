@@ -67,6 +67,7 @@
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
             ./hosts/mbp/configuration.nix
+            nix-index-database.darwinModules.nix-index
           ];
         };
       };
@@ -84,7 +85,6 @@
           modules = [
             ./hosts/cloudbox/configuration.nix
             inputs.nixos-thurs.nixosModules.cloudboxContainers
-            nix-index-database.nixosModules.nix-index
           ];
         };
         "workbox" = nixpkgs.lib.nixosSystem {
@@ -100,7 +100,6 @@
           modules = [
             ./hosts/netpi/configuration.nix
             inputs.nixos-thurs.nixosModules.netpiContainers
-            nix-index-database.nixosModules.nix-index
           ];
         };
         "netpi2" = nixpkgs.lib.nixosSystem {
@@ -108,7 +107,6 @@
           modules = [
             ./hosts/netpi/configuration.nix
             inputs.nixos-thurs.nixosModules.netpiContainers
-            nix-index-database.nixosModules.nix-index
           ];
         };
         "printpi" = nixpkgs.lib.nixosSystem {
@@ -116,7 +114,6 @@
           modules = [
             ./hosts/printpi/configuration.nix
             inputs.nixos-thurs.nixosModules.printpiContainers
-            nix-index-database.nixosModules.nix-index
           ];
         };
       };
@@ -167,16 +164,25 @@
       });
 
       devShells = forEachSupportedSystem ({ pkgs }: {
-        tf = pkgs.mkShell {
+        utils = with pkgs; mkShell {
           buildInputs = [
-            pkgs.opentofu
-            pkgs.awscli2
+            glow
+            gnupg
+            pinentry-all
+            wakeonlan
+            yt-dlp
           ];
         };
-        python = pkgs.mkShell {
+        tf = with pkgs; mkShell {
           buildInputs = [
-            pkgs.python312Full
-            (pkgs.python312.withPackages (ps: with ps; with pkgs.python312Packages; [
+            opentofu
+            awscli2
+          ];
+        };
+        python = with pkgs; mkShell {
+          buildInputs = [
+            python312Full
+            (python312.withPackages (ps: with ps; with python312Packages; [
               requests
             ]))
           ];

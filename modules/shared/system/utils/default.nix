@@ -12,32 +12,24 @@ in
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      nixpkgs-fmt
       bind
-      gnupg
-      fzf
-      jq
-      ncdu
-      ripgrep
-      wakeonlan
-      statix
       curl
       dig
       file
       fzf
-      glow
       jq
       killall
+      ncdu
+      nixpkgs-fmt
       nmap
+      ripgrep
       shellcheck
+      statix
       tree
       unzip
       wget
-      yt-dlp
     ] ++ optionals pkgs.stdenv.isDarwin [
       reattach-to-user-namespace
-    ] ++ optionals pkgs.stdenv.isLinux [
-      pinentry-all
     ];
   };
 }
