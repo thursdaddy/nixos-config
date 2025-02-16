@@ -24,7 +24,7 @@ in
         direnv = {
           disabled = false;
           format = "[$symbol$loaded$denied]($style)";
-          style = "fg:#ff8700";
+          style = "fg:#FF8700";
           symbol = "direnv ";
           allowed_msg = "";
           loaded_msg = "";
@@ -42,14 +42,14 @@ in
         status = {
           style = "italic";
           disabled = false;
-          symbol = "[](fg:#d54e53)";
+          symbol = "[](fg:#D54E53)";
           success_symbol = "[](fg:#A7AF63)";
           format = "[$int]($style)";
         };
         username = {
           show_always = true;
           style_user = "fg:#A7AF63";
-          style_root = "fg:#d54e53";
+          style_root = "fg:#D54E53";
           format = "[$user]($style)";
         };
         hostname = {
@@ -64,7 +64,7 @@ in
         };
         nix_shell = {
           disabled = false;
-          style = "fg:#ffd687";
+          style = "fg:#FFD687";
           symbol = " ";
           format = "[$symbol$state ]($style)";
         };
@@ -76,16 +76,16 @@ in
         git_status = {
           disabled = false;
           style = "fg:#F0C674";
-          format = "[($stashed$ahead$behind$diverged$deleted$renamed$modified$staged$untracked)]($style)";
+          format = "[($stashed$deleted$renamed$modified$staged$untracked$ahead_behind)]($style)";
           staged = "+$count ";
           modified = "!$count ";
-          deleted = "[✘$count ](fg:#d54e53)";
+          deleted = "[✘$count ](fg:#D54E53)";
           stashed = "[*$count ](fg:#A8AF63)";
-          renamed = "[$count ](fg:#ff8700)";
+          renamed = "[$count ](fg:#Ff8700)";
           untracked = "[?$count ](fg:#81A2BE)";
-          ahead = "⇡$count ";
-          diverged = "⇕↑$ahead_count ↓$behind_count ";
-          behind = "↓$behind_count ";
+          ahead = "[⇡$count ](fg:#A7AF63)";
+          behind = "[⇣$count ](fg:#FF8700)";
+          diverged = "⇕ ⇡$ahead_count ⇣$behind_count ";
         };
         directory = {
           format = "[ $path]($style)";
