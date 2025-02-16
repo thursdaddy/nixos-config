@@ -15,6 +15,7 @@ Est. Feb 2024
 | [home-manager](https://github.com/nix-community/home-manager/tree/release-24.11) | Manage apps and configs via nix! Importing as NixOS and Darwin modules (Not standalone) |
 | [lanzaboote](https://github.com/nix-community/lanzaboote) | Wallpaper manager for Hyprland configured via home-manager|
 | [nix-darwin](https://github.com/LnL7/nix-darwin) | Nix on MacOS |
+| [nix-index-database](https://github.com/nix-community/nix-index-database) | Nix on MacOS |
 | [nixos-generators](https://github.com/nix-community/nixos-generators) | Create NixOS configurations for various targets |
 | [nixvim](https://github.com/nix-community/nixvim/tree/main) | Fully configurable Neovim, imported via NixOS and Darwin modules |
 | [ssh-keys](https://github.com/thursdaddy.keys) | SSH Pub Keys from GitHub|
@@ -30,8 +31,8 @@ Est. Feb 2024
     ├── cloudbox/    # AWS instance
     ├── mbp/         # 2021 MBP M1
     ├── netpi/       # Pi4's running pihole + tailscale
-    ├── workbox/     # AMD 5900HX, 32GB DDR4
     ├── printpi/     # Pi4 running octoprint
+    ├── workbox/     # AMD 5900HX, 32GB DDR4
 ├── flake.nix
 ├── flake.lock
 ├── lib/             # extending lib with my own functions
@@ -40,7 +41,9 @@ Est. Feb 2024
     ├── home/        # home-manager configurations
     ├── nixos/       # nixos configurations
     ├── nixvim/      # nixvim configurations
+    ├── shared/      # shared darwin and nixos configurations
 ├── overlays/        # overlay configurations
+├── packages/        # personal packages
 └── systems/         # nixos-generator targets
 └── build            # utility build script (im lazy)
 ```
@@ -53,3 +56,4 @@ All modules are imported on a per system basis via the hosts `configuration.nix`
  - home-manager -> `modules/home/import.nix`
  - nixos        -> `modules/nixos/import.nix`
  - nixvim       -> `modules/nixvim/import.nix`
+ - shared       -> `modules/shared/import.nix`
