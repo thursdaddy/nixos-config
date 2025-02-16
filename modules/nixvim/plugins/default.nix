@@ -1,5 +1,6 @@
 { pkgs, ... }:
 let
+
   fzf-checkout = pkgs.vimUtils.buildVimPlugin {
     name = "fzf-checkout";
     src = pkgs.fetchFromGitHub {
@@ -9,15 +10,7 @@ let
       hash = "sha256-lM5vv0ucgxvoc8ZtJwShDoY7ji6BYl6VZA2bYN0UU2s=";
     };
   };
-  vgit = pkgs.vimUtils.buildVimPlugin {
-    name = "vgit";
-    src = pkgs.fetchFromGitHub {
-      owner = "tanvirtin";
-      repo = "vgit.nvim";
-      rev = "v1.0.6";
-      hash = "sha256-2GkAs8f/jwKGsabhr1Ik90wh19QRBEwvsn5fVGTmBaQ=";
-    };
-  };
+
 in
 {
   programs.nixvim = {
@@ -207,20 +200,13 @@ in
       { mode = "n"; key = "<leader>gdv"; action = "<CMD>VGit project_diff_preview<CR>"; options.noremap = true; }
     ];
 
-    # extraConfigLua = ''
-    #   require('vgit').setup()
-    #   local async = require "plenary.async"
-    # '';
-
     extraPlugins = with pkgs; [
       fzf-checkout
-      # unstable.vimPlugins.plenary-nvim
       unstable.vimPlugins.transparent-nvim
       unstable.vimPlugins.vim-shellcheck
       unstable.vimPlugins.vim-just
       unstable.vimPlugins.vim-rhubarb
       vimPlugins.fzfWrapper
-      # vgit
     ];
   };
 }

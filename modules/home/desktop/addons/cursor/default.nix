@@ -17,7 +17,7 @@ in
         gtk.enable = true;
         package = pkgs.bibata-cursors-translucent;
         name = "Bibata_Ghost";
-        size = 30;
+        size = 24;
       };
     };
   };

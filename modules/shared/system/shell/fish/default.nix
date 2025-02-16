@@ -27,6 +27,13 @@ in
       interactiveShellInit = ''
         set -U fish_greeting ""
         set -g fish_pager_color_prefix 444444
+
+        bind \cx beginning-of-line
+        bind \cb backward-word
+        bind \cf forward-word
+        bind \cy fish_clipboard_copy
+        bind \cp fish_clipboard_paste
+
         if test -d /opt/homebrew
           starship init fish | source
           # Homebrew is installed on MacOS

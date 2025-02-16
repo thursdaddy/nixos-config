@@ -75,7 +75,7 @@ in
         };
         git_status = {
           disabled = false;
-          style = "bold fg:#F0C674";
+          style = "fg:#F0C674";
           format = "[($stashed$ahead$behind$diverged$deleted$renamed$modified$staged$untracked)]($style)";
           staged = "+$count ";
           modified = "!$count ";
