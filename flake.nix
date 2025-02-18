@@ -66,7 +66,6 @@
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
             ./hosts/mbp/configuration.nix
-            nix-index-database.darwinModules.nix-index
           ];
         };
       };
@@ -121,10 +120,10 @@
         upSnap = pkgs.callPackage ./packages/upsnap.nix { };
         wallpapers = pkgs.stdenv.mkDerivation {
           name = "wallpapers";
-          src = ./.;
+          src = ./. + "/assets/wallpapers";
           installPhase = ''
             mkdir -p $out/
-            cp -Rf ./assets/wallpapers/ $out/
+            cp -Rf $src/ $out/
           '';
         };
         ami = nixos-generators.nixosGenerate {
