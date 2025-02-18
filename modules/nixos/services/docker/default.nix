@@ -3,7 +3,8 @@ let
 
   inherit (lib) mkEnableOption mkIf mkOption types;
   inherit (config.mine) user;
-  cfg = config.mine.system.virtualisation.docker;
+  cfg = config.mine.services.docker;
+  aliases = import ../../../shared/aliases.nix;
 
   container-version-check-env = pkgs.python311.withPackages (p:
     with p; [ pkgs.python311Packages.requests ]);
@@ -18,7 +19,7 @@ let
 
 in
 {
-  options.mine.system.virtualisation.docker = {
+  options.mine.services.docker = {
     enable = mkEnableOption "docker";
     scripts = mkOption {
       default = { };
@@ -34,11 +35,13 @@ in
   config = lib.mkIf cfg.enable {
     users.users.${user.name}.extraGroups = mkIf user.enable [ "docker" ];
 
-    environment.systemPackages = with pkgs; [
+    environment.systemPackages = [
       (mkIf cfg.scripts.check-versions container-version-check)
     ];
 
     virtualisation.docker.enable = true;
     virtualisation.oci-containers.backend = "docker";
+
+    programs.fish.shellAliases = mkIf (user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable) aliases.docker_aliases;
   };
 }

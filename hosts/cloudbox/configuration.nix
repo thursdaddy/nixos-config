@@ -43,6 +43,10 @@ in
           enable = true;
           isAgent = true;
         };
+        docker = {
+          enable = true;
+          scripts.check-versions = true;
+        };
         prometheus = {
           enable = true;
           exporters.node = enabled;
@@ -73,12 +77,6 @@ in
           openssh = enabled;
         };
         utils = enabled;
-        virtualisation = {
-          docker = {
-            enable = true;
-            scripts.check-versions = true;
-          };
-        };
       };
     };
   };

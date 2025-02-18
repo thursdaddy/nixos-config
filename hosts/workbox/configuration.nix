@@ -62,6 +62,10 @@ in
           isHub = true;
           isAgent = true;
         };
+        docker = {
+          enable = true;
+          scripts.check-versions = true;
+        };
         ollama = enabled;
         prometheus = {
           enable = true;
@@ -102,12 +106,6 @@ in
         };
         utils = enabled;
         video.amd = enabled;
-        virtualisation = {
-          docker = {
-            enable = true;
-            scripts.check-versions = true;
-          };
-        };
       };
     };
   };

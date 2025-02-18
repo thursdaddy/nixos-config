@@ -44,6 +44,10 @@ with lib.thurs;
           enable = true;
           isAgent = true;
         };
+        docker = {
+          enable = true;
+          scripts.check-versions = true;
+        };
         octoprint = enabled;
       };
 
@@ -65,12 +69,6 @@ with lib.thurs;
           openssh = enabled;
         };
         utils = enabled;
-        virtualisation = {
-          docker = {
-            enable = true;
-            scripts.check-versions = true;
-          };
-        };
       };
     };
   };

@@ -109,6 +109,10 @@ in
           enable = true;
           isAgent = true;
         };
+        docker = {
+          enable = true;
+          scripts.check-versions = true;
+        };
         mpd = enabled;
         ollama = enabled;
         prometheus = {
@@ -161,10 +165,6 @@ in
         utils = enabled;
         video.amd = enabled;
         virtualisation = {
-          docker = {
-            enable = true;
-            scripts.check-versions = true;
-          };
           libvirtd = enabled;
         };
       };

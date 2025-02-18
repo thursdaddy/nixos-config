@@ -80,6 +80,10 @@ in
         };
       };
 
+      services = {
+        docker = enabled;
+      };
+
       system = {
         defaults = enabled;
         fonts = enabled;

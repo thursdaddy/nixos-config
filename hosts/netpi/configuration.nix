@@ -36,6 +36,10 @@ in
           enable = true;
           isAgent = true;
         };
+        docker = {
+          enable = true;
+          scripts.check-versions = true;
+        };
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
@@ -65,12 +69,6 @@ in
           openssh = enabled;
         };
         utils = enabled;
-        virtualisation = {
-          docker = {
-            enable = true;
-            scripts.check-versions = true;
-          };
-        };
       };
     };
   };
