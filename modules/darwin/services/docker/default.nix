@@ -2,11 +2,11 @@
 let
 
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.mine.cli-tools.docker;
+  cfg = config.mine.services.docker;
 
 in
 {
-  options.mine.cli-tools.docker = {
+  options.mine.services.docker = {
     enable = mkEnableOption "Docker desktop";
   };
 
