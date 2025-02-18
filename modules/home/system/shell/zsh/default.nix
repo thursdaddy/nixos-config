@@ -4,6 +4,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
   cfg = config.mine.home-manager.zsh;
+  aliases = import ../../../../shared/aliases.nix;
 
 in
 {
@@ -25,16 +26,13 @@ in
         '';
 
         shellAliases = {
-          db = "docker build -t $(whoami)/$(basename $(pwd)):dev .";
-          dbnc = "docker build --no-cache -t $(whoami)/$(basename $(pwd)):dev .";
-          dr = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev bash";
-          drs = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev sh";
           _ds = "sudo systemctl status";
           _dstop = "sudo systemctl stop";
           _drestart = "sudo systemctl restart";
           _dstart = "sudo systemctl start";
           ll = "ls -larth";
-        };
+        } // lib.optionals config.mine.services.docker.enable aliases.docker_aliases;
+
 
         plugins = [
           {

@@ -4,7 +4,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
   cfg = config.mine.home-manager.git;
-  aliases = import ../../../shared/cli-tools/git/aliases.nix;
+  aliases = import ../../../shared/aliases.nix;
 
 in
 {
