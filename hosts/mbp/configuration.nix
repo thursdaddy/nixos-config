@@ -84,12 +84,16 @@ in
       system = {
         defaults = enabled;
         fonts = enabled;
-        security.touchsudo = enabled;
-        utils = enabled;
         nix = {
           index = enabled;
           unfree = enabled;
         };
+        security.touchsudo = enabled;
+        utils = {
+          dev = true;
+          sysadmin = true;
+        };
+        virtualisation.utm = enabled;
       };
     };
   };

@@ -92,7 +92,7 @@ in
             enable = true;
             hostname = "workbox";
           };
-          firewall = disabled;
+          firewall = enabled;
           forwarding.ipv4 = true;
           resolved = enabled;
         };
@@ -104,7 +104,10 @@ in
         services = {
           openssh = enabled;
         };
-        utils = enabled;
+        utils = {
+          dev = true;
+          sysadmin = true;
+        };
         video.amd = enabled;
       };
     };

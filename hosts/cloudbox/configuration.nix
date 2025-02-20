@@ -20,6 +20,10 @@ in
 
     nix.settings.trusted-users = [ "ssm-user" "@wheel" ];
 
+    environment.systemPackages = with pkgs; [
+      neovim
+    ];
+
     mine = {
       user = {
         enable = true;
@@ -30,7 +34,6 @@ in
         awscli = enabled;
         bottom = enabled;
         fastfetch = enabled;
-        nixvim = enabled;
         sops = {
           enable = true;
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";

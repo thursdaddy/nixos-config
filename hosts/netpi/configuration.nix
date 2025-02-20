@@ -68,7 +68,6 @@ in
         services = {
           openssh = enabled;
         };
-        utils = enabled;
       };
     };
   };

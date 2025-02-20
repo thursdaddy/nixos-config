@@ -163,7 +163,10 @@ in
           openssh = enabled;
           sleep-on-lan = enabled;
         };
-        utils = enabled;
+        utils = {
+          dev = true;
+          sysadmin = true;
+        };
         video.amd = enabled;
         virtualisation = {
           libvirtd = enabled;

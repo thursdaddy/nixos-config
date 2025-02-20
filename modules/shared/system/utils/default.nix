@@ -1,36 +1,50 @@
 { lib, config, pkgs, ... }:
 let
 
-  inherit (lib) mkEnableOption mkIf optionals;
+  inherit (lib) mkEnableOption mkIf types optionals;
+  inherit (lib.thurs) mkOpt;
   cfg = config.mine.system.utils;
+
+  dev = with pkgs; [
+    glow
+    jq
+    nixfmt-rfc-style
+    nixpkgs-fmt
+    shellcheck
+    statix
+  ];
+  sysadmin = with pkgs; [
+    bind
+    dig
+    gnupg
+    killall
+    ncdu
+    nmap
+    (mkIf pkgs.stdenv.isLinux pinentry-all)
+    wakeonlan
+  ];
 
 in
 {
   options.mine.system.utils = {
-    enable = mkEnableOption "system utils";
+    enable = mkOpt types.bool true "system utils";
+    dev = mkEnableOption "Developer focused tooling";
+    sysadmin = mkEnableOption "Sysadmin focused tooling";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      eza
-      bind
       curl
-      dig
+      eza
       file
       fzf
-      jq
-      killall
-      ncdu
-      nixpkgs-fmt
-      nmap
       ripgrep
-      shellcheck
-      nixfmt-rfc-style
-      statix
       tree
       unzip
       wget
-    ] ++ optionals pkgs.stdenv.isDarwin [
+    ] ++ optionals cfg.dev dev
+    ++ optionals cfg.sysadmin sysadmin
+    ++ optionals pkgs.stdenv.isDarwin [
       reattach-to-user-namespace
     ];
   };

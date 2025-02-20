@@ -68,7 +68,6 @@ with lib.thurs;
         services = {
           openssh = enabled;
         };
-        utils = enabled;
       };
     };
   };

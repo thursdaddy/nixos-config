@@ -163,15 +163,6 @@
       });
 
       devShells = forEachSupportedSystem ({ pkgs }: {
-        utils = with pkgs; mkShell {
-          buildInputs = [
-            glow
-            gnupg
-            pinentry-all
-            wakeonlan
-            yt-dlp
-          ];
-        };
         tf = with pkgs; mkShell {
           buildInputs = [
             opentofu
