@@ -66,6 +66,7 @@
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
             ./hosts/mbp/configuration.nix
+            nix-index-database.darwinModules.nix-index
           ];
         };
       };

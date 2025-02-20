@@ -149,6 +149,7 @@ in
         nix = {
           unfree = enabled;
           flakes = enabled;
+          index = enabled;
         };
         security.sudonopass = enabled;
         services = {

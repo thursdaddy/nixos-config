@@ -100,6 +100,7 @@ in
         nix = {
           unfree = enabled;
           flakes = enabled;
+          index = enabled;
         };
         services = {
           openssh = enabled;
