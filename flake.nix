@@ -120,10 +120,10 @@
         upSnap = pkgs.callPackage ./packages/upsnap.nix { };
         wallpapers = pkgs.stdenv.mkDerivation {
           name = "wallpapers";
-          src = ./. + "/assets/wallpapers";
+          src = ./assets/wallpapers;
           installPhase = ''
             mkdir -p $out/
-            cp -Rf $src/ $out/
+            cp -Rf ./ $out/
           '';
         };
         ami = nixos-generators.nixosGenerate {

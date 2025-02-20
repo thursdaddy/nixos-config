@@ -1,8 +1,9 @@
-{ lib, config, ... }:
+{ lib, config, inputs, pkgs, ... }:
 let
 
   inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
+  inherit (inputs.self.packages.${pkgs.system}) wallpapers;
   cfg = config.mine.desktop.hyprlock;
 
 in
@@ -22,7 +23,7 @@ in
           };
 
           background = [{
-            path = "$HOME/pictures/wallpapers/blue_astronaut_in_space.png";
+            path = "${wallpapers}/blue_astronaut_in_space.png";
           }];
 
           input-field = [{

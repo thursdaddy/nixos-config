@@ -19,14 +19,14 @@ in
         settings = {
           splash = false;
           preload = [
-            "${wallpapers}/wallpapers/blue_astronaut_in_space.png"
-            "${wallpapers}/wallpapers/Kurzgesagt_Galaxies.png"
+            "${wallpapers}/blue_astronaut_in_space.png"
+            "${wallpapers}/Kurzgesagt_Galaxies.png"
           ];
 
           wallpaper = [
-            "DP-1,${wallpapers}/wallpapers/Kurzgesagt_Galaxies.png"
-            "DP-2,${wallpapers}/wallpapers/blue_astronaut_in_space.png"
-            "DP-3,${wallpapers}/wallpapers/blue_astronaut_in_space.png"
+            "DP-1,${wallpapers}/Kurzgesagt_Galaxies.png"
+            "DP-2,${wallpapers}/blue_astronaut_in_space.png"
+            "DP-3,${wallpapers}/blue_astronaut_in_space.png"
           ];
         };
       };
