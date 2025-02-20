@@ -49,6 +49,16 @@ with lib.thurs;
           scripts.check-versions = true;
         };
         octoprint = enabled;
+        prometheus = {
+          enable = true;
+          exporters.node = enabled;
+        };
+        tailscale = {
+          enable = true;
+          authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
+          useRoutingFeatures = "client";
+          extraUpFlags = [ "--advertise-routes=192.168.20.0/24" ];
+        };
       };
 
       system = {
