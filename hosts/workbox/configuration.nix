@@ -72,7 +72,6 @@ in
           exporters = {
             node = enabled;
             smartctl = enabled;
-            zfs = enabled;
           };
         };
         tailscale = {

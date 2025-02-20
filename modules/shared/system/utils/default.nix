@@ -12,6 +12,7 @@ in
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
+      eza
       bind
       curl
       dig
@@ -24,6 +25,7 @@ in
       nmap
       ripgrep
       shellcheck
+      nixfmt-rfc-style
       statix
       tree
       unzip

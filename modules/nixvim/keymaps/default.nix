@@ -5,6 +5,8 @@ _: {
     keymaps = [
       # close panes
       { mode = "n"; key = "<leader>o"; action = "<CMD>only<CR>"; }
+      # delete all buffers but current
+      { mode = "n"; key = "<leader><C-o>"; action = "<CMD>%bd|e#<CR>"; }
       # clear highlights
       { mode = "n"; key = "<leader>c"; action = "<CMD>noh<CR>"; }
 

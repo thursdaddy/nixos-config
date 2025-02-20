@@ -3,6 +3,7 @@ let
 
   inherit (lib) mkIf;
   cfg = config.mine.user.shell.starship;
+  langs = "$aws$python$terraform$vagrant";
 
 in
 {
@@ -10,12 +11,13 @@ in
     programs.starship = {
       enable = true;
       settings = {
+        command_timeout = 5000;
         format = ''
           $os$directory $nix_shell$git_branch $git_status
           $character
         '';
         right_format = ''
-          $direnv$cmd_duration$username$hostname$time
+          ${langs}$direnv$cmd_duration$username$hostname$time
         '';
         character = {
           success_symbol = "[➜](bold green)";
@@ -23,14 +25,38 @@ in
         };
         direnv = {
           disabled = false;
-          format = "[$symbol$loaded$denied]($style)";
+          format = "[ $symbol$loaded$denied  ]($style)";
           style = "fg:#FF8700";
-          symbol = "direnv ";
+          symbol = " ";
           allowed_msg = "";
-          loaded_msg = "";
+          loaded_msg = "";
           not_allowed_msg = "";
           denied_msg = "";
           unloaded_msg = "";
+        };
+        python = {
+          disabled = false;
+          format = "[ $symbol$pyenv_prefix($version)($virtualenv) ]($style)";
+          symbol = " ";
+          style = "fg:#81A2BE";
+        };
+        aws = {
+          disabled = false;
+          format = "[ $symbol($profile)$region ]($style)";
+          symbol = "  ";
+          style = "fg:#81A2BE";
+        };
+        vagrant = {
+          disabled = false;
+          format = "[ $symbol($version) ]($style)";
+          symbol = " ";
+          style = "fg:#81A2BE";
+        };
+        terraform = {
+          disabled = false;
+          format = "[ $symbol($workspace) ]($style)";
+          symbol = " ";
+          style = "fg:#81A2BE";
         };
         os = {
           disabled = false;
@@ -46,10 +72,16 @@ in
           success_symbol = "[](fg:#A7AF63)";
           format = "[$int]($style)";
         };
+        sudo = {
+          disabled = true;
+          format = "[$symbol]($style)";
+          style = "red";
+          symbol = "󰀨 ";
+        };
         username = {
           show_always = true;
           style_user = "fg:#A7AF63";
-          style_root = "fg:#D54E53";
+          style_root = "bold fg:#D54E53";
           format = "[$user]($style)";
         };
         hostname = {
@@ -59,7 +91,7 @@ in
         };
         cmd_duration = {
           disabled = false;
-          format = "[  $duration ]($style)";
+          format = "[  $duration  ]($style)";
           style = "fg:#F0C674";
         };
         nix_shell = {
@@ -96,7 +128,7 @@ in
         };
         time = {
           disabled = false;
-          time_format = "%R";
+          time_format = "%R:%S";
           style = "fg:#81A2BE";
           format = "[  $time]($style)";
         };

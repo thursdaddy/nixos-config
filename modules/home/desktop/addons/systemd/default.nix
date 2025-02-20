@@ -15,7 +15,6 @@ in
     home-manager.users.${user.name} = {
       home.packages = with pkgs; [
         (writeShellScriptBin "restart.desktop" ''
-          #/usr/bin/env bash
           ${config.systemd.package}/bin/systemctl --user restart desktop.service
         '')
       ];

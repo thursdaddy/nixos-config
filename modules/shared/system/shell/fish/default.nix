@@ -36,6 +36,11 @@ in
         bind \cy fish_clipboard_copy
         bind \cp fish_clipboard_paste
 
+        function last_history_item
+            echo sudo $history[1]
+        end
+        abbr -a !! --position anywhere --function last_history_item
+
         if test -d /opt/homebrew
           starship init fish | source
           # Homebrew is installed on MacOS
@@ -44,6 +49,6 @@ in
       '';
     };
 
-    environment.pathsToLink = [ "/share/fish " ];
+    environment.pathsToLink = [ "/share/fish" ];
   };
 }

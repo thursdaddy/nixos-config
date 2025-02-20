@@ -50,11 +50,10 @@ in
           workspace = 10, monitor:DP-1
 
           # RULES
-          windowrulev2 = workspace 3 silent, class:(Steam)
+          windowrulev2 = workspace 10 silent, class:(steam)
           windowrulev2 = workspace 4 silent, class:(Bitwarden)
           windowrulev2 = workspace 4 silent, class:(Proton Mail)
           windowrulev2 = workspace 5 silent, class:(discord)
-          windowrulev2 = workspace 5 silent, title:(btm --color gruvbox)
           windowrulev2 = workspace 6 silent, class:(obsidian)
           windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
           windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
@@ -69,6 +68,7 @@ in
         settings = {
           "$mod" = "SUPER";
 
+          env = [ "XCURSOR_SIZE,32" ];
           general = {
             layout = "dwindle";
             gaps_in = 5;
@@ -94,6 +94,12 @@ in
           binds = {
             allow_workspace_cycles = true;
           };
+
+          bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+
+          animation = [
+            "windows, 1, 4, myBezier"
+          ];
 
           decoration = {
             dim_inactive = true;

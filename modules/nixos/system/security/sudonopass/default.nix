@@ -8,10 +8,9 @@ let
 in
 {
   options.mine.system.security.sudonopass = {
-    enable = mkEnableOption "zsh";
+    enable = mkEnableOption "Enable no password on sudo";
   };
 
-  # TODO: account for when user not enabled, if possible
   config = mkIf cfg.enable {
     security.sudo.extraRules = [{
       users = [ "${user.name}" ];
