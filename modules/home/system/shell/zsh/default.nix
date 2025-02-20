@@ -25,14 +25,9 @@ in
           eval "$(/opt/homebrew/bin/brew shellenv)"
         '';
 
-        shellAliases = {
-          _ds = "sudo systemctl status";
-          _dstop = "sudo systemctl stop";
-          _drestart = "sudo systemctl restart";
-          _dstart = "sudo systemctl start";
-          ll = "ls -larth";
-        } // lib.optionals config.mine.services.docker.enable aliases.docker_aliases;
-
+        shellAliases = aliases.systemctl
+          // aliases.eza
+          // lib.optionals config.mine.services.docker.enable aliases.docker;
 
         plugins = [
           {

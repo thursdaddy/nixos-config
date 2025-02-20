@@ -17,6 +17,6 @@ in
       pkgs.git
     ];
 
-    programs.fish.shellAliases = mkIf (user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable) aliases.git_aliases;
+    programs.fish.shellAliases = mkIf (user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable) aliases.git;
   };
 }

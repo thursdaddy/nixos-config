@@ -34,7 +34,7 @@ in
           core = { editor = "nvim"; };
         };
       };
-      programs.zsh.shellAliases = mkIf (config.mine.home-manager.zsh.enable || user.shell.package == pkgs.zsh || config.mine.system.shell.zsh.enable) aliases.git_aliases;
+      programs.zsh.shellAliases = mkIf (config.mine.home-manager.zsh.enable || user.shell.package == pkgs.zsh || config.mine.system.shell.zsh.enable) aliases.git;
     };
   };
 }

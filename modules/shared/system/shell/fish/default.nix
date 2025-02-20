@@ -3,6 +3,7 @@ let
 
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.system.shell.fish;
+  aliases = import ../../../../shared/aliases.nix;
 
 in
 {
@@ -20,10 +21,11 @@ in
       grc
     ];
 
-    # set fish_color_valid_path
     programs.fish = {
       enable = true;
       useBabelfish = true;
+      shellAliases = aliases.eza
+        // aliases.systemctl;
       interactiveShellInit = ''
         set -U fish_greeting ""
         set -g fish_pager_color_prefix 444444

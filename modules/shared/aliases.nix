@@ -1,5 +1,5 @@
 {
-  git_aliases = {
+  git = {
     ga = "git add";
     gaa = "git add .";
     gc = "git commit";
@@ -27,10 +27,26 @@
     gst = "git --no-pager status";
   };
 
-  docker_aliases = {
+  docker = {
     db = "docker build -t $(whoami)/$(basename $(pwd)):dev .";
     dbnc = "docker build --no-cache -t $(whoami)/$(basename $(pwd)):dev .";
     dr = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev bash";
     drs = "docker run -it --rm --name $(basename $(pwd)) $(whoami)/$(basename $(pwd)):dev sh";
+  };
+
+  eza = {
+    ld = "eza -lD";
+    lf = "eza -lF --color=always | grep -v /";
+    lh = "eza -dl .* --group-directories-first";
+    ll = "eza -al --group-directories-first";
+    ls = "eza -alF --color=always --sort=size | grep -v /";
+    lt = "eza -al --sort=modified";
+  };
+
+  systemctl = {
+    _dst = "sudo systemctl status";
+    _dstop = "sudo systemctl stop";
+    _drs = "sudo systemctl restart";
+    _dstart = "sudo systemctl start";
   };
 }

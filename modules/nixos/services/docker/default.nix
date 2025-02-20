@@ -42,6 +42,6 @@ in
     virtualisation.docker.enable = true;
     virtualisation.oci-containers.backend = "docker";
 
-    programs.fish.shellAliases = mkIf (user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable) aliases.docker_aliases;
+    programs.fish.shellAliases = mkIf (user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable) aliases.docker;
   };
 }
