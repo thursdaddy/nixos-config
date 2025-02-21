@@ -28,7 +28,7 @@ let
     buildPhase = ''
       runHook preBuild
 
-      pnpm run build
+      PUBLIC_VERSION=${version} pnpm run build
 
       runHook postBuild
     '';
