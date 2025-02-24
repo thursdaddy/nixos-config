@@ -24,6 +24,9 @@ c137:
 cloudbox:
   @./nix.sh rebuild cloudbox
 
+homebox:
+  @./nix.sh rebuild homebox
+
 workbox:
   @./nix.sh rebuild workbox
 

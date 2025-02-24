@@ -29,6 +29,7 @@ Est. Feb 2024
 ├── hosts/
     ├── c137/        # AMD 5950x, 64GB DDR4, AMD 6600XT
     ├── cloudbox/    # AWS instance
+    ├── homebox/     # Lenovo ThinkCentre M700, i5-6500T, 16GB DDR4
     ├── mbp/         # 2021 MBP M1
     ├── netpi/       # Pi4's running pihole + tailscale
     ├── printpi/     # Pi4 running octoprint

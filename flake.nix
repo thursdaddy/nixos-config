@@ -86,6 +86,12 @@
             inputs.nixos-thurs.nixosModules.cloudboxContainers
           ];
         };
+        "homebox" = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; inherit lib; };
+          modules = [
+            ./hosts/homebox/configuration.nix
+          ];
+        };
         "workbox" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
