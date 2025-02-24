@@ -23,6 +23,7 @@ in
           success_symbol = "[➜](bold green)";
           error_symbol = "[✗](bold red)";
         };
+
         direnv = {
           disabled = false;
           format = "[ $symbol$loaded$denied  ]($style)";
@@ -34,37 +35,43 @@ in
           denied_msg = "";
           unloaded_msg = "";
         };
+
         python = {
           disabled = false;
           format = "[ $symbol$pyenv_prefix($version)($virtualenv) ]($style)";
           symbol = " ";
           style = "fg:#81A2BE";
         };
+
         aws = {
           disabled = false;
           format = "[ $symbol($profile)$region ]($style)";
           symbol = "  ";
           style = "fg:#81A2BE";
         };
+
         vagrant = {
           disabled = false;
           format = "[ $symbol($version) ]($style)";
           symbol = " ";
           style = "fg:#81A2BE";
         };
+
         terraform = {
           disabled = false;
           format = "[ $symbol($workspace) ]($style)";
           symbol = " ";
           style = "fg:#81A2BE";
         };
+
         os = {
           disabled = false;
+          symbols = {
+            NixOS = " ";
+            Macos = " ";
+          };
         };
-        os.symbols = {
-          NixOS = " ";
-          Macos = " ";
-        };
+
         status = {
           style = "italic";
           disabled = false;
@@ -72,39 +79,46 @@ in
           success_symbol = "[](fg:#A7AF63)";
           format = "[$int]($style)";
         };
+
         sudo = {
           disabled = true;
           format = "[$symbol]($style)";
           style = "red";
           symbol = "󰀨 ";
         };
+
         username = {
           show_always = true;
           style_user = "fg:#A7AF63";
           style_root = "bold fg:#D54E53";
           format = "[$user]($style)";
         };
+
         hostname = {
           ssh_only = false;
           style = "fg:#A7AF63";
           format = "[@$hostname]($style)";
         };
+
         cmd_duration = {
           disabled = false;
           format = "[  $duration  ]($style)";
           style = "fg:#F0C674";
         };
+
         nix_shell = {
           disabled = false;
           style = "fg:#FFD687";
           symbol = " ";
           format = "[$symbol$state ]($style)";
         };
+
         git_branch = {
           symbol = " ";
           style = "fg:#A7AF63";
           format = "[$symbol$branch]($style)";
         };
+
         git_status = {
           disabled = false;
           style = "fg:#F0C674";
@@ -119,6 +133,7 @@ in
           behind = "[⇣$count ](fg:#FF8700)";
           diverged = "⇕ ⇡$ahead_count ⇣$behind_count ";
         };
+
         directory = {
           format = "[ $path]($style)";
           style = "fg:#81A2BE";
@@ -126,11 +141,12 @@ in
           truncation_length = 5;
           truncation_symbol = "…/";
         };
+
         time = {
           disabled = false;
           time_format = "%R:%S";
           style = "fg:#81A2BE";
-          format = "[  $time]($style)";
+          format = "[    $time]($style)";
         };
       };
     };

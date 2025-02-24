@@ -5,6 +5,7 @@ with lib.thurs;
   imports = [
     (inputs.nixpkgs + "/nixos/modules/virtualisation/amazon-image.nix")
     ../../modules/nixos/import.nix
+    ../../modules/shared/import.nix
     ../../overlays/unstable
   ];
 

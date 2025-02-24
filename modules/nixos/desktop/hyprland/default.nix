@@ -14,7 +14,6 @@ in
     services.displayManager.sddm.wayland.enable = mkIf config.mine.desktop.sddm.enable true;
 
     programs.hyprland = {
-      package = pkgs.unstable.hyprland;
       enable = true;
       xwayland.enable = true;
     };

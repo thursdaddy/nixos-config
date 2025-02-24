@@ -41,6 +41,7 @@ in
             ];
           };
         };
+        zsh = enabled;
       };
 
       apps = {

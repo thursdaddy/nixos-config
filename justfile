@@ -1,6 +1,7 @@
 host := ```
    echo $(hostname)
 ```
+
 statix:
   @statix check
 

@@ -2,7 +2,8 @@
   git = {
     ga = "git add";
     gaa = "git add .";
-    gc = "git commit";
+    gap = "git add .";
+    gc = "git add --patch";
     gca = "git commit --amend";
     gcg = "git --no-pager log --graph --topo-order --abbrev-commit --date=short --decorate --all --boundary";
     gcl = "git --no-pager log --topo-order --abbrev-commit --date=short --decorate --all --boundary --reverse";

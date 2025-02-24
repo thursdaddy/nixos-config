@@ -46,6 +46,10 @@ in
         git = enabled;
       };
 
+      services = {
+        docker = enabled;
+      };
+
       system = {
         networking = {
           networkd = {
@@ -57,9 +61,6 @@ in
         };
         security.sudonopass = enabled;
         utils = enabled;
-        virtualisation = {
-          docker = enabled;
-        };
       };
     };
   };

@@ -23,9 +23,9 @@ in
 
     programs.fish = {
       enable = true;
-      useBabelfish = true;
       shellAliases = aliases.eza
         // aliases.systemctl;
+      promptInit = mkIf pkgs.stdenv.isDarwin "starship init fish | source";
       interactiveShellInit = ''
         set -U fish_greeting ""
         set -g fish_pager_color_prefix 444444
@@ -42,7 +42,6 @@ in
         abbr -a !! --position anywhere --function last_history_item
 
         if test -d /opt/homebrew
-          starship init fish | source
           # Homebrew is installed on MacOS
           /opt/homebrew/bin/brew shellenv | source
         end

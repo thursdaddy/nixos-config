@@ -15,14 +15,19 @@ in
 {
   programs.nixvim = {
     plugins = {
+      autoclose.enable = true;
       barbecue.enable = true;
       cmp-buffer.enable = true;
       cmp-emoji.enable = true;
       cmp-nvim-lsp.enable = true;
       cmp-path.enable = true;
       comment.enable = true;
+      diffview.enable = true;
+      direnv.enable = true;
       endwise.enable = true;
       fugitive.enable = true;
+      gitgutter.enable = false;
+      gitsigns.enable = true;
       illuminate.enable = true;
       indent-blankline.enable = true;
       lastplace.enable = true;
@@ -56,9 +61,6 @@ in
             "<C-Space>" = "cmp.mapping.complete()";
           };
         };
-      };
-      diffview = {
-        enable = true;
       };
       gitblame = {
         enable = true;
@@ -188,6 +190,7 @@ in
       { mode = "n"; key = "<leader>E"; action = "<CMD>NvimTreeFocus<CR>"; }
       # fugitive
       { mode = "n"; key = "<leader>gaa"; action = "<CMD>Git add .<CR>"; options.noremap = true; }
+      { mode = "n"; key = "<leader>gap"; action = "<CMD>Git add --patch<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>gs"; action = "<CMD>below Git<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>gc"; action = "<CMD>below Git commit<CR>"; options.noremap = true; }
       { mode = "n"; key = "<leader>gb"; action = "<CMD>GBranches<CR>"; options.noremap = true; } #fzf-checkout
