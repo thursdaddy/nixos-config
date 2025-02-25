@@ -3,6 +3,25 @@ let
 
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.apps.home-assistant;
+  traefik_hass_conf = pkgs.writeTextFile {
+    name = "blocky.yml";
+    text = ''
+      http:
+        routers:
+          hass:
+            rule: "Host(`hass2.${config.nixos-thurs.traefik.fqdn}`)"
+            service: hass
+            entrypoints:
+              - "websecure"
+            tls:
+              certResolver: letsencrypt
+        services:
+          hass:
+            loadBalancer:
+              servers:
+              - url: http://192.168.20.201:8090
+    '';
+  };
 
 in
 {
@@ -27,29 +46,9 @@ in
       };
     };
 
-    sops.templates."traefik_hass_conf" = {
-      owner = "thurs";
-      content = ''
-        http:
-          routers:
-            hass:
-              rule: "Host(`hass2.${config.nixos-thurs.traefik.fqdn}`)"
-              service: hass
-              entrypoints:
-                - "websecure"
-              tls:
-                certResolver: letsencrypt
-          services:
-            hass:
-              loadBalancer:
-                servers:
-                - url: http://192.168.20.201:8090
-      '';
-    };
-
     virtualisation.oci-containers.containers."traefik" = mkIf config.mine.container.traefik.enable {
       volumes = [
-        "${config.sops.templates."traefik_hass_conf".path}:/hass_conf.yml"
+        "${traefik_hass_conf}:/hass_conf.yml"
       ];
       cmd = [
         "--providers.file.filename=/hass_conf.yml"

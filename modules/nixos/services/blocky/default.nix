@@ -16,7 +16,7 @@ in
   imports = [ inputs.nixos-thurs.nixosModules.blocky ];
 
   options.mine.services.blocky = {
-    enable = mkEnableOption "Enable Ollama";
+    enable = mkEnableOption "Enable Blocky, a DNS proxy and ad-blocker for local network";
   };
 
   config = mkIf cfg.enable {
