@@ -50,6 +50,7 @@ in
         discord = enabled;
         element = enabled;
         firefox = enabled;
+        flycast = enabled;
         freecad = enabled;
         ghostty = enabled;
         gimp = enabled;
