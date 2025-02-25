@@ -89,6 +89,14 @@ in
         vagrant = enabled;
       };
 
+      container = {
+        configPath = "${user.homeDir}/configs";
+        traefik = {
+          enable = true;
+          awsEnvKeys = true;
+        };
+      };
+
       desktop = {
         cursor = enabled;
         fuzzel = enabled;

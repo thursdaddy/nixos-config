@@ -75,7 +75,7 @@
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
             ./hosts/c137/configuration.nix
-            inputs.nixos-thurs.nixosModules.c137Containers
+            # inputs.nixos-thurs.nixosModules.c137Containers
             nix-index-database.nixosModules.nix-index
           ];
         };
@@ -104,14 +104,12 @@
           specialArgs = { inherit inputs; inherit lib; hostname = "netpi1"; };
           modules = [
             ./hosts/netpi/configuration.nix
-            inputs.nixos-thurs.nixosModules.netpiContainers
           ];
         };
         "netpi2" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; inherit lib; hostname = "netpi2"; };
           modules = [
             ./hosts/netpi/configuration.nix
-            inputs.nixos-thurs.nixosModules.netpiContainers
           ];
         };
         "printpi" = nixpkgs.lib.nixosSystem {
