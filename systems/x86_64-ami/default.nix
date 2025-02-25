@@ -1,5 +1,7 @@
 { lib, inputs, config, ... }:
-with lib.thurs;
+let
+  inherit (lib.thurs) enabled;
+in
 {
 
   imports = [

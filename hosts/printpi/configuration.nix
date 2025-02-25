@@ -1,6 +1,7 @@
 { pkgs, lib, inputs, ... }:
-with lib;
-with lib.thurs;
+let
+  inherit (lib.thurs) enabled;
+in
 {
   imports = [
     inputs.nixos-hardware.nixosModules.raspberry-pi-4

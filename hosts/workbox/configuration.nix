@@ -1,10 +1,7 @@
 { lib, config, pkgs, inputs, ... }:
-with lib;
-with lib.thurs;
 let
-
   inherit (config.mine) user;
-
+  inherit (lib.thurs) enabled;
 in
 {
   imports = [

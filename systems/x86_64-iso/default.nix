@@ -1,9 +1,5 @@
-{ lib, pkgs, ... }:
-with lib;
-with lib.thurs; {
-
-  imports = [
-  ];
+{ pkgs, ... }: {
+  imports = [ ];
 
   config = {
     system.stateVersion = "24.11";
