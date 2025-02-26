@@ -31,11 +31,20 @@ in
         };
       };
 
+      container = {
+        configPath = "/opt/configs";
+        traefik = {
+          enable = true;
+          awsEnvKeys = true;
+        };
+      };
+
       services = {
         beszel = {
           enable = true;
           isAgent = true;
         };
+        blocky = enabled;
         docker = {
           enable = true;
           scripts.check-versions = true;

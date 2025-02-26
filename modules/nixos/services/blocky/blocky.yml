@@ -1,0 +1,46 @@
+upstreams:
+  init:
+    strategy: fast
+  groups:
+    default:
+      - 1.1.1.1
+
+connectIPVersion: dual
+
+bootstrapDns:
+  - tcp+udp:1.1.1.1
+
+blocking:
+  denylists:
+    ads:
+      - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
+      - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+      - http://sysctl.org/cameleon/hosts
+      - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
+    special:
+      - https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts
+  allowlists:
+    ads:
+      - allowlist.txt
+  clientGroupsBlock:
+    default:
+      - ads
+      - special
+  blockType: zeroIp
+  blockTTL: 1m
+
+clientLookup:
+  upstream: 192.168.20.1
+  singleNameOrder:
+    - 2
+    - 1
+
+ports:
+  dns: 53
+
+log:
+  level: info
+  format: text
+  timestamp: true
+  privacy: false
+
