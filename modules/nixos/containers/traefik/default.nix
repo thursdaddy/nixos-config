@@ -1,24 +1,23 @@
 { config, lib, pkgs, inputs, ... }:
 let
-
   inherit (lib) mkEnableOption mkIf mkOption types;
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.container.traefik;
-  traefik_cfg = config.nixos-thurs.traefik;
-  regex_fqdn = builtins.replaceStrings [ "." ] [ "\\." ] "${traefik_cfg.fqdn}";
-
 
   version = "3.3.3";
 
+  fqdn = config.nixos-thurs.traefik.fqdn;
+  regex_fqdn = builtins.replaceStrings [ "." ] [ "\\." ] "${fqdn}";
   envFileContents = ''
     AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."aws/traefik/AWS_SECRET_ACCESS_KEY"}
     AWS_ACCESS_KEY_ID=${config.sops.placeholder."aws/traefik/AWS_ACCESS_KEY_ID"}
     AWS_HOSTED_ZONE_ID=${config.sops.placeholder."aws/traefik/AWS_HOSTED_ZONE_ID"}
   '';
-
 in
 {
-  imports = [ inputs.nixos-thurs.nixosModules.traefik ];
+  imports = [
+    inputs.nixos-thurs.nixosModules.traefik
+  ];
 
   options.mine.container.traefik = mkOption {
     default = { };
@@ -95,18 +94,16 @@ in
         "--entrypoints.websecure.address=:443"
         "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
         "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=${cfg.dnsChallengeProvider}"
-        "--certificatesresolvers.letsencrypt.acme.email=${traefik_cfg.email}"
         "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
       ];
       labels = {
         "traefik.enable" = "true";
         "traefik.http.routers.traefik.tls" = "true";
         "traefik.http.routers.traefik.tls.certresolver" = "letsencrypt";
-        "traefik.http.routers.traefik.tls.domains[0].main" = "${traefik_cfg.fqdn}";
-        "traefik.http.routers.traefik.tls.domains[0].sans" = "*.${traefik_cfg.fqdn}";
-        "traefik.http.routers.traefik.rule" = "Host(`traefik.${traefik_cfg.fqdn}`)";
+        "traefik.http.routers.traefik.tls.domains[0].main" = "${fqdn}";
+        "traefik.http.routers.traefik.tls.domains[0].sans" = "*.${fqdn}";
+        "traefik.http.routers.traefik.rule" = "Host(`traefik.${fqdn}`)";
         "traefik.http.routers.traefik.entrypoints" = "websecure";
-        "traefik.http.services.traefik.loadbalancer.server.port" = "8080";
         "traefik.http.routers.http-catchall.rule" = "HostRegexp(`^.+\\.${regex_fqdn}`)";
         "traefik.http.routers.http-catchall.entrypoints" = "web";
         "traefik.http.routers.http-catchall.middlewares" = "redirect-to-https@docker";
