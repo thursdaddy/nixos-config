@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, ... }:
 let
   inherit (lib) mkEnableOption mkIf mkOption types;
   inherit (lib.thurs) mkOpt;
@@ -6,7 +6,7 @@ let
 
   version = "3.3.3";
 
-  fqdn = config.nixos-thurs.traefik.fqdn;
+  fqdn = config.mine.container.traefik.domainName;
   regex_fqdn = builtins.replaceStrings [ "." ] [ "\\." ] "${fqdn}";
   envFileContents = ''
     AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."aws/traefik/AWS_SECRET_ACCESS_KEY"}
@@ -15,18 +15,14 @@ let
   '';
 in
 {
-  imports = [
-    inputs.nixos-thurs.nixosModules.traefik
-  ];
-
   options.mine.container.traefik = mkOption {
     default = { };
     type = types.submodule {
       options = {
         enable = mkEnableOption "Enable Traefik";
-        version = mkOpt types.str "v${version}" "Traefik image version";
         dnsChallengeProvider = mkOpt types.str "route53" "Traefik dnsChallengeProvider.";
         awsEnvKeys = mkOpt types.bool false "Traefik requires keys to update route53 records.";
+        domainName = mkOpt types.str "example.com" "Domain name to use with traefik";
       };
     };
   };
@@ -51,8 +47,11 @@ in
       '';
     };
 
+    # used to create /etc/static/traefik, where traefik static configs are stored then mounted into traefik
+    environment.etc."traefik/placeholder".text = "";
+
     systemd.tmpfiles.rules = [
-      "d ${config.mine.container.configPath}/traefik/acme 0755 root root -"
+      "d ${config.mine.container.settings.configPath}/traefik/acme 0755 root root -"
     ];
 
     sops = {
@@ -65,7 +64,7 @@ in
     };
 
     virtualisation.oci-containers.containers."traefik" = {
-      image = "traefik:${cfg.version}";
+      image = "traefik:${version}";
       ports = [
         "0.0.0.0:80:80"
         "0.0.0.0:443:443"
@@ -82,7 +81,10 @@ in
       };
       volumes = [
         "/var/run/docker.sock:/var/run/docker.sock:ro"
-        "${config.mine.container.configPath}/traefik:/etc/traefik/"
+        "${config.mine.container.settings.configPath}/traefik:/etc/traefik/"
+        # mounted to follow symlinks created by environment.etc for static traefik configs
+        "/etc/static/traefik:/static"
+        "/nix/store:/nix/store"
       ];
       cmd = [
         "--api.dashboard=false"
@@ -90,6 +92,8 @@ in
         "--log.level=info"
         "--providers.docker=true"
         "--providers.docker.exposedbydefault=false"
+        "--providers.file.directory=/static"
+        "--providers.file.watch=true"
         "--entrypoints.web.address=:80"
         "--entrypoints.websecure.address=:443"
         "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"

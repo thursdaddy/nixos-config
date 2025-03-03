@@ -17,6 +17,7 @@ let
     bind
     dig
     gnupg
+    usbutils
     killall
     ncdu
     nmap

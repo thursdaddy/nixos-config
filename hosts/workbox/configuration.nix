@@ -5,12 +5,13 @@ let
 in
 {
   imports = [
+    inputs.nixos-thurs.nixosModules.configs
     ./hardware-configuration.nix
     ./stage1-boot.nix
-    ../../overlays/unstable
     ../../modules/nixos/import.nix
     ../../modules/shared/import.nix
     ../../modules/home/import.nix
+    ../../overlays/import.nix
   ];
 
   config = {
@@ -51,6 +52,34 @@ in
           enable = true;
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
         };
+      };
+
+      container = {
+        audiobookshelf = enabled;
+        commafeed = enabled;
+        gitlab = enabled;
+        gitlab-runner = enabled;
+        grafana = enabled;
+        grocy = enabled;
+        hoarder = enabled;
+        open-webui = enabled;
+        prometheus = enabled;
+        syncthing = {
+          enable = true;
+          subdomain = "sync-workbox";
+          volumePaths = [
+            "${user.homeDir}/projects:/projects"
+            "${user.homeDir}/documents/notes/:/notes"
+          ];
+        };
+        teslamate = enabled;
+        thelounge = enabled;
+        traefik = {
+          enable = true;
+          awsEnvKeys = true;
+          domainName = config.nixos-thurs.localDomain;
+        };
+        vaultwarden = enabled;
       };
 
       services = {

@@ -1,10 +1,8 @@
 { lib, pkgs, config, ... }:
 let
-
   inherit (lib) mkEnableOption mkIf types;
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.services.beszel;
-
 in
 {
   options.mine.services.beszel = {
@@ -58,6 +56,19 @@ in
         Type = "simple";
         Restart = "always";
         RestartSec = "5s";
+      };
+    };
+
+    environment.etc = mkIf (config.mine.container.traefik.enable && cfg.isHub) {
+      "traefik/beszel.yml" = {
+        text = (builtins.readFile
+          (pkgs.substituteAll {
+            name = "beszel";
+            src = ./traefik.yml;
+            fqdn = config.mine.container.traefik.domainName;
+            ip = "192.168.20.120";
+          })
+        );
       };
     };
   };

@@ -24,6 +24,7 @@
   networking.hostId = "5cdce191";
 
   swapDevices = [ ];
+
   fileSystems = {
     "/" = {
       device = "NIX/root";
@@ -33,6 +34,12 @@
       device = "/dev/disk/by-uuid/B503-FC0B";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
+    };
+    # nfs mounts
+    "/backups" = {
+      device = "192.168.20.12:/fast/backups";
+      fsType = "nfs";
+      options = [ "auto" "rw" "defaults" "_netdev" ];
     };
   };
 }

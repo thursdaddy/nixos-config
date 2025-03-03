@@ -7,6 +7,7 @@ let
 in
 {
   imports = [
+    inputs.nixos-thurs.nixosModules.configs
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
@@ -90,7 +91,9 @@ in
       };
 
       container = {
-        configPath = "${user.homeDir}/configs";
+        settings = {
+          configPath = "${user.homeDir}/configs";
+        };
         traefik = {
           enable = true;
           awsEnvKeys = true;

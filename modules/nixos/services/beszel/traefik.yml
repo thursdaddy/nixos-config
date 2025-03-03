@@ -1,0 +1,15 @@
+http:
+  routers:
+    monitor:
+      rule: "Host(`monitor.@fqdn@`)"
+      service: monitor
+      entrypoints:
+        - "websecure"
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    monitor:
+      loadBalancer:
+        servers:
+        - url: http://@ip@:8890
