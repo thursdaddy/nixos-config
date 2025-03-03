@@ -105,7 +105,6 @@ in
           enable = true;
           useRoutingFeatures = "client";
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
-          extraUpFlags = [ "--advertise-routes=192.168.20.0/24" ];
         };
         upsnap = enabled;
       };

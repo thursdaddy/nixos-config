@@ -70,7 +70,6 @@ in
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
           useRoutingFeatures = "client";
-          extraUpFlags = [ "--advertise-routes=192.168.20.0/24" ];
         };
       };
 

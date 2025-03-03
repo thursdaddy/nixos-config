@@ -139,7 +139,6 @@ in
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
           useRoutingFeatures = "client";
-          extraUpFlags = [ "--accept-dns=true" ];
         };
       };
 

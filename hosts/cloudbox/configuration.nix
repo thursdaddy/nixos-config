@@ -69,7 +69,6 @@ in
         tailscale = {
           enable = true;
           useRoutingFeatures = "client";
-          extraUpFlags = [ "--accept-routes" "--accept-dns=true" ];
         };
       };
 

@@ -13,6 +13,7 @@ in
     authKeyFile = mkOpt (types.nullOr types.path) null "authKeyFile path";
     useRoutingFeatures = mkOpt (types.enum [ "none" "client" "server" "both" ]) "none" "Tailscale routingFeatures";
     extraUpFlags = mkOpt (types.listOf types.str) [ ] "Tailscale up flags";
+    extraSetFlags = mkOpt (types.listOf types.str) [ ] "Tailscale set flags";
   };
 
   config = mkIf cfg.enable {
@@ -23,6 +24,7 @@ in
       authKeyFile = mkIf sops.enable config.sops.secrets."tailscale/AUTH_KEY".path;
       inherit (config.mine.services.tailscale) useRoutingFeatures;
       inherit (config.mine.services.tailscale) extraUpFlags;
+      inherit (config.mine.services.tailscale) extraSetFlags;
     };
 
     sops.secrets."tailscale/AUTH_KEY" = mkIf sops.enable {
