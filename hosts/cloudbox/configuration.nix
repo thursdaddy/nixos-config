@@ -1,9 +1,10 @@
-{ lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 let
   inherit (lib.thurs) enabled;
 in
 {
   imports = [
+    inputs.nixos-thurs.nixosModules.configs
     (inputs.nixpkgs + "/nixos/modules/virtualisation/amazon-image.nix")
     ./hardware-configuration.nix
     ../../overlays/unstable
@@ -39,6 +40,16 @@ in
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
         };
         ssm-session-manager = enabled;
+      };
+
+      container = {
+        traefik = {
+          enable = true;
+          domainName = config.nixos-thurs.publicDomain;
+        };
+        vaultwarden = enabled;
+        gatus = enabled;
+        overseerr = enabled;
       };
 
       services = {

@@ -1,0 +1,16 @@
+apiVersion: 1
+
+# deleteDatasources:
+#   - name: "c137"
+#     orgId: 1
+
+datasources:
+  - name: workbox
+    type: prometheus
+    access: proxy
+    url: http://192.168.20.120:9090
+    jsonData:
+      httpMethod: POST
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.52.0

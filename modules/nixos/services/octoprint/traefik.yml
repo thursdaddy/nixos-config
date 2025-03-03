@@ -1,0 +1,26 @@
+http:
+  routers:
+    octopi:
+      rule: "Host(`printer.@fqdn@`)"
+      service: octoprint
+      entrypoints:
+        - "websecure"
+      tls:
+        certResolver: letsencrypt
+    stream:
+      rule: "Host(`stream.@fqdn@`)"
+      service: octostream
+      entrypoints:
+        - "websecure"
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    octoprint:
+      loadBalancer:
+        servers:
+        - url: http://@ip@:5000
+    octostream:
+      loadBalancer:
+        servers:
+        - url: http://@ip@:8080

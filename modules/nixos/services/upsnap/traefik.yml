@@ -1,0 +1,15 @@
+http:
+  routers:
+    upsnap:
+      rule: "Host(`upsnap.@fqdn@`)"
+      service: upsnap
+      entrypoints:
+        - "websecure"
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    upsnap:
+      loadBalancer:
+        servers:
+        - url: http://@ip@:8090

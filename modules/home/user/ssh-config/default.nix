@@ -5,6 +5,7 @@ let
   inherit (config.mine) user;
   cfg = config.mine.home-manager.ssh-config;
 
+  domainName = config.nixos-thurs.localDomain;
 in
 {
   options.mine.home-manager.ssh-config = {
@@ -43,8 +44,8 @@ in
             identitiesOnly = true;
             identityFile = "~/.ssh/git";
           };
-          "git.thurs.pw" = {
-            hostname = "git.thurs.pw";
+          "git.${domainName}" = {
+            hostname = "git.${domainName}";
             identitiesOnly = true;
             identityFile = "~/.ssh/git";
             port = 2222;

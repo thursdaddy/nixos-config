@@ -75,7 +75,6 @@
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
             ./hosts/c137/configuration.nix
-            # inputs.nixos-thurs.nixosModules.c137Containers
             nix-index-database.nixosModules.nix-index
           ];
         };
@@ -83,7 +82,6 @@
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
             ./hosts/cloudbox/configuration.nix
-            inputs.nixos-thurs.nixosModules.cloudboxContainers
           ];
         };
         "homebox" = nixpkgs.lib.nixosSystem {
@@ -96,7 +94,6 @@
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
             ./hosts/workbox/configuration.nix
-            inputs.nixos-thurs.nixosModules.workboxContainers
             nix-index-database.nixosModules.nix-index
           ];
         };
@@ -116,7 +113,6 @@
           specialArgs = { inherit inputs; inherit lib; };
           modules = [
             ./hosts/printpi/configuration.nix
-            inputs.nixos-thurs.nixosModules.printpiContainers
           ];
         };
       };

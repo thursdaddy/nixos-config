@@ -1,12 +1,13 @@
-{ pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, ... }:
 let
   inherit (lib.thurs) enabled;
 in
 {
   imports = [
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
+    inputs.nixos-thurs.nixosModules.configs
     ./hardware-configuration.nix
-    ../../overlays/unstable
+    ../../overlays/import.nix
     ../../modules/nixos/import.nix
     ../../modules/shared/import.nix
   ];
@@ -37,6 +38,17 @@ in
         sops = {
           enable = true;
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
+        };
+      };
+
+      container = {
+        settings = {
+          configPath = "/opt/configs";
+        };
+        traefik = {
+          enable = true;
+          awsEnvKeys = true;
+          domainName = config.nixos-thurs.localDomain;
         };
       };
 

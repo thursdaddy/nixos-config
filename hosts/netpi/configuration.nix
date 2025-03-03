@@ -1,11 +1,11 @@
 { pkgs, lib, config, inputs, hostname, ... }:
 let
   inherit (lib.thurs) enabled;
-  inherit (config.mine) user;
 in
 {
   imports = [
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
+    inputs.nixos-thurs.nixosModules.configs
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
@@ -31,24 +31,12 @@ in
         };
       };
 
-      container = {
-        configPath = "/opt/configs";
-        traefik = {
-          enable = true;
-          awsEnvKeys = true;
-        };
-      };
-
       services = {
         beszel = {
           enable = true;
           isAgent = true;
         };
         blocky = enabled;
-        docker = {
-          enable = true;
-          scripts.check-versions = true;
-        };
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;

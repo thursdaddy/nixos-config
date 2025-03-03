@@ -1,0 +1,25 @@
+http:
+  routers:
+    hass:
+      rule: "Host(`home.@fqdn@`)"
+      service: hass
+      entrypoints:
+        - "websecure"
+      tls:
+        certResolver: letsencrypt
+    z2m:
+      rule: "Host(`z2m.@fqdn@`)"
+      service: z2m
+      entrypoints:
+        - "websecure"
+      tls:
+        certResolver: letsencrypt
+  services:
+    hass:
+      loadBalancer:
+        servers:
+        - url: http://@ip@:8090
+    z2m:
+      loadBalancer:
+        servers:
+        - url: http://@ip@:8080

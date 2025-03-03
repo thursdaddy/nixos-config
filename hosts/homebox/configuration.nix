@@ -1,18 +1,25 @@
-{ lib, pkgs, inputs, ... }:
+{ lib, config, pkgs, inputs, ... }:
 let
   inherit (lib.thurs) enabled;
 in
 {
   imports = [
+    inputs.nixos-thurs.nixosModules.configs
     ./hardware-configuration.nix
-    ../../overlays/unstable
     ../../modules/nixos/import.nix
     ../../modules/shared/import.nix
     ../../modules/home/import.nix
+    ../../overlays/import.nix
   ];
 
   config = {
     system.stateVersion = "24.11";
+
+    fileSystems."/backups" = {
+      device = "192.168.20.12:/fast/backups";
+      fsType = "nfs";
+      options = [ "auto" "rw" "defaults" "_netdev" ];
+    };
 
     mine = {
       user = {
@@ -26,10 +33,10 @@ in
       };
 
       container = {
-        configPath = "/opt/configs";
         traefik = {
           enable = true;
           awsEnvKeys = true;
+          domainName = config.nixos-thurs.localDomain;
         };
       };
 
@@ -46,10 +53,17 @@ in
       };
 
       services = {
-        docker = enabled;
         beszel = {
           enable = true;
           isAgent = true;
+        };
+        blocky = enabled;
+        docker = enabled;
+        tailscale = {
+          enable = true;
+          authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
+          useRoutingFeatures = "client";
+          extraUpFlags = [ "--advertise-routes=192.168.20.0/24" ];
         };
       };
 
