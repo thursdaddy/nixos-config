@@ -117,10 +117,6 @@ in
                 enabled = true;
                 ignore = [ "E302" "E305" "E501" ];
               };
-              pydocstyle = {
-                enabled = true;
-                ignore = [ "D400" "D415" ];
-              };
               pylint.enabled = true;
             };
           };

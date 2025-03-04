@@ -56,14 +56,14 @@ in
           windowrulev2 = workspace 4 silent, class:(Proton Mail)
           windowrulev2 = workspace 5 silent, class:(discord)
           windowrulev2 = workspace 6 silent, class:(obsidian)
-          windowrulev2 = workspace 8 silent, initialTitle:(youtube.com_/)
-          windowrulev2 = maximize, initialTitle:(youtube.com_/)
-          windowrulev2 = nodim, initialTitle:(youtube.com_/)
-          windowrulev2 = size 90%, initialTitle:(youtube.com_/)
-          windowrulev2 = workspace 8 silent, initialTitle:(music.youtube.com_/)
-          windowrulev2 = maximize, initialTitle:(music.youtube.com_/)
-          windowrulev2 = nodim, initialTitle:(music.youtube.com_/)
-          windowrulev2 = size 90%, initialTitle:(music.youtube.com_/)
+          windowrulev2 = workspace 8 silent, class:(chrome-youtube.com__-Default)
+          windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
+          windowrulev2 = nodim, class:(chrome-youtube.com__-Default)
+          windowrulev2 = size 90%, class:(chrome-youtube.com__-Default)
+          windowrulev2 = workspace 8 silent, class:(chrome-music.youtube.com__-Default)
+          windowrulev2 = maximize, class:(chrome-music.youtube.com__-Default)
+          windowrulev2 = nodim, class:(chrome-music.youtube.com__-Default)
+          windowrulev2 = size 90%, class:(chrome-music.youtube.com__-Default)
         '';
 
         settings = {
@@ -129,12 +129,12 @@ in
             "$mod_SHIFT, F, fullscreen, 1"
             "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
             "$mod_SHIFT, O, exec, obsidian"
-            "$mod_SHIFT, P, exec, ${lib.getExe pkgs.vivaldi} --app=https://192.168.20.80:32400"
+            "$mod_SHIFT, P, exec, ${lib.getExe pkgs.vivaldi} --app=https://192.168.10.189:32400"
             "$mod_SHIFT, Q, killactive"
             "$mod_SHIFT, X, exec, loginctl lock-session && sleep 2 && hyprctl dispatch dpms off && hyprlock"
             "$mod_SHIFT, Z, exec, loginctl lock-session && sleep 2 && hyprctl dispatch dpms off && systemctl suspend"
-            "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.vivaldi} --app=https://youtube.com"
-            "$mod_SHIFT, M, exec, ${lib.getExe pkgs.vivaldi} --app=https://music.youtube.com"
+            "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
+            "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://music.youtube.com"
             # Mouse Focus
             "$mod, H, movefocus, l"
             "$mod, L, movefocus, r"
