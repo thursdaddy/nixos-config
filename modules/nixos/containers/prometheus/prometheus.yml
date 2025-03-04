@@ -1,4 +1,13 @@
 scrape_configs:
+- job_name: hass
+  scrape_interval: 60s
+  metrics_path: /api/prometheus
+  authorization:
+    credentials: "@prom_token@"
+  scheme: https
+  static_configs:
+    - targets: [ 'home.@domain_name@' ]
+
 - job_name: node
   static_configs:
   - targets: [ '192.168.10.57:9100' ]

@@ -5,10 +5,14 @@ let
   cfg = config.mine.container.prometheus;
 
   version = "2.52.0";
-  prometheus_config = pkgs.writeTextFile {
-    name = "prometheus.yml";
-    text = builtins.readFile config.mine.container.prometheus.configFile;
-  };
+  prometheus_config = (builtins.readFile
+    (pkgs.substituteAll {
+      name = "prometheus";
+      src = ./prometheus.yml;
+      domain_name = config.mine.container.traefik.domainName;
+      prom_token = config.sops.placeholder."hass/PROM_TOKEN";
+    })
+  );
 in
 {
   options.mine.container.prometheus = {
@@ -19,6 +23,12 @@ in
 
   config = mkIf cfg.enable {
     networking.firewall.allowedTCPPorts = [ 9090 ];
+
+    sops = {
+      secrets."hass/PROM_TOKEN" = { };
+      templates."prometheus_config".content = prometheus_config;
+    };
+
 
     virtualisation.oci-containers.containers.prometheus = {
       user = "root:root";
@@ -36,7 +46,8 @@ in
         "--storage.tsdb.retention.size=50GB"
       ];
       volumes = [
-        "${prometheus_config}:/etc/prometheus/prometheus.yml"
+
+        "${config.sops.templates."prometheus_config".path}:/etc/prometheus/prometheus.yml"
         "${config.mine.container.settings.configPath}/prometheus:/prometheus"
       ];
       labels = {
