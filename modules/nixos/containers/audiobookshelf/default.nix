@@ -41,7 +41,7 @@ in
     };
 
     fileSystems."/podcasts" = {
-      device = "192.168.20.12:/fast/podcasts";
+      device = "192.168.10.12:/fast/podcasts";
       fsType = "nfs";
       options = [ "auto" "rw" "defaults" "_netdev" ];
     };

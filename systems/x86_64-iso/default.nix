@@ -15,7 +15,7 @@
     networking = {
       hostId = "00000000";
       defaultGateway = "192.168.20.1";
-      nameservers = [ "192.168.20.51" "192.168.20.52" ];
+      nameservers = [ "192.168.10.57" "192.168.10.201" ];
       interfaces.eth0.ipv4.addresses = [{
         address = "192.168.20.222";
         prefixLength = 24;

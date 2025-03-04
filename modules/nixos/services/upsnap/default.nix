@@ -46,7 +46,7 @@ in
             name = "upsnap";
             src = ./traefik.yml;
             fqdn = config.mine.container.traefik.domainName;
-            ip = "192.168.20.120";
+            ip = "192.168.10.120";
           })
         );
       };

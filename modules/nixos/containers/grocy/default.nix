@@ -54,8 +54,8 @@ in
       extraOptions = [
         "--network=traefik"
         "--pull=always"
-        "--dns=192.168.20.52"
-        "--dns=192.168.20.51"
+        "--dns=192.168.10.201"
+        "--dns=192.168.10.57"
       ];
       volumes = [
         "${config.mine.container.settings.configPath}/barcodebuddy:/config"

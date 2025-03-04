@@ -1,8 +1,8 @@
 { lib, config, pkgs, inputs, ... }:
 let
-
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.services.blocky;
+
   configFile = pkgs.writeTextFile {
     name = "blocky.yml";
     text = ''
@@ -10,7 +10,6 @@ let
       ${builtins.readFile config.nixos-thurs.blocky.customDnsMappings}
     '';
   };
-
 in
 {
   imports = [ inputs.nixos-thurs.nixosModules.blocky ];

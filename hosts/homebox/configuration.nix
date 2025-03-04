@@ -1,6 +1,7 @@
 { lib, config, pkgs, inputs, ... }:
 let
   inherit (lib.thurs) enabled;
+  inherit (config.mine) user;
 in
 {
   imports = [
@@ -16,7 +17,7 @@ in
     system.stateVersion = "24.11";
 
     fileSystems."/backups" = {
-      device = "192.168.20.12:/fast/backups";
+      device = "192.168.10.12:/fast/backups";
       fsType = "nfs";
       options = [ "auto" "rw" "defaults" "_netdev" ];
     };
@@ -26,6 +27,19 @@ in
         enable = true;
         home-manager = enabled;
         shell.package = pkgs.fish;
+      };
+
+      home-manager = {
+        tmux = {
+          enable = true;
+          sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/"
+              "/var/lib/"
+            ];
+          };
+        };
       };
 
       apps = {
