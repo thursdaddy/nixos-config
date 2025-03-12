@@ -41,6 +41,12 @@ in
         end
         abbr -a !! --position anywhere --function last_history_item
 
+        function fish_should_add_to_history
+            string match -qr "^\s" -- $argv; and return 1
+            string match -qr "^clear\$" -- $argv; and return 1
+            return 0
+        end
+
         if test -d /opt/homebrew
           # Homebrew is installed on MacOS
           /opt/homebrew/bin/brew shellenv | source

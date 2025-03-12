@@ -64,6 +64,9 @@ in
           windowrulev2 = maximize, class:(chrome-music.youtube.com__-Default)
           windowrulev2 = nodim, class:(chrome-music.youtube.com__-Default)
           windowrulev2 = size 90%, class:(chrome-music.youtube.com__-Default)
+          windowrulev2 = workspace 8 silent, class:(Vivaldi-stable), initialTitle:(192.168.10.189_/)
+          windowrulev2 = maximize, class:(Vivaldi-stable), initialTitle:(192.168.10.189_/)
+          windowrulev2 = nodim, class:(Vivaldi-stable), initialTitle:(192.168.10.189_/)
         '';
 
         settings = {

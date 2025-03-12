@@ -13,8 +13,9 @@ in
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [
-      pkgs.git
+    environment.systemPackages = with pkgs; [
+      git
+      gh
     ];
 
     programs.fish.shellAliases = mkIf (user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable) aliases.git;

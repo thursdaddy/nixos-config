@@ -108,15 +108,11 @@ in
               # code style enforcement
               flake8 = {
                 enabled = true;
-                ignore = [ "E302" "E305" "E501" ];
+                ignore = [ "E302" "E305" "E501" "W503" ];
               };
               isort.enabled = true; # import sort
               jedi.enabled = true; # autocompletion
               mccabe.enabled = true; # code complexity checker
-              pycodestyle = {
-                enabled = true;
-                ignore = [ "E302" "E305" "E501" ];
-              };
               pylint.enabled = true;
             };
           };
