@@ -22,6 +22,10 @@ in
       options = [ "auto" "rw" "defaults" "_netdev" ];
     };
 
+    environment.systemPackages = [
+      pkgs.esptool
+    ];
+
     mine = {
       user = {
         enable = true;
@@ -30,6 +34,8 @@ in
       };
 
       home-manager = {
+        git = enabled;
+        ssh-config = enabled;
         tmux = {
           enable = true;
           sessionizer = {
@@ -98,6 +104,7 @@ in
         };
         services = {
           openssh = enabled;
+          bluetooth = enabled;
         };
         utils = {
           dev = true;

@@ -223,6 +223,8 @@ in
       plugins = plugins: with plugins; [
         camerasettings
         timelapse
+        mqtt
+        octoprint-homeassistant
         octoprint-cancelobject
         octoprint-costestimation
         octoprint-dashboard

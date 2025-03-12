@@ -1,0 +1,9 @@
+- platform: telnet
+  switches:
+    projector:
+      name: Projector
+      resource: 192.168.100.54
+      port: 23
+      command_on: "\x7e\x30\x30\x30\x30\x20\x31\x0d"
+      command_off: "\x7e\x30\x30\x30\x30\x20\x30\x0d"
+      timeout: 0.9

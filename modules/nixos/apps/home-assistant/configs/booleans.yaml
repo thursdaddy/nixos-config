@@ -1,0 +1,18 @@
+lock_front_door_jammed:
+  name: Determine if front door lock is jammed
+  icon: mdi:lock-alert
+lock_back_door_jammed:
+  name: Determine if back door lock is jammed
+  icon: mdi:lock-alert
+automated_locks:
+  name: Use smart lock automations
+  initial: true
+  icon: mdi:lock
+office_motion_disabled:
+  name: Disable Office Motion
+  initial: false
+  icon: mdi:light
+all_motion_disabled:
+  name: Disable All Motion Light Automations
+  initial: false
+  icon: mdi:light

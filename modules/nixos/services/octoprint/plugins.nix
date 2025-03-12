@@ -42,6 +42,19 @@
             doCheck = false;
           };
 
+          octoprint-homeassistant = pyself.buildPythonPackage rec {
+            pname = "OctoPrint-HomeAssistant";
+            version = "3.7.0";
+            src = self.fetchFromGitHub {
+              owner = "cmroche";
+              repo = "OctoPrint-HomeAssistant";
+              rev = "${version}";
+              sha256 = "sha256-R6ayI8KHpBSR2Cnp6B2mKdJGHaxTENkOKvbvILLte2E=";
+            };
+            propagatedBuildInputs = [ pysuper.octoprint pkgs.python312Packages.psutil ];
+            doCheck = false;
+          };
+
           octoprint-cancelobject = pyself.buildPythonPackage rec {
             pname = "OctoPrint-Cancelobject";
             version = "0.5.0";

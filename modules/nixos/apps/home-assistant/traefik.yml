@@ -14,6 +14,13 @@ http:
         - "websecure"
       tls:
         certResolver: letsencrypt
+    esphome:
+      rule: "Host(`esphome.@fqdn@`)"
+      service: esphome
+      entrypoints:
+        - "websecure"
+      tls:
+        certResolver: letsencrypt
   services:
     hass:
       loadBalancer:
@@ -23,3 +30,7 @@ http:
       loadBalancer:
         servers:
         - url: http://@ip@:8080
+    esphome:
+      loadBalancer:
+        servers:
+        - url: http://@ip@:6052
