@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.audiobookshelf;
 
-  version = "2.19.3";
+  version = "2.19.5";
 in
 {
   options.mine.container.audiobookshelf = {

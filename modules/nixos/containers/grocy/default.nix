@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.grocy;
 
-  version = "4.4.1";
+  version = "4.4.2";
 in
 {
   options.mine.container.grocy = {
@@ -56,6 +56,7 @@ in
         "--pull=always"
         "--dns=192.168.10.201"
         "--dns=192.168.10.57"
+        "--dns=192.168.10.60"
       ];
       volumes = [
         "${config.mine.container.settings.configPath}/barcodebuddy:/config"
