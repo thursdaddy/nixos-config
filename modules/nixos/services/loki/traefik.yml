@@ -1,0 +1,15 @@
+http:
+  routers:
+    octopi:
+      rule: "Host(`loki.@fqdn@`)"
+      service: loki
+      entrypoints:
+        - "websecure"
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    loki:
+      loadBalancer:
+        servers:
+        - url: http://@ip@:3100

@@ -66,6 +66,7 @@ in
       };
 
       services = {
+        alloy = enabled;
         beszel = {
           enable = true;
           isAgent = true;

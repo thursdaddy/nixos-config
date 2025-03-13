@@ -61,6 +61,7 @@ in
         grafana = enabled;
         grocy = enabled;
         hoarder = enabled;
+        influxdb = enabled;
         open-webui = enabled;
         prometheus = enabled;
         syncthing = {
@@ -91,6 +92,7 @@ in
           enable = true;
           scripts.check-versions = true;
         };
+        loki = enabled;
         ollama = enabled;
         prometheus = {
           enable = true;

@@ -5,7 +5,7 @@ let
 in
 {
   options.mine.apps.home-assistant = {
-    enable = mkEnableOption "Install Home-Assistant";
+    enable = mkEnableOption "Install Home-Assistant along with Postgres, AppDaemon, Mosquitto, Zigbee2MQTT, Govee2MQTT and espHome";
   };
 
   config = mkIf cfg.enable {
@@ -131,8 +131,19 @@ in
                   namespace: default
                   ha_url: https://home.thurs.pw
                   token: ${config.sops.placeholder."hass/APPD_TOKEN"}
+            logs:
+              main_log:
+                filename: /var/lib/appdaemon/logs/main.log
+              access_log:
+                filename: /var/lib/appdaemon/logs/access.log
+              error_log:
+                filename: /var/lib/appdaemon/logs/error.log
+              diag_log:
+                filename: /var/lib/appdaemon/logs/diag.log
+                log_generations: 5
+                log_size: 1024
+                format: "{asctime} {levelname:<8} {appname:<10}: {message}"
           '';
-
         };
         "z2m_secret.yaml" = {
           owner = "zigbee2mqtt";
