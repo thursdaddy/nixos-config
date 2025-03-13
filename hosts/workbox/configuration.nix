@@ -54,6 +54,7 @@ in
       };
 
       container = {
+        alertmanager = enabled;
         audiobookshelf = enabled;
         commafeed = enabled;
         gitlab = enabled;
