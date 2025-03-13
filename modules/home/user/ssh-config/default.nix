@@ -1,11 +1,8 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, ... }:
 let
-
   inherit (lib) mkEnableOption mkIf;
   inherit (config.mine) user;
   cfg = config.mine.home-manager.ssh-config;
-
-  domainName = config.nixos-thurs.localDomain;
 in
 {
   options.mine.home-manager.ssh-config = {
@@ -44,8 +41,8 @@ in
             identitiesOnly = true;
             identityFile = "~/.ssh/git";
           };
-          "git.${domainName}" = {
-            hostname = "git.${domainName}";
+          "git.thurs.pw" = {
+            hostname = "git.thurs.pw";
             identitiesOnly = true;
             identityFile = "~/.ssh/git";
             port = 2222;

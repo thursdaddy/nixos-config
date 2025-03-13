@@ -5,7 +5,6 @@ in
 {
   imports = [
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
-    inputs.nixos-thurs.nixosModules.configs
     ./hardware-configuration.nix
     ../../overlays/import.nix
     ../../modules/nixos/import.nix
@@ -41,7 +40,7 @@ in
         traefik = {
           enable = true;
           awsEnvKeys = true;
-          domainName = config.nixos-thurs.localDomain;
+          domainName = "thurs.pw";
         };
       };
 

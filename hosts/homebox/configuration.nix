@@ -5,7 +5,6 @@ let
 in
 {
   imports = [
-    inputs.nixos-thurs.nixosModules.configs
     ./hardware-configuration.nix
     ../../modules/nixos/import.nix
     ../../modules/shared/import.nix
@@ -50,7 +49,7 @@ in
         traefik = {
           enable = true;
           awsEnvKeys = true;
-          domainName = config.nixos-thurs.localDomain;
+          domainName = "thurs.pw";
         };
       };
 

@@ -97,6 +97,7 @@ in
         traefik = {
           enable = true;
           awsEnvKeys = true;
+          domainName = "thurs.pw";
         };
       };
 

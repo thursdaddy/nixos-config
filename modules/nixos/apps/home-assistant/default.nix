@@ -129,7 +129,7 @@ in
                 HASS:
                   type: hass
                   namespace: default
-                  ha_url: https://home.${config.nixos-thurs.localDomain}
+                  ha_url: https://home.thurs.pw
                   token: ${config.sops.placeholder."hass/APPD_TOKEN"}
           '';
 

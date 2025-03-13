@@ -1,19 +1,14 @@
-{ lib, config, pkgs, inputs, ... }:
+{ lib, config, pkgs, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.services.blocky;
 
   configFile = pkgs.writeTextFile {
     name = "blocky.yml";
-    text = ''
-      ${builtins.readFile ./blocky.yml}
-      ${builtins.readFile config.nixos-thurs.blocky.customDnsMappings}
-    '';
+    text = builtins.readFile ./blocky.yml;
   };
 in
 {
-  imports = [ inputs.nixos-thurs.nixosModules.blocky ];
-
   options.mine.services.blocky = {
     enable = mkEnableOption "Enable Blocky, a DNS proxy and ad-blocker for local network";
   };
