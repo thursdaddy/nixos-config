@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -19,7 +24,10 @@ in
       unitConfig = {
         Description = "A glossy Matrix collaboration client for the web. ";
         Documentation = "https://github.com/element-hq/element-web";
-        PartOf = [ "hyprland-session.target" "desktop.service" ];
+        PartOf = [
+          "hyprland-session.target"
+          "desktop.service"
+        ];
         After = [ "graphical-session.target" ];
       };
 

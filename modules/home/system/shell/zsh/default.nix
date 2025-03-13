@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -25,9 +30,8 @@ in
           eval "$(/opt/homebrew/bin/brew shellenv)"
         '';
 
-        shellAliases = aliases.systemctl
-          // aliases.eza
-          // lib.optionals config.mine.services.docker.enable aliases.docker;
+        shellAliases =
+          aliases.systemctl // aliases.eza // lib.optionals config.mine.services.docker.enable aliases.docker;
 
         plugins = [
           {

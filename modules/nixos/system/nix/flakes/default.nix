@@ -1,4 +1,9 @@
-{ inputs, lib, config, ... }:
+{
+  inputs,
+  lib,
+  config,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -12,7 +17,10 @@ in
 
   config = mkIf cfg.enable {
     nix = {
-      settings.experimental-features = [ "nix-command" "flakes" ];
+      settings.experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       registry.nixpkgs.flake = inputs.nixpkgs;
       # https://discourse.nixos.org/t/problems-after-switching-to-flake-system/24093/8
       nixPath = [ "/etc/nix/path" ];

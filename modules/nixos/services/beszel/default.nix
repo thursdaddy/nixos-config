@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf types;
   inherit (lib.thurs) mkOpt;
@@ -11,7 +16,9 @@ in
     isHub = mkEnableOption "Run as Beszel Hub";
     listenAddress = mkOpt types.str "0.0.0.0" "Address on which to start Beszel Hub webserver.";
     hubPort = mkOpt types.port 8890 "Port for Beszel Hub webserver.";
-    hubPubKey = mkOpt types.str "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACtKZg/D2PNYeYZfJ6jCCHtxaW12T7k/83xqwV8KJzC" "Hub Public Key.";
+    hubPubKey =
+      mkOpt types.str "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACtKZg/D2PNYeYZfJ6jCCHtxaW12T7k/83xqwV8KJzC"
+        "Hub Public Key.";
     isAgent = mkEnableOption "Run as Beszel Agent";
     agentPort = mkOpt types.port 45876 "Port the Agent runs on.";
   };
@@ -61,13 +68,15 @@ in
 
     environment.etc = mkIf (config.mine.container.traefik.enable && cfg.isHub) {
       "traefik/beszel.yml" = {
-        text = (builtins.readFile
-          (pkgs.substituteAll {
-            name = "beszel";
-            src = ./traefik.yml;
-            fqdn = config.mine.container.traefik.domainName;
-            ip = "192.168.10.120";
-          })
+        text = (
+          builtins.readFile (
+            pkgs.substituteAll {
+              name = "beszel";
+              src = ./traefik.yml;
+              fqdn = config.mine.container.traefik.domainName;
+              ip = "192.168.10.120";
+            }
+          )
         );
       };
     };

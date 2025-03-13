@@ -12,12 +12,16 @@ in
   };
 
   config = mkIf cfg.enable {
-    security.sudo.extraRules = [{
-      users = [ "${user.name}" ];
-      commands = [{
-        command = "ALL";
-        options = [ "NOPASSWD" ];
-      }];
-    }];
+    security.sudo.extraRules = [
+      {
+        users = [ "${user.name}" ];
+        commands = [
+          {
+            command = "ALL";
+            options = [ "NOPASSWD" ];
+          }
+        ];
+      }
+    ];
   };
 }

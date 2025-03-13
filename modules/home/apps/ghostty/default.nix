@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf mkForce;
@@ -26,13 +31,13 @@ in
           gtk-adwaita = true;
           adw-toolbar-style = "raised-border";
 
-          font-size =
-            if pkgs.stdenv.isDarwin then
-              "12"
-            else
-              "11";
+          font-size = if pkgs.stdenv.isDarwin then "12" else "11";
 
-          font-feature = [ "-liga" "-calt" "-dlig" ];
+          font-feature = [
+            "-liga"
+            "-calt"
+            "-dlig"
+          ];
           font-family = "\"Monaspace Neon\"";
         };
       };

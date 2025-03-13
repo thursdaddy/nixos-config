@@ -1,7 +1,17 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
-  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    mkOption
+    types
+    ;
   inherit (lib.thurs) mkOpt;
   inherit (config.mine) user;
   cfg = config.mine.home-manager.tmux;

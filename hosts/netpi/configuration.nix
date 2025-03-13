@@ -1,4 +1,11 @@
-{ pkgs, lib, config, inputs, hostname, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  inputs,
+  hostname,
+  ...
+}:
 let
   inherit (lib.thurs) enabled;
 in

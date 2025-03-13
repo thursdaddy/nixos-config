@@ -9,23 +9,23 @@ _: {
       SignColumn.ctermbg = "none";
       DiagnosticSignError = {
         ctermbg = "none";
-        fg = "#fb4934"; #Red
+        fg = "#fb4934"; # Red
         bold = true;
       };
       DiagnosticSignWarn = {
         bold = true;
         ctermbg = "none";
-        fg = "#fe8019"; #Orange
+        fg = "#fe8019"; # Orange
       };
       DiagnosticSignInfo = {
         bold = true;
         ctermbg = "none";
-        fg = "#83a598"; #Blue
+        fg = "#83a598"; # Blue
       };
       DiagnosticSignHint = {
         bold = true;
         ctermbg = "none";
-        fg = "#8ec07c"; #Aqua
+        fg = "#8ec07c"; # Aqua
       };
     };
   };

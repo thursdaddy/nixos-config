@@ -19,7 +19,9 @@ in
           "*" = {
             identityFile = "~/.ssh/id_ed25519";
             sendEnv = [ "TERM" ];
-            setEnv = { TERM = "xterm-256color"; };
+            setEnv = {
+              TERM = "xterm-256color";
+            };
           };
           "192.168.20.222" = {
             identityFile = "~/.ssh/id_ed25519";

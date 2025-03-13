@@ -1,5 +1,12 @@
 # Inspired by @ElvishJerricco: https://github.com/ElvishJerricco/stage1-tpm-tailscale/tree/main
-{ lib, pkgs, inputs, utils, config, ... }:
+{
+  lib,
+  pkgs,
+  inputs,
+  utils,
+  config,
+  ...
+}:
 let
 
   inherit (config.services) tailscale;
@@ -28,8 +35,16 @@ in
         pkiBundle = "/etc/secureboot";
       };
       initrd = {
-        kernelModules = [ "tpm_crb" "r8169" ];
-        availableKernelModules = [ "ext4" "igb" "tun" "nft_chain_nat" ];
+        kernelModules = [
+          "tpm_crb"
+          "r8169"
+        ];
+        availableKernelModules = [
+          "ext4"
+          "igb"
+          "tun"
+          "nft_chain_nat"
+        ];
         services = {
           resolved.enable = true;
         };
@@ -48,7 +63,10 @@ in
           # Luks volume with nix root dataset zfs key
           keystore = {
             device = "/dev/disk/by-uuid/a9b17587-91b8-42bd-8029-53487520ffe3";
-            crypttabExtraOpts = [ "tpm2-device=auto" "nofail" ];
+            crypttabExtraOpts = [
+              "tpm2-device=auto"
+              "nofail"
+            ];
           };
           # Luks volume containing ssh host keys and tailscale statedir
           tpm2vpn = {
@@ -62,7 +80,11 @@ in
           extraBin.ping = "${pkgs.iputils}/bin/ping";
           emergencyAccess = "$6$LqrW7LCddFgpEu5P$YKQFUh96sq2RfB7VSxG041STkM.ZipEaJbC5cGkiCAR6dfQEUcbzqNyAb1Fqu5MHYJPuHSfpxiKcUli.Hff8Z.";
           packages = [ pkgs.tailscale ];
-          initrdBin = [ pkgs.iptables pkgs.iproute2 pkgs.tailscale ];
+          initrdBin = [
+            pkgs.iptables
+            pkgs.iproute2
+            pkgs.tailscale
+          ];
           users.systemd-resolve = { };
           groups.systemd-resolve = { };
 

@@ -67,7 +67,8 @@ in
         "traefik.http.routers.barcodebuddy.tls" = "true";
         "traefik.http.routers.barcodebuddy.tls.certresolver" = "letsencrypt";
         "traefik.http.routers.barcodebuddy.entrypoints" = "websecure";
-        "traefik.http.routers.barcodebuddy.rule" = "Host(`barcode.${config.mine.container.traefik.domainName}`)";
+        "traefik.http.routers.barcodebuddy.rule" =
+          "Host(`barcode.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.barcodebuddy.loadbalancer.server.port" = "80";
       };
     };

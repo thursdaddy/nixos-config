@@ -34,7 +34,8 @@ in
         "traefik.http.routers.overseerr.tls" = "true";
         "traefik.http.routers.overseerr.tls.certresolver" = "letsencrypt";
         "traefik.http.routers.overseerr.entrypoints" = "websecure";
-        "traefik.http.routers.overseerr.rule" = "Host(`request.${config.mine.container.traefik.domainName}`)";
+        "traefik.http.routers.overseerr.rule" =
+          "Host(`request.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.overseerr.loadbalancer.server.port" = "5055";
       };
     };

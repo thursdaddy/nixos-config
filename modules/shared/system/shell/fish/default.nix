@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -23,8 +28,7 @@ in
 
     programs.fish = {
       enable = true;
-      shellAliases = aliases.eza
-        // aliases.systemctl;
+      shellAliases = aliases.eza // aliases.systemctl;
       promptInit = mkIf pkgs.stdenv.isDarwin "starship init fish | source";
       interactiveShellInit = ''
         set -U fish_greeting ""

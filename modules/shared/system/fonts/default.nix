@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -17,7 +22,13 @@ in
       noto-fonts-cjk-sans
       noto-fonts-cjk-serif
       noto-fonts-emoji
-      (nerdfonts.override { fonts = [ "Hack" "GeistMono" "FiraMono" ]; })
+      (nerdfonts.override {
+        fonts = [
+          "Hack"
+          "GeistMono"
+          "FiraMono"
+        ];
+      })
     ];
   };
 }

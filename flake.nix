@@ -52,18 +52,53 @@
     };
   };
 
-  outputs = { self, nixpkgs, unstable, nixos-hardware, nix-darwin, nixos-generators, nix-index-database, home-manager, sops-nix, lanzaboote, nixos-thurs, ssh-keys, nixvim, ... } @ inputs:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      unstable,
+      nixos-hardware,
+      nix-darwin,
+      nixos-generators,
+      nix-index-database,
+      home-manager,
+      sops-nix,
+      lanzaboote,
+      nixos-thurs,
+      ssh-keys,
+      nixvim,
+      ...
+    }@inputs:
     let
-      lib = nixpkgs.lib.extend (self: super: { thurs = import ./lib { inherit inputs; lib = self; }; });
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
-      forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
-        pkgs = import nixpkgs { inherit system; };
-      });
+      lib = nixpkgs.lib.extend (
+        self: super: {
+          thurs = import ./lib {
+            inherit inputs;
+            lib = self;
+          };
+        }
+      );
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
+      forEachSupportedSystem =
+        f:
+        nixpkgs.lib.genAttrs supportedSystems (
+          system:
+          f {
+            pkgs = import nixpkgs { inherit system; };
+          }
+        );
     in
     {
       darwinConfigurations = {
         "mbp" = nix-darwin.lib.darwinSystem {
-          specialArgs = { inherit inputs; inherit lib; };
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+          };
           modules = [
             ./hosts/mbp/configuration.nix
             nix-index-database.darwinModules.nix-index
@@ -72,111 +107,161 @@
       };
       nixosConfigurations = {
         "c137" = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; inherit lib; };
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+          };
           modules = [
             ./hosts/c137/configuration.nix
             nix-index-database.nixosModules.nix-index
           ];
         };
         "cloudbox" = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; inherit lib; };
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+          };
           modules = [
             ./hosts/cloudbox/configuration.nix
           ];
         };
         "homebox" = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; inherit lib; };
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+          };
           modules = [
             ./hosts/homebox/configuration.nix
           ];
         };
         "workbox" = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; inherit lib; };
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+          };
           modules = [
             ./hosts/workbox/configuration.nix
             nix-index-database.nixosModules.nix-index
           ];
         };
         "netpi1" = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; inherit lib; hostname = "netpi1"; };
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+            hostname = "netpi1";
+          };
           modules = [
             ./hosts/netpi/configuration.nix
           ];
         };
         "netpi2" = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; inherit lib; hostname = "netpi2"; };
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+            hostname = "netpi2";
+          };
           modules = [
             ./hosts/netpi/configuration.nix
           ];
         };
         "printpi" = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; inherit lib; };
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+          };
           modules = [
             ./hosts/printpi/configuration.nix
           ];
         };
       };
 
-      packages = forEachSupportedSystem ({ pkgs }: {
-        upSnap = pkgs.callPackage ./packages/upsnap.nix { };
-        wallpapers = pkgs.stdenv.mkDerivation {
-          name = "wallpapers";
-          src = ./assets/wallpapers;
-          installPhase = ''
-            mkdir -p $out/
-            cp -Rf ./ $out/
-          '';
-        };
-        ami = nixos-generators.nixosGenerate {
-          specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
-          format = "amazon";
-          modules = [
-            ./systems/x86_64-ami
-          ];
-        };
-        iso = nixos-generators.nixosGenerate {
-          specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
-          format = "iso";
-          modules = [
-            ./systems/x86_64-iso
-          ];
-        };
-        sd-aarch64 = nixos-generators.nixosGenerate {
-          specialArgs = { inherit inputs; inherit lib; };
-          system = "aarch64-linux";
-          format = "sd-aarch64";
-          modules = [
-            ./systems/aarch64-sd
-          ];
-        };
-        vm-nogui = nixos-generators.nixosGenerate {
-          specialArgs = { inherit inputs; inherit lib; };
-          system = "x86_64-linux";
-          format = "vm-nogui";
-          modules = [
-            ./systems/x86_64-vm-nogui
-            nix-index-database.nixosModules.nix-index
-          ];
-        };
-      });
+      packages = forEachSupportedSystem (
+        { pkgs }:
+        {
+          upSnap = pkgs.callPackage ./packages/upsnap.nix { };
+          wallpapers = pkgs.stdenv.mkDerivation {
+            name = "wallpapers";
+            src = ./assets/wallpapers;
+            installPhase = ''
+              mkdir -p $out/
+              cp -Rf ./ $out/
+            '';
+          };
+          ami = nixos-generators.nixosGenerate {
+            specialArgs = {
+              inherit inputs;
+              inherit lib;
+            };
+            system = "x86_64-linux";
+            format = "amazon";
+            modules = [
+              ./systems/x86_64-ami
+            ];
+          };
+          iso = nixos-generators.nixosGenerate {
+            specialArgs = {
+              inherit inputs;
+              inherit lib;
+            };
+            system = "x86_64-linux";
+            format = "iso";
+            modules = [
+              ./systems/x86_64-iso
+            ];
+          };
+          sd-aarch64 = nixos-generators.nixosGenerate {
+            specialArgs = {
+              inherit inputs;
+              inherit lib;
+            };
+            system = "aarch64-linux";
+            format = "sd-aarch64";
+            modules = [
+              ./systems/aarch64-sd
+            ];
+          };
+          vm-nogui = nixos-generators.nixosGenerate {
+            specialArgs = {
+              inherit inputs;
+              inherit lib;
+            };
+            system = "x86_64-linux";
+            format = "vm-nogui";
+            modules = [
+              ./systems/x86_64-vm-nogui
+              nix-index-database.nixosModules.nix-index
+            ];
+          };
+        }
+      );
 
-      devShells = forEachSupportedSystem ({ pkgs }: {
-        tf = with pkgs; mkShell {
-          buildInputs = [
-            opentofu
-            awscli2
-          ];
-        };
-        python = with pkgs; mkShell {
-          buildInputs = [
-            python312Full
-            (python312.withPackages (ps: with ps; with python312Packages; [
-              requests
-            ]))
-          ];
-        };
-      });
+      devShells = forEachSupportedSystem (
+        { pkgs }:
+        {
+          tf =
+            with pkgs;
+            mkShell {
+              buildInputs = [
+                opentofu
+                awscli2
+              ];
+            };
+          python =
+            with pkgs;
+            mkShell {
+              buildInputs = [
+                python312Full
+                (python312.withPackages (
+                  ps:
+                  with ps;
+                  with python312Packages;
+                  [
+                    requests
+                  ]
+                ))
+              ];
+            };
+        }
+      );
     };
 }

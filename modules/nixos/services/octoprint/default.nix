@@ -1,4 +1,8 @@
-{ lib, config, pkgs, ... }:
+{ lib
+, config
+, pkgs
+, ...
+}:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.services.octoprint;
@@ -15,13 +19,15 @@ in
   config = mkIf cfg.enable {
     environment.etc = mkIf config.mine.container.traefik.enable {
       "traefik/octoprint.yml" = {
-        text = (builtins.readFile
-          (pkgs.substituteAll {
-            name = "octoprint";
-            src = ./traefik.yml;
-            fqdn = config.mine.container.traefik.domainName;
-            ip = "192.168.10.185";
-          })
+        text = (
+          builtins.readFile (
+            pkgs.substituteAll {
+              name = "octoprint";
+              src = ./traefik.yml;
+              fqdn = config.mine.container.traefik.domainName;
+              ip = "192.168.10.185";
+            }
+          )
         );
       };
     };
@@ -44,7 +50,10 @@ in
       octoprint = {
         after = [ "mount-configs.service" ];
         requires = [ "mount-configs.service" ];
-        path = [ pkgs.python3Packages.pip pkgs.v4l-utils ];
+        path = with pkgs; [
+          python3Packages.pip
+          v4l-utils
+        ];
         serviceConfig.AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
       };
 
@@ -80,13 +89,17 @@ in
 
     networking.firewall.allowedTCPPorts = [ 8080 ];
 
-    security.sudo.extraRules = [{
-      users = [ "octoprint" ];
-      commands = [{
-        command = "ALL";
-        options = [ "NOPASSWD" ];
-      }];
-    }];
+    security.sudo.extraRules = [
+      {
+        users = [ "octoprint" ];
+        commands = [
+          {
+            command = "ALL";
+            options = [ "NOPASSWD" ];
+          }
+        ];
+      }
+    ];
 
     users.users.octoprint.extraGroups = [
       "video"
@@ -220,28 +233,29 @@ in
           };
         };
       };
-      plugins = plugins: with plugins; [
-        camerasettings
-        timelapse
-        mqtt
-        octoprint-homeassistant
-        octoprint-cancelobject
-        octoprint-costestimation
-        octoprint-dashboard
-        octoprint-displaylayerprogress
-        octoprint-excluderegion
-        octoprint-filemanager
-        octoprint-powerfailure
-        octoprint-prettygcode
-        octoprint-preheat
-        octoprint-printtimegenius
-        octoprint-prusaslicerthumbnails
-        octoprint-printjobhistory
-        octoprint-slicerestimator
-        octoprint-spoolmanager
-        octoprint-tplinksmartplug
-        octoprint-uicustomizer
-      ];
+      plugins =
+        plugins: with plugins; [
+          camerasettings
+          timelapse
+          mqtt
+          octoprint-homeassistant
+          octoprint-cancelobject
+          octoprint-costestimation
+          octoprint-dashboard
+          octoprint-displaylayerprogress
+          octoprint-excluderegion
+          octoprint-filemanager
+          octoprint-powerfailure
+          octoprint-prettygcode
+          octoprint-preheat
+          octoprint-printtimegenius
+          octoprint-prusaslicerthumbnails
+          octoprint-printjobhistory
+          octoprint-slicerestimator
+          octoprint-spoolmanager
+          octoprint-tplinksmartplug
+          octoprint-uicustomizer
+        ];
     };
   };
 }

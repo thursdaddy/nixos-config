@@ -1,4 +1,10 @@
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   inherit (lib.thurs) enabled;
 in
@@ -19,7 +25,10 @@ in
       SystemMaxUse=1G
     '';
 
-    nix.settings.trusted-users = [ "ssm-user" "@wheel" ];
+    nix.settings.trusted-users = [
+      "ssm-user"
+      "@wheel"
+    ];
 
     environment.systemPackages = with pkgs; [
       neovim

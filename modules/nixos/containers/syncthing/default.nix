@@ -1,6 +1,11 @@
 { config, lib, ... }:
 let
-  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    mkOption
+    types
+    ;
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.container.syncthing;
 
@@ -20,7 +25,10 @@ in
 
   config = mkIf cfg.enable {
     networking.firewall.allowedTCPPorts = [ 22000 ];
-    networking.firewall.allowedUDPPorts = [ 22000 21027 ];
+    networking.firewall.allowedUDPPorts = [
+      22000
+      21027
+    ];
 
     virtualisation.oci-containers.containers."syncthing" = {
       image = " syncthing/syncthing:${version}";
@@ -46,7 +54,8 @@ in
         "traefik.http.routers.syncthing.tls" = "true";
         "traefik.http.routers.syncthing.tls.certresolver" = "letsencrypt";
         "traefik.http.routers.syncthing.entrypoints" = "websecure";
-        "traefik.http.routers.syncthing.rule" = "Host(`${cfg.subdomain}.${config.mine.container.traefik.domainName}`)";
+        "traefik.http.routers.syncthing.rule" =
+          "Host(`${cfg.subdomain}.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.syncthing.loadbalancer.server.port" = "8384";
       };
     };

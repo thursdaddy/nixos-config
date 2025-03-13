@@ -33,7 +33,8 @@ in
         "traefik.http.routers.audiobookshelf.tls" = "true";
         "traefik.http.routers.audiobookshelf.tls.certresolver" = "letsencrypt";
         "traefik.http.routers.audiobookshelf.entrypoints" = "websecure";
-        "traefik.http.routers.audiobookshelf.rule" = "Host(`podcasts.${config.mine.container.traefik.domainName}`)";
+        "traefik.http.routers.audiobookshelf.rule" =
+          "Host(`podcasts.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.audiobookshelf.loadbalancer.server.port" = "80";
         "org.opencontainers.image.version" = "${version}";
         "org.opencontainers.image.source" = "https://github.com/advplyr/audiobookshelf";
@@ -43,7 +44,12 @@ in
     fileSystems."/podcasts" = {
       device = "192.168.10.12:/fast/podcasts";
       fsType = "nfs";
-      options = [ "auto" "rw" "defaults" "_netdev" ];
+      options = [
+        "auto"
+        "rw"
+        "defaults"
+        "_netdev"
+      ];
     };
   };
 }

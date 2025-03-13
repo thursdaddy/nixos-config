@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -51,7 +56,11 @@ let
         phone = "";
         portable = "";
         car = "";
-        default = [ "" "" "" ];
+        default = [
+          ""
+          ""
+          ""
+        ];
       };
       on-click = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0";
       on-click-middle = "wpctl set-volume @DEFAULT_AUDIO_SINK@ .85";
@@ -82,53 +91,101 @@ let
 
   main = {
     name = "main";
-    output = [ "DP-2" "!DP-1" "!DP-3" ];
+    output = [
+      "DP-2"
+      "!DP-1"
+      "!DP-3"
+    ];
     layer = "top";
     position = "bottom";
-    modules-left = [ "hyprland/workspaces" "hyprland/window" ];
+    modules-left = [
+      "hyprland/workspaces"
+      "hyprland/window"
+    ];
     modules-center = [ "mpd" ];
-    modules-right =
-      [ "network" "cpu" "memory" "wireplumber" "clock" "custom/notification" "tray" ];
+    modules-right = [
+      "network"
+      "cpu"
+      "memory"
+      "wireplumber"
+      "clock"
+      "custom/notification"
+      "tray"
+    ];
     "hyprland/workspaces" = {
       active-only = false;
       all-outputs = false;
       persistent-workspaces = {
-        "DP-2" = [ 1 2 3 4 ];
+        "DP-2" = [
+          1
+          2
+          3
+          4
+        ];
       };
     };
   };
 
   side = {
     name = "side";
-    output = [ "!DP-2" "!DP-1" "DP-3" ];
+    output = [
+      "!DP-2"
+      "!DP-1"
+      "DP-3"
+    ];
     layer = "top";
     position = "bottom";
     modules-left = [ "hyprland/workspaces" ];
     modules-center = [ ];
-    modules-right =
-      [ "clock" "custom/notification" "tray" ];
+    modules-right = [
+      "clock"
+      "custom/notification"
+      "tray"
+    ];
     "hyprland/workspaces" = {
       active-only = false;
       all-outputs = false;
       persistent-workspaces = {
-        "DP-3" = [ 5 6 7 ];
+        "DP-3" = [
+          5
+          6
+          7
+        ];
       };
     };
   };
 
   top = {
     name = "top";
-    output = [ "!DP-2" "DP-1" "!DP-3" ];
+    output = [
+      "!DP-2"
+      "DP-1"
+      "!DP-3"
+    ];
     layer = "top";
     position = "bottom";
-    modules-left = [ "hyprland/workspaces" "network" ];
+    modules-left = [
+      "hyprland/workspaces"
+      "network"
+    ];
     modules-center = [ "mpd" ];
-    modules-right = [ "cpu" "memory" "wireplumber" "clock" "custom/notification" "tray" ];
+    modules-right = [
+      "cpu"
+      "memory"
+      "wireplumber"
+      "clock"
+      "custom/notification"
+      "tray"
+    ];
     "hyprland/workspaces" = {
       active-only = false;
       all-outputs = false;
       persistent-workspaces = {
-        "DP-1" = [ 8 9 10 ];
+        "DP-1" = [
+          8
+          9
+          10
+        ];
       };
     };
   };
@@ -165,7 +222,10 @@ in
         Unit = {
           Description = "Highly customizable Wayland bar for Sway and Wlroots based compositors.";
           Documentation = "https://github.com/Alexays/Waybar/wiki";
-          PartOf = [ "hyprland-session.target" "desktop.service" ];
+          PartOf = [
+            "hyprland-session.target"
+            "desktop.service"
+          ];
           After = [ "graphical-session.target" ];
         };
 
@@ -177,7 +237,9 @@ in
           KillMode = "mixed";
         };
 
-        Install = { WantedBy = [ "graphical-session.target" ]; };
+        Install = {
+          WantedBy = [ "graphical-session.target" ];
+        };
       };
     };
   };

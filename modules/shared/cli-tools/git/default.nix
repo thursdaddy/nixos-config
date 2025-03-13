@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -18,6 +23,8 @@ in
       gh
     ];
 
-    programs.fish.shellAliases = mkIf (user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable) aliases.git;
+    programs.fish.shellAliases = mkIf (
+      user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable
+    ) aliases.git;
   };
 }

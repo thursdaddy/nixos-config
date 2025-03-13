@@ -28,7 +28,8 @@ in
         "traefik.http.routers.alertmanager.tls" = "true";
         "traefik.http.routers.alertmanager.tls.certresolver" = "letsencrypt";
         "traefik.http.routers.alertmanager.entrypoints" = "websecure";
-        "traefik.http.routers.alertmanager.rule" = "Host(`alertmanager.${config.mine.container.traefik.domainName}`)";
+        "traefik.http.routers.alertmanager.rule" =
+          "Host(`alertmanager.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.alertmanager.loadbalancer.server.port" = "9093";
         "org.opencontainers.image.version" = "${version}";
         "org.opencontainers.image.source" = "https://github.com/prometheus/alertmanager";

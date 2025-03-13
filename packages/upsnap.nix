@@ -1,4 +1,11 @@
-{ lib, stdenv, buildGoModule, fetchFromGitHub, nodejs, pnpm_9 }:
+{
+  lib,
+  stdenv,
+  buildGoModule,
+  fetchFromGitHub,
+  nodejs,
+  pnpm_9,
+}:
 let
   pname = "upsnap";
   version = "4.6.1";

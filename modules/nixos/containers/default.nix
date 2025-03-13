@@ -5,6 +5,8 @@ let
 in
 {
   options = {
-    mine.container.settings.configPath = mkOpt types.path "/opt/configs" "Base path for storing container configs";
+    mine.container.settings.configPath =
+      mkOpt types.path "/opt/configs"
+        "Base path for storing container configs";
   };
 }

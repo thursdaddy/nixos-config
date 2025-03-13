@@ -1,7 +1,18 @@
-{ lib, config, pkgs, inputs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 let
 
-  inherit (lib) mkEnableOption mkOption mkIf types;
+  inherit (lib)
+    mkEnableOption
+    mkOption
+    mkIf
+    types
+    ;
   inherit (lib.thurs) mkOpt;
   inherit (config.mine) user;
 
@@ -51,7 +62,9 @@ in
       createHome = true;
       uid = 1000;
       openssh.authorizedKeys.keyFiles = [ inputs.ssh-keys.outPath ];
-      openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMsmsLubwu6s0wkeKTsM2EIuJRKFsg2nZdRCVtQHk9LT thurs" ];
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMsmsLubwu6s0wkeKTsM2EIuJRKFsg2nZdRCVtQHk9LT thurs"
+      ];
       group = "${user.name}";
       extraGroups = [ "wheel" ];
       shell = user.shell.package;

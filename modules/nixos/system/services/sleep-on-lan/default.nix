@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -16,7 +21,10 @@ in
     ];
 
     networking.firewall.allowedUDPPorts = [ 9 ];
-    networking.firewall.allowedTCPPorts = [ 9 8009 ];
+    networking.firewall.allowedTCPPorts = [
+      9
+      8009
+    ];
 
     systemd.services.sleep-on-lan = {
       enable = true;

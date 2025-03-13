@@ -1,7 +1,12 @@
 { lib, config, ... }:
 let
 
-  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    mkOption
+    types
+    ;
   inherit (lib.thurs) mkOpt mkOpt_;
   inherit (config.mine) user;
   cfg = config.mine.cli-tools.sops;

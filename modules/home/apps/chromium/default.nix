@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -12,7 +17,7 @@ in
   };
 
   # browser builds not supported on darwin, use homebrew instead
-  config = mkIf (cfg.enable && ! pkgs.stdenv.isDarwin) {
+  config = mkIf (cfg.enable && !pkgs.stdenv.isDarwin) {
     home-manager.users.${user.name} = {
       home.sessionVariables.NIXOS_OZONE_WL = "1";
 

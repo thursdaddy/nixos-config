@@ -1,7 +1,17 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
-  inherit (lib) mkEnableOption mkIf types optionals;
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    types
+    optionals
+    ;
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.system.utils;
 
@@ -34,19 +44,22 @@ in
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      curl
-      eza
-      file
-      fzf
-      ripgrep
-      tree
-      unzip
-      wget
-    ] ++ optionals cfg.dev dev
-    ++ optionals cfg.sysadmin sysadmin
-    ++ optionals pkgs.stdenv.isDarwin [
-      reattach-to-user-namespace
-    ];
+    environment.systemPackages =
+      with pkgs;
+      [
+        curl
+        eza
+        file
+        fzf
+        ripgrep
+        tree
+        unzip
+        wget
+      ]
+      ++ optionals cfg.dev dev
+      ++ optionals cfg.sysadmin sysadmin
+      ++ optionals pkgs.stdenv.isDarwin [
+        reattach-to-user-namespace
+      ];
   };
 }

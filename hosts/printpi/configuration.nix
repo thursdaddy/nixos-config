@@ -1,4 +1,10 @@
-{ config, pkgs, lib, inputs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 let
   inherit (lib.thurs) enabled;
 in
@@ -80,7 +86,13 @@ in
           mounts = {
             "/opt/configs" = {
               device = "192.168.10.12:/fast/configs/printpi";
-              options = [ "auto" "rw" "defaults" "_netdev" "x-systemd.automount" ];
+              options = [
+                "auto"
+                "rw"
+                "defaults"
+                "_netdev"
+                "x-systemd.automount"
+              ];
             };
           };
         };

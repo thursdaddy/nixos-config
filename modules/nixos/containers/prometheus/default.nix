@@ -1,17 +1,24 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf types;
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.container.prometheus;
 
   version = "2.52.0";
-  prometheus_config = (builtins.readFile
-    (pkgs.substituteAll {
-      name = "prometheus";
-      src = ./prometheus.yml;
-      domain_name = config.mine.container.traefik.domainName;
-      prom_token = config.sops.placeholder."hass/PROM_TOKEN";
-    })
+  prometheus_config = (
+    builtins.readFile (
+      pkgs.substituteAll {
+        name = "prometheus";
+        src = ./prometheus.yml;
+        domain_name = config.mine.container.traefik.domainName;
+        prom_token = config.sops.placeholder."hass/PROM_TOKEN";
+      }
+    )
   );
 in
 {
@@ -28,7 +35,6 @@ in
       secrets."hass/PROM_TOKEN" = { };
       templates."prometheus_config".content = prometheus_config;
     };
-
 
     virtualisation.oci-containers.containers.prometheus = {
       user = "root:root";
@@ -55,7 +61,8 @@ in
         "traefik.http.routers.prometheus.tls" = "true";
         "traefik.http.routers.prometheus.tls.certresolver" = "letsencrypt";
         "traefik.http.routers.prometheus.entrypoints" = "websecure";
-        "traefik.http.routers.prometheus.rule" = "Host(`prometheus.${config.mine.container.traefik.domainName}`)";
+        "traefik.http.routers.prometheus.rule" =
+          "Host(`prometheus.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.prometheus.loadbalancer.server.port" = "9090";
         "enable.versions.check" = "false";
       };

@@ -1,7 +1,18 @@
-{ pkgs, lib, config, inputs, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  inputs,
+  ...
+}:
 let
 
-  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    mkOption
+    types
+    ;
   inherit (lib.thurs) mkOpt mkOpt_;
   cfg = config.mine.cli-tools.sops;
 
@@ -11,7 +22,11 @@ let
   };
   ssm_systemd_script = pkgs.writeShellApplication {
     name = "get-age-key-from-ssm";
-    runtimeInputs = with pkgs; [ awscli2 coreutils gnused ];
+    runtimeInputs = with pkgs; [
+      awscli2
+      coreutils
+      gnused
+    ];
     text = ''
       AGE_KEY=$(aws ssm get-parameter --region ${cfg.ageKeyFile.ageKeyInSSM.region} --no-cli-pager --name ${cfg.ageKeyFile.ageKeyInSSM.paramName} --with-decryption --query "Parameter.Value" | sed 's/\"//g')
       echo "$AGE_KEY" > ${cfg.ageKeyFile.path}
@@ -36,7 +51,10 @@ in
               options = {
                 enable = mkOpt types.bool false "Runs systemd service to pull key from SSM Parameter store";
                 paramName = mkOpt (types.nullOr types.path) null "SSM Parameter name containing age key";
-                region = mkOpt (types.enum [ "us-west-2" "us-east-1" ]) "us-east-1" "AWS region for SSM parameter";
+                region = mkOpt (types.enum [
+                  "us-west-2"
+                  "us-east-1"
+                ]) "us-east-1" "AWS region for SSM parameter";
               };
             };
           };
@@ -48,7 +66,9 @@ in
       description = "Things that are needed for SOPS";
       type = types.submodule {
         options = {
-          network = mkOpt types.bool false "Decrypt after network is started, for network required keys like KMS.";
+          network =
+            mkOpt types.bool false
+              "Decrypt after network is started, for network required keys like KMS.";
           unlock = mkOpt types.bool false "Decrypt after logging, or ZFS volumes have been decrypted";
         };
       };
@@ -69,19 +89,21 @@ in
       age.keyFile = config.mine.cli-tools.sops.ageKeyFile.path;
     };
 
-    systemd.services.decrypt-sops-after-network = mkIf (cfg.requires.network || cfg.ageKeyFile.ageKeyInSSM.enable) {
-      description = "Decrypt SOPS secrets after network is established";
-      wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" ];
-      requires = [ "network-online.target" ];
-      serviceConfig = ssm_systemd_config // {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        Restart = "on-failure";
-        RestartSec = "3s";
-      };
-      script = config.system.activationScripts.setupSecrets.text;
-    };
+    systemd.services.decrypt-sops-after-network =
+      mkIf (cfg.requires.network || cfg.ageKeyFile.ageKeyInSSM.enable)
+        {
+          description = "Decrypt SOPS secrets after network is established";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network-online.target" ];
+          requires = [ "network-online.target" ];
+          serviceConfig = ssm_systemd_config // {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            Restart = "on-failure";
+            RestartSec = "3s";
+          };
+          script = config.system.activationScripts.setupSecrets.text;
+        };
 
     systemd.services.decrypt-sops-after-login = mkIf cfg.requires.unlock {
       description = "Decrypt SOPS secrets after disk has been unlocked";

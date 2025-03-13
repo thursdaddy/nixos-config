@@ -11,6 +11,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    homebrew.casks = [ "protonvpn" "proton-mail" ];
+    homebrew.casks = [
+      "protonvpn"
+      "proton-mail"
+    ];
   };
 }
