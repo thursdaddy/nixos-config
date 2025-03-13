@@ -35,11 +35,5 @@
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };
-    # nfs mounts
-    "/backups" = {
-      device = "192.168.10.12:/fast/backups";
-      fsType = "nfs";
-      options = [ "auto" "rw" "defaults" "_netdev" ];
-    };
   };
 }

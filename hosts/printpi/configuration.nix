@@ -16,13 +16,6 @@ in
     system.stateVersion = "24.11";
 
     services.rpcbind.enable = true;
-
-    fileSystems."/opt/configs" = {
-      device = "192.168.10.12:/fast/configs";
-      fsType = "nfs";
-      options = [ "auto" "rw" "defaults" "_netdev" "x-systemd.automount" ];
-    };
-
     environment.systemPackages = with pkgs; [
       neovim
     ];
@@ -81,6 +74,15 @@ in
           };
           firewall = enabled;
           forwarding.ipv4 = true;
+        };
+        nfs-mounts = {
+          enable = true;
+          mounts = {
+            "/opt/configs" = {
+              device = "192.168.10.12:/fast/configs/printpi";
+              options = [ "auto" "rw" "defaults" "_netdev" "x-systemd.automount" ];
+            };
+          };
         };
         nix = {
           unfree = enabled;

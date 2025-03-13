@@ -123,6 +123,14 @@ in
           forwarding.ipv4 = true;
           resolved = enabled;
         };
+        nfs-mounts = {
+          enable = true;
+          mounts = {
+            "/backups" = {
+              device = "192.168.10.12:/fast/backups/workbox";
+            };
+          };
+        };
         nix = {
           unfree = enabled;
           flakes = enabled;

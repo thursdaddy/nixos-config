@@ -16,12 +16,6 @@ in
   config = {
     system.stateVersion = "24.11";
 
-    fileSystems."/backups" = {
-      device = "192.168.10.12:/fast/backups";
-      fsType = "nfs";
-      options = [ "auto" "rw" "defaults" "_netdev" ];
-    };
-
     environment.systemPackages = [
       pkgs.esptool
     ];
@@ -97,6 +91,14 @@ in
             hostname = "homebox";
           };
           firewall = enabled;
+        };
+        nfs-mounts = {
+          enable = true;
+          mounts = {
+            "/backups" = {
+              device = "192.168.10.12:/fast/backups/homebox";
+            };
+          };
         };
         nix = {
           unfree = enabled;
