@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -6,7 +11,13 @@ let
 
   r53-updater = pkgs.writeShellApplication {
     name = "r53-updater";
-    runtimeInputs = with pkgs; [ awscli2 coreutils curl dig gawk ];
+    runtimeInputs = with pkgs; [
+      awscli2
+      coreutils
+      curl
+      dig
+      gawk
+    ];
 
     text = ''
       export AWS_PAGER=""

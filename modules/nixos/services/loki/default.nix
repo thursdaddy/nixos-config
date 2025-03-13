@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.services.loki;
@@ -15,13 +20,15 @@ in
   config = mkIf cfg.enable {
     environment.etc = mkIf config.mine.container.traefik.enable {
       "traefik/loki.yml" = {
-        text = (builtins.readFile
-          (pkgs.substituteAll {
-            name = "loki";
-            src = ./traefik.yml;
-            fqdn = config.mine.container.traefik.domainName;
-            ip = "192.168.10.120";
-          })
+        text = (
+          builtins.readFile (
+            pkgs.substituteAll {
+              name = "loki";
+              src = ./traefik.yml;
+              fqdn = config.mine.container.traefik.domainName;
+              ip = "192.168.10.120";
+            }
+          )
         );
       };
     };
@@ -43,4 +50,3 @@ in
     };
   };
 }
-

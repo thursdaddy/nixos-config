@@ -1,4 +1,9 @@
-{ lib, config, inputs, ... }:
+{
+  lib,
+  config,
+  inputs,
+  ...
+}:
 let
 
   inherit (lib) mkIf;
@@ -17,7 +22,11 @@ in
     home-manager = {
       useUserPackages = true;
       useGlobalPkgs = true;
-      extraSpecialArgs = { inherit inputs; inherit user; inherit allowed-unfree-packages; };
+      extraSpecialArgs = {
+        inherit inputs;
+        inherit user;
+        inherit allowed-unfree-packages;
+      };
       users.${user.name}.imports = [ ./home.nix ];
     };
   };

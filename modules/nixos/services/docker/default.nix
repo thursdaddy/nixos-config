@@ -1,13 +1,24 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
-  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    mkOption
+    types
+    ;
   inherit (config.mine) user;
   cfg = config.mine.services.docker;
   aliases = import ../../../shared/aliases.nix;
 
-  container-version-check-env = pkgs.python311.withPackages (p:
-    with p; [ pkgs.python311Packages.requests ]);
+  container-version-check-env = pkgs.python311.withPackages (
+    p: with p; [ pkgs.python311Packages.requests ]
+  );
 
   container-version-check = pkgs.substituteAll {
     name = "_container-check";
@@ -42,6 +53,8 @@ in
     virtualisation.docker.enable = true;
     virtualisation.oci-containers.backend = "docker";
 
-    programs.fish.shellAliases = mkIf (user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable) aliases.docker;
+    programs.fish.shellAliases = mkIf (
+      user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable
+    ) aliases.docker;
   };
 }

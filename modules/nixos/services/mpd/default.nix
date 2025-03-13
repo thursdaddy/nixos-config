@@ -43,7 +43,12 @@ in
     fileSystems."/music" = {
       device = "192.168.10.12:/fast/music";
       fsType = "nfs";
-      options = [ "auto" "rw" "defaults" "_netdev" ];
+      options = [
+        "auto"
+        "rw"
+        "defaults"
+        "_netdev"
+      ];
     };
   };
 }

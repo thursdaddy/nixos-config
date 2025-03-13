@@ -86,7 +86,8 @@ in
           "traefik.http.routers.tesla-grafana.tls" = "true";
           "traefik.http.routers.tesla-grafana.tls.certresolver" = "letsencrypt";
           "traefik.http.routers.tesla-grafana.entrypoints" = "websecure";
-          "traefik.http.routers.tesla-grafana.rule" = "Host(`tesla.${config.mine.container.traefik.domainName}`)";
+          "traefik.http.routers.tesla-grafana.rule" =
+            "Host(`tesla.${config.mine.container.traefik.domainName}`)";
           "traefik.http.services.tesla-grafana.loadbalancer.server.port" = "3000";
           "enable.versions.check" = "false";
         };
@@ -133,7 +134,8 @@ in
           "traefik.http.routers.tesla-postgres.tls" = "true";
           "traefik.http.routers.tesla-postgres.tls.certresolver" = "letsencrypt";
           "traefik.http.routers.tesla-postgres.entrypoints" = "websecure";
-          "traefik.http.routers.tesla-postgres.rule" = "Host(`tesla-db.${config.mine.container.traefik.domainName}`)";
+          "traefik.http.routers.tesla-postgres.rule" =
+            "Host(`tesla-db.${config.mine.container.traefik.domainName}`)";
           "traefik.http.services.tesla-postgres.loadbalancer.server.port" = "5432";
           "enable.versions.check" = "false";
         };

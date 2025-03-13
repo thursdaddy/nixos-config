@@ -15,7 +15,6 @@ in
 {
   programs.nixvim = {
     plugins = {
-      autoclose.enable = true;
       barbecue.enable = true;
       cmp-buffer.enable = true;
       cmp-emoji.enable = true;
@@ -49,7 +48,9 @@ in
             { name = "nvim_lua"; }
             { name = "path"; }
           ];
-          snippet = { expand = "luasnip"; };
+          snippet = {
+            expand = "luasnip";
+          };
           mapping = {
             "<CR>" = "cmp.mapping.confirm({ select = true })";
             "<Down>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
@@ -76,8 +77,19 @@ in
             long_message_to_split = true;
           };
           routes = [
-            { view = "notify"; filter = { event = "msg_showmode"; }; }
-            { view = "cmdline_output"; filter = { event = "msg_show"; min_height = 15; }; }
+            {
+              view = "notify";
+              filter = {
+                event = "msg_showmode";
+              };
+            }
+            {
+              view = "cmdline_output";
+              filter = {
+                event = "msg_show";
+                min_height = 15;
+              };
+            }
           ];
         };
       };
@@ -99,7 +111,9 @@ in
           marksman.enable = true;
           nil_ls = {
             enable = true;
-            settings = { formatting.command = [ "nixpkgs-fmt" ]; };
+            settings = {
+              formatting.command = [ "nixpkgs-fmt" ];
+            };
           };
           pylsp = {
             enable = true;
@@ -108,7 +122,12 @@ in
               # code style enforcement
               flake8 = {
                 enabled = true;
-                ignore = [ "E302" "E305" "E501" "W503" ];
+                ignore = [
+                  "E302"
+                  "E305"
+                  "E501"
+                  "W503"
+                ];
               };
               isort.enabled = true; # import sort
               jedi.enabled = true; # autocompletion
@@ -164,35 +183,138 @@ in
     # plugin specific keymaps
     keymaps = [
       # diff-view
-      { mode = "n"; key = "<leader>dv"; action = "<CMD>DiffviewOpen<CR>"; }
-      { mode = "n"; key = "<leader>dvh"; action = "<CMD>DiffviewFileHistory<CR>"; }
-      { mode = "n"; key = "<leader>dvc"; action = "<CMD>DiffviewClose<CR>"; }
+      {
+        mode = "n";
+        key = "<leader>dv";
+        action = "<CMD>DiffviewOpen<CR>";
+      }
+      {
+        mode = "n";
+        key = "<leader>dvh";
+        action = "<CMD>DiffviewFileHistory<CR>";
+      }
+      {
+        mode = "n";
+        key = "<leader>dvc";
+        action = "<CMD>DiffviewClose<CR>";
+      }
       # telescope
-      { mode = "n"; key = "<leader>ff"; action = "<CMD>Telescope find_files find_command=rg,--no-ignore,--files,--hidden,--glob,!.git,--glob,!.terraform prompt_prefix=🔍<CR>"; }
+      {
+        mode = "n";
+        key = "<leader>ff";
+        action = "<CMD>Telescope find_files find_command=rg,--no-ignore,--files,--hidden,--glob,!.git,--glob,!.terraform prompt_prefix=🔍<CR>";
+      }
       # tmux-navigator
-      { mode = "n"; key = "<C-h>"; action = "<CMD>TmuxNavigateLeft<CR>zz"; }
-      { mode = "n"; key = "<C-j>"; action = "<CMD>TmuxNavigateDown<CR>zz"; }
-      { mode = "n"; key = "<C-k>"; action = "<CMD>TmuxNavigateUp<CR>zz"; }
-      { mode = "n"; key = "<C-l>"; action = "<CMD>TmuxNavigateRight<CR>zz"; }
+      {
+        mode = "n";
+        key = "<C-h>";
+        action = "<CMD>TmuxNavigateLeft<CR>zz";
+      }
+      {
+        mode = "n";
+        key = "<C-j>";
+        action = "<CMD>TmuxNavigateDown<CR>zz";
+      }
+      {
+        mode = "n";
+        key = "<C-k>";
+        action = "<CMD>TmuxNavigateUp<CR>zz";
+      }
+      {
+        mode = "n";
+        key = "<C-l>";
+        action = "<CMD>TmuxNavigateRight<CR>zz";
+      }
       # markdown-preview
-      { mode = "n"; key = "<leader>md"; action = "<CMD>MarkdownPreview<CR>"; }
-      { mode = "n"; key = "<leader>mds"; action = "<CMD>MarkdownPreviewStop<CR>"; }
+      {
+        mode = "n";
+        key = "<leader>md";
+        action = "<CMD>MarkdownPreview<CR>";
+      }
+      {
+        mode = "n";
+        key = "<leader>mds";
+        action = "<CMD>MarkdownPreviewStop<CR>";
+      }
       # nvim-tree
-      { mode = "n"; key = "<leader>e"; action = "<CMD>NvimTreeToggle<CR>"; }
-      { mode = "n"; key = "<leader>E"; action = "<CMD>NvimTreeFocus<CR>"; }
+      {
+        mode = "n";
+        key = "<leader>e";
+        action = "<CMD>NvimTreeToggle<CR>";
+      }
+      {
+        mode = "n";
+        key = "<leader>E";
+        action = "<CMD>NvimTreeFocus<CR>";
+      }
       # fugitive
-      { mode = "n"; key = "<leader>gaa"; action = "<CMD>Git add .<CR>"; options.noremap = true; }
-      { mode = "n"; key = "<leader>gap"; action = "<CMD>Git add --patch<CR>"; options.noremap = true; }
-      { mode = "n"; key = "<leader>gs"; action = "<CMD>below Git<CR>"; options.noremap = true; }
-      { mode = "n"; key = "<leader>gc"; action = "<CMD>below Git commit<CR>"; options.noremap = true; }
-      { mode = "n"; key = "<leader>gb"; action = "<CMD>GBranches<CR>"; options.noremap = true; } #fzf-checkout
-      { mode = "n"; key = "<leader>gp"; action = "<CMD>Git push<CR>"; options.noremap = true; }
-      { mode = "n"; key = "<leader>gl"; action = "<CMD>Git pull<CR>"; options.noremap = true; }
-      { mode = "n"; key = "<leader>gcb"; action = "<CMD>Git blame<CR>"; options.noremap = true; }
-      { mode = "n"; key = "<leader>g,"; action = "<CMD>diffget //2<CR>"; options.noremap = true; }
-      { mode = "n"; key = "<leader>g."; action = "<CMD>diffget //3<CR>"; options.noremap = true; }
+      {
+        mode = "n";
+        key = "<leader>gaa";
+        action = "<CMD>Git add .<CR>";
+        options.noremap = true;
+      }
+      {
+        mode = "n";
+        key = "<leader>gap";
+        action = "<CMD>Git add --patch<CR>";
+        options.noremap = true;
+      }
+      {
+        mode = "n";
+        key = "<leader>gs";
+        action = "<CMD>below Git<CR>";
+        options.noremap = true;
+      }
+      {
+        mode = "n";
+        key = "<leader>gc";
+        action = "<CMD>below Git commit<CR>";
+        options.noremap = true;
+      }
+      {
+        mode = "n";
+        key = "<leader>gb";
+        action = "<CMD>GBranches<CR>";
+        options.noremap = true;
+      } # fzf-checkout
+      {
+        mode = "n";
+        key = "<leader>gp";
+        action = "<CMD>Git push<CR>";
+        options.noremap = true;
+      }
+      {
+        mode = "n";
+        key = "<leader>gl";
+        action = "<CMD>Git pull<CR>";
+        options.noremap = true;
+      }
+      {
+        mode = "n";
+        key = "<leader>gcb";
+        action = "<CMD>Git blame<CR>";
+        options.noremap = true;
+      }
+      {
+        mode = "n";
+        key = "<leader>g,";
+        action = "<CMD>diffget //2<CR>";
+        options.noremap = true;
+      }
+      {
+        mode = "n";
+        key = "<leader>g.";
+        action = "<CMD>diffget //3<CR>";
+        options.noremap = true;
+      }
       # vGit
-      { mode = "n"; key = "<leader>gdv"; action = "<CMD>VGit project_diff_preview<CR>"; options.noremap = true; }
+      {
+        mode = "n";
+        key = "<leader>gdv";
+        action = "<CMD>VGit project_diff_preview<CR>";
+        options.noremap = true;
+      }
     ];
 
     extraPlugins = with pkgs; [

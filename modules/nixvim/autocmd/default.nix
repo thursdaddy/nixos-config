@@ -10,7 +10,9 @@ _: {
         group = "highlight_yank";
         event = "TextYankPost";
         pattern = "*";
-        callback = { __raw = "function() vim.highlight.on_yank { higroup = 'IncSearch', timeout = 500 } end"; };
+        callback = {
+          __raw = "function() vim.highlight.on_yank { higroup = 'IncSearch', timeout = 500 } end";
+        };
       }
       {
         group = "wscleanup";

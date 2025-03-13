@@ -1,4 +1,9 @@
-{ lib, config, inputs, ... }:
+{
+  lib,
+  config,
+  inputs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkDefault mkIf;
@@ -22,10 +27,7 @@ in
       enable = true;
       settings = {
         PasswordAuthentication = false;
-        PermitRootLogin =
-          if cfg.root
-          then "prohibit-password"
-          else mkDefault "no";
+        PermitRootLogin = if cfg.root then "prohibit-password" else mkDefault "no";
       };
     };
   };

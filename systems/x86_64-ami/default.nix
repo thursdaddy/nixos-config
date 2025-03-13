@@ -1,4 +1,9 @@
-{ lib, inputs, config, ... }:
+{
+  lib,
+  inputs,
+  config,
+  ...
+}:
 let
   inherit (lib.thurs) enabled;
 in
@@ -22,7 +27,10 @@ in
         enable = true;
         authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
         useRoutingFeatures = "client";
-        extraUpFlags = [ "--accept-routes" "--accept-dns=true" ];
+        extraUpFlags = [
+          "--accept-routes"
+          "--accept-dns=true"
+        ];
       };
 
       system = {

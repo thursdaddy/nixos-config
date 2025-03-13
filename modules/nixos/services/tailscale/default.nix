@@ -1,4 +1,10 @@
-{ lib, pkgs, config, inputs, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf types;
@@ -11,7 +17,12 @@ in
   options.mine.services.tailscale = {
     enable = mkEnableOption "Enable Tailscale";
     authKeyFile = mkOpt (types.nullOr types.path) null "authKeyFile path";
-    useRoutingFeatures = mkOpt (types.enum [ "none" "client" "server" "both" ]) "none" "Tailscale routingFeatures";
+    useRoutingFeatures = mkOpt (types.enum [
+      "none"
+      "client"
+      "server"
+      "both"
+    ]) "none" "Tailscale routingFeatures";
     extraUpFlags = mkOpt (types.listOf types.str) [ ] "Tailscale up flags";
     extraSetFlags = mkOpt (types.listOf types.str) [ ] "Tailscale set flags";
   };
@@ -31,18 +42,20 @@ in
       sopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
     };
 
-    systemd.services.tailscaled-autoconnect-reload = mkIf (sops.requires.network || sops.ageKeyFile.ageKeyInSSM.enable) {
-      description = "Restart tailscaled-autoconnect after secrets have been decrypted";
-      after = [ "decrypt-sops-after-network.service" ];
-      partOf = [ "decrypt-sops-after-network.service" ];
-      wantedBy = [ "multi-user.target" ];
-      preStart = "${pkgs.coreutils}/bin/sleep 1";
-      serviceConfig = {
-        Type = "oneshot";
-      };
-      script = ''
-        ${config.systemd.package}/bin/systemctl restart tailscaled-autoconnect
-      '';
-    };
+    systemd.services.tailscaled-autoconnect-reload =
+      mkIf (sops.requires.network || sops.ageKeyFile.ageKeyInSSM.enable)
+        {
+          description = "Restart tailscaled-autoconnect after secrets have been decrypted";
+          after = [ "decrypt-sops-after-network.service" ];
+          partOf = [ "decrypt-sops-after-network.service" ];
+          wantedBy = [ "multi-user.target" ];
+          preStart = "${pkgs.coreutils}/bin/sleep 1";
+          serviceConfig = {
+            Type = "oneshot";
+          };
+          script = ''
+            ${config.systemd.package}/bin/systemctl restart tailscaled-autoconnect
+          '';
+        };
   };
 }

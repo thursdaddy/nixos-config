@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -120,60 +125,61 @@ in
             "$mod, mouse:273, movewindow"
           ];
 
-          bind = [
-            "$mod, space, exec, fuzzel"
-            "$mod_SHIFT, space, togglefloating"
-            "$mod, return, exec, ghostty"
-            "$mod_SHIFT, return, exec, [float;noanim] ghostty"
-            "$mod, F, fullscreen"
-            "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
-            "$mod_SHIFT, B, exec, vivaldi"
-            "$mod_SHIFT, D, exec, discord"
-            "$mod_SHIFT, F, fullscreen, 1"
-            "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
-            "$mod_SHIFT, O, exec, obsidian"
-            "$mod_SHIFT, P, exec, ${lib.getExe pkgs.vivaldi} --app=https://192.168.10.189:32400"
-            "$mod_SHIFT, Q, killactive"
-            "$mod_SHIFT, X, exec, loginctl lock-session && sleep 2 && hyprctl dispatch dpms off && hyprlock"
-            "$mod_SHIFT, Z, exec, loginctl lock-session && sleep 2 && hyprctl dispatch dpms off && systemctl suspend"
-            "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
-            "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://music.youtube.com"
-            # Mouse Focus
-            "$mod, H, movefocus, l"
-            "$mod, L, movefocus, r"
-            "$mod, K, movefocus, u"
-            "$mod, J, movefocus, d"
-            # Window Management
-            "$mod_SHIFT, H, movewindoworgroup, l"
-            "$mod_SHIFT, L, movewindoworgroup, r"
-            "$mod_SHIFT, K, movewindoworgroup, u"
-            "$mod_SHIFT, J, movewindoworgroup, d"
-            # Workspace Switcher
-            "$mod, TAB, workspace, previous"
-            "$mod, T, togglegroup"
-            "$mod, C, changegroupactive, b"
-            "$mod, V, changegroupactive, f"
-          ]
-          ++ (
-            # workspaces
-            # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
-            builtins.concatLists (builtins.genList
-              (
-                x:
-                let
-                  ws =
-                    let
-                      c = (x + 1) / 10;
-                    in
-                    builtins.toString (x + 1 - (c * 10));
-                in
-                [
-                  "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                  "$mod_SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
-                ]
+          bind =
+            [
+              "$mod, space, exec, fuzzel"
+              "$mod_SHIFT, space, togglefloating"
+              "$mod, return, exec, ghostty"
+              "$mod_SHIFT, return, exec, [float;noanim] ghostty"
+              "$mod, F, fullscreen"
+              "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
+              "$mod_SHIFT, B, exec, vivaldi"
+              "$mod_SHIFT, D, exec, discord"
+              "$mod_SHIFT, F, fullscreen, 1"
+              "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
+              "$mod_SHIFT, O, exec, obsidian"
+              "$mod_SHIFT, P, exec, ${lib.getExe pkgs.vivaldi} --app=https://192.168.10.189:32400"
+              "$mod_SHIFT, Q, killactive"
+              "$mod_SHIFT, X, exec, loginctl lock-session && sleep 2 && hyprctl dispatch dpms off && hyprlock"
+              "$mod_SHIFT, Z, exec, loginctl lock-session && sleep 2 && hyprctl dispatch dpms off && systemctl suspend"
+              "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://youtube.com"
+              "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} ${chrome-flags} --app=https://music.youtube.com"
+              # Mouse Focus
+              "$mod, H, movefocus, l"
+              "$mod, L, movefocus, r"
+              "$mod, K, movefocus, u"
+              "$mod, J, movefocus, d"
+              # Window Management
+              "$mod_SHIFT, H, movewindoworgroup, l"
+              "$mod_SHIFT, L, movewindoworgroup, r"
+              "$mod_SHIFT, K, movewindoworgroup, u"
+              "$mod_SHIFT, J, movewindoworgroup, d"
+              # Workspace Switcher
+              "$mod, TAB, workspace, previous"
+              "$mod, T, togglegroup"
+              "$mod, C, changegroupactive, b"
+              "$mod, V, changegroupactive, f"
+            ]
+            ++ (
+              # workspaces
+              # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
+              builtins.concatLists (
+                builtins.genList (
+                  x:
+                  let
+                    ws =
+                      let
+                        c = (x + 1) / 10;
+                      in
+                      builtins.toString (x + 1 - (c * 10));
+                  in
+                  [
+                    "$mod, ${ws}, workspace, ${toString (x + 1)}"
+                    "$mod_SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
+                  ]
+                ) 10
               )
-              10)
-          );
+            );
         };
       };
     };

@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.apps.home-assistant;
@@ -12,17 +17,20 @@ in
     services.home-assistant = {
       enable = true;
       config.http.server_port = 8090;
-      package = (pkgs.unstable.home-assistant.override {
-        extraPackages = py: with py; [
-          google-nest-sdm
-          grpcio
-          grpcio-tools
-          psutil-home-assistant
-          psycopg2
-        ];
-      }).overrideAttrs (oldAttrs: {
-        doInstallCheck = false;
-      });
+      package =
+        (pkgs.unstable.home-assistant.override {
+          extraPackages =
+            py: with py; [
+              google-nest-sdm
+              grpcio
+              grpcio-tools
+              psutil-home-assistant
+              psycopg2
+            ];
+        }).overrideAttrs
+          (oldAttrs: {
+            doInstallCheck = false;
+          });
       config.recorder.db_url = "postgresql://@/hass";
       openFirewall = true;
       config = {
@@ -88,13 +96,15 @@ in
 
     environment.etc = mkIf config.mine.container.traefik.enable {
       "traefik/hass.yml" = {
-        text = (builtins.readFile
-          (pkgs.substituteAll {
-            name = "hass";
-            src = ./traefik.yml;
-            fqdn = config.mine.container.traefik.domainName;
-            ip = "192.168.10.60";
-          })
+        text = (
+          builtins.readFile (
+            pkgs.substituteAll {
+              name = "hass";
+              src = ./traefik.yml;
+              fqdn = config.mine.container.traefik.domainName;
+              ip = "192.168.10.60";
+            }
+          )
         );
       };
     };
@@ -191,10 +201,12 @@ in
     services.postgresql = {
       enable = true;
       ensureDatabases = [ "hass" ];
-      ensureUsers = [{
-        name = "hass";
-        ensureDBOwnership = true;
-      }];
+      ensureUsers = [
+        {
+          name = "hass";
+          ensureDBOwnership = true;
+        }
+      ];
     };
 
     services.mosquitto = {
@@ -251,4 +263,3 @@ in
     };
   };
 }
-

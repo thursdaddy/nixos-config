@@ -1,10 +1,18 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkIf;
   cfg = config.mine.user.shell.starship;
   inherit (config.mine) user;
-  starship_config = import ../../../nixos/user/starship { inherit config; inherit lib; };
+  starship_config = import ../../../nixos/user/starship {
+    inherit config;
+    inherit lib;
+  };
 
 in
 {

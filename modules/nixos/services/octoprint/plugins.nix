@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   nixpkgs.overlays = [
     (self: super: {
       octoprint = super.octoprint.override {
@@ -51,7 +52,10 @@
               rev = "${version}";
               sha256 = "sha256-R6ayI8KHpBSR2Cnp6B2mKdJGHaxTENkOKvbvILLte2E=";
             };
-            propagatedBuildInputs = [ pysuper.octoprint pkgs.python312Packages.psutil ];
+            propagatedBuildInputs = [
+              pysuper.octoprint
+              pkgs.python312Packages.psutil
+            ];
             doCheck = false;
           };
 

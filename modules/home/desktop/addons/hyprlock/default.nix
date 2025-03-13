@@ -1,4 +1,10 @@
-{ lib, config, inputs, pkgs, ... }:
+{
+  lib,
+  config,
+  inputs,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -22,25 +28,29 @@ in
             ignore_empty_input = true;
           };
 
-          background = [{
-            path = "${wallpapers}/blue_astronaut_in_space.png";
-          }];
+          background = [
+            {
+              path = "${wallpapers}/blue_astronaut_in_space.png";
+            }
+          ];
 
-          input-field = [{
-            size = "300, 60";
-            outline_thickness = 2;
-            monitor = "";
-            dots_size = 0.05;
-            dots_spacing = 0.05;
-            dots_center = true;
-            outer_color = "rgba(0, 0, 0, 0)";
-            inner_color = "rgba(0, 0, 0, 0.5)";
-            font_color = "rgb(200, 200, 200)";
-            fade_on_empty = true;
-            fade_timeout = 5000;
-            placeholder_text = "PASSWORD";
-            position = "0, -120";
-          }];
+          input-field = [
+            {
+              size = "300, 60";
+              outline_thickness = 2;
+              monitor = "";
+              dots_size = 0.05;
+              dots_spacing = 0.05;
+              dots_center = true;
+              outer_color = "rgba(0, 0, 0, 0)";
+              inner_color = "rgba(0, 0, 0, 0.5)";
+              font_color = "rgb(200, 200, 200)";
+              fade_on_empty = true;
+              fade_timeout = 5000;
+              placeholder_text = "PASSWORD";
+              position = "0, -120";
+            }
+          ];
 
           label = {
             monitor = "";

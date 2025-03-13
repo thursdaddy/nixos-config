@@ -1,4 +1,10 @@
-{ lib, config, pkgs, inputs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 let
 
   inherit (lib.thurs) enabled;
@@ -187,4 +193,3 @@ in
     };
   };
 }
-

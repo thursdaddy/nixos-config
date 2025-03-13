@@ -1,4 +1,10 @@
-{ user, pkgs, lib, inputs, ... }:
+{
+  user,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 with lib;
 {
   imports = [

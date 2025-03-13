@@ -29,7 +29,8 @@ in
         "traefik.http.routers.open-webui.tls" = "true";
         "traefik.http.routers.open-webui.tls.certresolver" = "letsencrypt";
         "traefik.http.routers.open-webui.entrypoints" = "websecure";
-        "traefik.http.routers.open-webui.rule" = "Host(`ollama.${config.mine.container.traefik.domainName}`)";
+        "traefik.http.routers.open-webui.rule" =
+          "Host(`ollama.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.open-webui.loadbalancer.server.port" = "8080";
       };
     };

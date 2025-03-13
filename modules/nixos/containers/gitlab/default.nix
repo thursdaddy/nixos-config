@@ -41,7 +41,8 @@ in
         "traefik.http.routers.gitlab.service" = "gitlab";
         "traefik.http.routers.gitlab.entrypoints" = "websecure";
         "traefik.http.routers.gitlab.tls.certresolver" = "letsencrypt";
-        "traefik.http.routers.gitlab-registry.rule" = "Host(`reg.${config.mine.container.traefik.domainName}`)";
+        "traefik.http.routers.gitlab-registry.rule" =
+          "Host(`reg.${config.mine.container.traefik.domainName}`)";
         "traefik.http.routers.gitlab-registry.tls.certresolver" = "letsencrypt";
         "traefik.http.routers.gitlab-registry.entrypoints" = "websecure";
         "traefik.http.routers.gitlab-registry.service" = "gitlab-registry";

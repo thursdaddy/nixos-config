@@ -1,4 +1,10 @@
-{ lib, inputs, config, pkgs, ... }:
+{
+  lib,
+  inputs,
+  config,
+  pkgs,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf types;
   inherit (lib.thurs) mkOpt;
@@ -41,13 +47,15 @@ in
 
     environment.etc = mkIf config.mine.container.traefik.enable {
       "traefik/upsnap.yml" = {
-        text = (builtins.readFile
-          (pkgs.substituteAll {
-            name = "upsnap";
-            src = ./traefik.yml;
-            fqdn = config.mine.container.traefik.domainName;
-            ip = "192.168.10.120";
-          })
+        text = (
+          builtins.readFile (
+            pkgs.substituteAll {
+              name = "upsnap";
+              src = ./traefik.yml;
+              fqdn = config.mine.container.traefik.domainName;
+              ip = "192.168.10.120";
+            }
+          )
         );
       };
     };
