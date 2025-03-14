@@ -1,11 +1,22 @@
 local.file_match "local_files" {
-  path_targets = [{"__path__" = "/var/lib/octoprint/logs/octoprint.log"}]
+  path_targets = [
+    {"__path__" = "/var/lib/octoprint/logs/octoprint.log"},
+  ]
   sync_period = "5s"
+}
+
+loki.relabel "octoprint" {
+  forward_to = [loki.write.grafana_loki.receiver]
+
+  rule {
+      target_label = "app"
+      replacement = "octoprint"
+    }
 }
 
 loki.source.file "log_scrape" {
   targets    = local.file_match.local_files.targets
-  forward_to = [loki.write.grafana_loki.receiver]
+  forward_to = [loki.relabel.octoprint.receiver]
   tail_from_end = true
 }
 

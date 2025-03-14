@@ -1,12 +1,113 @@
-local.file_match "local_files" {
-  path_targets = [{"__path__" = "/var/lib/appdaemon/logs/*.log"}]
+local.file_match "appdaemon" {
+  path_targets = [
+    {"__path__" = "/var/lib/appdaemon/**/*.log"},
+  ]
   sync_period = "5s"
 }
 
-loki.source.file "log_scrape" {
-  targets    = local.file_match.local_files.targets
-  forward_to = [loki.write.grafana_loki.receiver]
+loki.source.file "appdaemon" {
+  targets    = local.file_match.appdaemon.targets
+  forward_to = [loki.relabel.appdaemon.receiver]
   tail_from_end = true
+}
+
+loki.relabel "appdaemon" {
+  forward_to = [loki.write.grafana_loki.receiver]
+
+  rule {
+      target_label = "app"
+      replacement = "appdaemon"
+    }
+}
+
+local.file_match "hass" {
+  path_targets = [
+    {"__path__" = "/var/lib/hass/home-assistant.log"},
+  ]
+  sync_period = "5s"
+}
+
+loki.source.file "hass" {
+  targets    = local.file_match.hass.targets
+  forward_to = [loki.relabel.hass.receiver]
+}
+
+loki.relabel "hass" {
+  forward_to = [loki.write.grafana_loki.receiver]
+
+  rule {
+      target_label = "app"
+      replacement = "appdaemon"
+    }
+}
+
+loki.relabel "journal" {
+  forward_to = []
+
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "unit"
+  }
+}
+
+loki.source.journal "zigbee2mqtt" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=zigbee2mqtt.service"
+  labels = {
+    "app" = "zigbee2mqtt",
+    "host" = "homebox",
+    "source" = "journal",
+  }
+}
+
+loki.source.journal "mosquitto" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=mosquitto.service"
+  labels = {
+    "app" = "mosquitto",
+    "host" = "homebox",
+    "source" = "journal",
+  }
+}
+
+loki.source.journal "govee2mqtt" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=govee2mqtt.service"
+  labels = {
+    "app" = "govee2mqtt",
+    "host" = "homebox",
+    "source" = "journal",
+  }
+}
+
+loki.source.journal "postgresql" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=postgresql.service"
+  labels = {
+    "app" = "postgresql",
+    "host" = "homebox",
+    "source" = "journal",
+  }
+}
+
+loki.source.journal "blocky" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=blocky.service"
+  labels = {
+    "app" = "blocky",
+    "host" = "homebox",
+    "source" = "journal",
+  }
 }
 
 loki.write "grafana_loki" {
