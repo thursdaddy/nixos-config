@@ -112,7 +112,7 @@ in
           nil_ls = {
             enable = true;
             settings = {
-              formatting.command = [ "nixpkgs-fmt" ];
+              formatting.command = [ "nixfmt" ];
             };
           };
           pylsp = {
