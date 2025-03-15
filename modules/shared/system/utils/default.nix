@@ -1,8 +1,7 @@
-{
-  lib,
-  config,
-  pkgs,
-  ...
+{ lib
+, config
+, pkgs
+, ...
 }:
 let
 
@@ -27,12 +26,14 @@ let
     bind
     dig
     gnupg
-    usbutils
     killall
     ncdu
     nmap
     (mkIf pkgs.stdenv.isLinux pinentry-all)
     wakeonlan
+  ] ++ optionals pkgs.stdenv.isLinux [
+    pinentry-all
+    usbutils
   ];
 
 in
