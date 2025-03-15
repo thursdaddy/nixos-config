@@ -6,6 +6,7 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
+  inherit (lib.thurs) enabled;
   cfg = config.mine.apps.home-assistant;
 in
 {
@@ -14,6 +15,13 @@ in
   };
 
   config = mkIf cfg.enable {
+    mine.apps.home-assistant = {
+      appdaemon = enabled;
+      govee2mqtt = enabled;
+      mqtt = enabled;
+      zigbee2mqtt = enabled;
+    };
+
     services.home-assistant = {
       enable = true;
       config.http.server_port = 8090;
@@ -74,7 +82,6 @@ in
         "lovelace"
         "lutron_caseta"
         "met"
-        "mqtt"
         "nws"
         "octoprint"
         "ping"
@@ -111,68 +118,11 @@ in
 
     sops = {
       secrets = {
-        "mqtt/USER_PASS" = {
-          owner = "mosquitto";
-        };
         "hass/APPD_TOKEN" = { };
         "hass/LONGITUDE" = { };
         "hass/LATITUDE" = { };
-        "govee/EMAIL" = { };
-        "govee/PASSWORD" = { };
-        "govee/API_KEY" = { };
       };
       templates = {
-        "appdaemon_conf" = {
-          path = "/var/lib/appdaemon/appdaemon.yaml";
-          content = ''
-            appdaemon:
-              time_zone: ${config.mine.system.timezone.location}
-              latitude: ${config.sops.placeholder."hass/LATITUDE"}
-              longitude: ${config.sops.placeholder."hass/LONGITUDE"}
-              elevation: 1211
-              plugins:
-                MQTT:
-                  type: mqtt
-                  namespace: mqtt
-                  client_user: zigbee
-                  client_password: ${config.sops.placeholder."mqtt/USER_PASS"}
-                HASS:
-                  type: hass
-                  namespace: default
-                  ha_url: https://home.thurs.pw
-                  token: ${config.sops.placeholder."hass/APPD_TOKEN"}
-            logs:
-              main_log:
-                filename: /var/lib/appdaemon/logs/main.log
-              access_log:
-                filename: /var/lib/appdaemon/logs/access.log
-              error_log:
-                filename: /var/lib/appdaemon/logs/error.log
-              diag_log:
-                filename: /var/lib/appdaemon/logs/diag.log
-                log_generations: 5
-                log_size: 1024
-                format: "{asctime} {levelname:<8} {appname:<10}: {message}"
-          '';
-        };
-        "z2m_secret.yaml" = {
-          owner = "zigbee2mqtt";
-          path = "/var/lib/zigbee2mqtt/secret.yaml";
-          content = ''
-            password: ${config.sops.placeholder."mqtt/USER_PASS"}
-          '';
-        };
-        "govee.env" = {
-          path = "/var/lib/govee2mqtt/govee2mqtt.env";
-          content = ''
-            GOVEE_EMAIL=${config.sops.placeholder."govee/EMAIL"}
-            GOVEE_PASSWORD=${config.sops.placeholder."govee/PASSWORD"}
-            GOVEE_API_KEY=${config.sops.placeholder."govee/API_KEY"}
-            GOVEE_MQTT_HOST=localhost
-            GOVEE_MQTT_USER=zigbee
-            GOVEE_MQTT_PASSWORD=${config.sops.placeholder."mqtt/USER_PASS"}
-          '';
-        };
         # abusing sops-nix templates for hass config files
         "projector.yaml" = {
           owner = "hass";
@@ -187,17 +137,6 @@ in
       };
     };
 
-    networking.firewall.allowedTCPPorts = [
-      8123
-      8080
-      1883
-    ];
-
-    services.govee2mqtt = {
-      enable = true;
-      environmentFile = config.sops.templates."govee.env".path;
-    };
-
     services.postgresql = {
       enable = true;
       ensureDatabases = [ "hass" ];
@@ -209,57 +148,10 @@ in
       ];
     };
 
-    services.mosquitto = {
-      enable = true;
-      listeners = [
-        {
-          users.zigbee = {
-            acl = [
-              "readwrite #"
-            ];
-            passwordFile = config.sops.secrets."mqtt/USER_PASS".path;
-          };
-        }
-      ];
-    };
-
-    services.zigbee2mqtt = {
-      enable = true;
-      settings = {
-        homeassistant = true;
-        frontend = {
-          enabled = true;
-          host = "0.0.0.0";
-          port = 8080;
-        };
-        mqtt = {
-          base_topic = "zigbee2mqtt";
-          server = "mqtt://localhost:1883";
-          user = "zigbee";
-          password = "!secret password";
-        };
-        permit_join = false;
-        serial = {
-          port = "/dev/ttyUSB0";
-        };
-      };
-    };
-
     services.esphome = {
       enable = true;
       address = "192.168.10.60";
       openFirewall = true;
-    };
-
-    systemd.services.appdaemon = {
-      description = "Start AppDaemon";
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.appdaemon}/bin/appdaemon -c /var/lib/appdaemon/";
-        Type = "simple";
-        Restart = "on-failure";
-        RestartSec = "3s";
-      };
     };
   };
 }
