@@ -1,0 +1,10 @@
+loki.source.journal "blocky" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=blocky.service"
+  labels = {
+    "app" = "blocky",
+    "source" = "journal",
+  }
+}

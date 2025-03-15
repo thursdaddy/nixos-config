@@ -11,17 +11,16 @@ loki.relabel "octoprint" {
   rule {
       target_label = "app"
       replacement = "octoprint"
-    }
+  }
+
+  rule {
+      target_label = "host"
+      replacement = "@host@"
+  }
 }
 
 loki.source.file "log_scrape" {
   targets    = local.file_match.local_files.targets
   forward_to = [loki.relabel.octoprint.receiver]
   tail_from_end = true
-}
-
-loki.write "grafana_loki" {
-  endpoint {
-    url = "https://loki.thurs.pw/loki/api/v1/push"
-  }
 }

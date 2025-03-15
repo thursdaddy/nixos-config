@@ -1,0 +1,11 @@
+loki.source.journal "mosquitto" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=mosquitto.service"
+  labels = {
+    "app" = "mosquitto",
+    "source" = "journal",
+  }
+}
+

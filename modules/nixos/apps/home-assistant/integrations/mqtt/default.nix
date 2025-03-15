@@ -45,5 +45,9 @@ in
         }
       ];
     };
+
+    environment.etc."alloy/mqtt.alloy" = mkIf config.mine.services.alloy.enable {
+      text = builtins.readFile ./config.alloy;
+    };
   };
 }

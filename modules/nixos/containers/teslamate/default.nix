@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.teslamate;
@@ -28,6 +33,18 @@ in
           POSTGRES_PASSWORD=${config.sops.placeholder."teslamate/DATABASE_PASS"}
         '';
       };
+    };
+
+    environment.etc."alloy/teslamate.alloy" = mkIf config.mine.services.alloy.enable {
+      text = (
+        builtins.readFile (
+          pkgs.substituteAll {
+            name = "teslamate.alloy";
+            src = ./config.alloy;
+            host = config.networking.hostName;
+          }
+        )
+      );
     };
 
     virtualisation.oci-containers.containers = {

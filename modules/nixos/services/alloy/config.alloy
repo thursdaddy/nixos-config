@@ -1,0 +1,18 @@
+loki.relabel "journal" {
+  forward_to = []
+
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "unit"
+  }
+  rule {
+    source_labels = ["__journal__hostname"]
+    target_label  = "host"
+  }
+}
+
+loki.write "grafana_loki" {
+  endpoint {
+    url = "https://loki.thurs.pw/loki/api/v1/push"
+  }
+}

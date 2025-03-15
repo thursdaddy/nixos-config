@@ -1,0 +1,10 @@
+loki.source.journal "audiobookshelf" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=docker-audiobookshelf.service"
+  labels = {
+    "app" = "audiobookshelf",
+    "source" = "journal",
+  }
+}

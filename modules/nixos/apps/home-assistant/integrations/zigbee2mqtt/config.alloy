@@ -1,0 +1,10 @@
+loki.source.journal "zigbee2mqtt" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=zigbee2mqtt.service"
+  labels = {
+    "app" = "zigbee2mqtt",
+    "source" = "journal",
+  }
+}

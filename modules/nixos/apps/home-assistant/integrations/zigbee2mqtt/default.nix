@@ -51,5 +51,9 @@ in
         };
       };
     };
+
+    environment.etc."alloy/zigbee2mqtt.alloy" = mkIf config.mine.services.alloy.enable {
+      text = builtins.readFile ./config.alloy;
+    };
   };
 }

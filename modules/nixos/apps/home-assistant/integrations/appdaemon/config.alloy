@@ -1,0 +1,27 @@
+local.file_match "appdaemon" {
+  path_targets = [
+    {"__path__" = "/var/lib/appdaemon/**/*.log"},
+  ]
+  sync_period = "5s"
+}
+
+loki.source.file "appdaemon" {
+  targets    = local.file_match.appdaemon.targets
+  forward_to = [loki.relabel.appdaemon.receiver]
+  tail_from_end = true
+}
+
+loki.relabel "appdaemon" {
+  forward_to = [loki.write.grafana_loki.receiver]
+
+  rule {
+      target_label = "app"
+      replacement = "appdaemon"
+  }
+
+  rule {
+      target_label = "host"
+      replacement = "@host@"
+  }
+}
+

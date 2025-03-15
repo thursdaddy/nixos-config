@@ -1,0 +1,11 @@
+loki.source.journal "govee2mqtt" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=govee2mqtt.service"
+  labels = {
+    "app" = "govee2mqtt",
+    "source" = "journal",
+  }
+}
+

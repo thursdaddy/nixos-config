@@ -39,5 +39,11 @@ in
         CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
       };
     };
+
+    environment.etc = mkIf config.mine.services.alloy.enable {
+      "alloy/blocky.alloy" = {
+        text = builtins.readFile ./config.alloy;
+      };
+    };
   };
 }

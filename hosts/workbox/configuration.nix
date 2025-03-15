@@ -90,6 +90,7 @@ in
       };
 
       services = {
+        alloy = enabled;
         beszel = {
           enable = true;
           isHub = true;

@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.audiobookshelf;
@@ -50,6 +55,20 @@ in
         "defaults"
         "_netdev"
       ];
+    };
+
+    environment.etc = {
+      "alloy/audiobookshelf.alloy" = mkIf config.mine.services.alloy.enable {
+        text = (
+          builtins.readFile (
+            pkgs.substituteAll {
+              name = "audiobookshelf.alloy";
+              src = ./config.alloy;
+              host = config.networking.hostName;
+            }
+          )
+        );
+      };
     };
   };
 }

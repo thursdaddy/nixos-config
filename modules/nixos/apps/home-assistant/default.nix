@@ -114,6 +114,17 @@ in
           )
         );
       };
+      "alloy/home-assistant.alloy" = mkIf config.mine.services.alloy.enable {
+        text = (
+          builtins.readFile (
+            pkgs.substituteAll {
+              name = "home-assistant.alloy";
+              src = ./config.alloy;
+              host = config.networking.hostName;
+            }
+          )
+        );
+      };
     };
 
     sops = {

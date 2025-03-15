@@ -7,7 +7,7 @@
 let
   inherit (lib) mkEnableOption mkIf mkForce;
   cfg = config.mine.services.alloy;
-  alloy_config = ./${config.networking.hostName}-config.alloy;
+  alloy_base_conf = ./config.alloy;
 in
 {
   options.mine.services.alloy = {
@@ -18,7 +18,7 @@ in
     networking.firewall.allowedTCPPorts = [ 12346 ];
 
     environment.etc."alloy/config.alloy" = {
-      text = builtins.readFile alloy_config;
+      text = builtins.readFile alloy_base_conf;
     };
 
     services.alloy = {
@@ -30,15 +30,6 @@ in
       ];
     };
 
-    # users.groups.alloy = { };
-    # users.users.alloy = {
-    #   isSystemUser = true;
-    #   uid = 473;
-    #   group = "alloy";
-    #   extraGroups = [ "thurs" "hass" "wheel" ];
-    # };
-
-    # permissions are wild
     systemd.services.alloy = {
       serviceConfig = {
         User = "root";

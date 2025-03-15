@@ -38,5 +38,9 @@ in
       enable = true;
       environmentFile = config.sops.templates."govee.env".path;
     };
+
+    environment.etc."alloy/govee2mqtt.alloy" = mkIf config.mine.services.alloy.enable {
+      text = builtins.readFile ./config.alloy;
+    };
   };
 }

@@ -31,6 +31,17 @@ in
           )
         );
       };
+      "alloy/octoprint.alloy" = mkIf config.mine.services.alloy.enable {
+        text = (
+          builtins.readFile (
+            pkgs.substituteAll {
+              name = "octoprint.alloy";
+              src = ./config.alloy;
+              host = config.networking.hostName;
+            }
+          )
+        );
+      };
     };
 
     environment.systemPackages = with pkgs; [

@@ -1,0 +1,36 @@
+local.file_match "hass" {
+  path_targets = [
+    {"__path__" = "/var/lib/hass/home-assistant.log"},
+  ]
+  sync_period = "5s"
+}
+
+loki.source.file "hass" {
+  targets    = local.file_match.hass.targets
+  forward_to = [loki.relabel.hass.receiver]
+}
+
+loki.relabel "hass" {
+  forward_to = [loki.write.grafana_loki.receiver]
+
+  rule {
+      target_label = "app"
+      replacement = "appdaemon"
+  }
+
+  rule {
+      target_label = "host"
+      replacement = "@host@"
+  }
+}
+
+loki.source.journal "postgresql" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=postgresql.service"
+  labels = {
+    "app" = "appdaemon",
+    "source" = "journal",
+  }
+}
