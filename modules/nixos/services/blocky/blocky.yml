@@ -4,6 +4,7 @@ upstreams:
   groups:
     default:
       - 1.1.1.1
+      - 84.200.69.80
 
 connectIPVersion: dual
 
