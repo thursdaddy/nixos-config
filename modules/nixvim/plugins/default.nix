@@ -103,6 +103,7 @@ in
         enable = true;
         servers = {
           bashls.enable = true;
+          harper_ls.enable = true;
           jsonls.enable = true;
           lua_ls = {
             enable = true;
