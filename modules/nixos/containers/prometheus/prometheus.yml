@@ -6,26 +6,26 @@ scrape_configs:
     credentials: "@prom_token@"
   scheme: https
   static_configs:
-    - targets: [ 'home.@domain_name@' ]
+    - targets: [ 'home.thurs.pw' ]
 
 - job_name: node
   static_configs:
-  - targets: [ '192.168.10.57:9100' ]
+  - targets: [ 'netpi1.thurs.pw:9100' ]
     labels:
       instance: netpi1
-  - targets: [ '192.168.10.201:9100' ]
+  - targets: [ 'netpi2.thurs.pw:9100' ]
     labels:
       instance: netpi2
-  - targets: [ '192.168.20.42:9100' ]
+  - targets: [ 'printpi.thurs.pw:9100' ]
     labels:
       instance: printpi
-  - targets: [ '192.168.10.137:9100' ]
+  - targets: [ 'c137.thurs.pw:9100' ]
     labels:
       instance: c137
-  - targets: [ '192.168.10.120:9100' ]
+  - targets: [ 'workbox.thurs.pw:9100' ]
     labels:
       instance: workbox
-  - targets: [ '192.168.10.12:9100' ]
+  - targets: [ 'borrowbox.thurs.pw:9100' ]
     labels:
       instance: borrowbox
   - targets: [ '100.114.203.99:9100' ]
@@ -34,24 +34,24 @@ scrape_configs:
 
 - job_name: smartctl
   static_configs:
-  - targets: [ '192.168.10.137:9633' ]
+  - targets: [ 'c137.thurs.pw:9633' ]
     labels:
       instance: c137
-  - targets: [ '192.168.10.120:9633' ]
+  - targets: [ 'workbox.thurs.pw:9633' ]
     labels:
       instance: workbox
-  - targets: [ '192.168.10.12:9633' ]
+  - targets: [ 'borrowbox.thurs.pw:9633' ]
     labels:
       instance: borrowbox
 
 - job_name: zfs
   static_configs:
-  - targets: [ '192.168.10.137:9134' ]
+  - targets: [ 'c137.thurs.pw:9134' ]
     labels:
       instance: c137
-  - targets: [ '192.168.10.120:9134' ]
+  - targets: [ 'workbox.thurs.pw:9134' ]
     labels:
       instance: workbox
-  - targets: [ '192.168.10.12:9134' ]
+  - targets: [ 'borrowbox.thurs.pw:9134' ]
     labels:
       instance: borrowbox
