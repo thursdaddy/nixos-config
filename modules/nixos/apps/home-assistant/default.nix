@@ -101,8 +101,8 @@ in
       "f ${config.services.home-assistant.configDir}/automations.yaml 0755 hass hass"
     ];
 
-    environment.etc = mkIf config.mine.container.traefik.enable {
-      "traefik/hass.yml" = {
+    environment.etc = {
+      "traefik/hass.yml" = mkIf config.mine.container.traefik.enable {
         text = (
           builtins.readFile (
             pkgs.substituteAll {

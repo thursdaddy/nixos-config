@@ -12,7 +12,6 @@ in
 {
   imports = [
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
-    inputs.nixos-thurs.nixosModules.configs
     ./hardware-configuration.nix
     ../../overlays/unstable
     ../../modules/nixos/import.nix
