@@ -19,8 +19,13 @@ in
   };
 
   config = mkIf cfg.enable {
-    networking.firewall.allowedTCPPorts = [ 53 ];
-    networking.firewall.allowedUDPPorts = [ 53 ];
+    networking.firewall = {
+      allowedTCPPorts = [
+        53
+        4000
+      ];
+      allowedUDPPorts = [ 53 ];
+    };
 
     environment.systemPackages = [
       pkgs.blocky

@@ -55,3 +55,16 @@ scrape_configs:
   - targets: [ 'borrowbox.thurs.pw:9134' ]
     labels:
       instance: borrowbox
+
+- job_name: blocky
+  static_configs:
+  - targets: [ 'netpi2.thurs.pw:4000' ]
+    labels:
+      instance: netpi2
+  - targets: [ 'netpi1.thurs.pw:4000' ]
+    labels:
+      instance: netpi1
+  - targets: [ 'homebox.thurs.pw:4000' ]
+    labels:
+      instance: homebox
+
