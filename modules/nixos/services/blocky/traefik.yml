@@ -1,15 +1,15 @@
 http:
   routers:
-    loki:
-      rule: "Host(`loki.@fqdn@`)"
-      service: loki
+    blocky:
+      rule: "Host(`blocky.@host@.thurs.pw`)"
+      service: blocky
       entrypoints:
         - "websecure"
       tls:
         certResolver: letsencrypt
 
   services:
-    loki:
+    blocky:
       loadBalancer:
         servers:
-        - url: http://@ip@:3100
+        - url: http://@host@.thurs.pw:4000

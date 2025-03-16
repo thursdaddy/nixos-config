@@ -8,10 +8,6 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.services.blocky;
 
-  configFile = pkgs.writeTextFile {
-    name = "blocky.yml";
-    text = builtins.readFile ./blocky.yml;
-  };
 in
 {
   options.mine.services.blocky = {
@@ -34,10 +30,13 @@ in
     systemd.services.blocky = {
       description = "A DNS proxy and ad-blocker for the local network";
       wantedBy = [ "multi-user.target" ];
+      reloadTriggers = [ config.environment.etc."blocky/config.yml".source or null ];
 
       serviceConfig = {
         DynamicUser = true;
-        ExecStart = "${lib.getExe pkgs.blocky} --config ${configFile} ";
+        ExecStart = "${lib.getExe pkgs.blocky} --config ${
+          config.environment.etc."blocky/config.yml".source
+        }";
         Restart = "on-failure";
 
         AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
@@ -45,9 +44,23 @@ in
       };
     };
 
-    environment.etc = mkIf config.mine.services.alloy.enable {
-      "alloy/blocky.alloy" = {
+    environment.etc = {
+      "alloy/blocky.alloy" = mkIf config.mine.services.alloy.enable {
         text = builtins.readFile ./config.alloy;
+      };
+      "traefik/blocky.yml" = {
+        text = (
+          builtins.readFile (
+            pkgs.substituteAll {
+              name = "blocky";
+              src = ./traefik.yml;
+              host = config.networking.hostName;
+            }
+          )
+        );
+      };
+      "blocky/config.yml" = {
+        text = builtins.readFile ./blocky.yml;
       };
     };
   };

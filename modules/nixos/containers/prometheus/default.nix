@@ -15,7 +15,6 @@ let
       pkgs.substituteAll {
         name = "prometheus";
         src = ./prometheus.yml;
-        domain_name = config.mine.container.traefik.domainName;
         prom_token = config.sops.placeholder."hass/PROM_TOKEN";
       }
     )
@@ -46,6 +45,9 @@ in
       extraOptions = [
         "--network=traefik"
         "--pull=always"
+        "--dns=192.168.10.57"
+        "--dns=192.168.10.60"
+        "--dns=192.168.10.201"
       ];
       cmd = [
         "--config.file=/etc/prometheus/prometheus.yml"

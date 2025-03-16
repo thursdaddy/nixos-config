@@ -3,8 +3,8 @@ upstreams:
     strategy: fast
   groups:
     default:
-      - 1.1.1.1
-      - 84.200.69.80
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.quad9.net/dns-query
 
 connectIPVersion: dual
 
@@ -54,8 +54,12 @@ customDNS:
   customTTL: 1h
   filterUnmappedTypes: true
   mapping:
+    alertmanager.thurs.pw: 192.168.10.120
     barcode.thurs.pw: 192.168.10.120
     bazarr.thurs.pw: 192.168.10.12
+    blocky.homebox.thurs.pw: 192.168.10.60
+    blocky.netpi1.thurs.pw: 192.168.10.57
+    blocky.netpi2.thurs.pw: 192.168.10.201
     bw.thurs.pw: 192.168.10.120
     cloudbox.thurs.pw: 100.114.203.99
     deemix.thurs.pw: 192.168.10.12
@@ -71,7 +75,6 @@ customDNS:
     immich.thurs.pw: 192.168.10.120
     influx.thurs.pw: 192.168.10.120
     irc.thurs.pw: 192.168.10.120
-    alertmanager.thurs.pw: 192.168.10.120
     lidarr.thurs.pw: 192.168.10.12
     loki.thurs.pw: 192.168.10.120
     matrix.thurs.pw: 192.168.10.120

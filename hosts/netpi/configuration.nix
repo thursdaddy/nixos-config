@@ -37,6 +37,17 @@ in
         };
       };
 
+      container = {
+        settings = {
+          configPath = "/opt/configs";
+        };
+        traefik = {
+          enable = true;
+          awsEnvKeys = true;
+          domainName = "thurs.pw";
+        };
+      };
+
       services = {
         alloy = enabled;
         beszel = {
@@ -44,6 +55,10 @@ in
           isAgent = true;
         };
         blocky = enabled;
+        docker = {
+          enable = true;
+          scripts.check-versions = true;
+        };
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
