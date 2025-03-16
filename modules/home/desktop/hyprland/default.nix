@@ -28,7 +28,11 @@ in
         QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
       };
 
-      home.packages = mkIf network.applet [ pkgs.networkmanagerapplet ];
+      home.packages = with pkgs; [
+        (mkIf network.applet networkmanagerapplet)
+        bemoji
+      ];
+
       services.network-manager-applet.enable = mkIf network.applet true;
 
       wayland.windowManager.hyprland = {
@@ -132,6 +136,7 @@ in
               "$mod, return, exec, ghostty"
               "$mod_SHIFT, return, exec, [float;noanim] ghostty"
               "$mod, F, fullscreen"
+              "$mod, E, exec, bemoji -c"
               "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
               "$mod_SHIFT, B, exec, vivaldi"
               "$mod_SHIFT, D, exec, discord"

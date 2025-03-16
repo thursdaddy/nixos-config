@@ -1,4 +1,9 @@
-{ lib, config, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
 
   inherit (lib) mkEnableOption mkIf;
@@ -13,6 +18,10 @@ in
 
   config = mkIf cfg.enable {
     home-manager.users.${user.name} = {
+      home.packages = [
+        pkgs.bemoji
+      ];
+
       programs.fuzzel = {
         enable = true;
         settings = {

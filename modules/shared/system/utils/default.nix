@@ -29,7 +29,6 @@ let
     killall
     ncdu
     nmap
-    (mkIf pkgs.stdenv.isLinux pinentry-all)
     wakeonlan
   ] ++ optionals pkgs.stdenv.isLinux [
     pinentry-all
