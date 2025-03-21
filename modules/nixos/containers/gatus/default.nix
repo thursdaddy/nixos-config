@@ -10,9 +10,6 @@ let
   cfg = config.mine.container.gatus;
 
   version = "5.16.0";
-  discord_webhook_url = config.sops.placeholder."discord/monitoring/WEBHOOK_URL";
-
-  gatus_endpoints_yaml = config.nixos-thurs.gatus.endpoints;
   gatus_config_yaml = pkgs.writeTextFile {
     name = "config.yaml";
     text = ''
@@ -31,25 +28,28 @@ in
   };
 
   config = mkIf cfg.enable {
-    sops.secrets."discord/monitoring/WEBHOOK_URL" = { };
-    sops.secrets."ntfy/topics/GATUS" = { };
-    sops.secrets."ntfy/TOKEN" = { };
-
-    sops.templates."alerting.yaml".content = ''
-      alerting:
-        ntfy:
-          topic: ${config.sops.placeholder."ntfy/topics/GATUS"}
-          url: http://ntfy
-          token: ${config.sops.placeholder."ntfy/TOKEN"}
-        discord:
-          webhook-url: "${discord_webhook_url}"
-          default:
-            enabled: true
-            failure-threshold: 2
-            success-threshold: 2
-            send-on-resolved: true
-            description: "healthcheck failed 2 times in a row"
-    '';
+    sops = {
+      secrets = {
+        "discord/monitoring/WEBHOOK_URL" = { };
+        "ntfy/topics/GATUS" = { };
+        "ntfy/TOKEN" = { };
+      };
+      templates."alerting.yaml".content = ''
+        alerting:
+          ntfy:
+            topic: ${config.sops.placeholder."ntfy/topics/GATUS"}
+            url: http://ntfy
+            token: ${config.sops.placeholder."ntfy/TOKEN"}
+          discord:
+            webhook-url: ${config.sops.placeholder."discord/monitoring/WEBHOOK_URL"}
+            default:
+              enabled: true
+              failure-threshold: 2
+              success-threshold: 2
+              send-on-resolved: true
+              description: "healthcheck failed 2 times in a row"
+      '';
+    };
 
     virtualisation.oci-containers.containers."gatus" = {
       image = "twinproduction/gatus:v${version}";
@@ -63,9 +63,9 @@ in
         GATUS_CONFIG_PATH = "/config";
       };
       volumes = [
-        "${gatus_endpoints_yaml}:/config/endpoints.yaml"
         "${gatus_config_yaml}:/config/config.yaml"
         "${config.sops.templates."alerting.yaml".path}:/config/alerting.yaml"
+        "${config.nixos-thurs.gatus.endpoints}:/config/endpoints.yaml"
       ];
       labels = {
         "traefik.enable" = "true";
