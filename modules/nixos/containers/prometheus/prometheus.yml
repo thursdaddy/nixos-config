@@ -56,16 +56,60 @@ scrape_configs:
     labels:
       instance: borrowbox
 
-- job_name: blocky
+- job_name: blocky-netpi1
   scheme: https
   static_configs:
   - targets: [ 'blocky.netpi1.thurs.pw' ]
     labels:
       instance: netpi1
+
+- job_name: blocky-netpi2
+  scheme: https
+  static_configs:
   - targets: [ 'blocky.netpi2.thurs.pw' ]
     labels:
       instance: netpi2
+
+- job_name: blocky-homebox
+  scheme: https
+  static_configs:
   - targets: [ 'blocky.homebox.thurs.pw' ]
     labels:
       instance: homebox
 
+- job_name: traefik-netpi2
+  static_configs:
+  - targets: [ 'netpi2.thurs.pw:8082' ]
+    labels:
+      instance: netpi2
+
+- job_name: traefik-printpi
+  static_configs:
+  - targets: [ 'printpi.thurs.pw:8082' ]
+    labels:
+      instance: printpi
+
+- job_name: traefik-workbox
+  scrape_timeout: 60s
+  static_configs:
+  - targets: [ '192.168.10.134:8082' ]
+    labels:
+      instance: workbox
+
+- job_name: traefik-netpi1
+  static_configs:
+  - targets: [ 'netpi1.thurs.pw:8082' ]
+    labels:
+      instance: netpi1
+
+- job_name: traefik-cloudbox
+  static_configs:
+  - targets: [ '100.114.203.99:8082' ]
+    labels:
+      instance: cloudbox
+
+- job_name: traefik-homebox
+  static_configs:
+  - targets: [ 'homebox.thurs.pw:8082' ]
+    labels:
+      instance: homebox
