@@ -55,10 +55,12 @@ in
         traefik = {
           enable = true;
           domainName = config.nixos-thurs.publicDomain;
+          basicAuth = true;
         };
         vaultwarden = enabled;
         gatus = enabled;
         overseerr = enabled;
+        ntfy = enabled;
       };
 
       services = {

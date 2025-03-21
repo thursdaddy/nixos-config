@@ -35,6 +35,10 @@ in
       ports = [
         "3000"
       ];
+      environment = {
+        "GF_SERVER_DOMAIN" = "grafana.thurs.pw";
+        "GF_SERVER_ROOT_URL" = "https://grafana.thurs.pw";
+      };
       extraOptions = [
         "--network=traefik"
         "--pull=always"

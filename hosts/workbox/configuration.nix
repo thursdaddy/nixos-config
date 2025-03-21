@@ -100,6 +100,7 @@ in
           enable = true;
           scripts.check-versions = true;
         };
+        grafana-ntfy = enabled;
         loki = enabled;
         ollama = enabled;
         prometheus = {

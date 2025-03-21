@@ -32,9 +32,15 @@ in
 
   config = mkIf cfg.enable {
     sops.secrets."discord/monitoring/WEBHOOK_URL" = { };
+    sops.secrets."ntfy/topics/GATUS" = { };
+    sops.secrets."ntfy/TOKEN" = { };
 
     sops.templates."alerting.yaml".content = ''
       alerting:
+        ntfy:
+          topic: ${config.sops.placeholder."ntfy/topics/GATUS"}
+          url: http://ntfy
+          token: ${config.sops.placeholder."ntfy/TOKEN"}
         discord:
           webhook-url: "${discord_webhook_url}"
           default:
@@ -68,6 +74,7 @@ in
         "traefik.http.routers.gatus.entrypoints" = "websecure";
         "traefik.http.routers.gatus.rule" = "Host(`uptime.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.gatus.loadbalancer.server.port" = "8080";
+        "traefik.http.routers.gatus.middlewares" = "basic-auth";
         "org.opencontainers.image.version" = "${version}";
         "org.opencontainers.image.source" = "https://github.com/TwiN/gatus";
       };

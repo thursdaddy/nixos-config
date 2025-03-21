@@ -18,3 +18,13 @@ providers:
   editable: true
   options:
     path: /etc/grafana/provisioning/dashboards/node-full
+
+- name: 'Traefik'
+  orgId: 1
+  folder: 'traefik'
+  type: 'file'
+  disableDeletion: false
+  editable: true
+  options:
+    path: /etc/grafana/provisioning/dashboards/traefik
+

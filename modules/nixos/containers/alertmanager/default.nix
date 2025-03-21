@@ -1,4 +1,8 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.alertmanager;
@@ -13,6 +17,7 @@ in
   config = mkIf cfg.enable {
     virtualisation.oci-containers.containers."alertmanager" = {
       image = "prom/alertmanager:v${version}";
+      hostname = "alertmanager";
       ports = [
         "9093"
       ];

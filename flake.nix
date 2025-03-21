@@ -179,6 +179,7 @@
         { pkgs }:
         {
           upSnap = pkgs.callPackage ./packages/upsnap.nix { };
+          grafana-ntfy = pkgs.callPackage ./packages/grafana-ntfy.nix { };
           wallpapers = pkgs.stdenv.mkDerivation {
             name = "wallpapers";
             src = ./assets/wallpapers;

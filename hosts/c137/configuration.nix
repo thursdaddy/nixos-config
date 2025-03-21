@@ -86,6 +86,7 @@ in
         direnv = enabled;
         just = enabled;
         ncmpcpp = enabled;
+        ntfy = enabled;
         fastfetch = enabled;
         nixvim = enabled;
         sops = {
