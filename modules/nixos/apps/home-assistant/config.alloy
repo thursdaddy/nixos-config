@@ -15,7 +15,7 @@ loki.relabel "hass" {
 
   rule {
       target_label = "app"
-      replacement = "appdaemon"
+      replacement = "hass"
   }
 
   rule {
@@ -30,7 +30,7 @@ loki.source.journal "postgresql" {
 
   matches = "_SYSTEMD_UNIT=postgresql.service"
   labels = {
-    "app" = "appdaemon",
+    "app" = "hass",
     "source" = "journal",
   }
 }

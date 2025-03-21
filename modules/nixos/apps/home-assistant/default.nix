@@ -7,6 +7,7 @@
 let
   inherit (lib) mkEnableOption mkIf;
   inherit (lib.thurs) enabled;
+  inherit (config.mine) user;
   cfg = config.mine.apps.home-assistant;
 in
 {
@@ -21,6 +22,8 @@ in
       mqtt = enabled;
       zigbee2mqtt = enabled;
     };
+
+    users.users.${user.name}.extraGroups = [ "hass" ];
 
     services.home-assistant = {
       enable = true;

@@ -18,6 +18,7 @@ in
       templates = {
         "appdaemon_conf" = {
           path = "/var/lib/appdaemon/appdaemon.yaml";
+          owner = "hass";
           content = ''
             appdaemon:
               time_zone: ${config.mine.system.timezone.location}
@@ -56,6 +57,7 @@ in
       description = "Start AppDaemon";
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
+        User = "hass";
         ExecStart = "${pkgs.appdaemon}/bin/appdaemon -c /var/lib/appdaemon/";
         Type = "simple";
         Restart = "on-failure";

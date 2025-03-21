@@ -1,18 +1,40 @@
+test_boolean:
+  name: Dev testing
+  initial: false
+  icon: mdi:lock
+lights_all:
+  name: All Lights
+  initial: true
+  icon: mdi:ceiling-light
 lock_front_door_jammed:
   name: Determine if front door lock is jammed
   icon: mdi:lock-alert
+  initial: false
 lock_back_door_jammed:
   name: Determine if back door lock is jammed
   icon: mdi:lock-alert
+  initial: false
 automated_locks:
   name: Use smart lock automations
   initial: true
   icon: mdi:lock
-office_motion_disabled:
-  name: Disable Office Motion
-  initial: false
-  icon: mdi:light
-all_motion_disabled:
-  name: Disable All Motion Light Automations
-  initial: false
-  icon: mdi:light
+motion_all:
+  name: All Motion Automations
+  initial: true
+  icon: mdi:run-fast
+motion_office:
+  name: Office Motion Automations
+  initial: true
+  icon: mdi:run-fast
+motion_stairway:
+  name: Stairway Motion Automations
+  initial: true
+  icon: mdi:run-fast
+motion_kitchen:
+  name: Kitchen Motion Automations
+  initial: true
+  icon: mdi:run-fast
+motion_sim:
+  name: Sim Motion Automations
+  initial: true
+  icon: mdi:run-fast
