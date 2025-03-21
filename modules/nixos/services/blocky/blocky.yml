@@ -20,9 +20,6 @@ blocking:
       - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
     special:
       - https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts
-  allowlists:
-    ads:
-      - allowlist.txt
   clientGroupsBlock:
     default:
       - ads

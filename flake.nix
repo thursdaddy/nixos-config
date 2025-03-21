@@ -54,19 +54,19 @@
 
   outputs =
     {
-      self,
-      nixpkgs,
-      unstable,
-      nixos-hardware,
-      nix-darwin,
-      nixos-generators,
-      nix-index-database,
       home-manager,
-      sops-nix,
       lanzaboote,
+      nix-darwin,
+      nix-index-database,
+      nixos-generators,
+      nixos-hardware,
       nixos-thurs,
-      ssh-keys,
+      nixpkgs,
       nixvim,
+      self,
+      sops-nix,
+      ssh-keys,
+      unstable,
       ...
     }@inputs:
     let

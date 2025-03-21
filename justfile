@@ -42,10 +42,10 @@ netpi1:
 netpi2:
   @./nix.sh rebuild netpi2
 
-piholes:
+blocky:
   @./nix.sh rebuild netpi1
   @./nix.sh rebuild netpi2
-  @./nix.sh rebuild printpi
+  @./nix.sh rebuild homebox
 
 all:
   @./nix.sh rebuild c137
@@ -57,3 +57,5 @@ all:
 
 help:
   @./nix.sh help
+
+

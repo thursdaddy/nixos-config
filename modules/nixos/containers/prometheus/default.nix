@@ -36,7 +36,7 @@ in
     };
 
     virtualisation.oci-containers.containers.prometheus = {
-      user = "root:root";
+      user = "root";
       image = "prom/prometheus:v${version}";
       hostname = "prometheus";
       ports = [
@@ -45,9 +45,6 @@ in
       extraOptions = [
         "--network=traefik"
         "--pull=always"
-        "--dns=192.168.10.57"
-        "--dns=192.168.10.60"
-        "--dns=192.168.10.201"
       ];
       cmd = [
         "--config.file=/etc/prometheus/prometheus.yml"

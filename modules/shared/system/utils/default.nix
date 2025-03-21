@@ -1,10 +1,10 @@
-{ lib
-, config
-, pkgs
-, ...
+{
+  lib,
+  config,
+  pkgs,
+  ...
 }:
 let
-
   inherit (lib)
     mkEnableOption
     mkIf
@@ -13,7 +13,6 @@ let
     ;
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.system.utils;
-
   dev = with pkgs; [
     glow
     jq
@@ -22,18 +21,21 @@ let
     shellcheck
     statix
   ];
-  sysadmin = with pkgs; [
-    bind
-    dig
-    gnupg
-    killall
-    ncdu
-    nmap
-    wakeonlan
-  ] ++ optionals pkgs.stdenv.isLinux [
-    pinentry-all
-    usbutils
-  ];
+  sysadmin =
+    with pkgs;
+    [
+      bind
+      dig
+      gnupg
+      killall
+      ncdu
+      nmap
+      wakeonlan
+    ]
+    ++ optionals pkgs.stdenv.isLinux [
+      pinentry-all
+      usbutils
+    ];
 
 in
 {

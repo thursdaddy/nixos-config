@@ -36,6 +36,7 @@ in
           }
         ];
         extraConfig = {
+          safe.directory = "*";
           init = {
             defaultBranch = "main";
           };
