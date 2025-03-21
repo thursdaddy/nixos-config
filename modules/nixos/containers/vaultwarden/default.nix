@@ -11,15 +11,20 @@ in
   };
 
   config = mkIf cfg.enable {
-    sops.secrets = {
-      "vaultwarden/YUBICO_CLIENT_ID" = { };
-      "vaultwarden/YUBICO_SECRET_KEY" = { };
+    sops = {
+      secrets = {
+        "vaultwarden/YUBICO_CLIENT_ID" = { };
+        "vaultwarden/YUBICO_SECRET_KEY" = { };
+      };
+      templates."vaultwarden.env".content = ''
+        YUBICO_CLIENT_ID=${config.sops.placeholder."vaultwarden/YUBICO_CLIENT_ID"}
+        YUBICO_SECRET_KEY=${config.sops.placeholder."vaultwarden/YUBICO_SECRET_KEY"}
+      '';
     };
 
-    sops.templates."vaultwarden.env".content = ''
-      YUBICO_CLIENT_ID=${config.sops.placeholder."vaultwarden/YUBICO_CLIENT_ID"}
-      YUBICO_SECRET_KEY=${config.sops.placeholder."vaultwarden/YUBICO_SECRET_KEY"}
-    '';
+    environment.etc."alloy/vaultwarden.alloy" = mkIf config.mine.services.alloy.enable {
+      text = builtins.readFile ./config.alloy;
+    };
 
     virtualisation.oci-containers.containers."vaultwarden" = {
       image = "vaultwarden/server:${version}";
