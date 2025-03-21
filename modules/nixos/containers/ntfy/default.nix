@@ -33,6 +33,7 @@ in
       hostname = "ntfy";
       ports = [
         "80"
+        "0.0.0.0:9090:9090"
       ];
       volumes = [
         "${config.mine.container.settings.configPath}/ntfy/cache:/var/cache/ntfy"
