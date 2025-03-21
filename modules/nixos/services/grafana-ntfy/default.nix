@@ -29,6 +29,7 @@ in
     };
 
     networking.firewall.allowedTCPPorts = [ 8888 ];
+
     systemd.services.grafana-ntfy = {
       enable = true;
       description = "Grafana notifications forwarder for ntfy.sh";
@@ -78,5 +79,10 @@ in
       };
     };
 
+    environment.etc = {
+      "alloy/grafana-ntfy.alloy" = mkIf config.mine.services.alloy.enable {
+        text = builtins.readFile ./config.alloy;
+      };
+    };
   };
 }

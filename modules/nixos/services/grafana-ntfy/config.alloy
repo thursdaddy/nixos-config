@@ -1,0 +1,10 @@
+loki.source.journal "grafana_ntfy" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=grafana-ntfy.service"
+  labels = {
+    "app" = "grafana_ntfy",
+    "source" = "journal",
+  }
+}

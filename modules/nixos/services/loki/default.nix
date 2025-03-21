@@ -19,6 +19,9 @@ in
 
   config = mkIf cfg.enable {
     environment.etc = mkIf config.mine.container.traefik.enable {
+      "alloy/loki.alloy" = mkIf config.mine.services.alloy.enable {
+        text = builtins.readFile ./config.alloy;
+      };
       "traefik/loki.yml" = {
         text = (
           builtins.readFile (
