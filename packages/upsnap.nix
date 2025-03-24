@@ -8,11 +8,11 @@
 }:
 let
   pname = "upsnap";
-  version = "5.0.3";
+  version = "4.6.1";
   src = fetchFromGitHub {
     owner = "seriousm4x";
     repo = "UpSnap";
-    rev = "de66c391911488d8c5c1a193cbf631e58a317daf";
+    rev = "e72dbb762144b3f9c40ccd186daa33d413f24c39";
     hash = "sha256-euGAMyG3ysKr0WLrd9P6t+/gAdWRvi3RJYSTkWS18Os=";
   };
 
