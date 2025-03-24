@@ -36,15 +36,7 @@ in
     };
 
     environment.etc."alloy/teslamate.alloy" = mkIf config.mine.services.alloy.enable {
-      text = (
-        builtins.readFile (
-          pkgs.substituteAll {
-            name = "teslamate.alloy";
-            src = ./config.alloy;
-            host = config.networking.hostName;
-          }
-        )
-      );
+      text = builtins.readFile ./config.alloy;
     };
 
     virtualisation.oci-containers.containers = {

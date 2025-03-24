@@ -1,7 +1,6 @@
 {
   lib,
   config,
-  inputs,
   pkgs,
   ...
 }:
@@ -57,8 +56,8 @@ in
       ];
       serviceConfig = {
         Type = "simple";
-        ExecStartPre = "/run/current-system/sw/bin/sleep 1";
-        ExecStart = "/run/current-system/sw/bin/true";
+        ExecStartPre = "${lib.getExe' pkgs.coreutils "sleep"} 1";
+        ExecStart = "${lib.getExe' pkgs.coreutils "true"}";
       };
     };
   };
