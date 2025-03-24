@@ -38,3 +38,7 @@ motion_sim:
   name: Sim Motion Automations
   initial: true
   icon: mdi:run-fast
+computer_c137:
+  name: Desktop c137
+  initial: false
+  icon: mdi:desktop-classic
