@@ -21,10 +21,6 @@ in
   config = {
     system.stateVersion = "24.11";
 
-    environment.systemPackages = [
-      pkgs.esptool
-    ];
-
     mine = {
       user = {
         enable = true;
@@ -113,6 +109,7 @@ in
         services = {
           openssh = enabled;
           bluetooth = enabled;
+          sleep-on-lan = enabled;
         };
         utils = {
           dev = true;

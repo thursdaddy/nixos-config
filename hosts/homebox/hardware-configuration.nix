@@ -21,6 +21,12 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
+  networking = {
+    interfaces = {
+      eno1.wakeOnLan.enable = true;
+    };
+  };
+
   fileSystems."/" = {
     device = "/dev/disk/by-label/NIXROOT";
     fsType = "ext4";

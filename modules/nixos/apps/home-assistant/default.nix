@@ -25,6 +25,11 @@ in
 
     users.users.${user.name}.extraGroups = [ "hass" ];
 
+    environment.systemPackages = with pkgs; [
+      esptool
+      wakelan
+    ];
+
     services.home-assistant = {
       enable = true;
       config.http.server_port = 8090;
