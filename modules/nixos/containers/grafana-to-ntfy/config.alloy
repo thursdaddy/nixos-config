@@ -1,0 +1,22 @@
+
+loki.source.journal "grafana_ntfy_audiobookshelf" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=docker-grafana-to-ntfy-audiobookshelf.service"
+  labels = {
+    "app" = "grafana_ntfy_audiobookshelf",
+    "source" = "journal",
+  }
+}
+
+loki.source.journal "grafana_ntfy_teslamate" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=docker-grafana-to-ntfy-teslamate.service"
+  labels = {
+    "app" = "grafana_ntfy_teslamate",
+    "source" = "journal",
+  }
+}

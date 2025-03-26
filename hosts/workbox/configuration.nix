@@ -66,6 +66,7 @@ in
         gitlab = enabled;
         gitlab-runner = enabled;
         grafana = enabled;
+        grafana-to-ntfy = enabled;
         grocy = enabled;
         hoarder = enabled;
         influxdb = enabled;
