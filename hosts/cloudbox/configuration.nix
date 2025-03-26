@@ -14,6 +14,7 @@ in
     (inputs.nixpkgs + "/nixos/modules/virtualisation/amazon-image.nix")
     ./hardware-configuration.nix
     ../../overlays/unstable
+    ../../modules/home/import.nix
     ../../modules/nixos/import.nix
     ../../modules/shared/import.nix
   ];
@@ -59,8 +60,8 @@ in
         };
         vaultwarden = enabled;
         gatus = enabled;
+        gotify = enabled;
         overseerr = enabled;
-        ntfy = enabled;
       };
 
       services = {
