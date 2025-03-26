@@ -116,6 +116,16 @@
             nix-index-database.nixosModules.nix-index
           ];
         };
+        "qcow2" = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+          };
+          modules = [
+            ./hosts/vm/configuration.nix
+            ./hosts/vm/qcow.nix
+          ];
+        };
         "cloudbox" = nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit inputs;
