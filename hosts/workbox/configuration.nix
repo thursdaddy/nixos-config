@@ -66,7 +66,6 @@ in
         gitlab = enabled;
         gitlab-runner = enabled;
         grafana = enabled;
-        grafana-to-ntfy = enabled;
         grocy = enabled;
         hoarder = enabled;
         influxdb = enabled;
@@ -101,7 +100,6 @@ in
           enable = true;
           scripts.check-versions = true;
         };
-        grafana-ntfy = enabled;
         loki = enabled;
         ollama = enabled;
         prometheus = {

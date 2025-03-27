@@ -28,12 +28,12 @@ providers:
   options:
     path: /etc/grafana/provisioning/dashboards/traefik
 
-- name: 'NTFY'
-  orgId: 1
-  folder: 'ntfy'
-  type: 'file'
-  disableDeletion: false
-  editable: true
-  options:
-    path: /etc/grafana/provisioning/dashboards/ntfy
-
+# testing gotify, no longer using NTFY
+# - name: 'NTFY'
+#   orgId: 1
+#   folder: 'ntfy'
+#   type: 'file'
+#   disableDeletion: false
+#   editable: true
+#   options:
+#     path: /etc/grafana/provisioning/dashboards/ntfy
