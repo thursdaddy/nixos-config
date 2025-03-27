@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 let
@@ -18,6 +17,7 @@ in
   config = mkIf cfg.enable {
     virtualisation.oci-containers.containers."gotify" = {
       image = "gotify/server:${version}";
+      hostname = "gotify";
       ports = [
         "80"
       ];

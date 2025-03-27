@@ -31,15 +31,15 @@ in
     sops = {
       secrets = {
         "discord/monitoring/WEBHOOK_URL" = { };
-        "ntfy/topics/GATUS" = { };
-        "ntfy/TOKEN" = { };
+        "gotify/tokens/GATUS" = { };
+        "gotify/URL" = { };
       };
       templates."alerting.yaml".content = ''
         alerting:
-          ntfy:
-            topic: ${config.sops.placeholder."ntfy/topics/GATUS"}
-            url: http://ntfy
-            token: ${config.sops.placeholder."ntfy/TOKEN"}
+          gotify:
+            server-url: http://gotify
+            token: ${config.sops.placeholder."gotify/tokens/GATUS"}
+            priority: 10
           discord:
             webhook-url: ${config.sops.placeholder."discord/monitoring/WEBHOOK_URL"}
             default:

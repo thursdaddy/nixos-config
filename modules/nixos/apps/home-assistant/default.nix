@@ -1,6 +1,7 @@
 {
   lib,
   config,
+  inputs,
   pkgs,
   ...
 }:
@@ -69,7 +70,11 @@ in
         };
         "switch projector" = "!include projector.yaml";
         input_boolean = "!include booleans.yaml";
+        notify = "!include notify.yaml";
       };
+      customComponents = [
+        inputs.self.packages.${pkgs.system}.homeassistant-gotify
+      ];
       extraComponents = [
         "alert"
         "bluetooth_tracker"
@@ -140,6 +145,8 @@ in
         "hass/APPD_TOKEN" = { };
         "hass/LONGITUDE" = { };
         "hass/LATITUDE" = { };
+        "gotify/URL" = { };
+        "gotify/token/HASS" = { };
       };
       templates = {
         # abusing sops-nix templates for hass config files
@@ -153,6 +160,17 @@ in
           path = "/var/lib/hass/booleans.yaml";
           content = builtins.readFile ./configs/booleans.yaml;
         };
+        "notify.yaml" = {
+          owner = "hass";
+          path = "/var/lib/hass/notify.yaml";
+          content = ''
+            - name: "gotify"
+              platform: gotify
+              url: ${config.sops.placeholder."gotify/URL"}
+              token: ${config.sops.placeholder."gotify/token/HASS"}
+          '';
+        };
+
       };
     };
 
@@ -172,5 +190,6 @@ in
       address = "192.168.10.60";
       openFirewall = true;
     };
+
   };
 }

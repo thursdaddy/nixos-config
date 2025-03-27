@@ -190,6 +190,9 @@
         {
           upSnap = pkgs.callPackage ./packages/upsnap.nix { };
           grafana-ntfy = pkgs.callPackage ./packages/grafana-ntfy.nix { };
+          homeassistant-gotify =
+            pkgs.home-assistant.python.pkgs.callPackage ./packages/homeassistant-gotify.nix
+              { };
           wallpapers = pkgs.stdenv.mkDerivation {
             name = "wallpapers";
             src = ./assets/wallpapers;
