@@ -112,6 +112,7 @@ in
         };
         extraOptions = [
           "--network=traefik"
+          "--pull=always"
         ];
         volumes = [
           "${config.mine.container.settings.configPath}/tesla-mosquitto/conf:/mosquitto/config"
@@ -134,6 +135,7 @@ in
         ];
         extraOptions = [
           "--network=traefik"
+          "--pull=always"
         ];
         volumes = [
           "${config.mine.container.settings.configPath}/tesla-postgres:/var/lib/postgresql/data"
