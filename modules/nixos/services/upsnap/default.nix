@@ -36,6 +36,7 @@ in
         XDG_CONFIG_HOME = "${cfg.dataDir}";
       };
       serviceConfig = {
+        User = "thurs";
         ExecStart = "${cfg.package}/bin/upsnap serve --http ${cfg.listenAddress}:${builtins.toString cfg.port}  --dir ${cfg.dataDir}";
         Type = "simple";
         Restart = "on-failure";
@@ -47,16 +48,7 @@ in
 
     environment.etc = mkIf config.mine.container.traefik.enable {
       "traefik/upsnap.yml" = {
-        text = (
-          builtins.readFile (
-            pkgs.substituteAll {
-              name = "upsnap";
-              src = ./traefik.yml;
-              fqdn = config.mine.container.traefik.domainName;
-              ip = "192.168.10.120";
-            }
-          )
-        );
+        text = builtins.readFile ./traefik.yml;
       };
     };
   };

@@ -1,7 +1,7 @@
 http:
   routers:
     monitor:
-      rule: "Host(`monitor.@fqdn@`)"
+      rule: "Host(`monitor.thurs.pw`)"
       service: monitor
       entrypoints:
         - "websecure"
@@ -12,4 +12,4 @@ http:
     monitor:
       loadBalancer:
         servers:
-        - url: http://@ip@:8890
+        - url: http://192.168.10.68:8890

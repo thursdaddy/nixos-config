@@ -1,7 +1,7 @@
 http:
   routers:
     upsnap:
-      rule: "Host(`upsnap.@fqdn@`)"
+      rule: "Host(`upsnap.thurs.pw`)"
       service: upsnap
       entrypoints:
         - "websecure"
@@ -12,4 +12,4 @@ http:
     upsnap:
       loadBalancer:
         servers:
-        - url: http://@ip@:8090
+        - url: http://192.168.10.15:8090

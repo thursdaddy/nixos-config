@@ -23,16 +23,7 @@ in
         text = builtins.readFile ./config.alloy;
       };
       "traefik/loki.yml" = {
-        text = (
-          builtins.readFile (
-            pkgs.substituteAll {
-              name = "loki";
-              src = ./traefik.yml;
-              fqdn = config.mine.container.traefik.domainName;
-              ip = "192.168.10.120";
-            }
-          )
-        );
+        text = builtins.readFile ./traefik.yml;
       };
     };
 
