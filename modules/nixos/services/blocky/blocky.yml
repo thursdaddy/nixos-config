@@ -51,54 +51,50 @@ customDNS:
   customTTL: 1h
   filterUnmappedTypes: true
   mapping:
-    alertmanager.thurs.pw: 192.168.10.134
-    barcode.thurs.pw: 192.168.10.120
+    alertmanager.thurs.pw: 192.168.10.68
+    barcode.thurs.pw: 192.168.10.15
     bazarr.thurs.pw: 192.168.10.12
     blocky.homebox.thurs.pw: 192.168.10.60
     blocky.netpi1.thurs.pw: 192.168.10.57
     blocky.netpi2.thurs.pw: 192.168.10.201
-    bw.thurs.pw: 192.168.10.120
-    cloudbox.thurs.pw: 100.114.203.99
+    bw.thurs.pw: 192.168.10.15
     deemix.thurs.pw: 192.168.10.12
     esphome.thurs.pw: 192.168.10.60
     espresense-office.thurs.pw: 192.168.100.88
-    feed.thurs.pw: 192.168.10.120
-    git.thurs.pw: 192.168.10.120
-    grafana.thurs.pw: 192.168.10.120
-    grocery.thurs.pw: 192.168.10.120
+    feed.thurs.pw: 192.168.10.15
+    git.thurs.pw: 192.168.10.15
+    grafana.thurs.pw: 192.168.10.68
+    grocery.thurs.pw: 192.168.10.15
     hass.thurs.pw: 192.168.10.189
-    hoarder.thurs.pw: 192.168.10.120
+    hoarder.thurs.pw: 192.168.10.15
     home.thurs.pw: 192.168.10.60
     immich.thurs.pw: 192.168.10.120
-    influx.thurs.pw: 192.168.10.120
-    irc.thurs.pw: 192.168.10.120
+    irc.thurs.pw: 192.168.10.15
     lidarr.thurs.pw: 192.168.10.12
-    loki.thurs.pw: 192.168.10.120
+    loki.thurs.pw: 192.168.10.68
     matrix.thurs.pw: 192.168.10.120
-    monitor.thurs.pw: 192.168.10.120
-    music.thurs.pw: 192.168.10.120
+    monitor.thurs.pw: 192.168.10.68
     ollama.thurs.pw: 192.168.10.120
     plex.thurs.pw: 192.168.10.189
-    podcasts.thurs.pw: 192.168.10.120
+    podcasts.thurs.pw: 192.168.10.15
     printer.thurs.pw: 192.168.10.185
-    prometheus.thurs.pw: 192.168.10.120
+    prometheus.thurs.pw: 192.168.10.68
     radarr.thurs.pw: 192.168.10.12
     readarr.thurs.pw: 192.168.10.12
-    reg.thurs.pw: 192.168.10.120
+    reg.thurs.pw: 192.168.10.15
     sabnzbd.thurs.pw: 192.168.10.12
     sonarr.thurs.pw: 192.168.10.12
     stream.thurs.pw: 192.168.10.185
     sync-borrowbox.thurs.pw: 192.168.10.12
     sync-streambox.thurs.pw: 192.168.10.189
     sync-workbox.thurs.pw: 192.168.10.120
+    sync-wormhole.thurs.pw: 192.168.10.51
     tautulli.thurs.pw: 192.168.10.189
-    tesla.thurs.pw: 192.168.10.120
-    teslamate.thurs.pw: 192.168.10.120
-    thanos-query.thurs.pw: 192.168.10.12
-    thanos.thurs.pw: 192.168.10.12
+    tesla.thurs.pw: 192.168.10.15
+    teslamate.thurs.pw: 192.168.10.15
     traefik-bb.thurs.pw: 192.168.10.12
     traefik-stream.thurs.pw: 192.168.10.189
-    upsnap.thurs.pw: 192.168.10.120
+    upsnap.thurs.pw: 192.168.10.15
     z2m.thurs.pw: 192.168.10.60
 
 conditional:

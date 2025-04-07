@@ -1,22 +1,21 @@
 {
-  lib,
   config,
   pkgs,
+  lib,
   inputs,
   ...
 }:
 let
-  inherit (config.mine) user;
   inherit (lib.thurs) enabled;
+  inherit (config.mine) user;
 in
 {
   imports = [
     ./hardware-configuration.nix
-    ./stage1-boot.nix
+    ../../overlays/unstable
     ../../modules/nixos/import.nix
-    ../../modules/shared/import.nix
     ../../modules/home/import.nix
-    ../../overlays/import.nix
+    ../../modules/shared/import.nix
   ];
 
   config = {
@@ -25,34 +24,12 @@ in
     mine = {
       user = {
         enable = true;
-        home-manager = enabled;
-        ghToken = enabled;
         shell.package = pkgs.fish;
-      };
-
-      home-manager = {
-        git = enabled;
-        ssh-config = enabled;
-        tmux = {
-          enable = true;
-          sessionizer = {
-            enable = true;
-            searchPaths = [
-              "${user.homeDir}/projects/nix"
-              "${user.homeDir}/projects/cloud"
-              "${user.homeDir}/projects/homelab"
-              "${user.homeDir}/projects/personal"
-            ];
-          };
-        };
       };
 
       cli-tools = {
         bottom = enabled;
-        direnv = enabled;
-        just = enabled;
         fastfetch = enabled;
-        nixvim = enabled;
         sops = {
           enable = true;
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
@@ -61,36 +38,16 @@ in
 
       container = {
         alertmanager = enabled;
-        audiobookshelf = enabled;
-        commafeed = enabled;
-        gitlab = enabled;
-        gitlab-runner = enabled;
         grafana = enabled;
-        grocy = enabled;
-        hoarder = enabled;
-        influxdb = enabled;
-        open-webui = enabled;
         prometheus = enabled;
-        syncthing = {
-          enable = true;
-          subdomain = "sync-workbox";
-          volumePaths = [
-            "${user.homeDir}/projects:/projects"
-            "${user.homeDir}/documents/notes/:/notes"
-          ];
-        };
-        teslamate = enabled;
-        thelounge = enabled;
         traefik = {
           enable = true;
           awsEnvKeys = true;
           domainName = "thurs.pw";
         };
-        vaultwarden = enabled;
       };
 
       services = {
-        alloy = enabled;
         beszel = {
           enable = true;
           isHub = true;
@@ -101,13 +58,10 @@ in
           scripts.check-versions = true;
         };
         loki = enabled;
-        ollama = enabled;
         prometheus = {
           enable = true;
           exporters = {
             node = enabled;
-            smartctl = enabled;
-            zfs = enabled;
           };
         };
         tailscale = {
@@ -115,44 +69,36 @@ in
           useRoutingFeatures = "client";
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
         };
-        upsnap = enabled;
+        qemu-guest = enabled;
       };
 
       system = {
         boot = {
           binfmt = enabled;
-          systemd = enabled;
+          grub = enabled;
         };
         networking = {
           networkd = {
             enable = true;
-            hostname = "workbox";
+            hostname = "kepler";
           };
           firewall = enabled;
-          forwarding.ipv4 = true;
-          resolved = enabled;
         };
         nfs-mounts = {
           enable = true;
           mounts = {
             "/backups" = {
-              device = "192.168.10.12:/fast/backups/workbox";
+              device = "192.168.10.12:/fast/backups";
             };
           };
         };
         nix = {
           unfree = enabled;
           flakes = enabled;
-          index = enabled;
         };
         services = {
           openssh = enabled;
         };
-        utils = {
-          dev = true;
-          sysadmin = true;
-        };
-        video.amd = enabled;
       };
     };
   };

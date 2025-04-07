@@ -27,8 +27,8 @@ cloudbox:
 homebox:
   @./nix.sh rebuild homebox
 
-workbox:
-  @./nix.sh rebuild workbox
+proxbox:
+  @./nix.sh rebuild proxbox
 
 printpi:
   @./nix.sh rebuild printpi
@@ -41,6 +41,15 @@ netpi1:
 
 netpi2:
   @./nix.sh rebuild netpi2
+
+kepler:
+  @./nix.sh rebuild kepler
+
+wormhole:
+  @./nix.sh rebuild wormhole
+
+jupiter:
+  @./nix.sh rebuild jupiter
 
 blocky:
   @./nix.sh rebuild netpi1
@@ -57,5 +66,3 @@ all:
 
 help:
   @./nix.sh help
-
-

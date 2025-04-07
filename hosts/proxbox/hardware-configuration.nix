@@ -34,7 +34,18 @@
   };
 
   # ZFS requires hostId set
-  networking.hostId = "5cdce191";
+  networking = {
+    hostId = "5cdce191";
+    interfaces = {
+      vmbr0.useDHCP = true;
+      enp2s0.wakeOnLan.enable = true;
+    };
+    bridges = {
+      "vmbr0" = {
+        interfaces = [ "eno1" ];
+      };
+    };
+  };
 
   swapDevices = [ ];
 
@@ -50,6 +61,12 @@
         "fmask=0022"
         "dmask=0022"
       ];
+    };
+    "/pool" = {
+      device = "proxpool1/main";
+      neededForBoot = false;
+      fsType = "zfs";
+      encrypted.keyFile = "/keystore/workbox.key";
     };
   };
 }

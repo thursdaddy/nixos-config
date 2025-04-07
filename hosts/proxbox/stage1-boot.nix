@@ -11,7 +11,7 @@ let
 
   inherit (config.services) tailscale;
   inherit (config.mine) user;
-  zfspool = "${utils.escapeSystemdPath "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_500GB_S466NX0M752674K-part2"}.device";
+  zfsrootpool = "${utils.escapeSystemdPath "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_500GB_S466NX0M752674K-part2"}.device";
 
 in
 {
@@ -134,8 +134,8 @@ in
             # Import ZFS pool, but dont load-key until /keystore which is a luks vol requiring password
             import-nixroot-bare = {
               requiredBy = [ "nixroot-load-key.service" ];
-              after = [ zfspool ];
-              bindsTo = [ zfspool ];
+              after = [ zfsrootpool ];
+              bindsTo = [ zfsrootpool ];
               unitConfig.DefaultDependencies = false;
               serviceConfig = {
                 Type = "oneshot";

@@ -31,6 +31,15 @@ scrape_configs:
   - targets: [ '100.114.203.99:9100' ]
     labels:
       instance: cloudbox
+  - targets: [ 'kepler.thurs.pw:9100' ]
+    labels:
+      instance: kepler
+  - targets: [ 'jupiter.thurs.pw:9100' ]
+    labels:
+      instance: jupiter
+  - targets: [ 'wormhole.thurs.pw:9100' ]
+    labels:
+      instance: jupiter
 
 - job_name: smartctl
   static_configs:

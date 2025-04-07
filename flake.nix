@@ -41,6 +41,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    proxmox-nixos = {
+      url = "github:SaumonNet/proxmox-nixos";
+    };
+
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -135,6 +139,33 @@
             ./hosts/cloudbox/configuration.nix
           ];
         };
+        "kepler" = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+          };
+          modules = [
+            ./hosts/kepler/configuration.nix
+          ];
+        };
+        "jupiter" = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+          };
+          modules = [
+            ./hosts/jupiter/configuration.nix
+          ];
+        };
+        "wormhole" = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs;
+            inherit lib;
+          };
+          modules = [
+            ./hosts/wormhole/configuration.nix
+          ];
+        };
         "homebox" = nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit inputs;
@@ -144,14 +175,14 @@
             ./hosts/homebox/configuration.nix
           ];
         };
-        "workbox" = nixpkgs.lib.nixosSystem {
+        "proxbox" = nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit inputs;
             inherit lib;
           };
           modules = [
-            ./hosts/workbox/configuration.nix
-            nix-index-database.nixosModules.nix-index
+            ./hosts/proxbox/configuration.nix
+            inputs.proxmox-nixos.nixosModules.proxmox-ve
           ];
         };
         "netpi1" = nixpkgs.lib.nixosSystem {
