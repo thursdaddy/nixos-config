@@ -11,6 +11,12 @@ in
   };
 
   config = mkIf cfg.enable {
-    homebrew.enable = true;
+    homebrew = {
+      enable = true;
+      onActivation = {
+        autoUpdate = true;
+        upgrade = true;
+      };
+    };
   };
 }
