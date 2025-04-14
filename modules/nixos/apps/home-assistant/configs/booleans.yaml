@@ -42,3 +42,15 @@ computer_c137:
   name: Desktop c137
   initial: false
   icon: mdi:desktop-classic
+computer_sim:
+  name: Desktop Sim
+  initial: false
+  icon: mdi:desktop-classic
+computer_gamer:
+  name: Desktop Gamer
+  initial: false
+  icon: mdi:desktop-classic
+activity_sim:
+  name: Sim Golf
+  initial: false
+  icon: mdi:golf
