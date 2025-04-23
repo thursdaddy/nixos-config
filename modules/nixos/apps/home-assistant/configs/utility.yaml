@@ -1,0 +1,58 @@
+heating_time_daily:
+  source: sensor.hvac_heating
+  name: Heating Time Daily
+  cycle: daily
+heating_time_weekly:
+  source: sensor.hvac_heating
+  name: Heating Time Weekly
+  cycle: weekly
+heating_time_monthly:
+  source: sensor.hvac_heating
+  name: Heating Time Monthly
+  cycle: monthly
+heating_time_yearly:
+  source: sensor.hvac_heating
+  name: Heating Time Yearly
+  cycle: yearly
+cooling_time_daily:
+  source: sensor.hvac_cooling
+  name: Cooling Time Daily
+  cycle: daily
+cooling_time_weekly:
+  source: sensor.hvac_cooling
+  name: Cooling Time Weekly
+  cycle: weekly
+cooling_time_monthly:
+  source: sensor.hvac_cooling
+  name: Cooling Time Monthly
+  cycle: monthly
+cooling_time_yearly:
+  source: sensor.hvac_cooling
+  name: Cooling Time Yearly
+  cycle: yearly
+idle_time_daily:
+  source: sensor.hvac_idle
+  name: Idle Time Daily
+  cycle: daily
+idle_time_weekly:
+  source: sensor.hvac_idle
+  name: Idle Time Weekly
+  cycle: weekly
+idle_time_monthly:
+  source: sensor.hvac_idle
+  name: Idle Time Monthly
+  cycle: monthly
+idle_time_yearly:
+  source: sensor.hvac_idle
+  name: Idle Time Yearly
+  cycle: yearly
+hvac_time_filter:
+  source: sensor.hvac_today
+  name: HVAC Time Filter
+  cycle: yearly
+hvac_daily_cost:
+  source: sensor.hvac_cost_tracker
+  name: HVAC Daily Costs
+hvac_monthly_cost:
+  source: sensor.hvac_cost_tracker
+  name: HVAC Monthly Costs

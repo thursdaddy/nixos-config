@@ -39,16 +39,19 @@ in
           extraPackages =
             py: with py; [
               google-nest-sdm
+              govee-ble
               grpcio
               grpcio-tools
               psutil-home-assistant
               psycopg2
+              zlib-ng
             ];
         }).overrideAttrs
           (oldAttrs: {
             doInstallCheck = false;
           });
       config.recorder.db_url = "postgresql://@/hass";
+      lovelaceConfigWritable = true;
       openFirewall = true;
       config = {
         api = { };
@@ -65,15 +68,22 @@ in
           unit_system = "imperial";
           temperature_unit = "F";
         };
+        lovelace.mode = "yaml";
         prometheus = {
           namespace = "hass";
         };
         "switch projector" = "!include projector.yaml";
         input_boolean = "!include booleans.yaml";
         notify = "!include notify.yaml";
+        sensor = "!include sensor.yaml";
+        utility_meter = "!include utility.yaml";
+        template = "!include template.yaml";
       };
       customComponents = [
         inputs.self.packages.${pkgs.system}.homeassistant-gotify
+      ];
+      customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
+        apexcharts-card
       ];
       extraComponents = [
         "alert"
@@ -106,6 +116,7 @@ in
         "unifi"
         "unifiprotect"
         "webhook"
+        "utility_meter"
         "zha" # not using but clears home-assistant startup error
       ];
     };
@@ -155,10 +166,25 @@ in
           path = "/var/lib/hass/projector.yaml";
           content = builtins.readFile ./configs/projector.yaml;
         };
+        "template.yaml" = {
+          owner = "hass";
+          path = "/var/lib/hass/template.yaml";
+          content = builtins.readFile ./configs/template.yaml;
+        };
         "booleans.yaml" = {
           owner = "hass";
           path = "/var/lib/hass/booleans.yaml";
           content = builtins.readFile ./configs/booleans.yaml;
+        };
+        "utility.yaml" = {
+          owner = "hass";
+          path = "/var/lib/hass/utility.yaml";
+          content = builtins.readFile ./configs/utility.yaml;
+        };
+        "sesnor.yaml" = {
+          owner = "hass";
+          path = "/var/lib/hass/sensor.yaml";
+          content = builtins.readFile ./configs/sensor.yaml;
         };
         "notify.yaml" = {
           owner = "hass";

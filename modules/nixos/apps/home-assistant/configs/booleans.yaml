@@ -54,3 +54,7 @@ activity_sim:
   name: Sim Golf
   initial: false
   icon: mdi:golf
+hvac_manual_control:
+  name: HVAC Manual Control
+  initial: false
+  icon: mdi:thermostat

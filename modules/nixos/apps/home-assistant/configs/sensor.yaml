@@ -1,0 +1,69 @@
+- platform: template
+  sensors:
+    hvac_activity:
+      friendly_name: "HVAC Action"
+      value_template: "{{ state_attr('climate.nest', 'hvac_action')}}"
+    hvac_cost_tracker:
+      friendly_name: "HVAC Cost Tracker"
+      unit_of_measurement: "$"
+      device_class: monetary
+      value_template: "0.00"
+
+- platform: history_stats
+  name: HVAC Cooling
+  entity_id: sensor.hvac_activity
+  state: "cooling"
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+
+- platform: history_stats
+  name: HVAC Idle
+  entity_id: sensor.hvac_activity
+  state: "idle"
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+
+- platform: history_stats
+  name: HVAC Heating
+  entity_id: sensor.hvac_activity
+  state: "heating"
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+
+- platform: history_stats
+  name: HVAC Off
+  entity_id: sensor.hvac_activity
+  state: "off"
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+
+- platform: history_stats
+  name: Heating Yesterday
+  entity_id: sensor.hvac_activity
+  state: 'heating'
+  type: time
+  end: "{{ today_at() }}"
+  duration:
+    hours: 24
+
+- platform: history_stats
+  name: Cooling Yesterday
+  entity_id: sensor.hvac_activity
+  state: 'cooling'
+  type: time
+  end: "{{ today_at() }}"
+  duration:
+    hours: 24
+
+- platform: history_stats
+  name: Cooling Yesterday
+  entity_id: sensor.hvac_activity
+  state: 'cooling'
+  type: time
+  end: "{{ today_at() }}"
+  duration:
+    hours: 24

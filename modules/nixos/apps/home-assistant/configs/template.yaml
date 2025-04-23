@@ -1,0 +1,33 @@
+- trigger:
+    - platform: time
+      at: "02:00:00"
+  action:
+    - service: weather.get_forecasts
+      target:
+        entity_id: weather.home
+      data:
+        type: twice_daily
+      response_variable: my_daily
+  sensor:
+    - name: forecast_today_high
+      unique_id: forecast_today_high_weather_home
+      unit_of_measurement: "°F"
+      device_class: temperature
+      state: >
+        {% if my_daily and my_daily['weather.home'] and my_daily['weather.home'].forecast %}
+          {% set first_two_forecasts = my_daily['weather.home'].forecast[:2] %}
+          {% for forecast in first_two_forecasts %}
+            {% if forecast.is_daytime %}
+              {{ forecast.temperature | round(0) }}
+              {%- break %}
+            {% endif %}
+          {% else %}
+            {% if first_two_forecasts | count > 0 %}
+              {{ first_two_forecasts[0].temperature | round(0) }} {# Fallback to the first temperature if no daytime forecast in the first two #}
+            {% else %}
+              unavailable
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          unavailable
+        {% endif %}
