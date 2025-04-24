@@ -66,8 +66,6 @@ in
       };
 
       container = {
-        gitlab-runner = enabled;
-        open-webui = enabled;
         traefik = {
           enable = true;
           awsEnvKeys = true;
@@ -85,7 +83,6 @@ in
           enable = true;
           scripts.check-versions = true;
         };
-        ollama = enabled;
         prometheus = {
           enable = true;
           exporters = {

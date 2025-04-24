@@ -68,13 +68,12 @@ customDNS:
     hass.thurs.pw: 192.168.10.189
     hoarder.thurs.pw: 192.168.10.15
     home.thurs.pw: 192.168.10.60
-    immich.thurs.pw: 192.168.10.120
     irc.thurs.pw: 192.168.10.15
     lidarr.thurs.pw: 192.168.10.12
     loki.thurs.pw: 192.168.10.68
-    matrix.thurs.pw: 192.168.10.120
+    matrix.thurs.pw: 192.168.10.15
     monitor.thurs.pw: 192.168.10.68
-    ollama.thurs.pw: 192.168.10.120
+    ollama.thurs.pw: 192.168.10.15
     plex.thurs.pw: 192.168.10.189
     podcasts.thurs.pw: 192.168.10.15
     printer.thurs.pw: 192.168.10.185
@@ -87,7 +86,6 @@ customDNS:
     stream.thurs.pw: 192.168.10.185
     sync-borrowbox.thurs.pw: 192.168.10.12
     sync-streambox.thurs.pw: 192.168.10.189
-    sync-workbox.thurs.pw: 192.168.10.120
     sync-wormhole.thurs.pw: 192.168.10.51
     tautulli.thurs.pw: 192.168.10.189
     tesla.thurs.pw: 192.168.10.15

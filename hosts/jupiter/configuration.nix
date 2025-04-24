@@ -43,6 +43,7 @@ in
         audiobookshelf = enabled;
         commafeed = enabled;
         gitlab = enabled;
+        gitlab-runner = enabled;
         grocy = enabled;
         hoarder = enabled;
         teslamate = enabled;
@@ -53,6 +54,7 @@ in
           domainName = "thurs.pw";
         };
         vaultwarden = enabled;
+        open-webui = enabled;
       };
 
       services = {
@@ -65,6 +67,7 @@ in
           enable = true;
           scripts.check-versions = true;
         };
+        ollama = enabled;
         prometheus = {
           enable = true;
           exporters = {
