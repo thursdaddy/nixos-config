@@ -14,9 +14,11 @@ bootstrapDns:
 blocking:
   denylists:
     ads:
+      - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/multi.txt
       - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
       - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
       - http://sysctl.org/cameleon/hosts
+      - https://freedns.controld.com/x-1hosts-lite
       - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
     special:
       - https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts
