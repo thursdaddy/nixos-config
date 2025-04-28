@@ -5,7 +5,7 @@
         "builtIn": 1,
         "datasource": {
           "type": "datasource",
-          "uid": "grafana"
+          "uid": "kepler"
         },
         "enable": true,
         "hide": true,
@@ -52,7 +52,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "current service state",
       "fieldConfig": {
@@ -121,7 +121,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": false,
           "expr": "sum(up{job=~\"$job\"})",
@@ -139,7 +139,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "Is blocking enabled?",
       "fieldConfig": {
@@ -208,7 +208,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": false,
           "expr": "blocky_blocking_enabled",
@@ -226,7 +226,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "Blocky [version](https://github.com/0xERR0R/blocky) number",
       "fieldConfig": {
@@ -277,7 +277,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": false,
           "expr": "blocky_build_info",
@@ -305,7 +305,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "Time since last list refresh",
       "fieldConfig": {
@@ -364,7 +364,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -383,7 +383,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "Average query response time for all query types",
       "fieldConfig": {
@@ -446,7 +446,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -465,7 +465,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "Number of all queries. Shows the last value",
       "fieldConfig": {
@@ -524,7 +524,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": true,
           "expr": "ceil(sum(increase(blocky_query_total[$__range]))) ",
@@ -542,7 +542,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "Percentage of blocked queries",
       "fieldConfig": {
@@ -608,7 +608,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": true,
           "expr": "sum(increase(blocky_response_total{response_type=\"BLOCKED\"}[$__range])) / sum(increase(blocky_query_total[$__range])) ",
@@ -626,7 +626,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "Number of entries in the cache. Shows the last value",
       "fieldConfig": {
@@ -673,7 +673,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -692,7 +692,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "Cache Hit/Miss ratio. 100 % means, all queries could be answered from the cache, 0% - all queries must be resolved via external DNS",
       "fieldConfig": {
@@ -745,7 +745,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -764,7 +764,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "fieldConfig": {
         "defaults": {
@@ -823,7 +823,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": true,
           "expr": "sum(go_memstats_sys_bytes{job=~\"$job\"})/sum(up{job=~\"$job\"})",
@@ -841,7 +841,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "Number of denylist entries",
       "fieldConfig": {
@@ -900,7 +900,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -919,7 +919,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "description": "Number of occured errors",
       "fieldConfig": {
@@ -986,7 +986,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": true,
           "expr": "sum(increase(blocky_error_total[$__range]))",
@@ -1004,7 +1004,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "fieldConfig": {
         "defaults": {
@@ -1088,7 +1088,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": true,
           "expr": "sum(rate(blocky_query_total[5m])) * 60",
@@ -1106,7 +1106,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "fieldConfig": {
         "defaults": {
@@ -1190,7 +1190,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": true,
           "expr": "sum by (client) (rate(blocky_query_total[5m])) * 60",
@@ -1208,7 +1208,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "fieldConfig": {
         "defaults": {
@@ -1275,7 +1275,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -1294,7 +1294,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "fieldConfig": {
         "defaults": {
@@ -1352,7 +1352,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": false,
           "expr": " sort_desc(sum by (type) (ceil(increase(blocky_query_total[$__range]))))",
@@ -1370,7 +1370,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "fieldConfig": {
         "defaults": {
@@ -1428,7 +1428,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": false,
           "expr": "sort_desc(sum by (client) (ceil(increase(blocky_query_total[$__range]))))",
@@ -1446,7 +1446,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "fieldConfig": {
         "defaults": {
@@ -1503,7 +1503,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1522,7 +1522,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "fieldConfig": {
         "defaults": {
@@ -1580,7 +1580,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": false,
           "expr": " sort_desc(sum by (reason) (ceil(increase(blocky_response_total[$__range]))))",
@@ -1598,7 +1598,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "fieldConfig": {
         "defaults": {
@@ -1656,7 +1656,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": false,
           "expr": " sort_desc(sum by (response_type) (ceil(increase(blocky_response_total[$__range]))))",
@@ -1674,7 +1674,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P9E4568C0C60C61C4"
+        "uid": "P633928652AF260E5"
       },
       "fieldConfig": {
         "defaults": {
@@ -1732,7 +1732,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P9E4568C0C60C61C4"
+            "uid": "P633928652AF260E5"
           },
           "exemplar": false,
           "expr": " sort_desc(sum by (response_code) (ceil(increase(blocky_response_total[$__range]))))",
@@ -1777,7 +1777,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "P9E4568C0C60C61C4"
+          "uid": "P633928652AF260E5"
         },
         "definition": "label_values(blocky_blocking_enabled,job)",
         "includeAll": true,
