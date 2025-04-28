@@ -175,13 +175,13 @@
             ./hosts/homebox/configuration.nix
           ];
         };
-        "proxbox" = nixpkgs.lib.nixosSystem {
+        "proxbox1" = nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit inputs;
             inherit lib;
           };
           modules = [
-            ./hosts/proxbox/configuration.nix
+            ./hosts/proxbox1/configuration.nix
             inputs.proxmox-nixos.nixosModules.proxmox-ve
           ];
         };
