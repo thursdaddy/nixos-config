@@ -50,8 +50,16 @@ in
       (mkIf cfg.scripts.check-versions container-version-check)
     ];
 
-    virtualisation.docker.enable = true;
-    virtualisation.oci-containers.backend = "docker";
+    virtualisation = {
+      oci-containers.backend = "docker";
+      docker = {
+        enable = true;
+        autoPrune = {
+          enable = true;
+          dates = "weekly";
+        };
+      };
+    };
 
     programs.fish.shellAliases = mkIf (
       user.shell.package == pkgs.fish || config.mine.system.shell.fish.enable
