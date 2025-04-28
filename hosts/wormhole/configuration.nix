@@ -60,7 +60,6 @@ in
           awsEnvKeys = true;
           domainName = "thurs.pw";
         };
-        qemu-guest = enabled;
       };
 
       cli-tools = {
@@ -95,6 +94,7 @@ in
           useRoutingFeatures = "client";
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
         };
+        qemu-guest = enabled;
       };
 
       system = {

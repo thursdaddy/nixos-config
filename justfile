@@ -27,8 +27,8 @@ cloudbox:
 homebox:
   @./nix.sh rebuild homebox
 
-proxbox:
-  @./nix.sh rebuild proxbox
+proxbox1:
+  @./nix.sh rebuild proxbox1
 
 printpi:
   @./nix.sh rebuild printpi

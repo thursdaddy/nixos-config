@@ -14,6 +14,7 @@ in
     ./hardware-configuration.nix
     ../../overlays/import.nix
     ../../modules/nixos/import.nix
+    ../../modules/home/import.nix
     ../../modules/shared/import.nix
   ];
 

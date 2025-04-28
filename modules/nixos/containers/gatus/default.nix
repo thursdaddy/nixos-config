@@ -31,14 +31,14 @@ in
     sops = {
       secrets = {
         "discord/monitoring/WEBHOOK_URL" = { };
-        "gotify/tokens/GATUS" = { };
+        "gotify/token/GATUS" = { };
         "gotify/URL" = { };
       };
       templates."alerting.yaml".content = ''
         alerting:
           gotify:
             server-url: http://gotify
-            token: ${config.sops.placeholder."gotify/tokens/GATUS"}
+            token: ${config.sops.placeholder."gotify/token/GATUS"}
             priority: 10
           discord:
             webhook-url: ${config.sops.placeholder."discord/monitoring/WEBHOOK_URL"}
