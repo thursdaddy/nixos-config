@@ -1,14 +1,13 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.teslamate;
 
-  version = "1.32.0";
+  version = "2.0.0";
 in
 {
   options.mine.container.teslamate = {
@@ -124,7 +123,7 @@ in
       };
 
       "tesla-postgres" = {
-        image = "postgres:13";
+        image = "postgres:17";
         ports = [ "5432" ];
         environment = {
           POSTGRES_USER = "teslamate";

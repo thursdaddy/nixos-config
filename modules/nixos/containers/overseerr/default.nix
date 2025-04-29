@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.overseerr;
 
-  version = "1.33.2";
+  version = "1.34.0";
 in
 {
   options.mine.container.overseerr = {

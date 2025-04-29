@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.gitlab;
 
-  version = "17.10.0";
+  version = "17.11.1";
 in
 {
   options.mine.container.gitlab = {

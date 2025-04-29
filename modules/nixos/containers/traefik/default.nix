@@ -15,7 +15,7 @@ let
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.container.traefik;
 
-  version = "3.3.4";
+  version = "3.3.6";
 
   fqdn = config.mine.container.traefik.domainName;
   regex_fqdn = builtins.replaceStrings [ "." ] [ "\\." ] "${fqdn}";

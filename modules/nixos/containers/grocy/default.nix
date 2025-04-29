@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.grocy;
 
-  version = "4.4.2";
+  version = "4.5.0";
 in
 {
   options.mine.container.grocy = {

@@ -9,7 +9,7 @@ let
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.container.syncthing;
 
-  version = "1.29.3";
+  version = "1.29.5";
 in
 {
   options.mine.container.syncthing = mkOption {
