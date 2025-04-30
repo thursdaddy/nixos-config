@@ -8,5 +8,7 @@ stages:
 flake:update:
   stage: flake
   image: reg.thurs.pw/docker/nix:latest
+  before_script:
+  - . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   script:
     - attic --version
