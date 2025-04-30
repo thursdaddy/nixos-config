@@ -165,9 +165,10 @@ in
           firewall = enabled;
         };
         nix = {
-          unfree = enabled;
           flakes = enabled;
           index = enabled;
+          substituters = enabled;
+          unfree = enabled;
         };
         security.sudonopass = enabled;
         services = {

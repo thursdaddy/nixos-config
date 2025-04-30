@@ -47,6 +47,7 @@ in
       };
 
       container = {
+        gitlab-runner = enabled;
         syncthing = {
           enable = true;
           subdomain = "sync-wormhole";

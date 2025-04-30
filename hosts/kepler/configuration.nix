@@ -38,6 +38,7 @@ in
 
       container = {
         alertmanager = enabled;
+        gitlab-runner = enabled;
         grafana = enabled;
         prometheus = enabled;
         traefik = {
