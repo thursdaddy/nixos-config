@@ -9,4 +9,4 @@ flake:update:
   stage: flake
   image: reg.thurs.pw/docker/nix:latest
   script:
-    - nix flake update
+    - attic --version
