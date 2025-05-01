@@ -81,6 +81,7 @@ in
 
       cli-tools = {
         ansible = enabled;
+        attic = enabled;
         charm-freeze = enabled;
         bottom = enabled;
         direnv = enabled;

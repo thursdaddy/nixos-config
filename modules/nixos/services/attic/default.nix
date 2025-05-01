@@ -1,7 +1,6 @@
 {
   lib,
   config,
-  pkgs,
   ...
 }:
 let
@@ -10,15 +9,11 @@ let
 in
 {
   options.mine.services.attic = {
-    enable = mkEnableOption "Attic cache";
+    enable = mkEnableOption "Attic server for nixpkg cache";
   };
 
   config = mkIf cfg.enable {
     networking.firewall.allowedTCPPorts = [ 8080 ];
-
-    environment.systemPackages = [
-      pkgs.attic-client
-    ];
 
     services.atticd = {
       enable = true;

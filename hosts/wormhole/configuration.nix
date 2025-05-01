@@ -64,6 +64,7 @@ in
       };
 
       cli-tools = {
+        attic = enabled;
         bottom = enabled;
         direnv = enabled;
         just = enabled;

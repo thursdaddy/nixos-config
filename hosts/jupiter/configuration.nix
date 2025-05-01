@@ -31,6 +31,7 @@ in
       };
 
       cli-tools = {
+        attic = enabled;
         bottom = enabled;
         fastfetch = enabled;
         sops = {
