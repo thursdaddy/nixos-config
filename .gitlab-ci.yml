@@ -16,4 +16,5 @@ flake:update:
     - /bin/attic login local http://192.168.10.15:8080 $ATTIC_TOKEN
     - NIX_CONFIG="access-tokens = github.com=$GITHUB_PAT" nix flake update
     - nix build .#nixosConfigurations.c137.config.system.build.toplevel
+    - /bin/attic push local ./result
 
