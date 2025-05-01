@@ -8,6 +8,8 @@ stages:
 flake:update:
   stage: flake
   image: local/nix-daemon:latest
+  variables:
+    NIX_CONFIG: "access-tokens = github.com=$GITHUB_PAT"
   before_script:
   - . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   script:
