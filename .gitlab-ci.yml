@@ -16,5 +16,5 @@ flake:update:
     - echo $ATTIC_TOKEN
     - nix build .#nixosConfigurations.homebox.config.system.build.toplevel
     - /bin/attic login local http://192.168.10.15:8080 $ATTIC_TOKEN
-    - /bin/attic push local $(ls -d /nix/store/*/ | grep -v fake_nixpkgs)
+    - /bin/attic push local ./result
 
