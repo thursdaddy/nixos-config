@@ -12,6 +12,8 @@ flake:update:
   - . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   script:
     - nix --version
-    - attic --version
+    - /bin/attic --version
+    - /bin/attic login local http://192.168.10.15:8080 $ATTIC_TOKEN
     - NIX_CONFIG="access-tokens = github.com=$GITHUB_PAT" nix flake update
     - nix build .#nixosConfigurations.c137.config.system.build.toplevel
+
