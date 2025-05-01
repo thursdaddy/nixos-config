@@ -8,14 +8,18 @@ stages:
 flake:update:
   stage: flake
   image: local/nix-daemon:latest
+  variables:
+    CONFIGURATIONS: "homebox c137 jupiter kepler wormhole"
   before_script:
   - . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   script:
-    - nix --version
     - NIX_CONFIG="access-tokens = github.com=$GITHUB_PAT" nix flake update
     - /bin/attic login local http://192.168.10.15:8080 $ATTIC_TOKEN
-    - nix build .#nixosConfigurations.homebox.config.system.build.toplevel
-    - /bin/attic push local ./result
-    - nix build .#nixosConfigurations.c137.config.system.build.toplevel
-    - /bin/attic push local ./result
+    - |
+      for config in $CONFIGURATIONS; do
+        echo "Building $config..."
+        nix build ".#nixosConfigurations.${config}.config.system.build.toplevel"
+        echo "Pushing $config..."
+        /bin/attic push local "./result"
+      done
 
