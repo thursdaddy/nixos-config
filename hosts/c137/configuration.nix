@@ -132,6 +132,7 @@ in
           enable = true;
           scripts.check-versions = true;
         };
+        gitlab-runner = enabled;
         mpd = enabled;
         ollama = enabled;
         prometheus = {
