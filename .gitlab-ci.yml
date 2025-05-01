@@ -18,7 +18,7 @@ flake:update:
       - flake.lock
 
 nix:build:
-  stage: flake
+  stage: nix
   image: local/nix-daemon:latest
   dependencies:
     - flake:update
