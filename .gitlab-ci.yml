@@ -12,6 +12,5 @@ flake:update:
   - . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   script:
     - nix --version
-    - echo $NIX_CONFIG
-    - echo $GITHUB_PAT
     - NIX_CONFIG="access-tokens = github.com=$GITHUB_PAT" nix flake update
+    - nix build .#nixosConfigurations.netpi1.config.system.build.toplevel
