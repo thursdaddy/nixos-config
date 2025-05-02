@@ -13,7 +13,6 @@ flake:update:
   - . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   script:
     - NIX_CONFIG="access-tokens = github.com=$GITHUB_PAT" nix flake update
-    - cat flake.lock
   artifacts:
     paths:
       - flake.lock
@@ -29,7 +28,6 @@ nix:build:
   - . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   script:
     - /bin/attic login local http://192.168.10.15:8080 $ATTIC_TOKEN
-    - cat flake.lock
     - |
       for config in $CONFIGURATIONS; do
         echo "Building $config..."
