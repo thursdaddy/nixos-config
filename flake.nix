@@ -11,6 +11,11 @@
       url = "github:thursdaddy/nixos-thurs/main";
     };
 
+    nix = {
+      url = "github:NixOS/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     ssh-keys = {
       url = "https://github.com/thursdaddy.keys";
       flake = false;
@@ -60,6 +65,7 @@
     {
       home-manager,
       lanzaboote,
+      nix,
       nix-darwin,
       nix-index-database,
       nixos-generators,

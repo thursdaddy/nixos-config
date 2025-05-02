@@ -47,6 +47,7 @@ in
       };
 
       container = {
+        gitlab-runner = enabled;
         syncthing = {
           enable = true;
           subdomain = "sync-wormhole";
@@ -63,6 +64,7 @@ in
       };
 
       cli-tools = {
+        attic = enabled;
         bottom = enabled;
         direnv = enabled;
         just = enabled;

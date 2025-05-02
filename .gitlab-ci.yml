@@ -1,0 +1,37 @@
+default:
+  tags:
+    - wormhole
+
+stages:
+  - flake
+  - nix
+
+flake:update:
+  stage: flake
+  image: local/nix-daemon:latest
+  before_script:
+  - . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+  script:
+    - NIX_CONFIG="access-tokens = github.com=$GITHUB_PAT" nix flake update
+  artifacts:
+    paths:
+      - flake.lock
+
+nix:build:
+  stage: nix
+  image: local/nix-daemon:latest
+  dependencies:
+    - flake:update
+  variables:
+    CONFIGURATIONS: "homebox c137 jupiter kepler wormhole"
+  before_script:
+  - . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+  script:
+    - /bin/attic login local http://192.168.10.15:8080 $ATTIC_TOKEN
+    - |
+      for config in $CONFIGURATIONS; do
+        echo "Building $config..."
+        nix build ".#nixosConfigurations.${config}.config.system.build.toplevel"
+        echo "Pushing $config..."
+        /bin/attic push local "./result"
+      done
