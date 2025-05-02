@@ -81,6 +81,7 @@ in
 
       cli-tools = {
         ansible = enabled;
+        attic = enabled;
         charm-freeze = enabled;
         bottom = enabled;
         direnv = enabled;
@@ -132,6 +133,7 @@ in
           enable = true;
           scripts.check-versions = true;
         };
+        gitlab-runner = enabled;
         mpd = enabled;
         ollama = enabled;
         prometheus = {
@@ -165,9 +167,10 @@ in
           firewall = enabled;
         };
         nix = {
-          unfree = enabled;
           flakes = enabled;
           index = enabled;
+          substituters = enabled;
+          unfree = enabled;
         };
         security.sudonopass = enabled;
         services = {

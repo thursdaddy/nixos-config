@@ -31,6 +31,7 @@ in
       };
 
       cli-tools = {
+        attic = enabled;
         bottom = enabled;
         fastfetch = enabled;
         sops = {
@@ -43,7 +44,6 @@ in
         audiobookshelf = enabled;
         commafeed = enabled;
         gitlab = enabled;
-        gitlab-runner = enabled;
         grocy = enabled;
         hoarder = enabled;
         teslamate = enabled;
@@ -59,6 +59,7 @@ in
 
       services = {
         alloy = enabled;
+        attic = enabled;
         beszel = {
           enable = true;
           isAgent = true;
