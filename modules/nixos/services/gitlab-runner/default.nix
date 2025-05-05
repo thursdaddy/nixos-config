@@ -28,7 +28,9 @@ let
     fromImage = localNix;
     name = "local/nix-daemon";
     tag = "labuildLayeredImagetest";
-    contents = [ pkgs.attic-client ];
+    contents = with pkgs; [
+      attic-client
+    ];
     config = {
       Volumes = {
         "/nix/store" = { };
@@ -86,11 +88,6 @@ in
         executor = "docker";
 
         dockerImage = "local/nix:latest";
-        dockerAllowedImages = [
-          "local/nix:latest"
-          "local/nix-daemon:latest"
-          "reg.thurs.pw/docker/ubuntu:latest"
-        ];
 
         environmentVariables = {
           NIX_REMOTE = "daemon";
