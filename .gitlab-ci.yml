@@ -56,6 +56,8 @@ build:artifacts:
   variables:
     NIX_CONFIG: "access-tokens = github.com=$GITHUB_PAT"
   script:
+    - /bin/attic login local http://192.168.10.15:8080 $ATTIC_TOKEN
+    - /bin/attic use local
     - |
       for config in $HOSTS; do
         echo "Building $config..."
@@ -76,11 +78,12 @@ attic:push:
     - build:artifacts
   script:
     - /bin/attic login local http://192.168.10.15:8080 $ATTIC_TOKEN
+    - /bin/attic use local
     - cd results
     - |
       for config in $HOSTS; do
         echo "Pushing packages for $config:"
-        /bin/attic push local ./$config
+        /bin/attic push --ignore-upstream-cache-filter local ./$config
       done
 
 sleep:
