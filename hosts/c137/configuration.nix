@@ -23,6 +23,7 @@ in
 
   config = {
     system.stateVersion = "24.11";
+    systemd.extraConfig = "DefaultLimitNOFILE=1024:1048576";
 
     mine = {
       user = {

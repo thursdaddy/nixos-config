@@ -59,7 +59,7 @@ build:artifacts:
     - |
       for config in $HOSTS; do
         echo "Building $config..."
-        nix build --option substitute false ".#nixosConfigurations.${config}.config.system.build.toplevel"
+        nix build ".#nixosConfigurations.${config}.config.system.build.toplevel"
         echo "Moving results to results/$config..."
         mv result results/$config
       done
