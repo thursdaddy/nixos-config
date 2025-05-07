@@ -28,7 +28,7 @@ wakeup:
         sleep 15
       fi
 
-flake:update:
+nix:flake:
   stage: flake
   image: local/nix-daemon:latest
   tags:
@@ -43,7 +43,7 @@ flake:update:
     paths:
       - flake.lock
 
-build:artifacts:
+nix:build:
   stage: build
   image: local/nix-daemon:latest
   tags:
