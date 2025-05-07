@@ -49,7 +49,7 @@ nix:build:
   tags:
     - c137
   dependencies:
-    - flake:update
+    - nix:flake
   before_script:
     - mkdir results
     - . "$HOME/.nix-profile/etc/profile.d/nix.sh"
@@ -75,7 +75,7 @@ attic:push:
   tags:
     - c137
   dependencies:
-    - build:artifacts
+    - nix:build
   script:
     - /bin/attic login local https://attic.thurs.pw $ATTIC_TOKEN
     - /bin/attic use local
