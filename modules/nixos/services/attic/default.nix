@@ -15,6 +15,12 @@ in
   config = mkIf cfg.enable {
     networking.firewall.allowedTCPPorts = [ 8080 ];
 
+    environment.etc = mkIf config.mine.container.traefik.enable {
+      "traefik/attic.yml" = {
+        text = builtins.readFile ./traefik.yml;
+      };
+    };
+
     services.atticd = {
       enable = true;
       environmentFile = "/var/lib/private/atticd/secret.token";

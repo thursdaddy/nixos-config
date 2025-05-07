@@ -53,6 +53,7 @@ customDNS:
   customTTL: 1h
   filterUnmappedTypes: true
   mapping:
+    attic.thurs.pw: 192.168.10.15
     alertmanager.thurs.pw: 192.168.10.68
     barcode.thurs.pw: 192.168.10.15
     bazarr.thurs.pw: 192.168.10.12

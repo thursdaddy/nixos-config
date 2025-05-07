@@ -16,7 +16,7 @@ in
 
   config = mkIf cfg.enable {
     nix.settings = {
-      substituters = [ "http://192.168.10.15:8080/local" ];
+      substituters = [ "https://attic.thurs.pw/local" ];
       trusted-public-keys = [ "local:N0zoKlOpv5HJk2ct5mtF+8mBa+cM+c7KeroG1mQ6e54=" ];
     };
   };

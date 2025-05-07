@@ -1,0 +1,15 @@
+http:
+  routers:
+    attic:
+      rule: "Host(`attic.thurs.pw`)"
+      service: attic
+      entrypoints:
+        - "websecure"
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    attic:
+      loadBalancer:
+        servers:
+        - url: http://192.168.10.15:8080
