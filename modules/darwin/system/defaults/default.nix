@@ -48,11 +48,13 @@ in
           (mkIf config.mine.apps.vivaldi.enable "/Applications/Vivaldi.app")
           (mkIf config.mine.apps.ghostty.enable "/Applications/Ghostty.app")
           (mkIf config.mine.apps.discord.enable "/Applications/Home Manager Apps/Discord.app")
+          (mkIf config.mine.apps.element.enable "/Applications/Element.app")
           (mkIf config.mine.apps.obsidian.enable "/Applications/Obsidian.app")
           (mkIf config.mine.apps.proton.enable "/Applications/Proton Mail.app")
           (mkIf config.mine.apps.prusa-slicer.enable "/Applications/PrusaSlicer.app/")
           (mkIf config.mine.apps.steam.enable "/Applications/Steam.app")
           (mkIf config.mine.apps.aldente.enable "/Applications/AlDente.app")
+          (mkIf config.mine.apps.ollama.enable "/Applications/Ollama.app")
         ];
 
         orientation = "bottom";

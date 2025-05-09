@@ -23,6 +23,14 @@ in
     nixpkgs.hostPlatform = "aarch64-darwin";
     system.stateVersion = 5;
 
+    # https://nixpk.gs/pr-tracker.html?pr=400290
+    nixpkgs.overlays = [
+      (self: super: {
+        nodejs = super.nodejs_22;
+        nodejs-slim = super.nodejs-slim_22;
+      })
+    ];
+
     mine = {
       user = {
         enable = true;
@@ -54,6 +62,7 @@ in
         aldente = enabled;
         chromium = enabled;
         discord = enabled;
+        element = enabled;
         ghostty = enabled;
         keybase = enabled;
         obsidian = enabled;
