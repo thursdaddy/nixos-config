@@ -17,4 +17,4 @@ jobs:
         with:
           fetch-depth: 0
       - name: Check Nix flake inputs
-        uses: DeterminateSystems/flake-checker-action@v9
+        uses: DeterminateSystems/flake-checker-action@v10
