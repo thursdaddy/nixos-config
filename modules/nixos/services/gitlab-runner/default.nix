@@ -14,7 +14,6 @@ let
     name = "local/nix";
     tag = "latest";
     bundleNixpkgs = false;
-    extraPkgs = with pkgs; [ cachix ];
     nixConf = {
       cores = "0";
       experimental-features = [
@@ -24,13 +23,29 @@ let
     };
   };
 
-  localNixDaemon = pkgs.dockerTools.buildLayeredImageWithNixDb {
+  localNixDaemon = pkgs.dockerTools.buildLayeredImage {
     fromImage = localNix;
+    includeNixDB = true;
     name = "local/nix-daemon";
-    tag = "labuildLayeredImagetest";
+    tag = "latest";
     contents = with pkgs; [
       attic-client
     ];
+    config = {
+      Volumes = {
+        "/nix/store" = { };
+        "/nix/var/nix/db" = { };
+        "/nix/var/nix/daemon-socket" = { };
+      };
+    };
+    maxLayers = 125;
+  };
+
+  localNixDaemonAarch = pkgs.pkgsCross.aarch64-multiplatform.dockerTools.buildLayeredImage {
+    fromImage = localNix;
+    includeNixDB = true;
+    name = "local/nix-daemon";
+    tag = "aarch";
     config = {
       Volumes = {
         "/nix/store" = { };
@@ -60,6 +75,17 @@ in
       containers.gitlabnix = {
         imageFile = localNixDaemon;
         image = "local/nix-daemon:latest";
+        cmd = [
+          "nix"
+          "daemon"
+        ];
+      };
+    };
+
+    virtualisation.oci-containers = {
+      containers.gitlabnixaarch = {
+        imageFile = localNixDaemonAarch;
+        image = "local/nix-daemon:aarch";
         cmd = [
           "nix"
           "daemon"

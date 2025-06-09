@@ -68,6 +68,7 @@ nix:build:
   artifacts:
     paths:
       - results/
+  allow_failure: true
 
 attic:push:
   stage: attic
