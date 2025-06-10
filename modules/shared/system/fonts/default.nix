@@ -17,18 +17,15 @@ in
 
   config = mkIf cfg.enable {
     fonts.packages = with pkgs; [
+      jetbrains-mono
       monaspace
       noto-fonts
       noto-fonts-cjk-sans
       noto-fonts-cjk-serif
       noto-fonts-emoji
-      (nerdfonts.override {
-        fonts = [
-          "Hack"
-          "GeistMono"
-          "FiraMono"
-        ];
-      })
+      nerd-fonts.hack
+      nerd-fonts.geist-mono
+      nerd-fonts.fira-mono
     ];
   };
 }

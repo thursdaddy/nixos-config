@@ -33,6 +33,7 @@ in
       lsp-format.enable = true;
       luasnip.enable = true;
       markdown-preview.enable = true;
+      snacks.enable = true;
       tmux-navigator.enable = true;
       undotree.enable = true;
       vim-surround.enable = true;
@@ -150,11 +151,13 @@ in
         };
       };
       notify = {
-        enable = true;
-        topDown = false;
-        fps = 200;
-        stages = "fade";
-        backgroundColour = "#000000";
+        settings = {
+          enable = true;
+          topDown = false;
+          fps = 200;
+          stages = "fade";
+          backgroundColour = "#000000";
+        };
       };
       telescope = {
         enable = true;
@@ -179,6 +182,33 @@ in
           "<leader>fgc" = "git_commits";
           "<leader>fbc" = "git_bcommits";
         };
+      };
+      treesitter = {
+        enable = true;
+        grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
+          bash
+          latex
+          norg
+          tsx
+          typst
+          vue
+          lua
+          markdown
+          nix
+          python
+          javascript
+          typescript
+          dockerfile
+          json
+          toml
+          yaml
+          vim
+          vimdoc
+          tmux
+          regex
+          gitcommit
+          gitignore
+        ];
       };
     };
     # plugin specific keymaps

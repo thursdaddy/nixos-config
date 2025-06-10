@@ -95,7 +95,6 @@ in
           requires.unlock = true;
           defaultSopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
         };
-        vagrant = enabled;
       };
 
       container = {
