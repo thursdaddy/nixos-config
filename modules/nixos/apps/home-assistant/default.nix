@@ -65,7 +65,7 @@ in
         homeassistant = {
           name = "thurs_home";
           time_zone = config.mine.system.timezone.location;
-          unit_system = "imperial";
+          unit_system = "us_customary";
           temperature_unit = "F";
         };
         lovelace.mode = "yaml";

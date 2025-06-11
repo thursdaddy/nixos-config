@@ -93,8 +93,9 @@ in
             "col.border_inactive" = "0xff000000";
             groupbar = {
               height = "14";
-              font_size = "10";
-              text_color = "0xff000000";
+              font_size = "12";
+              indicator_height = "6";
+              text_color = "0xffffffff";
               "col.active" = "0xff88c0d0";
               "col.inactive" = "0xff4c566a";
             };

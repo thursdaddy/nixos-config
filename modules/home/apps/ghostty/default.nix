@@ -38,7 +38,7 @@ in
             "-calt"
             "-dlig"
           ];
-          font-family = "\"Monaspace Neon\"";
+          font-family = "\"JetBrains Mono NL\"";
         };
       };
 
