@@ -15,12 +15,14 @@ NC='\033[0m' # No Color
 rebuild () {
   if [[ "${HOSTNAME:-$HOST}" == "$TARGET" ]]; then
     printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
+    attic use local
     sudo nixos-rebuild --flake .\#"$TARGET" --fast switch
   elif [[ "$TARGET" == "mbp" ]]; then
     printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
     darwin-rebuild --flake .\#mbp switch
   else
     printf "${BLUE}Rebuilding... ${ORANGE}${TARGET} (remote)${NC}\n"
+    attic use local
     nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --fast --use-substitutes --use-remote-sudo switch
   fi
 }
