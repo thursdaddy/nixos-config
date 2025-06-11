@@ -1,5 +1,5 @@
 variables:
-  HOSTS: "c137 homebox kepler jupiter wormhole proxbox1"
+  HOSTS: "c137 homebox kepler jupiter wormhole"
 
 stages:
   - wakeup
