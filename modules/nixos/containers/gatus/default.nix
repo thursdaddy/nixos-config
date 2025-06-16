@@ -9,7 +9,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.gatus;
 
-  version = "5.17.0";
+  version = "5.18.1";
   gatus_config_yaml = pkgs.writeTextFile {
     name = "config.yaml";
     text = ''
