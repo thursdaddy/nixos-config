@@ -21,7 +21,11 @@ in
 
   config = {
     nixpkgs.hostPlatform = "aarch64-darwin";
-    system.stateVersion = 5;
+
+    system = {
+      stateVersion = 5;
+      primaryUser = "${user.name}";
+    };
 
     # https://nixpk.gs/pr-tracker.html?pr=400290
     nixpkgs.overlays = [

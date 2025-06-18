@@ -19,7 +19,7 @@ rebuild () {
     sudo nixos-rebuild --flake .\#"$TARGET" --fast switch
   elif [[ "$TARGET" == "mbp" ]]; then
     printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
-    darwin-rebuild --flake .\#mbp switch
+    sudo darwin-rebuild --flake .\#mbp switch
   else
     printf "${BLUE}Rebuilding... ${ORANGE}${TARGET} (remote)${NC}\n"
     attic use local

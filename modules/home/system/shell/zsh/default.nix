@@ -26,7 +26,7 @@ in
 
         syntaxHighlighting.enable = true;
 
-        initExtra = mkIf pkgs.stdenv.hostPlatform.isDarwin ''
+        initContent = mkIf pkgs.stdenv.hostPlatform.isDarwin ''
           eval "$(/opt/homebrew/bin/brew shellenv)"
         '';
 

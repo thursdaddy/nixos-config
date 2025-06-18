@@ -20,7 +20,7 @@ in
     environment.systemPackages = with pkgs; [
       fishPlugins.colored-man-pages
       fishPlugins.done
-      fishPlugins.fzf-fish
+      # fishPlugins.fzf-fish #i https://github.com/NixOS/nixpkgs/issues/410069
       fishPlugins.forgit
       fishPlugins.grc
       grc
