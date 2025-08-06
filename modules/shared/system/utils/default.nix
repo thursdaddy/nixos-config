@@ -31,6 +31,8 @@ let
       ncdu
       nmap
       wakeonlan
+      rar
+      p7zip
     ]
     ++ optionals pkgs.stdenv.isLinux [
       pinentry-all
