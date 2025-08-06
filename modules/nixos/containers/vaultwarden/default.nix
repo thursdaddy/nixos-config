@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.vaultwarden;
 
-  version = "1.34.1";
+  version = "1.34.3";
 in
 {
   options.mine.container.vaultwarden = {
