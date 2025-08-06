@@ -22,6 +22,7 @@ in
     home-manager.users.${user.name} = {
       programs.hyprlock = {
         enable = true;
+        package = pkgs.unstable.hyprlock;
         settings = {
           general = {
             grace = 3;
