@@ -7,6 +7,7 @@
     system.stateVersion = "24.11";
 
     hardware.enableRedistributableFirmware = true;
+    security.sudo-rs.enable = true;
 
     boot = {
       kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
@@ -37,20 +38,21 @@
 
     networking = {
       hostId = "00000000";
-      defaultGateway = "192.168.20.1";
+      defaultGateway = "192.168.10.1";
       nameservers = [
         "192.168.10.201"
-        "192.168.20.53"
+        "192.168.10.60"
       ];
       interfaces.eth0.ipv4.addresses = [
         {
-          address = "192.168.20.222";
+          address = "192.168.10.222";
           prefixLength = 24;
         }
       ];
     };
 
     services.openssh.enable = true;
+    users.users.root.initialPassword = "changeme";
     users.users.root.openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMsmsLubwu6s0wkeKTsM2EIuJRKFsg2nZdRCVtQHk9LT thurs"
     ];

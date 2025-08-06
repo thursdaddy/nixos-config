@@ -22,6 +22,8 @@ in
   config = {
     system.stateVersion = "24.11";
 
+    security.sudo-rs.enable = true;
+
     mine = {
       user = {
         enable = true;
@@ -64,7 +66,7 @@ in
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
           useRoutingFeatures = "client";
-          extraSetFlags = [ "--advertise-routes=192.168.10.0/24,192.168.20.0/24" ];
+          extraSetFlags = [ "--advertise-routes=192.168.10.0/24" ];
         };
         prometheus = {
           enable = true;

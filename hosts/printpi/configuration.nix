@@ -21,6 +21,7 @@ in
   config = {
     system.stateVersion = "24.11";
 
+    security.sudo-rs.enable = true;
     services.rpcbind.enable = true;
     environment.systemPackages = with pkgs; [
       neovim
