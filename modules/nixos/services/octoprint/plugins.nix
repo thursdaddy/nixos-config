@@ -231,6 +231,7 @@
               pysuper.octoprint
               pkgs.python312Packages.peewee
               pkgs.python312Packages.qrcode
+              pkgs.python312Packages.future
               pkgs.python312Packages.pillow
             ];
             doCheck = false;
