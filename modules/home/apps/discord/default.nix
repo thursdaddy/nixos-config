@@ -25,7 +25,7 @@ in
       ];
 
     home-manager.users.${user.name} = {
-      home.packages = with pkgs; [ discord ];
+      home.packages = with pkgs; [ unstable.discord ];
     };
   };
 }
