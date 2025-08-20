@@ -57,12 +57,15 @@ blocky:
   @./nix.sh rebuild homebox
 
 all:
-  @./nix.sh rebuild c137
-  @./nix.sh rebuild workbox
+  @./nix.sh rebuild jupiter
+  @./nix.sh rebuild wormhole
+  @./nix.sh rebuild kepler
   @./nix.sh rebuild cloudbox
   @./nix.sh rebuild netpi1
   @./nix.sh rebuild netpi2
   @./nix.sh rebuild printpi
+  @./nix.sh rebuild homebox
+  @./nix.sh rebuild c137
 
 help:
   @./nix.sh help
