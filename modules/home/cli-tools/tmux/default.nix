@@ -34,7 +34,7 @@ let
 
     if [ $? != 0 ]; then
       echo "tmux session $1 does not exist!"
-      path=$(find ${tmuxs_paths} -depth -maxdepth 1 -type d -name $1 -print -quit 2>&1)
+      path=$(find ${tmuxs_paths} -depth -maxdepth 1 -type d -name $1 -print ! -name ".*" -quit 2>&1)
       cd $path
       tmux new-session -d -s "$SESSION" -n nvim 'nvim' \; \
         new-window -n zsh \; \
@@ -81,15 +81,12 @@ in
         escapeTime = 0;
         baseIndex = 1;
         historyLimit = 20000;
-        terminal = "xterm-256color";
+        terminal = "tmux-256color";
         plugins = with pkgs; [
-          tmuxPlugins.vim-tmux-navigator
           tmuxPlugins.tmux-fzf
-          tmuxPlugins.copy-toolkit
           tmuxPlugins.yank
         ];
         extraConfig = ''
-          TMUX_FZF_LAUNCH_KEY="C-space"
           bind | split-window -h -c "#{pane_current_path}"
           bind _ split-window -v -c "#{pane_current_path}"
 
@@ -161,7 +158,7 @@ in
           set -g pane-border-style fg='#6272a4'
           set -g message-style bg="$BG_HIGHLIGHT",fg="$ORANGE"
           set -g status-style bg='#44475a',fg='#bd93f9'
-          set -g status-interval 1
+          set -g status-interval 5
 
           set -g window-status-current-format "#[fg=$MAGENTA]      #I#[fg=$BLUE1] ❘#[fg=$GREEN]#W#[fg=$BLUE1]★  "
           set -g window-status-format "#[fg=$FG_DARK]      #I ❘#W  "
@@ -175,6 +172,7 @@ in
           set -ga status-right " #[bg=$BG_DARK]#[fg=$MAGENTA] %a #[bg=$BG_DARK]#[fg=$FG_DARK] %b %d #[fg=$TEAL] #[fg=$GREEN]%l:%M:%S "
 
           set -g mode-style "fg=$FG_DARK,bg=$TERMINAL_BLACK"
+          set -g default-command "''${SHELL}"
         '';
       };
 
@@ -198,7 +196,7 @@ in
 
       # source the autocomplete script in zsh
       programs.zsh = mkIf (cfg.sessionizer.enable && user.shell.package == pkgs.zsh) {
-        initExtra = ''
+        initContent = ''
           source ~/.local/bin/tmuxs_autocomplete.sh
         '';
       };

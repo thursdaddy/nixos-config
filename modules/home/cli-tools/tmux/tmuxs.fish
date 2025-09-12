@@ -1,6 +1,7 @@
 
 # start tmux session after cd'ing into the dir
 function tmux_session_start
+  echo $argv
   cd $argv
   set SESSION (basename $PWD)
 
@@ -56,7 +57,7 @@ else
   if string match -q "." $argv
     set -g path $PWD
   else
-    set -g path (find $tmuxs_paths -depth -maxdepth 2 -type d -iname $argv)
+    set -g path (find $tmuxs_paths -depth -maxdepth 1 -type d -iname $argv)
   end
 
   if test -z "$path"

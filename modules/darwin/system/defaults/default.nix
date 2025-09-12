@@ -47,7 +47,6 @@ in
         persistent-apps = [
           (mkIf config.mine.apps.vivaldi.enable "/Applications/Vivaldi.app")
           (mkIf config.mine.apps.ghostty.enable "/Applications/Ghostty.app")
-          (mkIf config.mine.apps.discord.enable "/Applications/Home Manager Apps/Discord.app")
           (mkIf config.mine.apps.element.enable "/Applications/Element.app")
           (mkIf config.mine.apps.obsidian.enable "/Applications/Obsidian.app")
           (mkIf config.mine.apps.proton.enable "/Applications/Proton Mail.app")

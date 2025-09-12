@@ -40,7 +40,7 @@ in
         enable = true;
         home-manager = enabled;
         ghToken = enabled;
-        shell.package = pkgs.fish;
+        shell.package = pkgs.zsh;
       };
 
       home-manager = {
@@ -80,13 +80,14 @@ in
       };
 
       cli-tools = {
-        awscli = enabled;
         ansible = enabled;
+        awscli = enabled;
         charm-freeze = enabled;
+        crush = enabled;
         direnv = enabled;
+        fastfetch = enabled;
         homebrew = enabled;
         just = enabled;
-        fastfetch = enabled;
         nixvim = enabled;
         sops = {
           enable = true;

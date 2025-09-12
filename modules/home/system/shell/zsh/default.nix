@@ -28,6 +28,7 @@ in
 
         initContent = mkIf pkgs.stdenv.hostPlatform.isDarwin ''
           eval "$(/opt/homebrew/bin/brew shellenv)"
+          eval "$(direnv hook zsh)"
         '';
 
         shellAliases =

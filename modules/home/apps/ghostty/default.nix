@@ -41,10 +41,6 @@ in
           font-family = "\"JetBrains Mono NL\"";
         };
       };
-
-      programs.tmux = {
-        terminal = mkForce "xterm-ghostty";
-      };
     };
   };
 }
