@@ -41,11 +41,15 @@ in
       };
 
       container = {
+        receipts-db = enabled;
         audiobookshelf = enabled;
         commafeed = enabled;
         gitlab = enabled;
         grocy = enabled;
         hoarder = enabled;
+        paperless-ngx = enabled;
+        rwmarkable = enabled;
+        tasktrove = enabled;
         teslamate = enabled;
         thelounge = enabled;
         traefik = {
@@ -81,7 +85,6 @@ in
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
         };
         qemu-guest = enabled;
-        upsnap = enabled;
       };
 
       system = {

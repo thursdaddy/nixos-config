@@ -84,13 +84,17 @@ customDNS:
     prometheus.thurs.pw: 192.168.10.68
     radarr.thurs.pw: 192.168.10.12
     readarr.thurs.pw: 192.168.10.12
+    receipts-db.thurs.pw: 192.168.10.15
     reg.thurs.pw: 192.168.10.15
+    lists.thurs.pw: 192.168.10.15
+    paperless.thurs.pw: 192.168.10.15
     sabnzbd.thurs.pw: 192.168.10.12
     sonarr.thurs.pw: 192.168.10.12
     stream.thurs.pw: 192.168.10.185
     sync-borrowbox.thurs.pw: 192.168.10.12
     sync-streambox.thurs.pw: 192.168.10.189
     sync-wormhole.thurs.pw: 192.168.10.51
+    tasks.thurs.pw: 192.168.10.15
     tautulli.thurs.pw: 192.168.10.189
     tesla.thurs.pw: 192.168.10.15
     teslamate.thurs.pw: 192.168.10.15
