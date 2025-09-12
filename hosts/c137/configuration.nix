@@ -24,6 +24,7 @@ in
   config = {
     system.stateVersion = "24.11";
     systemd.extraConfig = "DefaultLimitNOFILE=1024:1048576";
+    networking.firewall.allowedTCPPorts = [ 8000 ];
 
     mine = {
       user = {
@@ -84,6 +85,7 @@ in
         ansible = enabled;
         attic = enabled;
         charm-freeze = enabled;
+        crush = enabled;
         bottom = enabled;
         direnv = enabled;
         just = enabled;
