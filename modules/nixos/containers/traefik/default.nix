@@ -15,7 +15,7 @@ let
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.container.traefik;
 
-  version = "3.5.0";
+  version = "3.5.1";
 
   fqdn = config.mine.container.traefik.domainName;
   regex_fqdn = builtins.replaceStrings [ "." ] [ "\\." ] "${fqdn}";
@@ -102,17 +102,16 @@ in
       environment = {
         AWS_REGION = "us-west-2";
       };
-      volumes =
-        [
-          "/var/run/docker.sock:/var/run/docker.sock:ro"
-          "${config.mine.container.settings.configPath}/traefik:/etc/traefik/"
-          # mounted to follow symlinks created by environment.etc for static traefik configs
-          "/etc/static/traefik:/static"
-          "/nix/store:/nix/store"
-        ]
-        ++ optionals cfg.basicAuth [
-          "${config.sops.templates."userfile.env".path}:/etc/traefik/userfile"
-        ];
+      volumes = [
+        "/var/run/docker.sock:/var/run/docker.sock:ro"
+        "${config.mine.container.settings.configPath}/traefik:/etc/traefik/"
+        # mounted to follow symlinks created by environment.etc for static traefik configs
+        "/etc/static/traefik:/static"
+        "/nix/store:/nix/store"
+      ]
+      ++ optionals cfg.basicAuth [
+        "${config.sops.templates."userfile.env".path}:/etc/traefik/userfile"
+      ];
       cmd = [
         "--api.dashboard=false"
         "--api.insecure=false"

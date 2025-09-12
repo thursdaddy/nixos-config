@@ -9,7 +9,7 @@ let
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.container.syncthing;
 
-  version = "2.0.2";
+  version = "2.0.3";
 in
 {
   options.mine.container.syncthing = mkOption {
@@ -48,7 +48,8 @@ in
       ];
       volumes = [
         "${config.mine.container.settings.configPath}/syncthing:/var/syncthing"
-      ] ++ cfg.volumePaths;
+      ]
+      ++ cfg.volumePaths;
       labels = {
         "traefik.enable" = "true";
         "traefik.http.routers.syncthing.tls" = "true";
