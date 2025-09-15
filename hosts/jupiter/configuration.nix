@@ -41,7 +41,7 @@ in
       };
 
       container = {
-        receipts-db = enabled;
+        greenbook = enabled;
         audiobookshelf = enabled;
         commafeed = enabled;
         gitlab = enabled;

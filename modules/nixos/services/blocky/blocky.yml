@@ -84,7 +84,8 @@ customDNS:
     prometheus.thurs.pw: 192.168.10.68
     radarr.thurs.pw: 192.168.10.12
     readarr.thurs.pw: 192.168.10.12
-    receipts-db.thurs.pw: 192.168.10.15
+    greenbook.thurs.pw: 192.168.10.15
+    greenbook-db.thurs.pw: 192.168.10.15
     reg.thurs.pw: 192.168.10.15
     lists.thurs.pw: 192.168.10.15
     paperless.thurs.pw: 192.168.10.15
