@@ -6,6 +6,8 @@
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.greenbook;
+
+  version = "0.0.3";
 in
 {
   options.mine.container.greenbook = {
@@ -62,18 +64,19 @@ in
       };
       labels = {
         "traefik.enable" = "true";
-        "traefik.http.routers.greenbook.tls" = "true";
-        "traefik.http.routers.greenbook.tls.certresolver" = "letsencrypt";
-        "traefik.http.routers.greenbook.entrypoints" = "websecure";
-        "traefik.http.routers.greenbook.rule" =
-          "Host(`greenbook-db.${config.mine.container.traefik.domainName}`)";
-        "traefik.http.services.greenbook.loadbalancer.server.port" = "5432";
+        "traefik.tcp.routers.greenbook-db.rule" =
+          "HostSNI(`greenbook-db.${config.mine.container.traefik.domainName}`)";
+        "traefik.tcp.routers.greenbook-db.tls" = "true";
+        "traefik.tcp.routers.greenbook-db.tls.certresolver" = "letsencrypt";
+        "traefik.tcp.routers.greenbook-db.entrypoints" = "postgres";
+        "traefik.tcp.routers.greenbook-db.service" = "greenbook-db-service";
+        "traefik.tcp.services.greenbook-db-service.loadbalancer.server.port" = "5432";
         "enable.versions.check" = "false";
       };
     };
 
     virtualisation.oci-containers.containers."greenbook" = {
-      image = "reg.thurs.pw/homelab/greenbook";
+      image = "reg.thurs.pw/homelab/greenbook:${version}";
       login = {
         username = "thurs";
         registry = "reg.thurs.pw";

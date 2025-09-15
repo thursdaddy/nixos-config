@@ -17,6 +17,7 @@ let
 
   version = "3.5.1";
 
+  is_Jupiter = config.networking.hostName == "jupiter";
   fqdn = config.mine.container.traefik.domainName;
   regex_fqdn = builtins.replaceStrings [ "." ] [ "\\." ] "${fqdn}";
   envFileContents = ''
@@ -91,6 +92,9 @@ in
         "0.0.0.0:80:80"
         "0.0.0.0:443:443"
         "0.0.0.0:8082:8082"
+      ]
+      ++ optionals is_Jupiter [
+        "0.0.0.0:5432:5432"
       ];
       extraOptions = [
         "--network=traefik"
@@ -132,6 +136,9 @@ in
         "--metrics.prometheus.addServicesLabels=true"
         "--entrypoints.metrics.address=:8082"
         "--metrics.prometheus.entrypoint=metrics"
+      ]
+      ++ optionals is_Jupiter [
+        "--entrypoints.postgres.address=:5432"
       ];
       labels = {
         "traefik.enable" = "true";
