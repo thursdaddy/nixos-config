@@ -35,7 +35,7 @@ in
       enable = true;
       config.http.server_port = 8090;
       package =
-        (pkgs.unstable.home-assistant.override {
+        (pkgs.home-assistant.override {
           extraPackages =
             py: with py; [
               google-nest-sdm
