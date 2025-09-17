@@ -41,12 +41,14 @@ in
       };
 
       container = {
-        greenbook = enabled;
         audiobookshelf = enabled;
         commafeed = enabled;
         gitlab = enabled;
+        greenbook = enabled;
         grocy = enabled;
         hoarder = enabled;
+        navidrome = enabled;
+        open-webui = enabled;
         paperless-ngx = enabled;
         rwmarkable = enabled;
         tasktrove = enabled;
@@ -58,7 +60,6 @@ in
           domainName = "thurs.pw";
         };
         vaultwarden = enabled;
-        open-webui = enabled;
       };
 
       services = {
