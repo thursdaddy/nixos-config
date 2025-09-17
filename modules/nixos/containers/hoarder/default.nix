@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.hoarder;
 
-  version = "0.27.0";
+  version = "0.27.1";
   envFileContents = ''
     MEILI_MASTER_KEY=${config.sops.placeholder."hoarder/MEILI_MASTER_KEY"}
     NEXTAUTH_SECRET=${config.sops.placeholder."hoarder/MEILI_MASTER_KEY"}
@@ -40,9 +40,12 @@ in
           BROWSER_WEB_URL = "http://chrome:9222";
           DATA_DIR = "/data";
           OLLAMA_BASE_URL = "http://192.168.10.15:11434";
-          INFERENCE_IMAGE_MODEL = "falcon3:latest";
-          INFERENCE_TEXT_MODEL = "falcon3:latest";
+          INFERENCE_IMAGE_MODEL = "deepseek-r1:7b";
+          INFERENCE_TEXT_MODEL = "deepseek-r1:7b";
           INFERENCE_JOB_TIMEOUT_SEC = "300";
+          CRAWLER_FULL_PAGE_SCREENSHOT = "true";
+          CRAWLER_FULL_PAGE_ARCHIVE = "true";
+          CRAWLER_VIDEO_DOWNLOAD = "true";
         };
         environmentFiles = [
           config.sops.templates."hoarder.env".path

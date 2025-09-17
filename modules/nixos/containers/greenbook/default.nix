@@ -7,7 +7,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.greenbook;
 
-  version = "0.0.3";
+  version = "0.0.4";
 in
 {
   options.mine.container.greenbook = {
@@ -76,7 +76,7 @@ in
     };
 
     virtualisation.oci-containers.containers."greenbook" = {
-      image = "reg.thurs.pw/homelab/greenbook:${version}";
+      image = "reg.thurs.pw/homelab/greenbook:v${version}";
       login = {
         username = "thurs";
         registry = "reg.thurs.pw";
@@ -97,7 +97,8 @@ in
         config.sops.templates."greenbook-app".path
       ];
       environment = {
-        PAPERLESS_API_BASE_URL = "https://paperless.thurs.pw/api";
+        PAPERLESS_API_BASE_URL = "http://paperless-ngx-webserver:8000/api";
+        PAPERLESS_HTTPS_URL = "https://paperless.thusr.pw/api";
         DB_HOST = "greenbook-db";
         DB_USERNAME = "receipts";
         DB_NAME = "receipts";

@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.rwmarkable;
 
-  version = "main";
+  version = "1.3.2";
 in
 {
   options.mine.container.rwmarkable = {
