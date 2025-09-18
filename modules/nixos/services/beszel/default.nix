@@ -39,6 +39,9 @@ in
       wantedBy = [ "default.target" ];
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
+      environment = {
+        APP_URL = "https://monitor.thurs.pw";
+      };
       serviceConfig = {
         ExecStart = "${pkgs.unstable.beszel}/bin/beszel-hub serve --http ${cfg.listenAddress}:${builtins.toString cfg.hubPort} --dir ${cfg.dataDir}";
         Type = "simple";
