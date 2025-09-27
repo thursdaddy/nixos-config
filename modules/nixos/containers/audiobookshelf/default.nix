@@ -43,6 +43,9 @@ in
         "traefik.http.services.audiobookshelf.loadbalancer.server.port" = "80";
         "org.opencontainers.image.version" = "${version}";
         "org.opencontainers.image.source" = "https://github.com/advplyr/audiobookshelf";
+        "homelab.backup.enable" = "true";
+        "homelab.backup.path" = "${config.mine.container.settings.configPath}";
+        "homelab.backup.retention.period" = "5";
       };
     };
 

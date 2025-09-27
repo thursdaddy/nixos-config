@@ -49,6 +49,11 @@ in
         "traefik.http.services.gitlab-registry.loadbalancer.server.port" = "5005";
         "org.opencontainers.image.version" = "${version}";
         "org.opencontainers.image.source" = "https://github.com/gitlabhq/gitlabhq";
+        "homelab.backup.enable" = "true";
+        "homelab.backup.path" = "${config.mine.container.settings.configPath}";
+        "homelab.backup.path.ignore" = "data,registry,logs";
+        "homelab.backup.path.include" = "${config.mine.container.settings.configPath}/gitlab/data/backups";
+        "homelab.backup.retention.period" = "5";
       };
     };
   };

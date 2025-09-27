@@ -138,6 +138,7 @@ in
         ];
         volumes = [
           "${config.mine.container.settings.configPath}/tesla-postgres:/var/lib/postgresql/data"
+          "${config.mine.container.settings.configPath}/tesla-postgres/db_dumps:/db_dumps"
         ];
         labels = {
           "traefik.enable" = "true";
@@ -148,6 +149,9 @@ in
             "Host(`tesla-db.${config.mine.container.traefik.domainName}`)";
           "traefik.http.services.tesla-postgres.loadbalancer.server.port" = "5432";
           "enable.versions.check" = "false";
+          "homelab.backup.enable" = "true";
+          "homelab.backup.path" = "${config.mine.container.settings.configPath}/tesla-postgres/db_dumps";
+          "homelab.backup.retention.period" = "5";
         };
       };
     };

@@ -49,6 +49,7 @@ in
       cmd = [
         "--config.file=/etc/prometheus/prometheus.yml"
         "--storage.tsdb.retention.size=50GB"
+        "--web.enable-admin-api"
       ];
       volumes = [
 

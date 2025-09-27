@@ -28,6 +28,9 @@ in
           "--network=traefik"
           "--pull=always"
         ];
+        labels = {
+          "enable.versions.check" = "false";
+        };
       };
 
       "paperless-ngx-db" = {
@@ -44,12 +47,15 @@ in
           "--network=traefik"
           "--pull=always"
         ];
+        labels = {
+          "enable.versions.check" = "false";
+        };
       };
 
       "paperless-ngx-webserver" = {
         image = "ghcr.io/paperless-ngx/paperless-ngx:${paperlessVersion}";
         ports = [
-          "8000:8000" # Host_port:Container_port
+          "8000"
         ];
         volumes = [
           "${config.mine.container.settings.configPath}/paperless/data:/usr/src/paperless/data"
@@ -74,6 +80,9 @@ in
           "traefik.http.services.paperless.loadbalancer.server.port" = "8000";
           "org.opencontainers.image.version" = "${paperlessVersion}";
           "org.opencontainers.image.source" = "https://github.com/paperless-ngx/paperless-ngx/tree/main";
+          "homelab.backup.enable" = "true";
+          "homelab.backup.path" = "${config.mine.container.settings.configPath}/paperless/user/export";
+          "homelab.backup.retention.period" = "5";
         };
         environment = {
           # Environment variables from docker-compose

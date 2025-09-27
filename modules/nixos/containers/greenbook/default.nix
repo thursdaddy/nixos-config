@@ -49,6 +49,7 @@ in
       ];
       volumes = [
         "${config.mine.container.settings.configPath}/greenbook/db:/var/lib/postgresql/data"
+        "${config.mine.container.settings.configPath}/greenbook/db_dumps:/db_dumps"
       ];
       extraOptions = [
         "--network=traefik"
@@ -72,6 +73,9 @@ in
         "traefik.tcp.routers.greenbook-db.service" = "greenbook-db-service";
         "traefik.tcp.services.greenbook-db-service.loadbalancer.server.port" = "5432";
         "enable.versions.check" = "false";
+        "homelab.backup.enable" = "true";
+        "homelab.backup.path" = "${config.mine.container.settings.configPath}/greenbook/db_dumps";
+        "homelab.backup.retention.period" = "5";
       };
     };
 
@@ -113,6 +117,9 @@ in
           "Host(`greenbook.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.greenbook.loadbalancer.server.port" = "8000";
         "enable.versions.check" = "false";
+        "homelab.backup.enable" = "true";
+        "homelab.backup.path" = "${config.mine.container.settings.configPath}";
+        "homelab.backup.retention.period" = "5";
       };
     };
   };

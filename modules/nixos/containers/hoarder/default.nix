@@ -59,6 +59,9 @@ in
           "traefik.http.services.hoarder.loadbalancer.server.port" = "3000";
           "org.opencontainers.image.version" = "${version}";
           "org.opencontainers.image.source" = "https://github.com/hoarder-app/hoarder";
+          "homelab.backup.enable" = "true";
+          "homelab.backup.path" = "${config.mine.container.settings.configPath}";
+          "homelab.backup.retention.period" = "5";
         };
       };
       "hoarder-chrome" = {

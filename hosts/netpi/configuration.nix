@@ -83,14 +83,6 @@ in
           firewall = enabled;
           forwarding.ipv4 = true;
         };
-        nfs-mounts = {
-          enable = true;
-          mounts = {
-            "/backups" = {
-              device = "192.168.10.12:/fast/backups";
-            };
-          };
-        };
         nix = {
           unfree = enabled;
           flakes = enabled;

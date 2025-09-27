@@ -53,6 +53,9 @@ in
         "traefik.http.routers.vaultwarden.entrypoints" = "websecure";
         "traefik.http.routers.vaultwarden.rule" = "Host(`bw.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.vaultwarden.loadbalancer.server.port" = "80";
+        "homelab.backup.enable" = "true";
+        "homelab.backup.path" = "${config.mine.container.settings.configPath}";
+        "homelab.backup.retention.period" = "10";
       };
     };
   };
