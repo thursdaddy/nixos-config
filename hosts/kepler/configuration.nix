@@ -38,7 +38,6 @@ in
 
       container = {
         alertmanager = enabled;
-        gitlab-runner = enabled;
         grafana = enabled;
         prometheus = enabled;
         traefik = {
@@ -58,6 +57,22 @@ in
           enable = true;
           scripts.check-versions = true;
         };
+        gitlab-runner = {
+          enable = true;
+          runners = {
+            backup = {
+              tags = [
+                "${config.networking.hostName}"
+                "backup"
+              ];
+              dockerVolumes = [
+                "/backups:/backups"
+                "/opt/configs:/opt/configs:ro"
+                "/var/run/docker.sock:/var/run/docker.sock"
+              ];
+            };
+          };
+        };
         loki = enabled;
         prometheus = {
           enable = true;
@@ -65,12 +80,12 @@ in
             node = enabled;
           };
         };
+        qemu-guest = enabled;
         tailscale = {
           enable = true;
           useRoutingFeatures = "client";
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
         };
-        qemu-guest = enabled;
       };
 
       system = {
@@ -89,7 +104,7 @@ in
           enable = true;
           mounts = {
             "/backups" = {
-              device = "192.168.10.12:/fast/backups";
+              device = "192.168.10.12:/fast/backups/kepler";
             };
           };
         };

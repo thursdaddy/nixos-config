@@ -135,6 +135,31 @@ in
           enable = true;
           scripts.check-versions = true;
         };
+        gitlab-runner = {
+          enable = true;
+          runners = {
+            docker = {
+              tags = [
+                "${config.networking.hostName}"
+                "docker"
+              ];
+              dockerVolumes = [
+                "/var/run/docker.sock:/var/run/docker.sock"
+              ];
+            };
+            backup = {
+              tags = [
+                "${config.networking.hostName}"
+                "backup"
+              ];
+              dockerVolumes = [
+                "/backups:/backups"
+                "/opt/configs:/opt/configs:ro"
+                "/var/run/docker.sock:/var/run/docker.sock"
+              ];
+            };
+          };
+        };
         mpd = enabled;
         ollama = enabled;
         prometheus = {

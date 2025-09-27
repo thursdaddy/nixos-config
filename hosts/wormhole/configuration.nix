@@ -47,7 +47,6 @@ in
       };
 
       container = {
-        gitlab-runner = enabled;
         syncthing = {
           enable = true;
           subdomain = "sync-wormhole";
@@ -85,6 +84,31 @@ in
           enable = true;
           scripts.check-versions = true;
         };
+        gitlab-runner = {
+          enable = true;
+          runners = {
+            docker = {
+              tags = [
+                "${config.networking.hostName}"
+                "docker"
+              ];
+              dockerVolumes = [
+                "/var/run/docker.sock:/var/run/docker.sock"
+              ];
+            };
+            backup = {
+              tags = [
+                "${config.networking.hostName}"
+                "backup"
+              ];
+              dockerVolumes = [
+                "/backups:/backups"
+                "/opt/configs:/opt/configs:ro"
+                "/var/run/docker.sock:/var/run/docker.sock"
+              ];
+            };
+          };
+        };
         prometheus = {
           enable = true;
           exporters = {
@@ -115,7 +139,7 @@ in
           enable = true;
           mounts = {
             "/backups" = {
-              device = "192.168.10.12:/fast/backups/";
+              device = "192.168.10.12:/fast/backups/wormhole";
             };
           };
         };
