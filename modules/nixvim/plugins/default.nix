@@ -124,6 +124,8 @@ in
               # code style enforcement
               flake8 = {
                 enabled = true;
+                autoArchive = true;
+                autoEvalInputs = true;
                 ignore = [
                   "E302"
                   "E305"
@@ -210,6 +212,7 @@ in
           gitignore
         ];
       };
+      trouble.enable = true;
     };
     # plugin specific keymaps
     keymaps = [
@@ -344,6 +347,13 @@ in
         mode = "n";
         key = "<leader>gdv";
         action = "<CMD>VGit project_diff_preview<CR>";
+        options.noremap = true;
+      }
+      # Trouble
+      {
+        mode = "n";
+        key = "<leader>vd";
+        action = "<CMD>Trouble diagnostics toggle<CR>";
         options.noremap = true;
       }
     ];
