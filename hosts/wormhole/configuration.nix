@@ -65,6 +65,7 @@ in
       cli-tools = {
         attic = enabled;
         bottom = enabled;
+        crush = enabled;
         direnv = enabled;
         just = enabled;
         fastfetch = enabled;
