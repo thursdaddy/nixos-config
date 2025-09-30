@@ -56,6 +56,11 @@ in
         "traefik.http.routers.grafana.rule" = "Host(`grafana.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.grafana.loadbalancer.server.port" = "3000";
         "enable.versions.check" = "false";
+        "homelab.backup.enable" = "true";
+        "homelab.backup.path" = "${config.mine.container.settings.configPath}";
+        "homelab.backup.path.ignore" = "grafana";
+        "homelab.backup.path.include" = "/cache/grafana";
+        "homelab.backup.retention.period" = "5";
       };
     };
   };
