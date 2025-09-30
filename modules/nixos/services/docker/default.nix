@@ -56,7 +56,7 @@ in
         enable = true;
         autoPrune = {
           enable = true;
-          dates = "weekly";
+          dates = "daily";
         };
       };
     };

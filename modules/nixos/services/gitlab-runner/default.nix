@@ -115,7 +115,7 @@ in
         authenticationTokenConfigFile = "${runner_cfg_path}/${runnerName}";
         executor = "docker";
         dockerImage = "alpine";
-        dockerPullPolicy = "if-not-present";
+        dockerPullPolicy = "always";
         dockerPrivileged = true;
         dockerVolumes = runnerConfig.dockerVolumes;
         registrationFlags = [
