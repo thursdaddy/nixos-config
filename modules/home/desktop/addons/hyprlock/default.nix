@@ -39,7 +39,7 @@ in
             {
               size = "300, 60";
               outline_thickness = 2;
-              monitor = "";
+              monitor = "DP-1";
               dots_size = 0.05;
               dots_spacing = 0.05;
               dots_center = true;
@@ -54,7 +54,7 @@ in
           ];
 
           label = {
-            monitor = "";
+            monitor = "DP-1";
             text = ''cmd[update:10] echo "<b>$(date +'%_I:%M:%S')</b>"'';
             text_align = "center";
             color = "rgba(255, 255, 255, 1.0)";
