@@ -45,9 +45,9 @@
   };
 
   systemctl = {
-    _dst = "sudo systemctl status";
-    _dstop = "sudo systemctl stop";
-    _drs = "sudo systemctl restart";
-    _dstart = "sudo systemctl start";
+    _sst = "sudo systemctl status";
+    _srs = "sudo systemctl restart";
+    _sstop = "sudo systemctl stop";
+    _sstart = "sudo systemctl start";
   };
 }
