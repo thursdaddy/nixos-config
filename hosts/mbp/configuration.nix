@@ -98,6 +98,8 @@ in
         };
       };
 
+      desktop.aerospace = enabled;
+
       services = {
         docker = enabled;
       };

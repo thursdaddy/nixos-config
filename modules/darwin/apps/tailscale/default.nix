@@ -11,6 +11,6 @@ in
   };
 
   config = mkIf cfg.enable {
-    homebrew.casks = [ "tailscale" ];
+    homebrew.casks = [ "tailscale-app" ];
   };
 }
