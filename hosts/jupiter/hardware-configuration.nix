@@ -20,9 +20,12 @@
     "sd_mod"
     "sr_mod"
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+
+  boot = {
+    extraModulePackages = [ ];
+    initrd.kernelModules = [ ];
+    kernelModules = [ "kvm-amd" ];
+  };
 
   fileSystems = {
     "/" = {

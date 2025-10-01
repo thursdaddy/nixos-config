@@ -16,9 +16,11 @@ in
 
   config = mkIf cfg.enable {
     sops = {
-      secrets."grafana-ntfy/USER" = { };
-      secrets."grafana-ntfy/PASSWORD" = { };
-      secrets."grafana-ntfy/TOPIC_URL" = { };
+      secrets = {
+        "grafana-ntfy/USER" = { };
+        "grafana-ntfy/PASSWORD" = { };
+        "grafana-ntfy/TOPIC_URL" = { };
+      };
       templates."grafana-ntfy" = {
         content = ''
           NTFY_USER=${config.sops.placeholder."grafana-ntfy/USER"}

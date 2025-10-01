@@ -15,32 +15,32 @@ in
   };
 
   config = mkIf cfg.enable {
-    sops.secrets = {
-      "gitlab/REGISTRY_AUTH" = {
-        owner = "thurs";
+    sops = {
+      secrets = {
+        "gitlab/REGISTRY_AUTH" = {
+          owner = "thurs";
+        };
+        "paperless/API_TOKEN" = {
+          owner = "thurs";
+        };
+        "greenbook/DB_PASS" = {
+          owner = "thurs";
+        };
       };
-      "paperless/API_TOKEN" = {
-        owner = "thurs";
-      };
-      "greenbook/DB_PASS" = {
-        owner = "thurs";
+      templates = {
+        "registry_pass".content = ''
+          ${config.sops.placeholder."gitlab/REGISTRY_AUTH"}
+        '';
+        "greenbook-app".content = ''
+          PAPERLESS_AUTH_TOKEN=${config.sops.placeholder."paperless/API_TOKEN"}
+          DB_PASS=${config.sops.placeholder."greenbook/DB_PASS"}
+        '';
+        "greenbook-db".content = ''
+          POSTGRES_PASSWORD=${config.sops.placeholder."greenbook/DB_PASS"}
+        '';
       };
     };
 
-    sops.templates."registry_pass".content = ''
-      ${config.sops.placeholder."gitlab/REGISTRY_AUTH"}
-    '';
-
-    sops.templates."greenbook-app".content = ''
-      PAPERLESS_AUTH_TOKEN=${config.sops.placeholder."paperless/API_TOKEN"}
-      DB_PASS=${config.sops.placeholder."greenbook/DB_PASS"}
-    '';
-
-    sops.templates."greenbook-db".content = ''
-      POSTGRES_PASSWORD=${config.sops.placeholder."greenbook/DB_PASS"}
-    '';
-
-    networking.firewall.allowedTCPPorts = [ 5432 ];
     virtualisation.oci-containers.containers."greenbook-db" = {
       image = "postgres:17.6-alpine";
       hostname = "greenbook-db";

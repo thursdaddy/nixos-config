@@ -49,15 +49,13 @@ in
         text = builtins.readFile ./config.alloy;
       };
       "traefik/blocky.yml" = {
-        text = (
-          builtins.readFile (
+        text = builtins.readFile (
             pkgs.substituteAll {
               name = "blocky";
               src = ./traefik.yml;
               host = config.networking.hostName;
             }
-          )
-        );
+          );
       };
       "blocky/config.yml" = {
         text = builtins.readFile ./blocky.yml;

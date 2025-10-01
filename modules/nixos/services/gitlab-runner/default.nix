@@ -23,7 +23,6 @@ let
 
   cfg = config.mine.services.gitlab-runner;
 
-  hostname = config.networking.hostName;
   runner_cfg_path = "/etc/gitlab-runner";
 
   runner_script = builtins.readFile ./runner.py;
@@ -65,47 +64,50 @@ in
       runner_registration
     ];
 
-    systemd.services.gitlab-runner-token = {
-      enable = true;
-      description = "Manage Gitlab Runners";
-      wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" ];
-      requires = [ "network-online.target" ];
-      requiredBy = [ "gitlab-runner.service" ];
-      serviceConfig = {
-        Type = "oneshot";
-        Restart = "on-failure";
-        RestartSec = "10s";
-        RemainAfterExit = true;
-        Environment = [
-          "GITLAB_URL=https://git.thurs.pw"
-          "GITLAB_RUNNER_CONFIG_PATH=${runner_cfg_path}"
-        ];
-        EnvironmentFile = config.sops.templates."gitlab-runner.token".path;
+    systemd = {
+      services = {
+        gitlab-runner = {
+          bindsTo = [
+            "gitlab-runner-token.service"
+          ];
+          after = [
+            "gitlab-runner-token.service"
+          ];
+          partOf = [
+            "gitlab-runner-token.service"
+          ];
+        };
+        gitlab-runner-token = {
+          enable = true;
+          description = "Manage Gitlab Runners";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network-online.target" ];
+          requires = [ "network-online.target" ];
+          requiredBy = [ "gitlab-runner.service" ];
+          serviceConfig = {
+            Type = "oneshot";
+            Restart = "on-failure";
+            RestartSec = "10s";
+            RemainAfterExit = true;
+            Environment = [
+              "GITLAB_URL=https://git.thurs.pw"
+              "GITLAB_RUNNER_CONFIG_PATH=${runner_cfg_path}"
+            ];
+            EnvironmentFile = config.sops.templates."gitlab-runner.token".path;
+          };
+          script = ''
+            ${lib.concatStringsSep "\n" (
+              lib.mapAttrsToList (
+                runnerName: runnerConfig:
+                let
+                  tagList = lib.concatStringsSep "," runnerConfig.tags;
+                in
+                "/run/current-system/sw/bin/_gitlab-runner --register --name=${runnerName} --tags=${tagList}"
+              ) config.mine.services.gitlab-runner.runners
+            )}
+          '';
+        };
       };
-      script = ''
-        ${lib.concatStringsSep "\n" (
-          lib.mapAttrsToList (
-            runnerName: runnerConfig:
-            let
-              tagList = lib.concatStringsSep "," runnerConfig.tags;
-            in
-            "/run/current-system/sw/bin/_gitlab-runner --register --name=${runnerName} --tags=${tagList}"
-          ) config.mine.services.gitlab-runner.runners
-        )}
-      '';
-    };
-
-    systemd.services.gitlab-runner = {
-      bindsTo = [
-        "gitlab-runner-token.service"
-      ];
-      after = [
-        "gitlab-runner-token.service"
-      ];
-      partOf = [
-        "gitlab-runner-token.service"
-      ];
     };
 
     services.gitlab-runner = {
@@ -117,7 +119,7 @@ in
         dockerImage = "alpine";
         dockerPullPolicy = "always";
         dockerPrivileged = true;
-        dockerVolumes = runnerConfig.dockerVolumes;
+        inherit (runnerConfig) dockerVolumes;
         registrationFlags = [
           "--docker-network-mode=host"
         ];

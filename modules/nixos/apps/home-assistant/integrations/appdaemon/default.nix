@@ -66,15 +66,13 @@ in
     };
 
     environment.etc."alloy/appdaemon.alloy" = mkIf config.mine.services.alloy.enable {
-      text = (
-        builtins.readFile (
+      text = builtins.readFile (
           pkgs.substituteAll {
             name = "appdaemon.alloy";
             src = ./config.alloy;
             host = config.networking.hostName;
           }
-        )
-      );
+        );
     };
   };
 }

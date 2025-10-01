@@ -39,11 +39,11 @@ in
 
   config = mkIf cfg.enable {
     fileSystems = lib.mapAttrs' (name: mountConfig: {
-      name = name;
+      inherit name;
       value = {
-        device = mountConfig.device;
-        fsType = mountConfig.fsType;
-        options = mountConfig.options;
+        inherit (mountConfig) device;
+        inherit (mountConfig) fsType;
+        inherit (mountConfig) options;
       };
     }) config.mine.system.nfs-mounts.mounts;
   };

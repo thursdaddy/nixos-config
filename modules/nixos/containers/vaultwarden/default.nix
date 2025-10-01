@@ -55,7 +55,7 @@ in
         "traefik.http.services.vaultwarden.loadbalancer.server.port" = "80";
         "homelab.backup.enable" = "true";
         "homelab.backup.path" = "${config.mine.container.settings.configPath}";
-        "homelab.backup.retention.period" = "10";
+        "homelab.backup.retention.period" = "5";
       };
     };
   };

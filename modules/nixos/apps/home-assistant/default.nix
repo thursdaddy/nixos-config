@@ -31,94 +31,111 @@ in
       wakelan
     ];
 
-    services.home-assistant = {
-      enable = true;
-      config.http.server_port = 8090;
-      package =
-        (pkgs.home-assistant.override {
-          extraPackages =
-            py: with py; [
-              google-nest-sdm
-              govee-ble
-              grpcio
-              grpcio-tools
-              psutil-home-assistant
-              psycopg2
-              zlib-ng
-            ];
-        }).overrideAttrs
-          (oldAttrs: {
-            doInstallCheck = false;
-          });
-      config.recorder.db_url = "postgresql://@/hass";
-      lovelaceConfigWritable = true;
-      openFirewall = true;
-      config = {
-        api = { };
-        default_config = { };
-        http = {
-          use_x_forwarded_for = true;
-          trusted_proxies = [
-            "0.0.0.0/0"
-          ];
-        };
-        homeassistant = {
-          name = "thurs_home";
-          time_zone = config.mine.system.timezone.location;
-          unit_system = "us_customary";
-          temperature_unit = "F";
-        };
-        lovelace.mode = "yaml";
-        prometheus = {
-          namespace = "hass";
-        };
-        "switch projector" = "!include projector.yaml";
-        input_boolean = "!include booleans.yaml";
-        notify = "!include notify.yaml";
-        sensor = "!include sensor.yaml";
-        utility_meter = "!include utility.yaml";
-        template = "!include template.yaml";
+    services = {
+      postgresql = {
+        enable = true;
+        ensureDatabases = [ "hass" ];
+        ensureUsers = [
+          {
+            name = "hass";
+            ensureDBOwnership = true;
+          }
+        ];
       };
-      customComponents = [
-        inputs.self.packages.${pkgs.system}.homeassistant-gotify
-      ];
-      customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
-        apexcharts-card
-      ];
-      extraComponents = [
-        "alert"
-        "bluetooth_tracker"
-        "default_config"
-        "device_tracker"
-        "esphome"
-        "geo_location"
-        "google_assistant"
-        "google_assistant_sdk"
-        "gpslogger"
-        "history"
-        "history_stats"
-        "homeassistant"
-        "homeassistant_alerts"
-        "ibeacon"
-        "logbook"
-        "logger"
-        "lovelace"
-        "lutron_caseta"
-        "met"
-        "nws"
-        "octoprint"
-        "ping"
-        "prometheus"
-        "roborock"
-        "sun"
-        "telnet"
-        "tplink"
-        "unifi"
-        "unifiprotect"
-        "webhook"
-        "utility_meter"
-        "zha" # not using but clears home-assistant startup error
-      ];
+      esphome = {
+        address = "192.168.10.60";
+        enable = true;
+        openFirewall = true;
+      };
+      home-assistant = {
+        enable = true;
+        package =
+          (pkgs.home-assistant.override {
+            extraPackages =
+              py: with py; [
+                google-nest-sdm
+                govee-ble
+                grpcio
+                grpcio-tools
+                psutil-home-assistant
+                psycopg2
+                zlib-ng
+              ];
+          }).overrideAttrs
+            (oldAttrs: {
+              doInstallCheck = false;
+            });
+        lovelaceConfigWritable = true;
+        openFirewall = true;
+        config = {
+          api = { };
+          default_config = { };
+          homeassistant = {
+            name = "thurs_home";
+            time_zone = config.mine.system.timezone.location;
+            unit_system = "us_customary";
+            temperature_unit = "F";
+          };
+          http = {
+            server_port = 8090;
+            use_x_forwarded_for = true;
+            trusted_proxies = [
+              "0.0.0.0/0"
+            ];
+          };
+          input_boolean = "!include booleans.yaml";
+          lovelace.mode = "yaml";
+          notify = "!include notify.yaml";
+          prometheus = {
+            namespace = "hass";
+          };
+          recorder.db_url = "postgresql://@/hass";
+          "switch projector" = "!include projector.yaml";
+          sensor = "!include sensor.yaml";
+          template = "!include template.yaml";
+          utility_meter = "!include utility.yaml";
+        };
+        customComponents = [
+          inputs.self.packages.${pkgs.system}.homeassistant-gotify
+        ];
+        customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
+          apexcharts-card
+        ];
+        extraComponents = [
+          "alert"
+          "bluetooth_tracker"
+          "default_config"
+          "device_tracker"
+          "esphome"
+          "geo_location"
+          "google_assistant"
+          "google_assistant_sdk"
+          "gpslogger"
+          "history"
+          "history_stats"
+          "homeassistant"
+          "homeassistant_alerts"
+          "ibeacon"
+          "logbook"
+          "logger"
+          "lovelace"
+          "lutron_caseta"
+          "met"
+          "nws"
+          "octoprint"
+          "ping"
+          "prometheus"
+          "roborock"
+          "sun"
+          "telnet"
+          "tplink"
+          "unifi"
+          "unifiprotect"
+          "webhook"
+          "utility_meter"
+          "zha" # not using but clears home-assistant startup error
+        ];
+      };
     };
 
     systemd.tmpfiles.rules = [
@@ -127,26 +144,22 @@ in
 
     environment.etc = {
       "traefik/hass.yml" = mkIf config.mine.container.traefik.enable {
-        text = (
-          builtins.readFile (
-            pkgs.substituteAll {
-              name = "hass";
-              src = ./traefik.yml;
-              fqdn = config.mine.container.traefik.domainName;
-              ip = "192.168.10.60";
-            }
-          )
+        text = builtins.readFile (
+          pkgs.substituteAll {
+            name = "hass";
+            src = ./traefik.yml;
+            fqdn = config.mine.container.traefik.domainName;
+            ip = "192.168.10.60";
+          }
         );
       };
       "alloy/home-assistant.alloy" = mkIf config.mine.services.alloy.enable {
-        text = (
-          builtins.readFile (
-            pkgs.substituteAll {
-              name = "home-assistant.alloy";
-              src = ./config.alloy;
-              host = config.networking.hostName;
-            }
-          )
+        text = builtins.readFile (
+          pkgs.substituteAll {
+            name = "home-assistant.alloy";
+            src = ./config.alloy;
+            host = config.networking.hostName;
+          }
         );
       };
     };
@@ -196,26 +209,7 @@ in
               token: ${config.sops.placeholder."gotify/token/HASS"}
           '';
         };
-
       };
     };
-
-    services.postgresql = {
-      enable = true;
-      ensureDatabases = [ "hass" ];
-      ensureUsers = [
-        {
-          name = "hass";
-          ensureDBOwnership = true;
-        }
-      ];
-    };
-
-    services.esphome = {
-      enable = true;
-      address = "192.168.10.60";
-      openFirewall = true;
-    };
-
   };
 }

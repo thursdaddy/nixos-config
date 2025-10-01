@@ -11,15 +11,13 @@ let
   version = "2.11.0";
   ntfy_conf = pkgs.writeTextFile {
     name = "server.yml";
-    text = (
-      builtins.readFile (
+    text = builtins.readFile (
         pkgs.substituteAll {
           name = "ntfyserver";
           src = ./server.yml;
           domain = config.mine.container.traefik.domainName;
         }
-      )
-    );
+      );
   };
 in
 {

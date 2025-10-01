@@ -17,9 +17,11 @@
     "usbhid"
     "sd_mod"
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot = {
+    extraModulePackages = [ ];
+    initrd.kernelModules = [ ];
+    kernelModules = [ "kvm-intel" ];
+  };
 
   networking = {
     interfaces = {

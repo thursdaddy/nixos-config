@@ -74,6 +74,22 @@ in
           enable = true;
           scripts.check-versions = true;
         };
+        gitlab-runner = {
+          enable = true;
+          runners = {
+            backup = {
+              tags = [
+                "${config.networking.hostName}"
+                "backup"
+              ];
+              dockerVolumes = [
+                "/backups:/backups"
+                "/opt/configs:/opt/configs:ro"
+                "/var/run/docker.sock:/var/run/docker.sock"
+              ];
+            };
+          };
+        };
         prometheus = {
           enable = true;
           exporters.node = enabled;

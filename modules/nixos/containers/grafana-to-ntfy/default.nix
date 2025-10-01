@@ -27,23 +27,25 @@ in
         "ntfy/topics/TESLA" = { };
         "ntfy/topics/AUDIOBOOKSHELF" = { };
       };
-      templates."ntfy-secrets" = {
-        content = ''
-          NTFY_BAUTH_USER=${config.sops.placeholder."ntfy/USER"}
-          NTFY_BAUTH_PASS=${config.sops.placeholder."ntfy/PASSWORD"}
-        '';
-      };
-      templates."ntfy-teslamate" = {
-        content = ''
-          NTFY_URL=${config.sops.placeholder."ntfy/URL"}/${config.sops.placeholder."ntfy/topics/TESLA"}
-        '';
-      };
-      templates."ntfy-audiobookshelf" = {
-        content = ''
-          NTFY_URL=${config.sops.placeholder."ntfy/URL"}/${
-            config.sops.placeholder."ntfy/topics/AUDIOBOOKSHELF"
-          }
-        '';
+      templates = {
+        "ntfy-secrets" = {
+          content = ''
+            NTFY_BAUTH_USER=${config.sops.placeholder."ntfy/USER"}
+            NTFY_BAUTH_PASS=${config.sops.placeholder."ntfy/PASSWORD"}
+          '';
+        };
+        "ntfy-teslamate" = {
+          content = ''
+            NTFY_URL=${config.sops.placeholder."ntfy/URL"}/${config.sops.placeholder."ntfy/topics/TESLA"}
+          '';
+        };
+        "ntfy-audiobookshelf" = {
+          content = ''
+            NTFY_URL=${config.sops.placeholder."ntfy/URL"}/${
+              config.sops.placeholder."ntfy/topics/AUDIOBOOKSHELF"
+            }
+          '';
+        };
       };
     };
 

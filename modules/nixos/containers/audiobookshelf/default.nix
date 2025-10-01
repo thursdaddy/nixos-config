@@ -62,15 +62,13 @@ in
 
     environment.etc = {
       "alloy/audiobookshelf.alloy" = mkIf config.mine.services.alloy.enable {
-        text = (
-          builtins.readFile (
+        text = builtins.readFile (
             pkgs.substituteAll {
               name = "audiobookshelf.alloy";
               src = ./config.alloy;
               host = config.networking.hostName;
             }
-          )
-        );
+          );
       };
     };
   };
