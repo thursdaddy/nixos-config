@@ -1,0 +1,11 @@
+loki.source.journal "overseerr" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=docker-overseerr.service"
+  labels = {
+    "app" = "overseerr",
+    "source" = "journal",
+    "host" = "@host@",
+  }
+}

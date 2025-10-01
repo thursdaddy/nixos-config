@@ -1,0 +1,11 @@
+loki.source.journal "gatus" {
+  forward_to = [loki.write.grafana_loki.receiver]
+  relabel_rules = loki.relabel.journal.rules
+
+  matches = "_SYSTEMD_UNIT=docker-gatus.service"
+  labels = {
+    "app" = "gatus",
+    "source" = "journal",
+    "host" = "@host@",
+  }
+}

@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.overseerr;
@@ -11,6 +16,16 @@ in
   };
 
   config = mkIf cfg.enable {
+    environment.etc = {
+      "alloy/overseerr.alloy" = mkIf config.mine.services.alloy.enable {
+        text = builtins.readFile (
+          pkgs.replaceVars ./config.alloy {
+            host = config.networking.hostName;
+          }
+        );
+      };
+    };
+
     virtualisation.oci-containers.containers."overseerr" = {
       image = "linuxserver/overseerr:${version}";
       ports = [

@@ -51,6 +51,16 @@ in
       '';
     };
 
+    environment.etc = {
+      "alloy/overseerr.alloy" = mkIf config.mine.services.alloy.enable {
+        text = builtins.readFile (
+          pkgs.replaceVars ./config.alloy {
+            host = config.networking.hostName;
+          }
+        );
+      };
+    };
+
     virtualisation.oci-containers.containers."gatus" = {
       image = "twinproduction/gatus:v${version}";
       hostname = "gatus";
@@ -61,6 +71,7 @@ in
       ];
       environment = {
         GATUS_CONFIG_PATH = "/config";
+        GATUS_LOG_LEVEL = "WARN";
       };
       volumes = [
         "${gatus_config_yaml}:/config/config.yaml"
