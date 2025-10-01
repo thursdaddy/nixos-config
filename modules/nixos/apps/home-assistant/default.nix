@@ -53,6 +53,7 @@ in
           (pkgs.home-assistant.override {
             extraPackages =
               py: with py; [
+                aioacaia
                 google-nest-sdm
                 govee-ble
                 grpcio
