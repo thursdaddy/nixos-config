@@ -11,12 +11,10 @@ let
 
   version = "2.52.0";
   prometheus_config = builtins.readFile (
-      pkgs.substituteAll {
-        name = "prometheus";
-        src = ./prometheus.yml;
-        prom_token = config.sops.placeholder."hass/PROM_TOKEN";
-      }
-    );
+    pkgs.replaceVars ./prometheus.yml {
+      prom_token = config.sops.placeholder."hass/PROM_TOKEN";
+    }
+  );
 in
 {
   options.mine.container.prometheus = {

@@ -50,12 +50,10 @@ in
       };
       "traefik/blocky.yml" = {
         text = builtins.readFile (
-            pkgs.substituteAll {
-              name = "blocky";
-              src = ./traefik.yml;
-              host = config.networking.hostName;
-            }
-          );
+          pkgs.replaceVars ./traefik.yml {
+            host = config.networking.hostName;
+          }
+        );
       };
       "blocky/config.yml" = {
         text = builtins.readFile ./blocky.yml;

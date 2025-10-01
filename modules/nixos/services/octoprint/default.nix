@@ -18,25 +18,21 @@ in
   };
 
   config = mkIf cfg.enable {
-    environment.etc = mkIf config.mine.container.traefik.enable {
-      "traefik/octoprint.yml" = {
+    environment.etc = {
+      "traefik/octoprint.yml" = mkIf config.mine.container.traefik.enable {
         text = builtins.readFile (
-            pkgs.substituteAll {
-              name = "octoprint";
-              src = ./traefik.yml;
-              fqdn = config.mine.container.traefik.domainName;
-              ip = "192.168.10.185";
-            }
-          );
+          pkgs.replaceVars ./traefik.yml {
+            fqdn = config.mine.container.traefik.domainName;
+            ip = "192.168.10.185";
+          }
+        );
       };
       "alloy/octoprint.alloy" = mkIf config.mine.services.alloy.enable {
         text = builtins.readFile (
-            pkgs.substituteAll {
-              name = "octoprint.alloy";
-              src = ./config.alloy;
-              host = config.networking.hostName;
-            }
-          );
+          pkgs.replaceVars ./config.alloy {
+            host = config.networking.hostName;
+          }
+        );
       };
     };
 

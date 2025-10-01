@@ -6,5 +6,6 @@ loki.source.journal "audiobookshelf" {
   labels = {
     "app" = "audiobookshelf",
     "source" = "journal",
+    "host" = "@host@",
   }
 }

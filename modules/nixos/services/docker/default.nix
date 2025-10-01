@@ -16,18 +16,16 @@ let
   cfg = config.mine.services.docker;
   aliases = import ../../../shared/aliases.nix;
 
-  container-version-check-env = pkgs.python311.withPackages (
-    p: with p; [ pkgs.python311Packages.requests ]
-  );
-
-  container-version-check = pkgs.substituteAll {
-    name = "_container-check";
-    src = ./scripts/container-version-check.py;
-    dir = "/bin";
-    isExecutable = true;
-    py = "${container-version-check-env}/bin/python";
-  };
-
+  version_script = builtins.readFile ./scripts/container-version-check.py;
+  version_check = pkgs.writers.writePython3Bin "_container-check" {
+    flakeIgnore = [
+      "W503"
+      "E501"
+    ];
+    libraries = with pkgs.python3Packages; [
+      requests
+    ];
+  } version_script;
 in
 {
   options.mine.services.docker = {
@@ -47,7 +45,7 @@ in
     users.users.${user.name}.extraGroups = mkIf user.enable [ "docker" ];
 
     environment.systemPackages = [
-      (mkIf cfg.scripts.check-versions container-version-check)
+      (mkIf cfg.scripts.check-versions version_check)
     ];
 
     virtualisation = {

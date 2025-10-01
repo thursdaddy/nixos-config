@@ -12,12 +12,10 @@ let
   ntfy_conf = pkgs.writeTextFile {
     name = "server.yml";
     text = builtins.readFile (
-        pkgs.substituteAll {
-          name = "ntfyserver";
-          src = ./server.yml;
-          domain = config.mine.container.traefik.domainName;
-        }
-      );
+      pkgs.replaceVars ./server.yml {
+        domain = config.mine.container.traefik.domainName;
+      }
+    );
   };
 in
 {

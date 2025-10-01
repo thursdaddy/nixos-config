@@ -145,9 +145,7 @@ in
     environment.etc = {
       "traefik/hass.yml" = mkIf config.mine.container.traefik.enable {
         text = builtins.readFile (
-          pkgs.substituteAll {
-            name = "hass";
-            src = ./traefik.yml;
+          pkgs.replaceVars ./traefik.yml {
             fqdn = config.mine.container.traefik.domainName;
             ip = "192.168.10.60";
           }
@@ -155,9 +153,7 @@ in
       };
       "alloy/home-assistant.alloy" = mkIf config.mine.services.alloy.enable {
         text = builtins.readFile (
-          pkgs.substituteAll {
-            name = "home-assistant.alloy";
-            src = ./config.alloy;
+          pkgs.replaceVars ./config.alloy {
             host = config.networking.hostName;
           }
         );
