@@ -15,14 +15,12 @@ NC='\033[0m' # No Color
 rebuild () {
   if [[ "${HOSTNAME:-$HOST}" == "$TARGET" ]]; then
     printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
-    attic use local
     sudo nixos-rebuild --flake .\#"$TARGET" --fast switch
   elif [[ "$TARGET" == "mbp" ]]; then
     printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
     sudo darwin-rebuild --flake .\#mbp switch
   else
     printf "${BLUE}Rebuilding... ${ORANGE}${TARGET} (remote)${NC}\n"
-    attic use local
     nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --fast --use-substitutes --use-remote-sudo switch
   fi
 }
@@ -33,6 +31,22 @@ build () {
     copy_artifact_path
 }
 
+attic () {
+  /run/current-system/sw/bin/attic use local
+  if [[ $TARGET == "all" ]]; then
+    hosts=$(nix flake show . --json 2>/dev/null | jq -r '.nixosConfigurations | keys[]')
+    for host in $hosts; do
+      clean_host=$(basename "${host%/}")
+      echo "Building configuration for host: $clean_host"
+      nix build .\#nixosConfigurations."$clean_host".config.system.build.toplevel
+      /run/current-system/sw/bin/attic push --jobs 20 --ignore-upstream-cache-filter local ./result || true
+    done
+  else
+    echo "Building configuration for host: $TARGET"
+    nix build .\#nixosConfigurations."$TARGET".config.system.build.toplevel
+    /run/current-system/sw/bin/attic push --jobs 20  --ignore-upstream-cache-filter local ./result || true
+  fi
+}
 # copy result to builds/
 function copy_artifact_path {
   if [ -L ./result ]; then
@@ -129,5 +143,8 @@ case $1 in
     ;;
   rebuild)
     rebuild "$TARGET"
+    ;;
+  attic)
+    attic "$TARGET"
     ;;
 esac

@@ -54,7 +54,7 @@ customDNS:
   filterUnmappedTypes: true
   mapping:
     alertmanager.thurs.pw: 192.168.10.68
-    attic.thurs.pw: 192.168.10.15
+    attic.thurs.pw: 192.168.10.60
     barcode.thurs.pw: 192.168.10.15
     bazarr.thurs.pw: 192.168.10.12
     blocky.homebox.thurs.pw: 192.168.10.60

@@ -69,3 +69,6 @@ all:
 
 help:
   @./nix.sh help
+
+attic input:
+  @./nix.sh attic {{input}}

@@ -64,7 +64,6 @@ in
 
       services = {
         alloy = enabled;
-        attic = enabled;
         beszel = {
           enable = true;
           isAgent = true;

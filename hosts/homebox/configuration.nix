@@ -48,6 +48,7 @@ in
       };
 
       container = {
+        attic-db = enabled;
         traefik = {
           enable = true;
           awsEnvKeys = true;
@@ -56,6 +57,7 @@ in
       };
 
       cli-tools = {
+        attic = enabled;
         bottom = enabled;
         direnv = enabled;
         fastfetch = enabled;
@@ -69,6 +71,7 @@ in
 
       services = {
         alloy = enabled;
+        atticd = enabled;
         beszel = {
           enable = true;
           isAgent = true;
