@@ -61,6 +61,12 @@ in
           "Host(`prometheus.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.prometheus.loadbalancer.server.port" = "9090";
         "enable.versions.check" = "false";
+        "homelab.backup.enable" = "true";
+        "homelab.backup.path" = "${config.mine.container.settings.configPath}";
+        "homelab.backup.path.ignore" = "prometheus";
+        "homelab.backup.path.include" =
+          "${config.mine.container.settings.configPath}/prometheus/data/snapshots";
+        "homelab.backup.retention.period" = "5";
       };
     };
   };
