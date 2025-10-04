@@ -62,6 +62,17 @@ in
           enable = true;
           scripts.check-versions = true;
         };
+        gitlab-runner = {
+          enable = true;
+          runners = {
+            docker = {
+              tags = [
+                "${config.networking.hostName}"
+                "netpi"
+              ];
+            };
+          };
+        };
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;

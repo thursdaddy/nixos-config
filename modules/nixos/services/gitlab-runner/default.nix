@@ -17,7 +17,7 @@ let
     {
       options = {
         tags = mkOpt (types.nullOr (types.listOf types.str)) null "list of tags for the runner";
-        dockerVolumes = mkOpt (types.nullOr (types.listOf types.str)) null "volumes to attach to runner";
+        dockerVolumes = mkOpt (types.listOf types.str) [ "" ] "volumes to attach to runner";
       };
     };
 
