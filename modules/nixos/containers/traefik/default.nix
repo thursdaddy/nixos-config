@@ -41,7 +41,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    networking.firewall.allowedTCPPorts = [ 8082 ];
+    networking.firewall.allowedTCPPorts = [ 8082 ]; # prometheus exporter
     systemd.services.create-traefik-network = {
       description = "Create Traefik network after docker is running";
       after = [ "docker.service" ];
@@ -99,6 +99,7 @@ in
       extraOptions = [
         "--network=traefik"
         "--pull=always"
+        "--add-host=host.docker.internal:host-gateway"
       ];
       environmentFiles = mkIf cfg.awsEnvKeys [
         config.sops.templates."traefik.keys.env".path
@@ -126,6 +127,8 @@ in
         "--providers.file.watch=true"
         "--entrypoints.web.address=:80"
         "--entrypoints.websecure.address=:443"
+        "--entrypoints.websecure.transport.respondingtimeouts.readtimeout=600s"
+        "--entrypoints.websecure.transport.respondingtimeouts.idletimeout=600s"
         "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
         "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=${cfg.dnsChallengeProvider}"
         "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"

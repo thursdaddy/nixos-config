@@ -25,12 +25,12 @@ http:
     hass:
       loadBalancer:
         servers:
-        - url: http://@ip@:8090
+        - url: http://host.docker.internal:8090
     z2m:
       loadBalancer:
         servers:
-        - url: http://@ip@:8080
+        - url: http://host.docker.internal:8080
     esphome:
       loadBalancer:
         servers:
-        - url: http://@ip@:6052
+        - url: http://host.docker.internal:6052

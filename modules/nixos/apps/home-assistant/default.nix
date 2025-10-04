@@ -148,7 +148,6 @@ in
         text = builtins.readFile (
           pkgs.replaceVars ./traefik.yml {
             fqdn = config.mine.container.traefik.domainName;
-            ip = "192.168.10.60";
           }
         );
       };
