@@ -96,6 +96,9 @@ in
       };
       nvim-tree = {
         enable = true;
+        updateFocusedFile = {
+          enable = true;
+        };
         view = {
           side = "right";
         };
