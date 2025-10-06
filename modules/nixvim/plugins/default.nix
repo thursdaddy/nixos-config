@@ -306,7 +306,7 @@ in
       {
         mode = "n";
         key = "<leader>gc";
-        action = "<CMD>below Git commit<CR>";
+        action = "<CMD>below Git<CR><CMD> vert Git commit<CR>";
         options.noremap = true;
       }
       {
@@ -318,7 +318,7 @@ in
       {
         mode = "n";
         key = "<leader>gp";
-        action = "<CMD>Git push<CR>";
+        action = "<CMD>Git push <bar> bd<CR>";
         options.noremap = true;
       }
       {
