@@ -46,6 +46,11 @@ _: {
       # quick save/exit
       {
         mode = "n";
+        key = "<C-w>";
+        action = "<CMD>w!<CR>";
+      }
+      {
+        mode = "n";
         key = "<C-s>";
         action = "ZZ";
       }

@@ -18,8 +18,11 @@ in
       barbecue.enable = true;
       cmp-buffer.enable = true;
       cmp-emoji.enable = true;
+      cmp-git.enable = true;
       cmp-nvim-lsp.enable = true;
       cmp-path.enable = true;
+      colorful-menu.enable = true;
+      colorizer.enable = true;
       comment.enable = true;
       diffview.enable = true;
       direnv.enable = true;
@@ -33,6 +36,7 @@ in
       lsp-format.enable = true;
       luasnip.enable = true;
       markdown-preview.enable = true;
+      sandwich.enable = true;
       snacks.enable = true;
       tmux-navigator.enable = true;
       undotree.enable = true;
@@ -43,6 +47,9 @@ in
         autoEnableSources = true;
         settings = {
           sources = [
+            { name = "yanky"; }
+            { name = "fish"; }
+            { name = "right"; }
             { name = "nvim_lsp"; }
             { name = "luasnip"; }
             { name = "buffer"; }
@@ -107,8 +114,10 @@ in
         enable = true;
         servers = {
           bashls.enable = true;
+          gitlab_ci_ls.enable = true;
           harper_ls.enable = true;
           jsonls.enable = true;
+          jqls.enable = true;
           lua_ls = {
             enable = true;
             settings.telemetry.enable = false;
@@ -117,6 +126,10 @@ in
           nil_ls = {
             enable = true;
             settings = {
+              flake = {
+                autoArchive = true;
+                autoEvalInputs = true;
+              };
               formatting.command = [ "nixfmt" ];
             };
           };
@@ -314,7 +327,7 @@ in
         key = "<leader>gb";
         action = "<CMD>GBranches<CR>";
         options.noremap = true;
-      } # fzf-checkout
+      }
       {
         mode = "n";
         key = "<leader>gp";
@@ -343,13 +356,6 @@ in
         mode = "n";
         key = "<leader>g.";
         action = "<CMD>diffget //3<CR>";
-        options.noremap = true;
-      }
-      # vGit
-      {
-        mode = "n";
-        key = "<leader>gdv";
-        action = "<CMD>VGit project_diff_preview<CR>";
         options.noremap = true;
       }
       # Trouble
