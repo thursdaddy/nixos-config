@@ -27,12 +27,7 @@ let
 
   runner_script = builtins.readFile ./runner.py;
   runner_registration = pkgs.writers.writePython3Bin "_gitlab-runner" {
-    flakeIgnore = [
-      "E501"
-      "E266"
-      "E265"
-      "E320"
-    ];
+    doCheck = false;
     libraries = with pkgs.python3Packages; [
       requests
     ];
@@ -80,8 +75,8 @@ in
         gitlab-runner-token = {
           enable = true;
           description = "Manage Gitlab Runners";
+          after = [ "multi-user.target" ];
           wantedBy = [ "multi-user.target" ];
-          after = [ "network-online.target" ];
           requires = [ "network-online.target" ];
           requiredBy = [ "gitlab-runner.service" ];
           serviceConfig = {
