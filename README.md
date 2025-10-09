@@ -33,7 +33,7 @@ Est. Feb 2024
     ├── mbp/         # 2021 MBP M1
     ├── netpi/       # Pi4's running pihole + tailscale
     ├── printpi/     # Pi4 running octoprint
-    ├── proxbox/     # AMD 5900HX, 32GB DDR4
+    ├── proxbox/     # AMD 5900HX, 64GB DDR4
     ├── jupiter/     # VM for self-hosted apps
     ├── kepler/      # VM for monitoring tools
     ├── wormhole/    # VM for general use
