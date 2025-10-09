@@ -1,7 +1,6 @@
 
 # start tmux session after cd'ing into the dir
 function tmux_session_start
-  echo $argv
   cd $argv
   set SESSION (basename $PWD)
 
@@ -46,7 +45,6 @@ function tmux_session_selector
         tmux_session_start $selected_dir
       end
   end
-
 end
 
 # check if arg is passed to tmuxs to enable bypassing fzf
@@ -65,7 +63,7 @@ else
     tmux_session_selector
   else
     set -g basename (basename $path)
-    if tmux has -t $basename 2&> /dev/null
+    if tmux ls | awk -F':' '{print $1}' | grep -ow "$basename" 2&> /dev/null
         tmux attach -t $basename
     else
         tmux_session_start $path
