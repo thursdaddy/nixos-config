@@ -10,6 +10,7 @@ connectIPVersion: dual
 
 bootstrapDns:
   - tcp+udp:1.1.1.1
+  - https://1.1.1.1/dns-query
 
 blocking:
   denylists:
@@ -28,6 +29,12 @@ blocking:
       - special
   blockType: zeroIp
   blockTTL: 1m
+  loading:
+    refreshPeriod: 24h
+
+caching:
+  minTime: 5m
+  maxTime: 30m
 
 clientLookup:
   upstream: 192.168.20.1
@@ -38,6 +45,7 @@ clientLookup:
 ports:
   dns: 53
   http: 4000
+  tls: 853
 
 prometheus:
   enable: true

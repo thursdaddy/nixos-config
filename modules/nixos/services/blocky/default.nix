@@ -7,7 +7,16 @@
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.services.blocky;
-
+  blockyYAML = ./blocky.yml;
+  yaml2json =
+    file:
+    let
+      jsonOutputDrv = pkgs.runCommand "yaml-to-json" { } ''
+        ${pkgs.yj}/bin/yj < "${blockyYAML}" > $out
+      '';
+    in
+    builtins.fromJSON (builtins.readFile jsonOutputDrv);
+  blockyConfig = yaml2json blockyYAML;
 in
 {
   options.mine.services.blocky = {
@@ -23,25 +32,9 @@ in
       allowedUDPPorts = [ 53 ];
     };
 
-    environment.systemPackages = [
-      pkgs.blocky
-    ];
-
-    systemd.services.blocky = {
-      description = "A DNS proxy and ad-blocker for the local network";
-      wantedBy = [ "multi-user.target" ];
-      reloadTriggers = [ config.environment.etc."blocky/config.yml".source or null ];
-
-      serviceConfig = {
-        DynamicUser = true;
-        ExecStart = "${lib.getExe pkgs.blocky} --config ${
-          config.environment.etc."blocky/config.yml".source
-        }";
-        Restart = "on-failure";
-
-        AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
-        CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
-      };
+    services.blocky = {
+      enable = true;
+      settings = blockyConfig;
     };
 
     environment.etc = {
@@ -54,9 +47,6 @@ in
             host = config.networking.hostName;
           }
         );
-      };
-      "blocky/config.yml" = {
-        text = builtins.readFile ./blocky.yml;
       };
     };
   };
