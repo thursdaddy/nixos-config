@@ -5,10 +5,9 @@
   ...
 }:
 let
-
   inherit (lib) mkEnableOption mkIf;
+  inherit (config.mine) user;
   cfg = config.mine.cli-tools.direnv;
-
 in
 {
   options.mine.cli-tools.direnv = {
@@ -16,8 +15,14 @@ in
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      direnv
-    ];
+    programs.direnv = {
+      enable = true;
+      enableFishIntegration = mkIf (user.shell.package == pkgs.fish) true;
+      enableZshIntegration = mkIf (user.shell.package == pkgs.zsh) true;
+      nix-direnv = {
+        enable = true;
+        package = pkgs.nix-direnv;
+      };
+    };
   };
 }
