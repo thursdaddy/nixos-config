@@ -1,16 +1,14 @@
 # NixOS Configuration
+Est. Feb 2024
 
 My always evolving Nix flake ❄️ for declarative system and user environment management across multiple machines.
 
-Est. Feb 2024
-
 ## Flake Inputs
-
 | Name | Details |
 |:-----------| :------|
 | [nixpkgs](https://github.com/NixOS/nixpkgs/tree/nixos-25.05) | Primary Nix package collection (25.05 release) |
 | [unstable](https://github.com/NixOS/nixpkgs/tree/nixos-unstable) | Unstable Nixpkgs for newer packages |
-| nixos-thurs | Private repository for sops secrets and Docker container configurations |
+| nixos-thurs | Private repository for sops secrets and private modules |
 | [home-manager](https://github.com/nix-community/home-manager/tree/release-25.05) | Declarative management of user environments (imported as NixOS and Darwin modules) |
 | [lanzaboote](https://github.com/nix-community/lanzaboote) | Unified EFI bootloader for NixOS (used in specific hosts) |
 | [nix-darwin](https://github.com/LnL7/nix-darwin) | System configuration for macOS using Nix |
@@ -20,23 +18,21 @@ Est. Feb 2024
 | [ssh-keys](https://github.com/thursdaddy.keys) | Fetches public SSH keys from GitHub |
 | [sops-nix](https://github.com/Mic92/sops-nix) | Nix integration for SOPS (Secrets OPerationS) for managing encrypted secrets |
 
-
 ## Modules
 
 This repository is organized into several module categories. Modules are imported on a per-system basis in each host's `configuration.nix` and can be enabled individually.
 
 -   **[NixOS Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/nixos):** System-level configurations specific to NixOS.
--   **[Home Manager Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/home):** User-level configurations managed by Home Manager.
--   **[Darwin Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/darwin):** System-level configurations specific to macOS (via nix-darwin).
+-   **[Home Manager Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/home):** User-level configurations managed by [Home Manager](https://github.com/nix-community/home-manager).
+-   **[Darwin Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/darwin):** System-level configurations specific to macOS (via [nix-darwin](https://github.com/nix-darwin/nix-darwin)).
 -   **[NixVim Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/nixvim):** Declarative Neovim configuration.
 -   **[Shared Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/shared):** Configurations that are common across both NixOS and Darwin systems.
--   **[Custom Packages](https://github.com/thursdaddy/nixos-config/tree/main/packages):** Locally defined Nix packages.
--   **[Build Targets](https://github.com/thursdaddy/nixos-config/tree/main/systems):** NixOS configurations for various deployment targets (AMI, ISO, SD card, VM).
 
-
-Each module set has an `import.nix` file within its root directory to recursively find and import all `default.nix` files beneath it. The import files are declared in the hosts `configuration.nix` `imports` section.
+Each module set has an `import.nix` file within its root directory to recursively find and import all `default.nix` files beneath it. The import files are declared in the hosts `configuration.nix` [imports](https://github.com/thursdaddy/nixos-config/blob/main/hosts/c137/configuration.nix#L15) section.
 
 All modules are disabled by default and can be enabled using options, like `services.atticd.enable = true;`.
+
+This repository follows an opinionated, modular layout. While it may look overwhelming at first, the structure makes it easy to copy and paste existing configurations to develop new modules or support new hosts.
 
 ## Structure
 
@@ -69,57 +65,50 @@ All modules are disabled by default and can be enabled using options, like `serv
 └── systems/         # Definitions for `nixos-generators` targets (AMI, ISO, SD, VM)
 ```
 
-## Notes
+## Helper Script
 
+This repository uses a [`justfile`](./justfile) and a wrapper script ([`nix.sh`](./nix.sh)) to simplify common Nix operations. Below is a summary of the available commands.
 
-## Building and Deploying
-
-This repository uses a `justfile` and a wrapper script, [`nix.sh`](nix.sh), to simplify common Nix operations.
-
-### `nix.sh` Functions and `just` Commands
-
-#### Rebuilding a System (`rebuild` function)
-
-The `rebuild` function applies the Nix configuration to a target system. It detects if the target is a local machine (NixOS or Darwin) or a remote NixOS host and uses the appropriate rebuild command (`nixos-rebuild switch` or `darwin-rebuild switch`).
-
-| Just Command | Description |
+| Command | Description |
 | :--- | :--- |
-| `just rebuild` | Rebuilds the configuration for the current host. |
-| `just <hostname>` | Rebuilds the configuration for a specific host (e.g., `just c137`, `just mbp`). |
-
-#### Building an Artifact (`build` function)
-
-The `build` function builds a Nix derivation from `flake.nix` without applying it. This is used to create system images such as ISOs, virtual machine disks, or AMIs. The script copies the final artifact into the `builds/` directory.
-
-| Just Command | Description |
-| :--- | :--- |
-| `just build <target>` | Builds a target such as `vm-nogui`, `iso`, or `ami`. |
-
-#### Managing Flake Inputs (`update_flake_input` & `update_to_local_input` functions)
-
-These functions manage the dependencies (inputs) defined in `flake.nix`. They can update inputs from their remote sources or switch them to a local path for development.
-
-| Just Command | Description |
-| :--- | :--- |
+| `just rebuild` | Rebuilds the configuration for the current host (local NixOS or Darwin). |
+| `just <hostname>` | Rebuilds the configuration for a specific remote NixOS host (e.g., `just c137`). |
+| `just build <target>` | Builds artifacts (e.g., configurations found under flake.nix `packages`). |
 | `just update <input>` | Updates a specific flake input (e.g., `just update nixpkgs`). |
 | `just update all` | Updates all flake inputs in `flake.lock`. |
-| `just local <input>` | Switches an input's URL to a local filesystem path for development (e.g., `just local nixos-thurs`). |
+| `just local <input>` | Switches a flake input to a local path for development. |
+| `just attic <hostname>` | Builds and pushes a host's derivation to the [Attic](https://github.com/zhaofengli/attic) binary cache. |
+| `just attic all` | Builds and pushes derivations for all hosts to the Attic cache. |
+| `just statix` | Lints all Nix files in the repository with `statix check`. |
 
-#### Pushing to a Binary Cache (`attic` function)
+## Highlights
 
-The `attic` function builds the system derivation for one or all hosts and pushes the resulting paths to an [Attic](https://github.com/zhaofengli/attic) binary cache. This allows other machines to download pre-built packages instead of building them from source.
+#### 🏠 Declarative Home Assistant
 
-| Just Command | Description |
-| :--- | :--- |
-| `just attic <hostname>` | Builds and pushes the derivation for a specific host to the cache. |
-| `just attic all` | Builds and pushes derivations for all defined hosts to the cache. |
+The [Home Assistant module](./modules/nixos/apps/home-assistant) provides a fully declarative configuration for a complete smart home setup. Key features include:
 
-#### Linting (`statix`)
+- **Declarative Integrations:** All integrations, including Zigbee2MQTT, Govee, and MQTT, are defined in Nix, ensuring a reproducible setup.
+- **Entities as Code:** Home Assistant entities and sensor configurations are managed directly in YAML files within the repository.
+- **Automations as Code:** Technically not in nix but I am using AppDaemon to create and manage automations via Python: [appdaemon-scripts](https://github.com/thursdaddy/appdaemon-scripts)
 
-The `justfile` includes a command for checking the style and syntax of your Nix code.
+#### 🐳 Docker Containers with Traefik and Version Update Checks
 
-| Just Command | Description |
-| :--- | :--- |
-| `just statix` | Runs `statix check` to lint all Nix files in the repository. |
+The [container](./modules/nixos/containers) modules demonstrate how to manage containerized services declaratively.
 
+- **Traefik Integration:** Traefik configuration via Docker labels, simplifying reverse proxy and SSL management. Manage local DNS via [Blocky](https://github.com/thursdaddy/nixos-config/blob/main/modules/nixos/services/blocky/blocky.yml)
+- **Log ingestion via Alloy & Loki**: Create Alloy [configuration](https://github.com/thursdaddy/nixos-config/blob/main/modules/nixos/containers/audiobookshelf/config.alloy) files to ingest docker logs via journalctl and send to [Grafana Loki](https://grafana.com/oss/loki/).
+- **Version Checker:** A custom [update script](./modules/nixos/services/docker/scripts/container-version-check.py) utilizes the common `org.opencontainers.*` label format to check for new container image versions and link to latest releases.
+
+Can be run ad-hoc or even configured via a GitLab CI pipeline to send notifications via Discord.
+
+<table align="center">
+  <tr>
+    <td align="center">Terminal Output</td>
+    <td align="center">Discord Notification</td>
+  </tr>
+  <tr>
+    <td><img src="assets/readme/container-check-terminal.png" alt="Container Check Terminal Output" width="100%"></td>
+    <td><img src="assets/readme/container-check-discord.png" alt="Container Check Discord Notification" width="100%"></td>
+  </tr>
+</table>
 
