@@ -28,7 +28,7 @@ This repository is organized into several module categories.
 -   **[NixVim Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/nixvim):** Declarative Neovim configuration.
 -   **[Shared Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/shared):** Configurations that are common across both NixOS and Darwin systems.
 
-Each module set has an `import.nix` file within its root directory to recursively find and import all `default.nix` files beneath it. The import files are declared in the hosts `configuration.nix` [imports](https://github.com/thursdaddy/nixos-config/blob/main/hosts/c137/configuration.nix#L15) section.
+Each module set has an `import.nix` file within its root directory to recursively find and import all `default.nix` files beneath it. The import files are declared in the hosts `configuration.nix` [imports](./hosts/c137/configuration.nix#L15) section.
 
 All modules are disabled by default and can be enabled using options, like `services.atticd.enable = true;`.
 
@@ -95,8 +95,8 @@ The [Home Assistant module](./modules/nixos/apps/home-assistant) provides a full
 
 The [container](./modules/nixos/containers) modules demonstrate how to manage containerized services declaratively.
 
-- **Traefik Integration:** Traefik configuration via Docker labels, simplifying reverse proxy and SSL management. Manage local DNS via [Blocky](https://github.com/thursdaddy/nixos-config/blob/main/modules/nixos/services/blocky/blocky.yml)
-- **Log ingestion via Alloy & Loki**: Create Alloy [configuration](https://github.com/thursdaddy/nixos-config/blob/main/modules/nixos/containers/audiobookshelf/config.alloy) files to ingest docker logs via journalctl and send to [Grafana Loki](https://grafana.com/oss/loki/).
+- **Traefik Integration:** Traefik configuration via Docker labels, simplifying reverse proxy and SSL management. Manage local DNS via [Blocky](./modules/nixos/services/blocky/blocky.yml)
+- **Log ingestion via Alloy & Loki**: Create Alloy [configuration](./modules/nixos/containers/audiobookshelf/config.alloy) files to ingest docker logs via journalctl and send to [Grafana Loki](https://grafana.com/oss/loki/).
 - **Version Checker:** A custom [update script](./modules/nixos/services/docker/scripts/container-version-check.py) utilizes the common `org.opencontainers.*` label format to check for new container image versions and link to latest releases.
 
 Can be run ad-hoc or even configured via a GitLab CI pipeline to send notifications via Discord.
