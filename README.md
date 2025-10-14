@@ -20,7 +20,7 @@ My always evolving Nix flake ❄️ for declarative system and user environment 
 
 ## Modules
 
-This repository is organized into several module categories. Modules are imported on a per-system basis in each host's `configuration.nix` and can be enabled individually.
+This repository is organized into several module categories.
 
 -   **[NixOS Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/nixos):** System-level configurations specific to NixOS.
 -   **[Home Manager Modules](https://github.com/thursdaddy/nixos-config/tree/main/modules/home):** User-level configurations managed by [Home Manager](https://github.com/nix-community/home-manager).
