@@ -41,7 +41,7 @@ in
         environment = {
           POSTGRES_DB = "paperless";
           POSTGRES_USER = "paperless";
-          POSTGRES_PASSWORD = "paperless"; # Consider using secrets management for production
+          POSTGRES_PASSWORD = "paperless";
         };
         extraOptions = [
           "--network=traefik"
@@ -79,13 +79,12 @@ in
             "Host(`paperless.${config.mine.container.traefik.domainName}`)";
           "traefik.http.services.paperless.loadbalancer.server.port" = "8000";
           "org.opencontainers.image.version" = "${paperlessVersion}";
-          "org.opencontainers.image.source" = "https://github.com/paperless-ngx/paperless-ngx/tree/main";
+          "org.opencontainers.image.source" = "https://github.com/paperless-ngx/paperless-ngx";
           "homelab.backup.enable" = "true";
           "homelab.backup.path" = "${config.mine.container.settings.configPath}/paperless/user/export";
           "homelab.backup.retention.period" = "5";
         };
         environment = {
-          # Environment variables from docker-compose
           PAPERLESS_REDIS = "redis://paperless-ngx-broker:6379";
           PAPERLESS_DBHOST = "paperless-ngx-db";
         };
