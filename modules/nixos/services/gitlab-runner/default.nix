@@ -78,7 +78,6 @@ in
           after = [ "multi-user.target" ];
           wantedBy = [ "multi-user.target" ];
           requires = [ "network-online.target" ];
-          requiredBy = [ "gitlab-runner.service" ];
           serviceConfig = {
             Type = "oneshot";
             Restart = "on-failure";

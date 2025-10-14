@@ -60,12 +60,12 @@ all:
   @./nix.sh rebuild jupiter
   @./nix.sh rebuild wormhole
   @./nix.sh rebuild kepler
-  @./nix.sh rebuild cloudbox
   @./nix.sh rebuild netpi1
   @./nix.sh rebuild netpi2
   @./nix.sh rebuild printpi
   @./nix.sh rebuild homebox
   @./nix.sh rebuild c137
+  @./nix.sh rebuild cloudbox
 
 help:
   @./nix.sh help

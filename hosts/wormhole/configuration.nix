@@ -104,6 +104,7 @@ in
               ];
               dockerVolumes = [
                 "/backups:/backups"
+                "/home/thurs/documents/notes:/notes"
                 "/opt/configs:/opt/configs:ro"
                 "/var/run/docker.sock:/var/run/docker.sock"
               ];
