@@ -17,11 +17,13 @@ in
   config = mkIf cfg.enable {
     programs.direnv = {
       enable = true;
-      enableFishIntegration = mkIf (user.shell.package == pkgs.fish) true;
-      enableZshIntegration = mkIf (user.shell.package == pkgs.zsh) true;
       nix-direnv = {
         enable = true;
         package = pkgs.nix-direnv;
+      }
+      // lib.optionalAttrs pkgs.stdenv.isLinux {
+        enableFishIntegration = mkIf (user.shell.package == pkgs.fish) true;
+        enableZshIntegration = mkIf (user.shell.package == pkgs.zsh) true;
       };
     };
   };
