@@ -59,6 +59,7 @@ in
       cli-tools = {
         attic = enabled;
         bottom = enabled;
+        crush = enabled;
         direnv = enabled;
         fastfetch = enabled;
         just = enabled;
@@ -78,11 +79,28 @@ in
         };
         blocky = enabled;
         docker = enabled;
+        gitlab-runner = {
+          enable = true;
+          runners = {
+            backup = {
+              tags = [
+                "${config.networking.hostName}"
+                "backup"
+              ];
+              dockerVolumes = [
+                "/backups:/backups"
+                "/opt/configs:/opt/configs:ro"
+                "/var/lib:/fake/var/lib:ro"
+                "/var/run/docker.sock:/var/run/docker.sock"
+              ];
+            };
+          };
+        };
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
           useRoutingFeatures = "client";
-          extraSetFlags = [ "--advertise-routes=192.168.10.0/24,192.168.20.0/24" ];
+          extraSetFlags = [ "--advertise-routes=192.168.10.0/24" ];
         };
       };
 
