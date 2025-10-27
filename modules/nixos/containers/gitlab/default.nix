@@ -51,7 +51,7 @@ in
         "org.opencontainers.image.source" = "https://github.com/gitlabhq/gitlabhq";
         "homelab.backup.enable" = "true";
         "homelab.backup.path" = "${config.mine.container.settings.configPath}";
-        "homelab.backup.path.ignore" = "data,registry,logs";
+        "homelab.backup.path.ignore" = "gitlab";
         "homelab.backup.path.include" = "${config.mine.container.settings.configPath}/gitlab/data/backups";
         "homelab.backup.retention.period" = "5";
       };
