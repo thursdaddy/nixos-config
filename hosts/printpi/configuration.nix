@@ -99,7 +99,6 @@ in
           };
         };
         nix = {
-          unfree = enabled;
           flakes = enabled;
         };
         security.sudonopass = enabled;
