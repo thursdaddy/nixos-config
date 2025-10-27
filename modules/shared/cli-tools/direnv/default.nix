@@ -20,11 +20,11 @@ in
       nix-direnv = {
         enable = true;
         package = pkgs.nix-direnv;
-      }
-      // lib.optionalAttrs pkgs.stdenv.isLinux {
-        enableFishIntegration = mkIf (user.shell.package == pkgs.fish) true;
-        enableZshIntegration = mkIf (user.shell.package == pkgs.zsh) true;
       };
+    }
+    // lib.optionalAttrs pkgs.stdenv.isLinux {
+      enableFishIntegration = mkIf (user.shell.package == pkgs.fish) true;
+      enableZshIntegration = mkIf (user.shell.package == pkgs.zsh) true;
     };
   };
 }
