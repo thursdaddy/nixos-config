@@ -57,7 +57,6 @@ blocky:
   @./nix.sh rebuild homebox
 
 all:
-  @./nix.sh rebuild jupiter
   @./nix.sh rebuild wormhole
   @./nix.sh rebuild kepler
   @./nix.sh rebuild netpi1
@@ -66,6 +65,7 @@ all:
   @./nix.sh rebuild homebox
   @./nix.sh rebuild c137
   @./nix.sh rebuild cloudbox
+  @./nix.sh rebuild jupiter
 
 help:
   @./nix.sh help
