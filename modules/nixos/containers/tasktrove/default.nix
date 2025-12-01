@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.tasktrove;
 
-  version = "0.8.0";
+  version = "0.10.0";
 in
 {
   options.mine.container.tasktrove = {

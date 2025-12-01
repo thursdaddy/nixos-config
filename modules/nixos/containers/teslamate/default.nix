@@ -7,7 +7,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.teslamate;
 
-  version = "2.1.1";
+  version = "2.2.0";
 in
 {
   options.mine.container.teslamate = {
