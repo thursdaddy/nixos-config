@@ -42,11 +42,6 @@ in
           }
         ];
       };
-      esphome = {
-        address = "192.168.10.60";
-        enable = true;
-        openFirewall = true;
-      };
       home-assistant = {
         enable = true;
         package =
