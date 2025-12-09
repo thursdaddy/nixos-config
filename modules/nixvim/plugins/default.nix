@@ -103,11 +103,13 @@ in
       };
       nvim-tree = {
         enable = true;
-        updateFocusedFile = {
-          enable = true;
-        };
-        view = {
-          side = "right";
+        settings = {
+          updateFocusedFile = {
+            enable = true;
+          };
+          view = {
+            side = "right";
+          };
         };
       };
       lsp = {
@@ -206,7 +208,6 @@ in
         grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
           bash
           latex
-          norg
           tsx
           typst
           vue

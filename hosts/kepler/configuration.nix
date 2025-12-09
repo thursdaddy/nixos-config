@@ -109,8 +109,9 @@ in
           };
         };
         nix = {
-          unfree = enabled;
           flakes = enabled;
+          substituters = enabled;
+          unfree = enabled;
         };
         services = {
           openssh = enabled;

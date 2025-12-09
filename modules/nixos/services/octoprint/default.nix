@@ -44,7 +44,7 @@ in
     systemd.services = {
       octostream = {
         serviceConfig = {
-          ExecStart = "${pkgs.mjpg-streamer}/bin/mjpg_streamer -i \"input_uvc.so -r 1280x720 -d /dev/video0 -f 60 -n\" -o \"output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www\"";
+          ExecStart = "${pkgs.unstable.mjpg-streamer}/bin/mjpg_streamer -i \"input_uvc.so -r 1280x720 -d /dev/video0 -f 60 -n\" -o \"output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www\"";
         };
         wantedBy = [ "multi-user.target" ];
         after = [ "network-online.target" ];
@@ -79,7 +79,6 @@ in
           SpoolManager
           PrintJobHistory
           prusaslicerthumbnails
-          timelapse
           '
 
           for path in $source_path; do
@@ -240,13 +239,12 @@ in
       plugins =
         plugins: with plugins; [
           camerasettings
-          timelapse
           mqtt
           octoprint-homeassistant
           octoprint-cancelobject
           octoprint-costestimation
           octoprint-dashboard
-          octoprint-displaylayerprogress
+          displaylayerprogress
           octoprint-excluderegion
           octoprint-filemanager
           octoprint-powerfailure

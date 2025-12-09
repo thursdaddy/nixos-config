@@ -33,7 +33,6 @@ in
     services.zigbee2mqtt = {
       enable = true;
       settings = {
-        homeassistant = true;
         frontend = {
           enabled = true;
           host = "0.0.0.0";

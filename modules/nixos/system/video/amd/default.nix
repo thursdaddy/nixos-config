@@ -19,14 +19,13 @@ in
     hardware.graphics = {
       enable = true;
       extraPackages = with pkgs; [
-        amdvlk
         vulkan-loader
         vulkan-validation-layers
         vulkan-extension-layer
       ];
     };
     environment.systemPackages = with pkgs; [
-      glxinfo
+      mesa-demos
       amdgpu_top
       rocmPackages.rocm-smi
     ];

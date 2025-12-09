@@ -16,5 +16,6 @@ in
     security.pam.services.login.enableGnomeKeyring = true;
 
     programs.seahorse.enable = true; # keyring GUI
+    services.gnome.gcr-ssh-agent.enable = false;
   };
 }

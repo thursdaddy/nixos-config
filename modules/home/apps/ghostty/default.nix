@@ -28,7 +28,7 @@ in
 
           gtk-titlebar = false;
           gtk-wide-tabs = true;
-          gtk-adwaita = true;
+          # gtk-adwaita = true;
           adw-toolbar-style = "raised-border";
 
           font-size = if pkgs.stdenv.isDarwin then "12" else "11";

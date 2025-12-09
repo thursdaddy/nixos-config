@@ -99,7 +99,7 @@ in
             groupbar = {
               height = "14";
               font_size = "12";
-              indicator_height = "6";
+              indicator_height = "2";
               text_color = "0xffffffff";
               "col.active" = "0xff88c0d0";
               "col.inactive" = "0xff4c566a";

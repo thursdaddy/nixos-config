@@ -25,11 +25,16 @@ in
       "python3.12-ecdsa-0.19.1"
     ];
 
+    # I don't know why but without this $HOME is defaulting to "/" instead of "/home/thurs" and I get errors
+    environment.variables = {
+      HOME = "/home/thurs";
+    };
+
     mine = {
       user = {
         enable = true;
         home-manager = enabled;
-        shell.package = pkgs.fish;
+        shell.package = pkgs.zsh;
       };
 
       home-manager = {
@@ -130,6 +135,7 @@ in
         nix = {
           unfree = enabled;
           flakes = enabled;
+          substituters = enabled;
         };
         services = {
           openssh = enabled;

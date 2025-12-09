@@ -62,9 +62,6 @@ in
     systemd = {
       services = {
         gitlab-runner = {
-          bindsTo = [
-            "gitlab-runner-token.service"
-          ];
           after = [
             "gitlab-runner-token.service"
           ];

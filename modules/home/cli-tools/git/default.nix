@@ -27,15 +27,17 @@ in
       ];
       programs.git = {
         enable = true;
-        userName = "${user.name}";
-        userEmail = "${user.email}";
         includes = [
           {
             path = "~/projects/nix/nixos-thurs/.gitconfig";
             condition = "gitdir:~/projects/nix/nixos-thurs/";
           }
         ];
-        extraConfig = {
+        settings = {
+          user = {
+            name = "${user.name}";
+            email = "${user.email}";
+          };
           safe.directory = "*";
           init = {
             defaultBranch = "main";

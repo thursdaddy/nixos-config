@@ -6,10 +6,8 @@
   ...
 }:
 let
-
   inherit (lib.thurs) enabled;
   inherit (config.mine) user;
-
 in
 {
   imports = [
@@ -23,7 +21,9 @@ in
 
   config = {
     system.stateVersion = "24.11";
-    systemd.extraConfig = "DefaultLimitNOFILE=1024:1048576";
+    systemd.settings.Manager = {
+      DefaultLimitNOFILE = "1024:1048576";
+    };
     networking.firewall.allowedTCPPorts = [ 8000 ];
 
     mine = {
@@ -121,7 +121,6 @@ in
         hyprlock = enabled;
         hyprpaper = enabled;
         screenshots = enabled;
-        sddm = enabled;
         swaync = enabled;
         systemd = enabled;
         waybar = enabled;

@@ -13,10 +13,11 @@ in
     home-manager.users.${user.name} = {
       programs.ssh = {
         enable = true;
-        forwardAgent = true;
-        addKeysToAgent = "yes";
+        enableDefaultConfig = false;
         matchBlocks = {
           "*" = {
+            addKeysToAgent = "yes";
+            forwardAgent = true;
             identityFile = "~/.ssh/id_ed25519";
             sendEnv = [ "TERM" ];
             setEnv = {

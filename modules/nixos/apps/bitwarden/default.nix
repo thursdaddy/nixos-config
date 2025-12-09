@@ -16,7 +16,7 @@ in
   };
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      bitwarden
+      bitwarden-desktop
     ];
 
     systemd.user.services.bitwarden = {
@@ -26,7 +26,7 @@ in
       partOf = [ "desktop.service" ];
       wantedBy = [ "desktop.service" ];
       serviceConfig = {
-        ExecStart = "${lib.getExe pkgs.bitwarden}";
+        ExecStart = "${lib.getExe pkgs.bitwarden-desktop}";
         ExecStop = "${pkgs.coreutils}/bin/kill -SIGTERM $MAINPID";
         Restart = "on-failure";
         RestartSec = "5s";

@@ -44,10 +44,9 @@ in
       device = "192.168.10.12:/fast/music";
       fsType = "nfs";
       options = [
-        "auto"
+        "x-systemd.automount"
+        "noauto"
         "rw"
-        "defaults"
-        "_netdev"
       ];
     };
   };

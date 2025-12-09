@@ -18,7 +18,6 @@ in
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       unstable.protonvpn-gui
-      unstable.protonvpn-cli
       protonmail-desktop
     ];
 
