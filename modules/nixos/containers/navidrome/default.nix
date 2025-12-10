@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.navidrome;
 
-  version = "0.58.5";
+  version = "0.59.0";
 in
 {
   options.mine.container.navidrome = {

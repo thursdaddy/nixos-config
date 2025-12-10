@@ -50,7 +50,6 @@ in
         navidrome = enabled;
         open-webui = enabled;
         paperless-ngx = enabled;
-        rwmarkable = enabled;
         tasktrove = enabled;
         teslamate = enabled;
         thelounge = enabled;

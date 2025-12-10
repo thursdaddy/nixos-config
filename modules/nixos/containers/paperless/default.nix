@@ -7,7 +7,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.paperless-ngx;
 
-  paperlessVersion = "2.20.0";
+  paperlessVersion = "2.20.1";
   redisVersion = "8";
   postgresVersion = "17";
 
