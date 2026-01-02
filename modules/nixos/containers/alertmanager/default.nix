@@ -7,7 +7,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.alertmanager;
 
-  version = "0.29.0";
+  version = "0.30.0";
 in
 {
   options.mine.container.alertmanager = {
