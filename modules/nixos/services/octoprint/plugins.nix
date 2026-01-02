@@ -29,7 +29,8 @@
             };
             propagatedBuildInputs = [
               pysuper.octoprint
-              pkgs.python312Packages.future
+              pkgs.python312Packages.pillow
+
             ];
             doCheck = false;
             pyproject = true;
@@ -121,23 +122,24 @@
             pyproject = true;
           };
 
-          # timelapse = pyself.buildPythonPackage rec {
-          #   pname = "OctoPrint-TimeLapsePlus";
-          #   version = "1.4.1";
-          #   src = self.fetchFromGitHub {
-          #     owner = "cmuche";
-          #     repo = "octoprint-timelapseplus";
-          #     rev = "v${version}";
-          #     sha256 = "sha256-myyeM1wUYo0yrvkmnV6Xl5ThIl71olSlkOliYT/Rg/E=";
-          #   };
-          #   propagatedBuildInputs = [
-          #     pysuper.octoprint
-          #     pkgs.python313Packages.pillow
-          #     pkgs.python313Packages.deepdiff
-          #   ];
-          #   doCheck = false;
-          #   pyproject = true;
-          # };
+          timelapse = pyself.buildPythonPackage rec {
+            pname = "OctoPrint-TimeLapsePlus";
+            version = "1.4.1";
+            src = self.fetchFromGitHub {
+              owner = "cmuche";
+              repo = "octoprint-timelapseplus";
+              rev = "v${version}";
+              sha256 = "sha256-myyeM1wUYo0yrvkmnV6Xl5ThIl71olSlkOliYT/Rg/E=";
+            };
+            propagatedBuildInputs = [
+              pysuper.octoprint
+              pkgs.python312Packages.pillow
+              pkgs.python312Packages.deepdiff
+            ];
+            doCheck = false;
+            pyproject = true;
+            dontCheckRuntimeDeps = true;
+          };
 
           # TODO: this is broken in 24.11 due to missing distutils since python 3.12 no longer packages by default
           # https://github.com/FormerLurker/Octolapse/issues/957
@@ -222,7 +224,10 @@
               rev = "${version}";
               sha256 = "sha256-dWBhP2QiOVJaeyE1v8tpbxD88Ox5Z2NxVzJkcpto2W0=";
             };
-            propagatedBuildInputs = [ pysuper.octoprint ];
+            propagatedBuildInputs = [
+              pysuper.octoprint
+              pkgs.python312Packages.standard-imghdr
+            ];
             doCheck = false;
             pyproject = true;
           };
@@ -239,11 +244,12 @@
             };
             propagatedBuildInputs = [
               pysuper.octoprint
-              pkgs.python313Packages.peewee
-              pkgs.python313Packages.qrcode
-              pkgs.python313Packages.pillow
+              pkgs.python312Packages.peewee
+              pkgs.python312Packages.qrcode
+              pkgs.python312Packages.pillow
+              pkgs.python312Packages.future
             ];
-            build-system = [ pkgs.python313Packages.setuptools ];
+            build-system = [ pkgs.python312Packages.setuptools ];
             doCheck = false;
             pyproject = true;
           };
@@ -274,8 +280,7 @@
             };
             propagatedBuildInputs = [
               pysuper.octoprint
-              pkgs.python313Packages.pillow
-              pkgs.python313Packages.standard-imghdr
+              pkgs.python312Packages.pillow
             ];
             doCheck = false;
             pyproject = true;
@@ -292,7 +297,7 @@
             };
             propagatedBuildInputs = [
               pysuper.octoprint
-              pkgs.python313Packages.uptime
+              pkgs.python312Packages.uptime
             ];
             doCheck = false;
             pyproject = true;
@@ -309,14 +314,15 @@
             };
             propagatedBuildInputs = [
               pysuper.octoprint
-              pkgs.python313Packages.pillow
-              pkgs.python313Packages.peewee
-              pkgs.python313Packages.sarge
-              pkgs.python313Packages.six
-              pkgs.python313Packages.psutil
-              pkgs.python313Packages.file-read-backwards
-              pkgs.python313Packages.setuptools
-              pkgs.python313Packages.awesome-slugify
+              pkgs.python312Packages.pillow
+              pkgs.python312Packages.peewee
+              pkgs.python312Packages.sarge
+              pkgs.python312Packages.six
+              pkgs.python312Packages.psutil
+              pkgs.python312Packages.file-read-backwards
+              pkgs.python312Packages.setuptools
+              pkgs.python312Packages.awesome-slugify
+              pkgs.python312Packages.future
             ];
             doCheck = false;
             pyproject = true;

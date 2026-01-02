@@ -108,8 +108,25 @@ in
       "video"
     ];
 
+    # fix for aiohttp tests that require network
+    nixpkgs.overlays = [
+      (final: prev: {
+        pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+          (python-final: python-prev: {
+            aiohttp = python-prev.aiohttp.overrideAttrs (old: {
+              disabledTests = (old.disabledTests or [ ]) ++ [ "test_proxy_functional" ];
+            });
+          })
+        ];
+      })
+    ];
+
     services.octoprint = {
       enable = true;
+      # some octoprint plugins are not backwards compatible with python 3.13 as the "future" module is not supported in python 3.13
+      package = pkgs.octoprint.override {
+        python3 = pkgs.python312;
+      };
       openFirewall = true;
       extraConfig = {
         plugins = {
@@ -240,6 +257,7 @@ in
         plugins: with plugins; [
           camerasettings
           mqtt
+          timelapse
           octoprint-homeassistant
           octoprint-cancelobject
           octoprint-costestimation
