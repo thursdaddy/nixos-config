@@ -45,17 +45,22 @@ def get_label_value(container_id, label):
 def convert_to_api_url(repo_url, container_name):
     """Convert a GitHub repository URL to an API URL for querying the latest release or tags"""
     if "github.com" in repo_url:
-        api_url = repo_url.replace("github.com", "api.github.com/repos")
-        if container_name == "gitlab":  # Check if container is GitLab
-            api_url = f"{api_url}/tags"
+        if repo_url == "https://github.com/gitlabhq/gitlabhq":
+            return "https://api.github.com/repos/gitlabhq/gitlabhq/tags"  # Use API endpoint for tags
         else:
-            api_url = f"{api_url}/releases/latest"
-        return api_url
+            api_url = repo_url.replace("github.com", "api.github.com/repos")
+            if (
+                container_name == "gitlab"
+            ):  # For other GitLab-named containers on GitHub, query API tags
+                api_url = f"{api_url}/tags"
+            else:
+                api_url = f"{api_url}/releases/latest"
+            return api_url
     else:
         return None
 
 
-def get_latest_release(api_url):
+def get_latest_release(api_url, container_name, repo_url):
     """Query the API to get the latest release or tag"""
     headers = {}
 
@@ -77,13 +82,43 @@ def get_latest_release(api_url):
         response.raise_for_status()
         data = response.json()
 
-        # Check if this is a GitHub release API response
-        if isinstance(data, dict) and "tag_name" in data:  # GitHub
+        # Handle GitHub releases (dict with 'tag_name')
+        if isinstance(data, dict) and "tag_name" in data:
             return data["tag_name"]
 
-        # Check if this is a GitLab tag list response
-        elif isinstance(data, list) and len(data) > 0 and "name" in data[0]:  # GitLab
-            return data[0]["name"]
+        # Handle GitHub tags (list of dicts with 'name')
+        elif isinstance(data, list) and len(data) > 0 and "name" in data[0]:
+            # Filter out non-version tags and find the latest semantic version
+            version_tags = []
+            for item in data:
+                tag_name = item.get("name")
+                if tag_name and re.match(r"^(v)?\d+(\.\d+){0,2}([\-.]\S+)?$", tag_name):
+                    version_tags.append(tag_name)
+
+            if version_tags:
+                # Sort tags semantically after normalizing
+                def version_key(tag):
+                    parts = re.split(r"[\.-]", normalize_version(tag))
+                    return [int(p) if p.isdigit() else p for p in parts]
+
+                # Sort in descending order to get the latest
+                version_tags.sort(key=version_key, reverse=True)
+
+                if repo_url == "https://github.com/gitlabhq/gitlabhq":
+                    if len(version_tags) > 1:
+                        return version_tags[
+                            1
+                        ]  # Return the second latest for gitlabhq/gitlabhq
+                    else:
+                        print(
+                            f"Only one version tag found for {repo_url}, returning the latest."
+                        )
+                        return version_tags[0]
+                else:
+                    return version_tags[0]
+            else:
+                print(f"No valid version tags found in the API response for {api_url}")
+                return None
 
         else:
             print(f"Unexpected API response format: {data}")
@@ -162,7 +197,7 @@ def main(discord_flag):
         if not api_url:
             continue
 
-        latest_release_tag = get_latest_release(api_url)
+        latest_release_tag = get_latest_release(api_url, container_name, repo_url)
         if not latest_release_tag:
             continue
 
@@ -191,10 +226,12 @@ def main(discord_flag):
             outdated_containers.append(
                 f"{container_name:<20} {container_version}  ->  {latest_release_version}"
             )
-            outdated_containers.append(f"  Latest release: {repo_url}/releases/latest")
+            outdated_containers.append(
+                f"  Latest release: {repo_url}/releases/tag/v{latest_release_version}"
+            )
             # Add to Discord embed list for outdated containers
             discord_outdated_containers.append(
-                f"{container_name}: _{container_version}_ -> **[{latest_release_version}]({repo_url}/releases/latest)**"
+                f"{container_name}: _{container_version}_ -> **[{latest_release_version}]({repo_url}/tags)**"
             )
 
     # Print stdout results
