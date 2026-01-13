@@ -16,7 +16,7 @@ in
 {
   options.mine.services.tailscale = {
     enable = mkEnableOption "Enable Tailscale";
-    authKeyFile = mkOpt (types.nullOr types.path) null "authKeyFile path";
+    authKeyFile = mkOpt types.path config.sops.secrets."tailscale/AUTH_KEY".path "authKeyFile path";
     useRoutingFeatures = mkOpt (types.enum [
       "none"
       "client"
@@ -32,7 +32,7 @@ in
       enable = true;
       package = pkgs.unstable.tailscale;
       openFirewall = true;
-      authKeyFile = mkIf sops.enable config.sops.secrets."tailscale/AUTH_KEY".path;
+      inherit (config.mine.services.tailscale) authKeyFile;
       inherit (config.mine.services.tailscale) useRoutingFeatures;
       inherit (config.mine.services.tailscale) extraUpFlags;
       inherit (config.mine.services.tailscale) extraSetFlags;

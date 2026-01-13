@@ -2,6 +2,7 @@
   lib,
   inputs,
   config,
+  pkgs,
   ...
 }:
 let
@@ -21,23 +22,32 @@ in
     system.stateVersion = "25.11";
 
     ec2.hvm = true;
-    virtualisation.diskSize = 6 * 1024;
+    virtualisation.diskSize = 5 * 1024;
+
+    nix.settings.trusted-users = [
+      "ssm-user"
+      "@wheel"
+    ];
+
+    sops.secrets."tailscale/CLOUDBOX_AUTH_KEY" = {
+      sopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
+    };
 
     mine = {
+      user = {
+        enable = true;
+        shell.package = pkgs.fish;
+      };
+
       services.tailscale = {
         enable = true;
-        authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;
+        authKeyFile = config.sops.secrets."tailscale/CLOUDBOX_AUTH_KEY".path;
         useRoutingFeatures = "client";
-        extraUpFlags = [
-          "--accept-routes"
-          "--accept-dns=true"
-        ];
       };
 
       system = {
         networking = {
           resolved = enabled;
-          forwarding.ipv4 = true;
           networkd = {
             enable = true;
             hostname = "nixos";
@@ -46,16 +56,15 @@ in
         nix = {
           flakes = enabled;
         };
+        security.sudonopass = enabled;
         services = {
-          openssh = {
-            enable = true;
-            root = true;
-          };
+          openssh = enabled;
         };
         utils = enabled;
       };
 
       cli-tools = {
+        ssm-session-manager = enabled;
         sops = {
           enable = true;
           ageKeyFile = {

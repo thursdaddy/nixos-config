@@ -21,6 +21,21 @@ in
   config = {
     system.stateVersion = "24.11";
 
+    sops.secrets = {
+      "gitlab/GITLAB_COM_RUNNER_TOKEN" = {
+        owner = "thurs";
+      };
+    };
+
+    sops.templates."gitlab-runner.token".content = ''
+      CI_SERVER_URL=https://gitlab.com
+      CI_SERVER_TOKEN=${config.sops.placeholder."gitlab/GITLAB_COM_RUNNER_TOKEN"}
+    '';
+
+    services.gitlab-runner.services."gitlab".authenticationTokenConfigFile =
+      lib.mkForce
+        config.sops.templates."gitlab-runner.token".path;
+
     mine = {
       user = {
         enable = true;
@@ -107,6 +122,14 @@ in
                 "/home/thurs/documents/notes:/notes"
                 "/opt/configs:/opt/configs:ro"
                 "/var/run/docker.sock:/var/run/docker.sock"
+              ];
+            };
+            gitlab = {
+              tags = [
+                "builder"
+              ];
+              dockerVolumes = [
+                "/home/thurs/projects/nix/nixos-config/builds:/artifacts"
               ];
             };
           };

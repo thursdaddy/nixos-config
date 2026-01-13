@@ -65,9 +65,6 @@ in
           after = [
             "gitlab-runner-token.service"
           ];
-          partOf = [
-            "gitlab-runner-token.service"
-          ];
         };
         gitlab-runner-token = {
           enable = true;
