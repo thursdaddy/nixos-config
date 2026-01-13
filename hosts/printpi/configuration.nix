@@ -100,6 +100,7 @@ in
         };
         nix = {
           flakes = enabled;
+          substituters = enabled;
         };
         security.sudonopass = enabled;
         services = {
