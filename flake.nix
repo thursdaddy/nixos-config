@@ -249,6 +249,17 @@
               ./systems/x86_64-ami
             ];
           };
+          ami-arm = nixos-generators.nixosGenerate {
+            specialArgs = {
+              inherit inputs;
+              inherit lib;
+            };
+            system = "aarch64-linux";
+            format = "amazon";
+            modules = [
+              ./systems/aarch64-ami
+            ];
+          };
           iso = nixos-generators.nixosGenerate {
             specialArgs = {
               inherit inputs;
