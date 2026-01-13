@@ -22,28 +22,28 @@ in
     home-manager.users.${user.name} = {
       services.hypridle = {
         enable = true;
+        package = pkgs.unstable.hypridle;
         settings = {
           general = {
             before_sleep_cmd = "loginctl lock-session";
             after_sleep_cmd = "${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
-            lock_cmd = "hyprlock";
+            lock_cmd = "pidof hyprlock || hyprlock";
           };
 
           listener = [
             {
               timeout = 1200;
-              on-timeout = "${notify-message} \"HyprIdle: Locking Screen...\" && loginctl lock-session";
+              on-timeout = "loginctl lock-session";
               on-resume = "${notify-message} \"HyprIdle: Screen Unlocked!\"";
             }
             {
-              timeout = 1500;
+              timeout = 1230;
               on-timeout = "${pkgs.hyprland}/bin/hyprctl dispatch dpms off";
               on-resume = "${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
-
             }
             {
-              timeout = 2430;
-              on-timeout = "${notify-message} \"HyprIdle: Suspending system..\" && systemctl suspend";
+              timeout = 1800;
+              on-timeout = "systemctl suspend";
             }
           ];
         };

@@ -40,6 +40,7 @@ in
         package = pkgs.hyprland;
 
         extraConfig = ''
+
           exec-once = steam
           exec-once = discord
           exec-once = obsidian
@@ -84,6 +85,10 @@ in
         '';
 
         settings = {
+          debug = {
+            disable_logs = false;
+          };
+
           "$mod" = "SUPER";
 
           env = [ "XCURSOR_SIZE,32" ];
