@@ -44,7 +44,7 @@ in
     systemd.services = {
       octostream = {
         serviceConfig = {
-          ExecStart = "${pkgs.unstable.mjpg-streamer}/bin/mjpg_streamer -i \"input_uvc.so -r 1280x720 -d /dev/video0 -f 60 -n\" -o \"output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www\"";
+          ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video0 --resolution=1920x1080 --desired-fps=60 --format=MJPEG --host=0.0.0.0 --port=8080 --workers=3 --persistent";
         };
         wantedBy = [ "multi-user.target" ];
         after = [ "network-online.target" ];
@@ -275,6 +275,7 @@ in
           octoprint-spoolmanager
           octoprint-tplinksmartplug
           octoprint-uicustomizer
+          octoprint-octolight-home-assistant
         ];
     };
   };

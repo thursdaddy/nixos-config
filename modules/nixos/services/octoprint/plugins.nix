@@ -342,18 +342,19 @@
             pyproject = true;
           };
 
-          # octoprint-themeify = pyself.buildPythonPackage rec {
-          #   pname = "OctoPrint-Themeify";
-          #   version = "1.2.2";
-          #   src = self.fetchFromGitHub {
-          #     owner = "Birkbjo";
-          #     repo = "OctoPrint-Themeify";
-          #     rev = "v${version}";
-          #     sha256 = "sha256-om9IUSmxU8y0x8DrodW1EU/pilAN3+PbtYck6KfROEg=";
-          #   };
-          #   propagatedBuildInputs = [ pysuper.octoprint ];
-          #   doCheck = false;
-          # };
+          octoprint-octolight-home-assistant = pyself.buildPythonPackage rec {
+            pname = "OctoPrint-Octolight-Home-Assistant";
+            version = "0.2.2";
+            src = self.fetchFromGitHub {
+              owner = "mark-bloom";
+              repo = "OctoLight_Home-Assistant";
+              rev = "${version}";
+              sha256 = "sha256-m6eOlMM2SqH0cyTKa23OU3mfGmMPjNPX/lOUwZOrLAY=";
+            };
+            propagatedBuildInputs = [ pysuper.octoprint ];
+            doCheck = false;
+            pyproject = true;
+          };
         };
       };
     })
