@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.commafeed;
 
-  version = "5.12.0";
+  version = "6.0.0";
 in
 {
   options.mine.container.commafeed = {
