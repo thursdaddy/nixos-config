@@ -5,10 +5,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.mine.apps.home-assistant.mqtt;
+  cfg = config.mine.services.home-assistant.mqtt;
 in
 {
-  options.mine.apps.home-assistant.mqtt = {
+  options.mine.services.home-assistant.mqtt = {
     enable = mkEnableOption "MQTT";
   };
 

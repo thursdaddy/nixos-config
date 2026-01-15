@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.mine.apps.home-assistant.appdaemon;
+  cfg = config.mine.services.home-assistant.appdaemon;
 in
 {
-  options.mine.apps.home-assistant.appdaemon = {
+  options.mine.services.home-assistant.appdaemon = {
     enable = mkEnableOption "AppDaemon home-assistant python automation apps.";
   };
 

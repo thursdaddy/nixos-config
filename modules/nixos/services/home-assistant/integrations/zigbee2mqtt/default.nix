@@ -5,10 +5,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.mine.apps.home-assistant.zigbee2mqtt;
+  cfg = config.mine.services.home-assistant.zigbee2mqtt;
 in
 {
-  options.mine.apps.home-assistant.zigbee2mqtt = {
+  options.mine.services.home-assistant.zigbee2mqtt = {
     enable = mkEnableOption "Zigbee2MQTT";
   };
 

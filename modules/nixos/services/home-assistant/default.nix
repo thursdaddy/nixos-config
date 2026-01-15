@@ -9,15 +9,15 @@ let
   inherit (lib) mkEnableOption mkIf;
   inherit (lib.thurs) enabled;
   inherit (config.mine) user;
-  cfg = config.mine.apps.home-assistant;
+  cfg = config.mine.services.home-assistant;
 in
 {
-  options.mine.apps.home-assistant = {
+  options.mine.services.home-assistant = {
     enable = mkEnableOption "Install Home-Assistant along with Postgres, AppDaemon, Mosquitto, Zigbee2MQTT, Govee2MQTT and espHome";
   };
 
   config = mkIf cfg.enable {
-    mine.apps.home-assistant = {
+    mine.services.home-assistant = {
       appdaemon = enabled;
       govee2mqtt = enabled;
       mqtt = enabled;

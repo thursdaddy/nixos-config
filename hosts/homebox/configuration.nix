@@ -52,10 +52,6 @@ in
         };
       };
 
-      apps = {
-        home-assistant = enabled;
-      };
-
       container = {
         attic-db = enabled;
         traefik = {
@@ -105,6 +101,7 @@ in
             };
           };
         };
+        home-assistant = enabled;
         tailscale = {
           enable = true;
           authKeyFile = config.sops.secrets."tailscale/AUTH_KEY".path;

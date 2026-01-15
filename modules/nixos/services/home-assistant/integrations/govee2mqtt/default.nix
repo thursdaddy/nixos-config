@@ -5,10 +5,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.mine.apps.home-assistant.govee2mqtt;
+  cfg = config.mine.services.home-assistant.govee2mqtt;
 in
 {
-  options.mine.apps.home-assistant.govee2mqtt = {
+  options.mine.services.home-assistant.govee2mqtt = {
     enable = mkEnableOption "Govee2MQTT";
   };
 
