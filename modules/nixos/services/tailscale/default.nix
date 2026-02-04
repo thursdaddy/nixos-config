@@ -17,6 +17,7 @@ in
   options.mine.services.tailscale = {
     enable = mkEnableOption "Enable Tailscale";
     authKeyFile = mkOpt types.path config.sops.secrets."tailscale/AUTH_KEY".path "authKeyFile path";
+    sopsKey = mkOpt types.str "tailscale/AUTH_KEY" "sops key for tailscale auth";
     useRoutingFeatures = mkOpt (types.enum [
       "none"
       "client"
@@ -32,13 +33,13 @@ in
       enable = true;
       package = pkgs.unstable.tailscale;
       openFirewall = true;
-      inherit (config.mine.services.tailscale) authKeyFile;
+      authKeyFile = config.sops.secrets."${config.mine.services.tailscale.sopsKey}".path;
       inherit (config.mine.services.tailscale) useRoutingFeatures;
       inherit (config.mine.services.tailscale) extraUpFlags;
       inherit (config.mine.services.tailscale) extraSetFlags;
     };
 
-    sops.secrets."tailscale/AUTH_KEY" = mkIf sops.enable {
+    sops.secrets."${config.mine.services.tailscale.sopsKey}" = {
       sopsFile = inputs.nixos-thurs.packages.${pkgs.system}.mySecrets + "/encrypted/secrets.yaml";
     };
 

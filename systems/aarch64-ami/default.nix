@@ -39,10 +39,16 @@ in
         shell.package = pkgs.fish;
       };
 
-      services.tailscale = {
-        enable = true;
-        authKeyFile = config.sops.secrets."tailscale/CLOUDBOX_AUTH_KEY".path;
-        useRoutingFeatures = "client";
+      services = {
+        docker = {
+          enable = true;
+          scripts.check-versions = true;
+        };
+        tailscale = {
+          enable = true;
+          authKeyFile = config.sops.secrets."tailscale/CLOUDBOX_AUTH_KEY".path;
+          useRoutingFeatures = "client";
+        };
       };
 
       system = {

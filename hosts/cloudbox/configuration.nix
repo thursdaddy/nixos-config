@@ -97,7 +97,11 @@ in
         r53-updater = enabled;
         tailscale = {
           enable = true;
+          sopsKey = "tailscale/CLOUDBOX_AUTH_KEY";
           useRoutingFeatures = "client";
+          extraUpFlags = [
+            "--accept-routes"
+          ];
         };
       };
 

@@ -8,7 +8,7 @@
 {
   imports = [ ];
 
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
 
   boot = {
     kernelModules = [ ];

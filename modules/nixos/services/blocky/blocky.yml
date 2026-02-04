@@ -69,6 +69,7 @@ customDNS:
     blocky.netpi1.thurs.pw: 192.168.10.57
     blocky.netpi2.thurs.pw: 192.168.10.201
     bw.thurs.pw: 192.168.10.15
+    cloudbox.thurs.pw: 100.110.38.73
     deemix.thurs.pw: 192.168.10.12
     esphome.thurs.pw: 192.168.10.60
     espresense-office.thurs.pw: 192.168.100.88
@@ -83,6 +84,7 @@ customDNS:
     home.thurs.pw: 192.168.10.60
     irc.thurs.pw: 192.168.10.15
     jellyfin.thurs.pw: 192.168.10.189
+    lack.thurs.pw: 192.168.10.185
     lidarr.thurs.pw: 192.168.10.12
     lists.thurs.pw: 192.168.10.15
     loki.thurs.pw: 192.168.10.68
