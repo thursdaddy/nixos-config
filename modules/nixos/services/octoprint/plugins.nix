@@ -342,6 +342,20 @@
             pyproject = true;
           };
 
+          # octoprint-multicam = pyself.buildPythonPackage rec {
+          #   pname = "OctoPrint-MultiCam";
+          #   version = "0.4.2";
+          #   src = self.fetchFromGitHub {
+          #     owner = "mikedmor";
+          #     repo = "OctoPrint_MultiCam";
+          #     rev = "${version}";
+          #     sha256 = "sha256-bqYTPCy3evmOahTZMWgfDeBRNwqerW9nR6lrumgqGPU=";
+          #   };
+          #   propagatedBuildInputs = [ pysuper.octoprint ];
+          #   doCheck = false;
+          #   pyproject = true;
+          # };
+
           octoprint-octolight-home-assistant = pyself.buildPythonPackage rec {
             pname = "OctoPrint-Octolight-Home-Assistant";
             version = "0.2.2";

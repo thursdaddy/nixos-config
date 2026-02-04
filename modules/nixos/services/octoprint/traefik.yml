@@ -14,13 +14,24 @@ http:
         - "websecure"
       tls:
         certResolver: letsencrypt
+    lack:
+      rule: "Host(`lack.@fqdn@`)"
+      service: lackstream
+      entrypoints:
+        - "websecure"
+      tls:
+        certResolver: letsencrypt
 
   services:
     octoprint:
       loadBalancer:
         servers:
-        - url: http://@ip@:5000
+          - url: http://@ip@:5000
     octostream:
       loadBalancer:
         servers:
-        - url: http://@ip@:8080
+          - url: http://@ip@:8080
+    lackstream:
+      loadBalancer:
+        servers:
+          - url: http://@ip@:9090

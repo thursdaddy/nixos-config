@@ -41,10 +41,24 @@ in
       v4l-utils # camera control
     ];
 
+    networking.firewall.allowedTCPPorts = [
+      8080
+      9090
+    ];
+
     systemd.services = {
       octostream = {
         serviceConfig = {
-          ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video0 --resolution=1920x1080 --desired-fps=60 --format=MJPEG --host=0.0.0.0 --port=8080 --workers=3 --persistent";
+          ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video2 --resolution=1920x1080 --desired-fps=15 --format=MJPEG --host=0.0.0.0 --port=8080 --encoder=hw --workers=2 --persistent";
+        };
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network-online.target" ];
+        requires = [ "network-online.target" ];
+      };
+
+      lackstream = {
+        serviceConfig = {
+          ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video0 --resolution=1920x1080 --desired-fps=60 --format=MJPEG --host=0.0.0.0 --port=9090 --encoder=hw --workers=3 --persistent";
         };
         wantedBy = [ "multi-user.target" ];
         after = [ "network-online.target" ];
@@ -52,8 +66,7 @@ in
       };
 
       octoprint = {
-        after = [ "mount-configs.service" ];
-        requires = [ "mount-configs.service" ];
+        after = lib.mkForce [ "mount-configs.service" ];
         path = with pkgs; [
           python3Packages.pip
           v4l-utils
@@ -89,8 +102,6 @@ in
         '';
       };
     };
-
-    networking.firewall.allowedTCPPorts = [ 8080 ];
 
     security.sudo.extraRules = [
       {
@@ -256,26 +267,27 @@ in
       plugins =
         plugins: with plugins; [
           camerasettings
+          displaylayerprogress
           mqtt
-          timelapse
-          octoprint-homeassistant
           octoprint-cancelobject
           octoprint-costestimation
           octoprint-dashboard
-          displaylayerprogress
           octoprint-excluderegion
           octoprint-filemanager
+          octoprint-homeassistant
+          # octoprint-multicam
+          octoprint-octolight-home-assistant
           octoprint-powerfailure
-          octoprint-prettygcode
           octoprint-preheat
+          octoprint-prettygcode
+          octoprint-printjobhistory
           octoprint-printtimegenius
           octoprint-prusaslicerthumbnails
-          octoprint-printjobhistory
           octoprint-slicerestimator
           octoprint-spoolmanager
           octoprint-tplinksmartplug
           octoprint-uicustomizer
-          octoprint-octolight-home-assistant
+          timelapse
         ];
     };
   };
