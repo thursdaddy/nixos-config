@@ -1,6 +1,5 @@
 { pkgs, ... }:
 let
-
   fzf-checkout = pkgs.vimUtils.buildVimPlugin {
     name = "fzf-checkout";
     src = pkgs.fetchFromGitHub {
@@ -10,7 +9,6 @@ let
       hash = "sha256-lM5vv0ucgxvoc8ZtJwShDoY7ji6BYl6VZA2bYN0UU2s=";
     };
   };
-
 in
 {
   programs.nixvim = {
