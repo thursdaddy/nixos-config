@@ -34,7 +34,7 @@ in
       };
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${lib.getExe pkgs.hyprlock}";
+        ExecStart = "${lib.getExe' pkgs.busybox "pidof"} hyprlock || ${lib.getExe pkgs.hyprlock}";
         User = user.name;
       };
     };
