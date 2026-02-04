@@ -6,6 +6,10 @@ lights_all:
   name: All Lights
   initial: true
   icon: mdi:ceiling-light
+lights_tv_automation:
+  name: TV Lights Automation
+  initial: true
+  icon: mdi:ceiling-light
 lock_front_door_jammed:
   name: Determine if front door lock is jammed
   icon: mdi:lock-alert
