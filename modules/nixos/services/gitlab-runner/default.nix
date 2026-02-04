@@ -62,7 +62,7 @@ in
     systemd = {
       services = {
         gitlab-runner = {
-          after = [
+          requires = [
             "gitlab-runner-token.service"
           ];
         };
@@ -102,6 +102,7 @@ in
       enable = true;
       services = lib.mapAttrs (runnerName: runnerConfig: {
         description = "Gitlab Runner ${runnerName} on ${config.networking.hostName}.";
+        requestConcurrency = 3;
         authenticationTokenConfigFile = "${runner_cfg_path}/${runnerName}";
         executor = "docker";
         dockerImage = "alpine";
