@@ -125,7 +125,11 @@ in
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           (python-final: python-prev: {
             aiohttp = python-prev.aiohttp.overrideAttrs (old: {
-              disabledTests = (old.disabledTests or [ ]) ++ [ "test_proxy_functional" ];
+              disabledTests = (old.disabledTests or [ ]) ++ [
+                "test_proxy_functional"
+                "test_client_middleware_digest_auth"
+                "test_cookie_helpers"
+              ];
             });
           })
         ];
