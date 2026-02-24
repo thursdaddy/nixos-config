@@ -33,7 +33,7 @@ in
       enable = true;
       package = pkgs.unstable.tailscale;
       openFirewall = true;
-      authKeyFile = config.sops.secrets."${config.mine.services.tailscale.sopsKey}".path;
+      authKeyFile = config.mine.services.tailscale.authKeyFile;
       inherit (config.mine.services.tailscale) useRoutingFeatures;
       inherit (config.mine.services.tailscale) extraUpFlags;
       inherit (config.mine.services.tailscale) extraSetFlags;

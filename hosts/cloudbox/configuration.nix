@@ -26,11 +26,18 @@ in
       SystemMaxUse=1G
     '';
 
+    swapDevices = [
+      {
+        device = "/swap";
+        size = 2 * 1024;
+      }
+    ];
     nix.settings.trusted-users = [
       "ssm-user"
       "@wheel"
     ];
 
+    security.sudo-rs.enable = true;
     environment.systemPackages = with pkgs; [
       neovim
     ];
@@ -98,6 +105,7 @@ in
         tailscale = {
           enable = true;
           sopsKey = "tailscale/CLOUDBOX_AUTH_KEY";
+          authKeyFile = "/tmp/auth";
           useRoutingFeatures = "client";
           extraUpFlags = [
             "--accept-routes"
