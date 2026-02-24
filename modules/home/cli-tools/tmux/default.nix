@@ -111,8 +111,6 @@ in
           bind -r [ select-pane -t :.-
           bind -r ] select-pane -t :.+
 
-          bind -r Tab switch-client -l
-
           bind -r o previous-window
           bind -r p next-window
 
@@ -151,7 +149,9 @@ in
           set-option -g automatic-rename-format '#{b:pane_current_command}'
 
           # riced tmux session picker
-          bind-key Space choose-window -w -O name -F '#{?pane_format,#[fg=colour209]#{pane_current_command} #[fg=colour209]#{pane_title},#{?window_format,#[fg=colour209]#{window_name}#{window_flags}#{?#{==:#{window_panes},1}, #{?#{!=:#{window_name},#{pane_current_command}},#[fg=colour112]#{pane_current_command} ,}#[fg=colour39]#{pane_title},},#[fg=colour112]#{?session_grouped, (group #{session_group}: #{session_group_list}),}#{?session_attached,(attached),#[fg=colour9](unattached)}}}'
+          set -g @choose_window_format '#{?pane_format,#[fg=colour209]#{pane_current_command} #[fg=colour209]#{pane_title},#{?window_format,#[fg=colour209]#{window_name}#{window_flags}#{?#{==:#{window_panes},1}, #{?#{!=:#{window_name},#{pane_current_command}},#[fg=colour112]#{pane_current_command} ,}#[fg=colour39]#{pane_title},},#[fg=colour112]#{?session_grouped, (group #{session_group}: #{session_group_list}),}#{?session_attached,(attached),#[fg=colour9](unattached)}}}'
+          bind-key Space run-shell "tmux choose-window -w -O name -F '#{@choose_window_format}'"
+          bind -r Tab run-shell "tmux switch-client -l || tmux choose-window -w -O name -F '#{@choose_window_format}'"
 
           set -g status-justify left
 
