@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.open-webui;
 
-  version = "0.7.2";
+  version = "0.8.3";
 in
 {
   options.mine.container.open-webui = {

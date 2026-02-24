@@ -15,7 +15,7 @@ let
   inherit (lib.thurs) mkOpt;
   cfg = config.mine.container.traefik;
 
-  version = "3.6.7";
+  version = "3.6.8";
 
   is_Jupiter = config.networking.hostName == "jupiter";
   fqdn = config.mine.container.traefik.domainName;

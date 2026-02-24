@@ -3,7 +3,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.vaultwarden;
 
-  version = "1.35.2";
+  version = "1.35.3";
 in
 {
   options.mine.container.vaultwarden = {
@@ -15,10 +15,12 @@ in
       secrets = {
         "vaultwarden/YUBICO_CLIENT_ID" = { };
         "vaultwarden/YUBICO_SECRET_KEY" = { };
+        "vaultwarden/ADMIN_TOKEN" = { };
       };
       templates."vaultwarden.env".content = ''
         YUBICO_CLIENT_ID=${config.sops.placeholder."vaultwarden/YUBICO_CLIENT_ID"}
         YUBICO_SECRET_KEY=${config.sops.placeholder."vaultwarden/YUBICO_SECRET_KEY"}
+        ADMIN_TOKEN=${config.sops.placeholder."vaultwarden/ADMIN_TOKEN"}
       '';
     };
 

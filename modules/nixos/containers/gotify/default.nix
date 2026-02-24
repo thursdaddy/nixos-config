@@ -7,7 +7,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.gotify;
 
-  version = "2.8.0";
+  version = "2.9.0";
 in
 {
   options.mine.container.gotify = {

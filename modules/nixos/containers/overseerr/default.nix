@@ -8,7 +8,7 @@ let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.mine.container.overseerr;
 
-  version = "1.34.0";
+  version = "1.35.0";
 in
 {
   options.mine.container.overseerr = {
@@ -52,6 +52,9 @@ in
         "traefik.http.routers.overseerr.rule" =
           "Host(`request.${config.mine.container.traefik.domainName}`)";
         "traefik.http.services.overseerr.loadbalancer.server.port" = "5055";
+        "homelab.backup.enable" = "true";
+        "homelab.backup.path" = "${config.mine.container.settings.configPath}";
+        "homelab.backup.retention.period" = "5";
       };
     };
   };
