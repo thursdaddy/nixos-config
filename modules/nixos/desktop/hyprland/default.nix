@@ -23,6 +23,10 @@ in
       xwayland.enable = true;
     };
 
+    xdg.portal = {
+      enable = true;
+      extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+    };
     environment.systemPackages = with pkgs; [
       wdisplays
       wl-clipboard

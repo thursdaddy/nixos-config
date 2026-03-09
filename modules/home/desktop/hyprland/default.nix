@@ -31,6 +31,7 @@ in
       home.packages = with pkgs; [
         (mkIf network.applet networkmanagerapplet)
         bemoji
+        plex-desktop
       ];
 
       services.network-manager-applet.enable = mkIf network.applet true;
@@ -70,6 +71,7 @@ in
           windowrulev2 = maximize, class:(chrome-youtube.com__-Default)
           windowrulev2 = nodim, class:(chrome-youtube.com__-Default)
           windowrulev2 = nodim, class:(Vivaldi-stable)
+          windowrulev2 = nodim, class:(tv.plex.Plex)
           windowrulev2 = nodim, class:^(vivaldi).*$
           windowrulev2 = size 90%, class:(chrome-youtube.com__-Default)
           windowrulev2 = workspace 8 silent, class:(chrome-music.youtube.com__-Default)
@@ -153,7 +155,7 @@ in
             "$mod_SHIFT, F, fullscreen, 1"
             "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
             "$mod_SHIFT, O, exec, obsidian"
-            "$mod_SHIFT, P, exec, ${lib.getExe pkgs.vivaldi} --app=https://192.168.10.189:32400"
+            "$mod_SHIFT, P, exec, plex-desktop"
             "$mod_SHIFT, Q, killactive"
             "$mod_SHIFT, X, exec, loginctl lock-session && sleep 2 && hyprctl dispatch dpms off && hyprlock"
             "$mod_SHIFT, Z, exec, loginctl lock-session && sleep 2 && hyprctl dispatch dpms off && systemctl suspend"
