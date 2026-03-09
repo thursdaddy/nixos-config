@@ -25,6 +25,7 @@ in
       DefaultLimitNOFILE = "1024:1048576";
     };
     networking.firewall.allowedTCPPorts = [ 8000 ];
+    nix.settings.download-buffer-size = 524288000;
 
     mine = {
       user = {

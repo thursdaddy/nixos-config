@@ -2,7 +2,7 @@
 let
   unstablePkgs = final: prev: {
     unstable = import inputs.unstable {
-      system = "${prev.system}";
+      inherit (final.stdenv.hostPlatform) system;
       config.allowUnfree = true;
     };
   };

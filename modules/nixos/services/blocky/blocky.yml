@@ -61,6 +61,7 @@ customDNS:
   customTTL: 1h
   filterUnmappedTypes: true
   mapping:
+    nginx.thurs.pw: 192.168.10.103
     alertmanager.thurs.pw: 192.168.10.68
     attic.thurs.pw: 192.168.10.60
     barcode.thurs.pw: 192.168.10.15
