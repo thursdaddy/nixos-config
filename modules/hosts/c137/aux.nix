@@ -7,6 +7,8 @@ _: {
       ...
     }:
     {
+      nixpkgs.config.allowUnfree = true;
+
       environment.systemPackages = with pkgs; [
         flycast
         freecad
@@ -19,13 +21,11 @@ _: {
       hardware = {
         xone.enable = true; # game controller
         keyboard.zsa.enable = true;
+        logitech.wireless = {
+          enable = true;
+          enableGraphical = true;
+        };
       };
-
-      nixpkgs.config.allowUnfreePredicate =
-        pkg:
-        builtins.elem (lib.getName pkg) [
-          "xow_dongle-firmware"
-        ];
 
       # disable devices that trigger wake
       systemd.services.udev-suspend-fix = {
@@ -42,28 +42,6 @@ _: {
             fi
           done
         '';
-      };
-
-      # re-map kensington trackball buttons
-      services.input-remapper = {
-        enable = true;
-        serviceWantedBy = [ "multi-user.target" ];
-      };
-
-      systemd.user.services.input-remapper-autoload = {
-        description = "Run input-remapper-control autoload command";
-        documentation = [ "https://github.com/sezanzeb/input-remapper" ];
-        after = [ "graphical-session.target" ];
-        bindsTo = [ "graphical-session.target" ];
-        wantedBy = [ "graphical-session.target" ];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.input-remapper}/bin/input-remapper-control --command autoload";
-          Restart = "on-failure";
-          RestartSec = "5s";
-          KillMode = "mixed";
-          Slice = "session.slice";
-        };
       };
 
       services.ollama = {

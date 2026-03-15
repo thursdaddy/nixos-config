@@ -85,8 +85,8 @@ _: {
               networkmanager-openvpn
             ];
           };
+          programs.nm-applet.enable = true;
 
-          # programs.nm-applet.enable = true;
           environment.systemPackages = [
             pkgs.networkmanagerapplet
           ];

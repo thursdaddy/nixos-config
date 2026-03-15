@@ -48,6 +48,7 @@ _: {
           hyprland = enabled;
           hyprlock = enabled;
           hyprpaper = enabled;
+          sddm = enabled;
           waybar = enabled;
         };
 

@@ -1,6 +1,6 @@
 _: {
   flake.modules.nixos.apps =
-    { pkgs, ... }:
+    { lib, pkgs, ... }:
     {
       environment.systemPackages = with pkgs; [
         element-desktop
@@ -13,8 +13,7 @@ _: {
         bindsTo = [ "graphical-session.target" ];
         wantedBy = [ "graphical-session.target" ];
         serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.input-remapper}/bin/input-remapper-control --command autoload";
+          ExecStart = "${lib.getExe pkgs.element-desktop}";
           Restart = "on-failure";
           RestartSec = "2s";
           KillMode = "mixed";

@@ -33,7 +33,11 @@ _: {
 
         xdg.portal = {
           enable = true;
-          extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+          extraPortals = [
+            pkgs.xdg-desktop-portal-gtk
+            pkgs.xdg-desktop-portal-hyprland
+          ];
+          config.common.default = "*";
         };
 
         environment.systemPackages = with pkgs; [
@@ -65,6 +69,7 @@ _: {
     {
       config = lib.mkIf cfg.enable {
         home.sessionVariables = {
+          NIXOS_OZONE_WL = "1";
           XDG_CURRENT_SESSION = "hyprland";
           XDG_SESSION_TYPE = "wayland";
           QT_QPA_PLATFORM = "wayland-egl";
@@ -76,10 +81,6 @@ _: {
           package = pkgs.hyprland;
 
           extraConfig = ''
-            exec-once = steam
-            exec-once = discord
-            exec-once = obsidian
-
             # MONITORS AND WORKSPACES
             monitor=DP-1, 2560x1440@165, 90x0, 1
             monitor=DP-2, 3840x1600@144, 0x1440, 1

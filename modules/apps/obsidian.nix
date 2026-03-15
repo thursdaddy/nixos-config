@@ -6,15 +6,22 @@ _: {
         permittedInsecurePackages = [
           "electron-25.9.0"
         ];
-        allowUnfreePredicate =
-          pkg:
-          let
-            name = lib.getName pkg;
-          in
-          name == "obsidian" || lib.hasPrefix "obsidian" name;
       };
 
-      nixpkgs.config.allowUnfree = true;
+      systemd.user.services.obsidian = {
+        description = "Obsidian Desktop Autostart";
+        after = [ "graphical-session.target" ];
+        bindsTo = [ "graphical-session.target" ];
+        wantedBy = [ "graphical-session.target" ];
+        serviceConfig = {
+          ExecStart = "${lib.getExe pkgs.obsidian}";
+          Restart = "on-failure";
+          RestartSec = "5s";
+          KillMode = "mixed";
+          Slice = "app.slice";
+        };
+      };
+
       environment.systemPackages = with pkgs; [
         obsidian
       ];
