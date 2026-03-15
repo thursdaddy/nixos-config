@@ -7,6 +7,21 @@ _: {
       };
 
       config = {
+        systemd.user.services.waybar = {
+          description = "Highly customizable Wayland bar for Sway and Wlroots based compositors.";
+          documentation = [ "https://github.com/Alexays/Waybar/wiki" ];
+          after = [ "graphical-session.target" ];
+          bindsTo = [ "graphical-session.target" ];
+          wantedBy = [ "graphical-session.target" ];
+          serviceConfig = {
+            Type = "simple";
+            ExecStart = "${pkgs.waybar}/bin/waybar";
+            ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
+            Restart = "on-failure";
+            RestartSec = "2s";
+            KillMode = "mixed";
+          };
+        };
       };
     };
 
@@ -217,34 +232,11 @@ _: {
           ];
         };
 
+        services.blueman-applet.enable = true;
+
         gtk.iconTheme = {
           package = pkgs.gnome.adwaita-icon-theme;
           name = "adwaita-icon-theme";
-        };
-
-        # TODO: migrate this to nixos module
-        systemd.user.services.waybar = {
-          Unit = {
-            Description = "Highly customizable Wayland bar for Sway and Wlroots based compositors.";
-            Documentation = "https://github.com/Alexays/Waybar/wiki";
-            PartOf = [
-              "hyprland-session.target"
-              "desktop.service"
-            ];
-            After = [ "graphical-session.target" ];
-          };
-
-          Service = {
-            ExecStart = "${pkgs.waybar}/bin/waybar";
-            ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
-            Restart = "on-failure";
-            RestartSec = "2s";
-            KillMode = "mixed";
-          };
-
-          Install = {
-            WantedBy = [ "graphical-session.target" ];
-          };
         };
       };
     };

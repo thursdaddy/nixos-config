@@ -53,14 +53,16 @@ _: {
       systemd.user.services.input-remapper-autoload = {
         description = "Run input-remapper-control autoload command";
         documentation = [ "https://github.com/sezanzeb/input-remapper" ];
-        enable = true;
-        after = [ "input-remapper.service" ];
-        partOf = [ "desktop.service" ];
-        wantedBy = [ "desktop.service" ];
+        after = [ "graphical-session.target" ];
+        bindsTo = [ "graphical-session.target" ];
+        wantedBy = [ "graphical-session.target" ];
         serviceConfig = {
           Type = "oneshot";
-          ExecStartPre = "${pkgs.coreutils}/bin/sleep 5";
           ExecStart = "${pkgs.input-remapper}/bin/input-remapper-control --command autoload";
+          Restart = "on-failure";
+          RestartSec = "5s";
+          KillMode = "mixed";
+          Slice = "session.slice";
         };
       };
 
@@ -70,7 +72,7 @@ _: {
         };
       };
 
-      systemd.services.beszel-agent = lib.mkIf config.mine.services.beszel-agent.enable {
+      systemd.services.beszel-agent = {
         path = lib.mkIf config.mine.desktop.amd.enable [ pkgs.rocmPackages.rocm-smi ];
       };
     };

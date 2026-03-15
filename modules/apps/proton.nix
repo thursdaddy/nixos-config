@@ -8,17 +8,16 @@ _: {
       ];
 
       systemd.user.services.protonmail = {
-        description = "Autostart service for Protonmail Desktop";
-        enable = true;
-        partOf = [ "desktop.service" ];
-        wantedBy = [ "desktop.service" ];
+        description = "Protonmail Desktop Autostart";
+        after = [ "graphical-session.target" ];
+        bindsTo = [ "graphical-session.target" ];
+        wantedBy = [ "graphical-session.target" ];
         serviceConfig = {
           ExecStart = "${lib.getExe pkgs.protonmail-desktop}";
-          ExecStop = "${pkgs.coreutils}/bin/kill -SIGTERM $MAINPID";
           Restart = "on-failure";
           RestartSec = "5s";
           KillMode = "mixed";
-          SuccessExitStatus = "1";
+          Slice = "app.slice";
         };
       };
     };

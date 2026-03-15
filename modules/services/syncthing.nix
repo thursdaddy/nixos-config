@@ -26,15 +26,15 @@ _: {
         systemd.user.services.syncthing-tray = {
           description = "autostart service for syncthing tray";
           documentation = [ "https://github.com/Martchus/syncthingtray" ];
-          enable = true;
-          partOf = [ "desktop.service" ];
-          wantedBy = [ "desktop.service" ];
+          after = [ "graphical-session.target" ];
+          bindsTo = [ "graphical-session.target" ];
+          wantedBy = [ "graphical-session.target" ];
           serviceConfig = {
             ExecStartPre = "${pkgs.coreutils}/bin/sleep 10";
             ExecStart = "${pkgs.syncthingtray-minimal}/bin/syncthingtray --wait";
-            ExecStop = "${pkgs.coreutils}/bin/kill -SIGUSR3 $MAINPID";
             Restart = "always";
             KillMode = "mixed";
+            Slice = "session.slice";
           };
         };
 

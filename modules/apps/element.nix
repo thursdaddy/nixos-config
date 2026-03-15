@@ -7,25 +7,19 @@ _: {
       ];
 
       systemd.user.services.element-desktop = {
-        unitConfig = {
-          Description = "A glossy Matrix collaboration client for the web. ";
-          Documentation = "https://github.com/element-hq/element-web";
-          PartOf = [
-            "hyprland-session.target"
-            "desktop.service"
-          ];
-          After = [ "graphical-session.target" ];
-        };
-
+        description = "A glossy Matrix collaboration client for the web.";
+        documentation = [ "https://github.com/element-hq/element-web" ];
+        after = [ "graphical-session.target" ];
+        bindsTo = [ "graphical-session.target" ];
+        wantedBy = [ "graphical-session.target" ];
         serviceConfig = {
-          ExecStart = "${pkgs.element-desktop}/bin/element-desktop";
-          ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
+          Type = "oneshot";
+          ExecStart = "${pkgs.input-remapper}/bin/input-remapper-control --command autoload";
           Restart = "on-failure";
           RestartSec = "2s";
           KillMode = "mixed";
+          Slice = "session.slice";
         };
-
-        wantedBy = [ "graphical-session.target" ];
       };
     };
 

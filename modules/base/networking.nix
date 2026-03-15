@@ -59,7 +59,7 @@ _: {
           networking = {
             firewall.enable = cfg.firewall.enable;
             hostName = cfg.hostName;
-            useDHCP = true;
+            useDHCP = lib.mkDefault true;
             interfaces = lib.mkIf cfg.wake-on-lan.enable {
               "${cfg.wake-on-lan.interface}".wakeOnLan.enable = true;
             };
@@ -86,9 +86,10 @@ _: {
             ];
           };
 
-          programs.nm-applet.enable = true;
-
-          systemd.services.NetworkManager-wait-online.enable = lib.mkForce false;
+          # programs.nm-applet.enable = true;
+          environment.systemPackages = [
+            pkgs.networkmanagerapplet
+          ];
 
           users.users.${user.name}.extraGroups = [ "networkmanager" ];
         })
