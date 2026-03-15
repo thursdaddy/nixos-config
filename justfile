@@ -45,6 +45,9 @@ netpi2:
 kepler:
   @./nix.sh rebuild kepler
 
+rpi4:
+  @./nix.sh rebuild rpi4
+
 wormhole:
   @./nix.sh rebuild wormhole
 

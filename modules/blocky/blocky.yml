@@ -1,0 +1,84 @@
+upstreams:
+  init:
+    strategy: fast
+  groups:
+    default:
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.quad9.net/dns-query
+
+connectIPVersion: dual
+
+bootstrapDns:
+  - tcp+udp:1.1.1.1
+  - https://1.1.1.1/dns-query
+
+blocking:
+  denylists:
+    ads:
+      - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/multi.txt
+      - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
+      - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+      - http://sysctl.org/cameleon/hosts
+      - https://freedns.controld.com/x-1hosts-lite
+      - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
+    special:
+      - https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts
+  clientGroupsBlock:
+    default:
+      - ads
+      - special
+  blockType: zeroIp
+  blockTTL: 1m
+  loading:
+    refreshPeriod: 24h
+
+caching:
+  minTime: 5m
+  maxTime: 30m
+
+clientLookup:
+  upstream: 192.168.20.1
+  singleNameOrder:
+    - 2
+    - 1
+
+ports:
+  dns: 53
+  http: 4000
+  tls: 853
+
+prometheus:
+  enable: true
+  path: /metrics
+
+log:
+  level: info
+  format: text
+  timestamp: true
+  privacy: false
+
+conditional:
+  mapping:
+    thurs.pw: 192.168.20.1
+
+customDNS:
+  customTTL: 1h
+  filterUnmappedTypes: true
+  mapping:
+    attic.thurs.pw: 192.168.10.60
+    bazarr.thurs.pw: 192.168.10.12
+    cloudbox.thurs.pw: 100.114.10.49
+    deemix.thurs.pw: 192.168.10.12
+    esphome.thurs.pw: 192.168.10.60
+    espresense-office.thurs.pw: 192.168.100.88
+    grafana.thurs.pw: 192.168.10.68
+    jellyfin.thurs.pw: 192.168.10.189
+    lidarr.thurs.pw: 192.168.10.12
+    loki.thurs.pw: 192.168.10.68
+    monitor.thurs.pw: 192.168.10.68
+    plex.thurs.pw: 192.168.10.189
+    readarr.thurs.pw: 192.168.10.12
+    stream.thurs.pw: 192.168.10.185
+    sync-borrowbox.thurs.pw: 192.168.10.12
+    sync-streambox.thurs.pw: 192.168.10.189
+    tautulli.thurs.pw: 192.168.10.189

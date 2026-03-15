@@ -1,0 +1,127 @@
+scrape_configs:
+  - job_name: hass
+    scrape_interval: 60s
+    metrics_path: /api/prometheus
+    authorization:
+      credentials: "@prom_token@"
+    scheme: https
+    static_configs:
+      - targets: ["home.thurs.pw"]
+
+  - job_name: node
+    static_configs:
+      - targets: ["netpi1.thurs.pw:9100"]
+        labels:
+          instance: netpi1
+      - targets: ["netpi2.thurs.pw:9100"]
+        labels:
+          instance: netpi2
+      - targets: ["printpi.thurs.pw:9100"]
+        labels:
+          instance: printpi
+      - targets: ["c137.thurs.pw:9100"]
+        labels:
+          instance: c137
+      - targets: ["proxbox1.thurs.pw:9100"]
+        labels:
+          instance: proxbox1
+      - targets: ["borrowbox.thurs.pw:9100"]
+        labels:
+          instance: borrowbox
+      - targets: ["100.114.203.99:9100"]
+        labels:
+          instance: cloudbox
+      - targets: ["kepler.thurs.pw:9100"]
+        labels:
+          instance: kepler
+      - targets: ["jupiter.thurs.pw:9100"]
+        labels:
+          instance: jupiter
+      - targets: ["wormhole.thurs.pw:9100"]
+        labels:
+          instance: jupiter
+      - targets: ["homebox.thurs.pw:9100"]
+        labels:
+          instance: homebox
+
+  - job_name: smartctl
+    static_configs:
+      - targets: ["c137.thurs.pw:9633"]
+        labels:
+          instance: c137
+      - targets: ["proxbox1.thurs.pw:9633"]
+        labels:
+          instance: proxbox1
+      - targets: ["borrowbox.thurs.pw:9633"]
+        labels:
+          instance: borrowbox
+
+  - job_name: zfs
+    static_configs:
+      - targets: ["c137.thurs.pw:9134"]
+        labels:
+          instance: c137
+      - targets: ["proxbox1.thurs.pw:9134"]
+        labels:
+          instance: proxbox1
+      - targets: ["borrowbox.thurs.pw:9134"]
+        labels:
+          instance: borrowbox
+
+  - job_name: blocky-netpi1
+    scheme: https
+    static_configs:
+      - targets: ["blocky-netpi1.thurs.pw"]
+        labels:
+          instance: netpi1
+
+  - job_name: blocky-netpi2
+    scheme: https
+    static_configs:
+      - targets: ["blocky-netpi2.thurs.pw"]
+        labels:
+          instance: netpi2
+
+  - job_name: blocky-homebox
+    scheme: https
+    static_configs:
+      - targets: ["blocky-homebox.thurs.pw"]
+        labels:
+          instance: homebox
+
+  - job_name: traefik-netpi2
+    static_configs:
+      - targets: ["netpi2.thurs.pw:8082"]
+        labels:
+          instance: netpi2
+
+  - job_name: traefik-printpi
+    static_configs:
+      - targets: ["printpi.thurs.pw:8082"]
+        labels:
+          instance: printpi
+
+  - job_name: traefik-proxbox1
+    scrape_timeout: 60s
+    static_configs:
+      - targets: ["192.168.10.134:8082"]
+        labels:
+          instance: proxbox1
+
+  - job_name: traefik-netpi1
+    static_configs:
+      - targets: ["netpi1.thurs.pw:8082"]
+        labels:
+          instance: netpi1
+
+  - job_name: traefik-cloudbox
+    static_configs:
+      - targets: ["100.114.203.99:8082"]
+        labels:
+          instance: cloudbox
+
+  - job_name: traefik-homebox
+    static_configs:
+      - targets: ["homebox.thurs.pw:8082"]
+        labels:
+          instance: homebox
