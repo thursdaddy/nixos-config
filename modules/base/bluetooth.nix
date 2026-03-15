@@ -23,6 +23,7 @@ _: {
               AutoEnable = true;
             };
             General = {
+              ControllerMode = "dual";
               Experimental = true;
             };
           };

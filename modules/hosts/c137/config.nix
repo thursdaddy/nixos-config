@@ -15,6 +15,7 @@ _: {
           bluetooth = enabled;
           nix.ghToken = enabled;
           networking = {
+            networkManager = enabled;
             hostName = "c137";
             meta = {
               hostIp = "192.168.10.137";
@@ -24,6 +25,7 @@ _: {
               interface = "enp5s0";
             };
           };
+          utils.sysadmin = enabled;
         };
 
         home-manager = {

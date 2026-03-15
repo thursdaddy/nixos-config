@@ -28,9 +28,11 @@ _: {
                   type = lib.types.listOf lib.types.str;
                   default = [
                     "auto"
-                    "rw"
-                    "defaults"
                     "_netdev"
+                    "bg"
+                    "timeo=30"
+                    "retrans=2"
+                    "x-systemd.mount-timeout=10"
                   ];
                   description = "Default mount options";
                 };

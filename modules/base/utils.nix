@@ -18,6 +18,7 @@
           ncdu
           nmap
           unixtools.netstat
+          usbutils
           wakeonlan
         ]
         ++ lib.optionals (!pkgs.stdenv.hostPlatform.isAarch64) [
