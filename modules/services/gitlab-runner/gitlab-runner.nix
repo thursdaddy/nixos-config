@@ -55,12 +55,11 @@ _: {
                 "gitlab-runner-token.service"
               ];
             };
+
             gitlab-runner-token = {
               enable = true;
               description = "Manage Gitlab Runners";
-              after = [ "multi-user.target" ];
               wantedBy = [ "multi-user.target" ];
-              requires = [ "network-online.target" ];
               serviceConfig = {
                 Type = "oneshot";
                 Restart = "on-failure";
