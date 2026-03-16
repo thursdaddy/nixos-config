@@ -10,8 +10,10 @@ _: {
       inherit (lib.thurs) disabled enabled;
     in
     {
+      boot.loader.systemd-boot.configurationLimit = 5;
       mine = {
         base = {
+          nix.substituters = disabled;
           networking = {
             hostName = "cloudbox";
             ipv4Forwarding = enabled;
@@ -35,7 +37,6 @@ _: {
         };
 
         services = {
-          alloy = disabled;
           gitlab-runner = {
             enable = true;
             runners = {

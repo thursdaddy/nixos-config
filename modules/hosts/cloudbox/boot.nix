@@ -36,6 +36,10 @@ _: {
         };
       };
 
+      boot.loader.systemd-boot.configurationLimit = 5;
+
       networking.useDHCP = lib.mkDefault true;
+      nixpkgs.hostPlatform = "aarch64-linux";
+      system.stateVersion = "25.11";
     };
 }
