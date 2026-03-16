@@ -3,26 +3,25 @@ Est. Feb 2024
 
 My always evolving Nix flake ❄️. Declarative configurations across all systems in my Homelab:
 
- - MacBookPro M1 darwinConfiguration (nix-darwin + home-manager)
- - Desktop configuration (nixos modules + home-manager)
-
- - Lenovo ThinkCentre M700 for Home-Assistant.
-
+ - MacBookPro M1 (nix-darwin + home-manager)
+ - Desktop configuration (nixos + home-manager)
+ - Amazon EC2 Graviton (aarch64) instance
+ - Lenovo ThinkCentre M700 (Home-Assistant)
  - Beelink GTR5 as a ProxMox host:
-    - Customized stage1-boot to enable Tailscale for ssh access to unlock ZFS Encrypted root device.
-    - VM's to run applications for monitoring and self-hosted tools.
-
- - Raspberry Pi 4's used for Blocky (Local DNS/Ad-blocking) and Octoprint.
+    - Customized stage1-boot to start Tailscale enabling ssh access to unlock ZFS Encrypted root device.
+    - Multiple VM's to run self-hosted applications for monitoring and various services.
+ - Raspberry Pi 4's
+    - Blocky (Local DNS/Ad-blocking)
+    - Octoprint (3d printer server + plugins)
 
 ## Migration to flake-parts
-
 I wanted to implement flake-parts after looking into it while exploring the buzz around the dendritic pattern.
 
-I might be abusing it but it *feels* better than my prior implementation that required some odd imports, folder structures and everything being mkEnableOption'ed.
+I am now using vic/import-tree to bulk-import the modules directory instead of relying on tricky imports and rigid folder structures with everything being mkEnableOption'ed.
 
-While I do still utilize a lot custom options, the bulk of my configurations are now enabled by default. They are now dictated by what flake modules are imported as my new implementation utilizes vic/import-tree to bulk import all nix files in my modules directory.
+Now most configurations are enabled by default and the system profile is determined by which flake modules it imports. Shared modules (like services and containers) still utilize enable options to maintain granular control where needed.
 
-Flake-parts also enables me to have insight across my nixosConfigurations via nix functions. For example, the blocky module scrapes my nixosConfiguration for specific options and if found, includes them in blockys `customDNS.mapping` setting. It scrapes them for options: `mine.services.*` and `mine.containers.*`, if they are enabled and have a `subdomain` option defined, it will be included in the DNS list.
+One of the primary advantages of this new structure is the ability to use Nix functions to gain insight across all nixosConfigurations. Doing so allows me to automate local DNS by programmatically scraping the entire flake for specific options under `mine.services.*` and `mine.containers.*`. If a service is enabled and has a subdomain option set, it is automatically injected into the Blocky customDNS.mapping configuration. This automation ensures that local DNS records are dynamically managed as services are deployed or decommissioned across the homelab.
 
 ## Helper Script
 
