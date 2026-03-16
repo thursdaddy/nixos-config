@@ -14,9 +14,14 @@
           attic-client
           bind
           dig
+          fastfetch
+          file
           gnupg
+          inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.siomon
           ncdu
           nmap
+          p7zip
+          ripgrep
           unixtools.netstat
           usbutils
           wakeonlan
@@ -34,15 +39,12 @@
         environment.systemPackages =
           with pkgs;
           [
-            inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.siomon
             bottom
             curl
             eza
-            fastfetch
-            file
+            jq
+            just
             killall
-            p7zip
-            ripgrep
             tree
             wget
           ]
