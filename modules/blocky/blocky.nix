@@ -95,15 +95,6 @@
       };
 
       config = {
-        mine.base.networking =
-          let
-            inherit (lib.thurs) disabled enabled;
-          in
-          {
-            ipv4Forwarding = enabled;
-            resolved = disabled;
-          };
-
         services.blocky = {
           enable = true;
           settings =
@@ -224,6 +215,12 @@
             853
           ];
           allowedUDPPorts = [ 53 ];
+        };
+
+        services.resolved.enable = false;
+
+        boot.kernel.sysctl = {
+          "net.ipv4.conf.all.forwarding" = true;
         };
 
         environment.etc =
