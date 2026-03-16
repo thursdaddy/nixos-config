@@ -34,6 +34,8 @@ _: {
           dataDir = "/mnt/data/loki";
         };
 
+        networking.firewall.allowedTCPPorts = [ 3100 ];
+
         mine.base.nfs-mounts = {
           mounts = {
             "/mnt/data/loki" = {
@@ -48,6 +50,7 @@ _: {
               inherit config;
               inherit name;
               inherit port;
+              ip = "192.168.10.68";
             };
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
