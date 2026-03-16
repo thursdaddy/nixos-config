@@ -1,16 +1,18 @@
 _: {
   flake.modules.homeManager.apps =
     {
-      config,
+      osConfig,
       pkgs,
       lib,
       ...
     }:
+    let
+      inherit (osConfig.mine.base) user;
+    in
     {
       programs.ghostty = {
         enable = true;
-        # ghostty is wip on darwin, installing via homebrew, hacky workaround to use home-manager for config
-        package = lib.mkIf pkgs.stdenv.isDarwin pkgs.emptyDirectory;
+        package = if pkgs.stdenv.isDarwin then null else pkgs.ghostty;
         settings = {
           confirm-close-surface = false;
           background-opacity = "0.95";
@@ -18,7 +20,6 @@ _: {
 
           gtk-titlebar = false;
           gtk-wide-tabs = true;
-          # gtk-adwaita = true;
           adw-toolbar-style = "raised-border";
 
           font-size = if pkgs.stdenv.isDarwin then "12" else "11";
@@ -30,6 +31,8 @@ _: {
           ];
           font-family = "\"Monaspace Neon\"";
         };
+        enableFishIntegration = lib.mkIf (user.shell.package == pkgs.fish) true;
+        enableZshIntegration = lib.mkIf (user.shell.package == pkgs.zsh) true;
       };
     };
 
