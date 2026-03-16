@@ -6,7 +6,7 @@ _: {
       ...
     }:
     let
-      inherit (lib.thurs) enabled;
+      inherit (lib.thurs) disabled enabled;
       inherit (config.mine.base) user;
     in
     {
@@ -40,6 +40,7 @@ _: {
         services = {
           backups = enabled;
           traefik = enabled;
+          sleep-on-lan = enabled;
         };
       };
     };
