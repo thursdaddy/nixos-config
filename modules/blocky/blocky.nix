@@ -10,20 +10,7 @@
     let
       name = "blocky";
       port = 4000;
-
       cfg = config.mine.services.${name};
-
-      # Convert blocky.yml to JSON/attrSet
-      blockyYAML = ./blocky.yml;
-      yaml2json =
-        file:
-        let
-          jsonOutputDrv = pkgs.runCommand "yaml-to-json" { } ''
-            ${pkgs.yj}/bin/yj < "${file}" > $out
-          '';
-        in
-        builtins.fromJSON (builtins.readFile jsonOutputDrv);
-      blockyConfig = yaml2json blockyYAML;
 
       # Check nixosConfigurations for "enabled" services and/or containers with a set
       # "subdomain" option. If found, uses subdomain value combined with
@@ -31,6 +18,7 @@
       # config.mine.base.networking.meta.hostIp. These generate an attr set
       # used to in blockys customDNS.mapping entries.
       allConfigs = inputs.self.nixosConfigurations or { };
+
       includedHosts = [
         "cloudbox"
         "homebox"
@@ -40,29 +28,35 @@
         "netpi2"
         "printpi"
       ];
-      targetHosts = lib.filterAttrs (name: _: builtins.elem name includedHosts) allConfigs;
+
+      # Only crawl hosts that are in the list AND have a config defined
+      targetHosts = lib.filterAttrs (
+        name: v: (builtins.elem name includedHosts) && (v ? config)
+      ) allConfigs;
+
       scrapeNixosConfigurations =
         hostName: hostValue:
         let
-          mine = hostValue.config.mine or { };
+          mineCfg = hostValue.config.mine or { };
 
-          serviceTraefik = mine.services.traefik or { };
-          containerTraefik = mine.containers.traefik or { };
-
-          traefikEnabled = (serviceTraefik.enable or false) || (containerTraefik.enable or false);
+          serviceTraefikEnabled = mineCfg.services.traefik.enable or false;
+          containerTraefikEnabled = mineCfg.containers.traefik.enable or false;
+          traefikEnabled = serviceTraefikEnabled || containerTraefikEnabled;
 
           rootDomain =
-            if (serviceTraefik.enable or false) then
-              serviceTraefik.rootDomainName
+            if serviceTraefikEnabled then
+              mineCfg.services.traefik.rootDomainName or "thurs.pw"
             else
-              containerTraefik.rootDomainName or "thurs.pw";
+              mineCfg.containers.traefik.rootDomainName or "thurs.pw";
 
-          hostIp = mine.base.networking.meta.hostIp or "192.168.10.1";
+          hostIp = mineCfg.base.networking.meta.hostIp or "192.168.10.1";
 
           getMappings =
             attrs:
             let
-              enabled = lib.filterAttrs (n: v: n != "settings" && (v.enable or false) && (v ? subdomain)) attrs;
+              enabled = lib.filterAttrs (
+                n: v: n != "settings" && (v.subdomain or null) != null && (v.enable or false)
+              ) attrs;
             in
             lib.mapAttrs' (
               n: v:
@@ -75,30 +69,15 @@
 
         in
         if traefikEnabled then
-          lib.recursiveUpdate (getMappings (mine.containers or { })) (getMappings (mine.services or { }))
+          lib.recursiveUpdate (getMappings (mineCfg.containers or { })) (
+            getMappings (mineCfg.services or { })
+          )
         else
           { };
 
       scrapedCustomDnsMapping = lib.foldl' lib.recursiveUpdate { } (
         lib.mapAttrsToList scrapeNixosConfigurations targetHosts
       );
-
-      # Manual DNS entries
-      extraCustomDnsMapping = {
-        "bazarr.thurs.pw" = "192.168.10.12";
-        "radarr.thurs.pw" = "192.168.10.12";
-        "readarr.thurs.pw" = "192.168.10.12";
-        "sab.thurs.pw" = "192.168.10.12";
-        "sabnzbd.thurs.pw" = "192.168.10.12";
-        "sonarr.thurs.pw" = "192.168.10.12";
-      };
-
-      # Combine extraCustomDnsMapping and scrapedCustomDnsMapping into customDns.mapping
-      finalCustomDnsMapping = {
-        customDNS = {
-          mapping = lib.recursiveUpdate scrapedCustomDnsMapping extraCustomDnsMapping;
-        };
-      };
 
     in
     {
@@ -127,7 +106,115 @@
 
         services.blocky = {
           enable = true;
-          settings = lib.recursiveUpdate blockyConfig finalCustomDnsMapping;
+          settings =
+            lib.recursiveUpdate
+              {
+                customDNS = {
+                  mapping = scrapedCustomDnsMapping;
+                };
+              }
+              {
+                upstreams = {
+                  init = {
+                    strategy = "fast";
+                  };
+                  groups = {
+                    default = [
+                      "https://cloudflare-dns.com/dns-query"
+                      "https://dns.quad9.net/dns-query"
+                    ];
+                  };
+                };
+
+                connectIPVersion = "dual";
+
+                bootstrapDns = [
+                  "tcp+udp:1.1.1.1"
+                  "https://1.1.1.1/dns-query"
+                ];
+
+                blocking = {
+                  denylists = {
+                    ads = [
+                      "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/multi.txt"
+                      "https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt"
+                      "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+                      "http://sysctl.org/cameleon/hosts"
+                      "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt"
+                    ];
+                    special = [
+                      "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts"
+                    ];
+                  };
+                  clientGroupsBlock = {
+                    default = [
+                      "ads"
+                      "special"
+                    ];
+                  };
+                  blockType = "zeroIp";
+                  blockTTL = "1m";
+                  loading = {
+                    refreshPeriod = "24h";
+                  };
+                };
+
+                caching = {
+                  minTime = "5m";
+                  maxTime = "30m";
+                };
+
+                clientLookup = {
+                  upstream = "192.168.20.1";
+                  singleNameOrder = [
+                    2
+                    1
+                  ];
+                };
+
+                ports = {
+                  dns = 53;
+                  http = 4000;
+                  tls = 853;
+                };
+
+                prometheus = {
+                  enable = true;
+                  path = "/metrics";
+                };
+
+                log = {
+                  level = "info";
+                  format = "text";
+                  timestamp = true;
+                  privacy = false;
+                };
+
+                conditional = {
+                  mapping = {
+                    "thurs.pw" = "192.168.20.1";
+                  };
+                };
+
+                customDNS = {
+                  customTTL = "1h";
+                  filterUnmappedTypes = true;
+                  mapping = {
+                    "attic.thurs.pw" = "192.168.10.60";
+                    "bazarr.thurs.pw" = "192.168.10.12";
+                    "cloudbox.thurs.pw" = "100.114.10.49";
+                    "deemix.thurs.pw" = "192.168.10.12";
+                    "jellyfin.thurs.pw" = "192.168.10.189";
+                    "lidarr.thurs.pw" = "192.168.10.12";
+                    "plex.thurs.pw" = "192.168.10.189";
+                    "radarr.thurs.pw" = "192.168.10.12";
+                    "readarr.thurs.pw" = "192.168.10.12";
+                    "sabnzbd.thurs.pw" = "192.168.10.12";
+                    "sonarr.thurs.pw" = "192.168.10.12";
+                    "tautulli.thurs.pw" = "192.168.10.189";
+                  };
+                };
+              };
         };
 
         networking.firewall = {
