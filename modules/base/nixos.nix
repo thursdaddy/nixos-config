@@ -1,6 +1,11 @@
 _: {
   flake.modules.nixos.base =
-    { lib, config, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     {
       systemd.settings.Manager = {
         "DefaultTimeoutStopSec" = "15s";
