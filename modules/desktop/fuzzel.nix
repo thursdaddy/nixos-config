@@ -9,33 +9,36 @@ _: {
     let
       fuzzelSettings = {
         main = {
-          fuzzy = true;
-          font = "Hack:size=11";
           dpi-aware = "yes";
-          layer = "overlay";
           exit-on-keyboard-focus-loss = true;
           fields = "filename,name,generic";
-          show-actions = false;
-          horizontal-pad = 10;
-          vertical-pad = 8;
-          inner-pad = 0;
+          font = "Hack:size=11";
+          hide-before-typing = true;
+          horizontal-pad = 12;
           image-size-ratio = 0.5;
-          lines = 3;
+          inner-pad = 5;
+          layer = "overlay";
+          line-height = 16;
+          lines = 5;
+          placeholder = " 󰍉 ";
+          show-actions = false;
           tabs = 2;
-          width = 15;
+          vertical-pad = 12;
+          width = 35;
         };
         colors = {
-          background = "2E3440DD";
-          text = "ECEFF4FF";
-          match = "88C0D0FF";
-          selection = "4C566AFF";
-          selection-text = "ECEFF4FF";
-          selection-match = "88C0D0FF";
-          border = "2E3440FF";
+          background = "2e3440ef";
+          border = "5e81acff";
+          match = "81a1c1ff";
+          placeholder = "4c566aff";
+          selection = "4c566aff";
+          selection-match = "88c0d0ff";
+          selection-text = "eceff4ff";
+          text = "d8dee9ff";
         };
         border = {
           width = 2;
-          radius = 4;
+          radius = 10;
         };
         dmenu = {
           mode = "text";
@@ -43,21 +46,16 @@ _: {
         };
       };
 
-      fuzzelConfig = pkgs.writeText "fuzzel.ini" (pkgs.lib.generators.toINI { } fuzzelSettings);
-
-      fuzzelWrapped = pkgs.symlinkJoin {
-        name = "fuzzel-wrapped";
-        paths = [ pkgs.fuzzel ];
-        nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
-        postBuild = ''
-          wrapProgram $out/bin/fuzzel \
-            --add-flags "--config=${fuzzelConfig}"
-        '';
-      };
+      fuzzelConf = pkgs.writeText "fuzzel.ini" (pkgs.lib.generators.toINI { } fuzzelSettings);
     in
     {
       config = {
-        environment.systemPackages = [ fuzzelWrapped ];
+        environment = {
+          etc."xdg/fuzzel/fuzzel.ini".source = fuzzelConf;
+          systemPackages = [
+            pkgs.fuzzel
+          ];
+        };
       };
     };
 }
