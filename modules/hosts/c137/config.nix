@@ -28,28 +28,30 @@ _: {
           utils.sysadmin = enabled;
         };
 
-        home-manager = {
-          tmux = {
-            sessionizer = {
-              enable = true;
-              searchPaths = [
-                "${user.homeDir}/projects/nix"
-                "${user.homeDir}/projects/cloud"
-                "${user.homeDir}/projects/homelab"
-                "${user.homeDir}/projects/personal"
-              ];
-            };
+        dev.tmux = {
+          sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/projects/nix"
+              "${user.homeDir}/projects/cloud"
+              "${user.homeDir}/projects/homelab"
+              "${user.homeDir}/projects/personal"
+            ];
           };
         };
 
         desktop = {
           amd = enabled;
           cursor = enabled;
+          hypridle = enabled;
           hyprland = enabled;
           hyprlock = enabled;
           hyprpaper = enabled;
+          waybar = {
+            enable = true;
+            theme."mine" = enabled;
+          };
           sddm = enabled;
-          waybar = enabled;
         };
 
         apps = {

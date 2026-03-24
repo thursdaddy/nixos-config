@@ -20,19 +20,18 @@ _: {
           enable32Bit = true;
           extraPackages = with pkgs; [
             libva
-            mesa
             libva-vdpau-driver
             libvdpau-va-gl
-
+            mesa
+            vulkan-extension-layer
             vulkan-loader
             vulkan-validation-layers
-            vulkan-extension-layer
           ];
         };
 
         environment.systemPackages = with pkgs; [
-          mesa-demos
           amdgpu_top
+          mesa-demos
           rocmPackages.rocm-smi
         ];
       };
