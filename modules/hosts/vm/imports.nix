@@ -1,13 +1,10 @@
-{ config, inputs, ... }:
+{ config, ... }:
 {
   configurations.nixos.vm.module = {
-    imports =
-      with config.flake.modules.nixos;
-      [
-        base
-        dev
-        home
-        containers
-      ];
+    imports = with config.flake.modules.nixos; [
+      base
+      dev
+      containers
+    ];
   };
 }

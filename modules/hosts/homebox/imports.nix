@@ -7,7 +7,6 @@
       blocky
       containers
       dev
-      home
       home-assistant
       services
     ];
