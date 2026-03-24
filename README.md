@@ -3,8 +3,8 @@ Est. Feb 2024
 
 My always evolving Nix flake ❄️. Declarative configurations across all systems in my Homelab:
 
- - MacBookPro M1 (nix-darwin + home-manager)
- - Desktop configuration (nixos + home-manager)
+ - MacBookPro M1
+ - Desktop configuration
  - Amazon EC2 Graviton (aarch64) instance
  - Lenovo ThinkCentre M700 (Home-Assistant)
  - Beelink GTR5 as a ProxMox host:
@@ -22,6 +22,9 @@ I am now using vic/import-tree to bulk-import the modules directory instead of r
 Now most configurations are enabled by default and the system profile is determined by which flake modules it imports. Shared modules (like services and containers) still utilize enable options to maintain granular control where needed.
 
 One of the primary advantages of this new structure is the ability to use Nix functions to gain insight across all nixosConfigurations. Doing so allows me to automate local DNS by programmatically scraping the entire flake for specific options under `mine.services.*` and `mine.containers.*`. If a service is enabled and has a subdomain option set, it is automatically injected into the Blocky customDNS.mapping configuration. This automation ensures that local DNS records are dynamically managed as services are deployed or decommissioned across the homelab.
+
+I've also moved away from home-manager since the majority of my systems run NixOS (or nix-darwin on MBP M1) and I can use native NixOS modules to accomplish my desired setup. This is done either via wrappers, passing config files via ExecStart or just declaring env variables pointing to config files in the nix-store.
+
 
 ## Helper Script
 
