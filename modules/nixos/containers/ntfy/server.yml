@@ -1,5 +1,0 @@
-auth-file: "/etc/ntfy/user.db"
-auth-default-access: "deny-all"
-behind-proxy: true
-base-url: https://ntfy.@domain@
-metrics-listen-http: "0.0.0.0:9090"
