@@ -245,7 +245,6 @@ _: {
           hicolor-icon-theme
           hyprpicker
           swaynotificationcenter
-          libnotify
         ];
       };
     };
