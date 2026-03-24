@@ -19,21 +19,19 @@ _: {
 
         desktop.aerospace = enabled;
 
-        home-manager = {
-          tmux = {
-            sessionizer = {
-              enable = true;
-              searchPaths = [
-                "${user.homeDir}/projects/nix"
-                "${user.homeDir}/projects/cloud"
-                "${user.homeDir}/projects/homelab"
-                "${user.homeDir}/projects/personal"
-              ];
-            };
+        dev.tmux = {
+          sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/projects/nix"
+              "${user.homeDir}/projects/cloud"
+              "${user.homeDir}/projects/homelab"
+              "${user.homeDir}/projects/personal"
+            ];
           };
         };
-
       };
+
       # https://nixpk.gs/pr-tracker.html?pr=400290
       nixpkgs.overlays = [
         (self: super: {

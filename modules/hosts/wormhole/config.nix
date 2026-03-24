@@ -10,19 +10,6 @@ _: {
       inherit (config.mine.base) user;
     in
     {
-      # TODO: clean this up (need to add option for CI_SERVER_URL)
-      sops = {
-        secrets."gitlab/GITLAB_COM_RUNNER_TOKEN" = { };
-        templates."gitlab-runner.token".content = ''
-          CI_SERVER_URL=https://gitlab.com
-          CI_SERVER_TOKEN=${config.sops.placeholder."gitlab/GITLAB_COM_RUNNER_TOKEN"}
-        '';
-      };
-
-      services.gitlab-runner.services."gitlab".authenticationTokenConfigFile =
-        lib.mkForce
-          config.sops.templates."gitlab-runner.token".path;
-
       mine = {
         base = {
           nix.ghToken = enabled;
@@ -36,20 +23,7 @@ _: {
               interface = "ens19";
             };
           };
-        };
-
-        home-manager = {
-          tmux = {
-            sessionizer = {
-              enable = true;
-              searchPaths = [
-                "${user.homeDir}/projects/nix"
-                "${user.homeDir}/projects/cloud"
-                "${user.homeDir}/projects/homelab"
-                "${user.homeDir}/projects/personal"
-              ];
-            };
-          };
+          utils.sysadmin = enabled;
         };
 
         containers = {
@@ -59,6 +33,18 @@ _: {
             volumePaths = [
               "${user.homeDir}/projects:/projects"
               "${user.homeDir}/documents/notes/:/notes"
+            ];
+          };
+        };
+
+        dev.tmux = {
+          sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/projects/nix"
+              "${user.homeDir}/projects/cloud"
+              "${user.homeDir}/projects/homelab"
+              "${user.homeDir}/projects/personal"
             ];
           };
         };
@@ -90,5 +76,18 @@ _: {
           qemu-guest = enabled;
         };
       };
+
+      # TODO: clean this up (need to add option for CI_SERVER_URL)
+      sops = {
+        secrets."gitlab/GITLAB_COM_RUNNER_TOKEN" = { };
+        templates."gitlab-runner.token".content = ''
+          CI_SERVER_URL=https://gitlab.com
+          CI_SERVER_TOKEN=${config.sops.placeholder."gitlab/GITLAB_COM_RUNNER_TOKEN"}
+        '';
+      };
+
+      services.gitlab-runner.services."gitlab".authenticationTokenConfigFile =
+        lib.mkForce
+          config.sops.templates."gitlab-runner.token".path;
     };
 }

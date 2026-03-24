@@ -13,6 +13,7 @@
         }).override
           {
             packageOverrides = pyself: pysuper: {
+              # Ignore failing tests
               aiohttp = pysuper.aiohttp.overrideAttrs (old: {
                 disabledTests = (old.disabledTests or [ ]) ++ [
                   "test_proxy_functional"
@@ -21,6 +22,7 @@
                 ];
               });
 
+              # Octoprint Python 3.12 Plugins
               camerasettings = pyself.buildPythonPackage rec {
                 pname = "OctoPrint-CameraSettings";
                 version = "0.4.3";

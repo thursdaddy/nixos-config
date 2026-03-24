@@ -17,11 +17,13 @@ _: {
           type = lib.types.submodule {
             options = {
               enable = lib.mkEnableOption "Beszel Hub";
+
               subdomain = lib.mkOption {
                 description = "Container url, used by blocky to create DNS entry";
                 type = lib.types.str;
                 default = "monitor";
               };
+
               dataDir = lib.mkOption {
                 type = lib.types.path;
                 default = "/opt/configs/beszel-hub";
@@ -53,6 +55,7 @@ _: {
                 default = true;
                 description = "Enable beszel agent";
               };
+
               port = lib.mkOption {
                 type = lib.types.port;
                 default = 45876;
@@ -99,18 +102,24 @@ _: {
             Type = "simple";
             Restart = "always";
             RestartSec = "5s";
+            X-Restart-Triggers = [
+              config.sops.templates."beszel-hub-pub-key".path
+            ];
           };
         };
 
         networking.firewall.allowedTCPPorts = [
-          (lib.mkIf cfg.beszel-agent.enable cfg.beszel-agent.port)
           (lib.mkIf cfg.beszel-agent.enable cfg.beszel-hub.port)
         ];
 
         sops = {
-          secrets."beszel/HUB_PUB_KEY" = { };
+          secrets = {
+            "beszel/HUB_PUB_KEY" = { };
+            "beszel/TOKEN" = { };
+          };
           templates."beszel-hub-pub-key".content = ''
-            KEY="${config.sops.placeholder."beszel/HUB_PUB_KEY"}"
+            KEY=${config.sops.placeholder."beszel/HUB_PUB_KEY"}
+            TOKEN=${config.sops.placeholder."beszel/TOKEN"}
           '';
         };
 
@@ -120,6 +129,7 @@ _: {
               inherit config;
               name = cfg.beszel-hub.subdomain;
               port = cfg.beszel-hub.port;
+              ip = "host.docker.internal";
             };
           in
           {

@@ -6,7 +6,7 @@ _: {
       ...
     }:
     let
-      inherit (lib.thurs) disabled enabled;
+      inherit (lib.thurs) enabled;
       inherit (config.mine.base) user;
     in
     {
@@ -25,15 +25,13 @@ _: {
           };
         };
 
-        home-manager = {
-          tmux = {
-            sessionizer = {
-              enable = true;
-              searchPaths = [
-                "${user.homeDir}/"
-                "/var/lib/"
-              ];
-            };
+        dev = {
+          tmux.sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/"
+              "/var/lib/"
+            ];
           };
         };
 

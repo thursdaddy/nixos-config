@@ -23,10 +23,13 @@ _: {
           };
         };
 
-        users.users.root.openssh.authorizedKeys.keyFiles = lib.mkIf cfg.root [ inputs.ssh-keys.outPath ];
+        users.users.root.openssh = {
+          authorizedKeys.keyFiles = lib.mkIf cfg.root [ inputs.ssh-keys.outPath ];
+        };
 
         # Passwordless sudo when SSH'ing with keys
         security.pam.sshAgentAuth.enable = true;
+
         programs.ssh.startAgent = true;
       };
     };

@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   flake.modules.nixos.dev =
-    { config, ... }:
+    { config, pkgs, ... }:
     {
       imports = [
         inputs.nixvim.nixosModules.nixvim
@@ -10,11 +10,15 @@
 
       config = {
         programs.nixvim.enable = true;
+
+        environment.systemPackages = [
+          pkgs.ripgrep
+        ];
       };
     };
 
   flake.modules.darwin.dev =
-    { config, ... }:
+    { config, pkgs, ... }:
     {
       imports = [
         inputs.nixvim.nixDarwinModules.nixvim
@@ -23,6 +27,10 @@
 
       config = {
         programs.nixvim.enable = true;
+
+        environment.systemPackages = [
+          pkgs.ripgrep
+        ];
       };
     };
 }

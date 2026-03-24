@@ -30,7 +30,6 @@ _: {
           bindsTo = [ "graphical-session.target" ];
           wantedBy = [ "graphical-session.target" ];
           serviceConfig = {
-            ExecStartPre = "${pkgs.coreutils}/bin/sleep 10";
             ExecStart = "${pkgs.syncthingtray-minimal}/bin/syncthingtray --wait";
             Restart = "always";
             KillMode = "mixed";

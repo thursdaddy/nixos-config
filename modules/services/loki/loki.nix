@@ -50,7 +50,8 @@ _: {
               inherit config;
               inherit name;
               inherit port;
-              ip = "192.168.10.68";
+              # ip = "192.168.10.68";
+              ip = "host.docker.internal";
             };
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;

@@ -1,32 +1,66 @@
 _: {
-  flake.modules.generic.apps =
-    { lib, ... }:
+  flake.modules.nixos.apps =
     {
-      options.mine.apps.chromium = {
-        enable = lib.mkEnableOption "Enable Hyprpaper Home-Manager config";
-      };
-    };
-
-  flake.modules.homeManager.apps =
-    { lib, osConfig, ... }:
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
-      cfg = osConfig.mine.apps.chromium;
+      cfg = config.mine.apps.chromium;
+
+      myChromium = pkgs.symlinkJoin {
+        name = "chromium";
+        paths = [ pkgs.chromium ];
+        buildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          wrapProgram $out/bin/chromium \
+            --add-flags "--ignore-gpu-blocklist" \
+            --add-flags "--enable-gpu-rasterization" \
+            --add-flags "--enable-zero-copy" \
+            --add-flags "--canvas-oop-rasterization" \
+            --add-flags "--enable-features=VaapiVideoDecoder,UseOzonePlatform" \
+            --add-flags "--ozone-platform=wayland" \
+            --add-flags "--force-dark-mode"
+        '';
+      };
     in
     {
+      options.mine.apps.chromium = {
+        enable = lib.mkEnableOption "Enable Home-Manager Chromium";
+      };
+
       config = lib.mkIf cfg.enable {
-        home.sessionVariables.NIXOS_OZONE_WL = "1";
+        environment = {
+          sessionVariables = {
+            NIXOS_OZONE_WL = "1";
+          };
+          systemPackages = [ myChromium ];
+        };
 
         programs.chromium = {
           enable = true;
-          commandLineArgs = [
-            "--ignore-gpu-blocklist"
-            "--enable-gpu-rasterization"
-            "--enable-zero-copy"
-            "--canvas-oop-rasterization"
-            "--enable-features=VaapiVideoDecoder"
-            "--enable-features=UseOzonePlatform"
-            "--ozone-platform=wayland"
+          extensions = [
+            "cfhdojbkjhnklbpkdaibdccddilifddb"
+            "eimadpbcbfnmbkopoojfekhnkhdbieeh"
           ];
+          extraOpts = {
+            "BrowserSignin" = 0;
+            "PasswordManagerEnabled" = false;
+            "3rdparty" = {
+              "extensions" = {
+                "eimadpbcbfnmbkopoojfekhnkhdbieeh" = {
+                  "automation" = {
+                    "enabled" = true;
+                    "mode" = "system"; # Follow your system's dark/light theme
+                  };
+                  "brightness" = 100;
+                  "contrast" = 100;
+                  "engine" = "dynamicTheme"; # The best quality rendering engine
+                };
+              };
+            };
+          };
         };
       };
     };

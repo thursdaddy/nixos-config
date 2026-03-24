@@ -3,32 +3,13 @@
   flake.modules.generic.base =
     {
       config,
+      options,
       pkgs,
       lib,
       ...
     }:
     let
-      sysadmin =
-        with pkgs;
-        [
-          attic-client
-          bind
-          dig
-          fastfetch
-          file
-          gnupg
-          inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.siomon
-          ncdu
-          nmap
-          p7zip
-          ripgrep
-          unixtools.netstat
-          usbutils
-          wakeonlan
-        ]
-        ++ lib.optionals (!pkgs.stdenv.hostPlatform.isAarch64) [
-          rar
-        ];
+      cfg = config.mine.base.utils;
     in
     {
       options.mine.base.utils = {
@@ -42,13 +23,36 @@
             bottom
             curl
             eza
+            fastfetch
             jq
             just
             killall
             tree
             wget
           ]
-          ++ lib.optionals (config.mine.base.utils.sysadmin.enable) sysadmin;
+          ++ lib.optionals (cfg.sysadmin.enable) [
+            attic-client
+            bind
+            dig
+            file
+            gnupg
+            inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.siomon
+            ncdu
+            nmap
+            p7zip
+            unixtools.netstat
+            usbutils
+            wakeonlan
+          ]
+          ++ lib.optionals (!pkgs.stdenv.hostPlatform.isAarch64 && cfg.sysadmin.enable) [ rar ]
+          ++ lib.optionals (options ? mine.dev) [
+            glow
+            nixfmt-rfc-style
+            nixpkgs-fmt
+            shellcheck
+            statix
+          ]
+          ++ lib.optionals (!(options ? mine.dev)) [ neovim ];
 
         nixpkgs.config.allowUnfreePredicate =
           pkg:

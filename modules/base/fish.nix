@@ -44,6 +44,7 @@ _: {
             # Homebrew is installed on MacOS
             /opt/homebrew/bin/brew shellenv | source
           end
+          starship init fish | source
         '';
       };
 

@@ -54,6 +54,11 @@
           ];
           shell = user.shell.package;
         };
+
+        environment.variables = {
+          EDITOR = "nvim";
+          VISUAL = "nvim";
+        };
       };
     };
 
@@ -83,11 +88,6 @@
       };
 
       nix.settings.trusted-users = [ user.name ];
-
-      environment.variables = {
-        EDITOR = "nvim";
-        VISUAL = "nvim";
-      };
 
     };
 

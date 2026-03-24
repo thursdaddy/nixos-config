@@ -2,9 +2,8 @@
   inputs,
   ...
 }:
-let
-  sopsOptions =
-    { inputs }:
+{
+  flake.modules.generic.base =
     {
       lib,
       pkgs,
@@ -68,32 +67,6 @@ let
         };
       };
     };
-in
-{
-
-  flake.modules.darwin.base =
-    {
-      config,
-      pkgs,
-      ...
-    }:
-    {
-      imports = [
-        (sopsOptions { inherit inputs; })
-        inputs.sops-nix.darwinModules.sops
-        inputs.nixos-thurs.nixosModules.configs
-      ];
-
-      config = {
-        sops = {
-          inherit (config.mine.base.sops) defaultSopsFile;
-          age.keyFile = config.mine.base.sops.ageKeyFile.path;
-        };
-        environment.systemPackages = with pkgs; [
-          sops
-        ];
-      };
-    };
 
   flake.modules.nixos.base =
     {
@@ -107,6 +80,7 @@ in
         Environment = "SOPS_AGE_KEY_FILE=${config.sops.age.keyFile}";
         ExecStartPre = ssm_systemd_script + "/bin/get-age-key-from-ssm";
       };
+
       ssm_systemd_script = pkgs.writeShellApplication {
         name = "get-age-key-from-ssm";
         runtimeInputs = with pkgs; [
@@ -122,19 +96,20 @@ in
     in
     {
       imports = [
-        (sopsOptions { inherit inputs; })
         inputs.sops-nix.nixosModules.sops
         inputs.nixos-thurs.nixosModules.configs
       ];
 
       config = {
-        environment.systemPackages = with pkgs; [
-          sops
-        ];
-
         sops = {
           inherit (config.mine.base.sops) defaultSopsFile;
           age.keyFile = config.mine.base.sops.ageKeyFile.path;
+        };
+
+        environment = {
+          systemPackages = with pkgs; [
+            sops
+          ];
         };
 
         systemd.services.decrypt-sops-after-network =
@@ -167,6 +142,30 @@ in
           };
           script = config.system.activationScripts.setupSecrets.text;
         };
+      };
+    };
+
+  flake.modules.darwin.base =
+    {
+      config,
+      pkgs,
+      ...
+    }:
+    {
+      imports = [
+        inputs.sops-nix.darwinModules.sops
+        inputs.nixos-thurs.nixosModules.configs
+      ];
+
+      config = {
+        sops = {
+          inherit (config.mine.base.sops) defaultSopsFile;
+          age.keyFile = config.mine.base.sops.ageKeyFile.path;
+        };
+
+        environment.systemPackages = with pkgs; [
+          sops
+        ];
       };
     };
 }

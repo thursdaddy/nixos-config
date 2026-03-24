@@ -4,9 +4,6 @@ let
   hmModules = inputs.self.modules.homeManager;
 
   sharedModules = [
-    "dev"
-    "apps"
-    "base"
     "desktop"
   ];
 in
@@ -15,6 +12,9 @@ in
     imports =
       with darwinModules;
       [
+        apps
+        base
+        dev
         home
       ]
       ++ (map (name: darwinModules.${name}) sharedModules)

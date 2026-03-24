@@ -1,6 +1,7 @@
-_: {
+{ inputs, ... }:
+{
   flake.modules.generic.nixvim =
-    { pkgs, ... }:
+    { lib, pkgs, ... }:
     let
       fzf-checkout = pkgs.vimUtils.buildVimPlugin {
         name = "fzf-checkout";
@@ -231,6 +232,7 @@ _: {
           };
           trouble.enable = true;
         };
+
         # plugin specific keymaps
         keymaps = [
           # diff-view
@@ -249,12 +251,14 @@ _: {
             key = "<leader>dvc";
             action = "<CMD>DiffviewClose<CR>";
           }
+
           # telescope
           {
             mode = "n";
             key = "<leader>ff";
             action = "<CMD>Telescope find_files find_command=rg,--no-ignore,--files,--hidden,--glob,!.git,--glob,!.terraform prompt_prefix=🔍<CR>";
           }
+
           # tmux-navigator
           {
             mode = "n";
@@ -276,6 +280,7 @@ _: {
             key = "<C-l>";
             action = "<CMD>TmuxNavigateRight<CR>zz";
           }
+
           # markdown-preview
           {
             mode = "n";
@@ -287,6 +292,7 @@ _: {
             key = "<leader>mds";
             action = "<CMD>MarkdownPreviewStop<CR>";
           }
+
           # nvim-tree
           {
             mode = "n";
@@ -298,6 +304,7 @@ _: {
             key = "<leader>E";
             action = "<CMD>NvimTreeFocus<CR>";
           }
+
           # fugitive
           {
             mode = "n";
@@ -359,6 +366,7 @@ _: {
             action = "<CMD>diffget //3<CR>";
             options.noremap = true;
           }
+
           # Trouble
           {
             mode = "n";
@@ -367,6 +375,12 @@ _: {
             options.noremap = true;
           }
         ];
+
+        extraConfigVim = lib.mkIf pkgs.stdenv.isDarwin ''
+          let g:fugitive_git_executable = "${
+            lib.getExe' inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.darwinGit "git"
+          }"
+        '';
 
         extraPlugins = with pkgs; [
           fzf-checkout
