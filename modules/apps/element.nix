@@ -1,6 +1,11 @@
 _: {
   flake.modules.nixos.apps =
-    { lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     {
       environment.systemPackages = with pkgs; [
         element-desktop
@@ -11,7 +16,9 @@ _: {
         documentation = [ "https://github.com/element-hq/element-web" ];
         after = [ "graphical-session.target" ];
         bindsTo = [ "graphical-session.target" ];
+        partOf = [ "graphical-session.target" ];
         wantedBy = [ "graphical-session.target" ];
+        path = [ config.system.path ];
         serviceConfig = {
           ExecStart = "${lib.getExe pkgs.element-desktop}";
           Restart = "on-failure";

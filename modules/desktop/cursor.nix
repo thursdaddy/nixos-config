@@ -56,7 +56,6 @@ _: {
           oblique-hyprcursor
         ];
 
-        xdg.portal.enable = true;
         services.dbus.enable = true;
 
         environment.sessionVariables = {

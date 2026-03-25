@@ -1,6 +1,11 @@
 _: {
   flake.modules.nixos.apps =
-    { lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     {
       nixpkgs.config = {
         permittedInsecurePackages = [
@@ -13,6 +18,8 @@ _: {
         after = [ "graphical-session.target" ];
         bindsTo = [ "graphical-session.target" ];
         wantedBy = [ "graphical-session.target" ];
+        partOf = [ "graphical-session.target" ];
+        path = [ config.system.path ];
         serviceConfig = {
           ExecStart = "${lib.getExe pkgs.obsidian}";
           Restart = "on-failure";

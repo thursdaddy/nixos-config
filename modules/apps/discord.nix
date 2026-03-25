@@ -1,6 +1,11 @@
 _: {
   flake.modules.nixos.apps =
-    { lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       package = pkgs.unstable.discord;
     in
@@ -14,6 +19,8 @@ _: {
         after = [ "graphical-session.target" ];
         bindsTo = [ "graphical-session.target" ];
         wantedBy = [ "graphical-session.target" ];
+        partOf = [ "graphical-session.target" ];
+        path = [ config.system.path ];
         serviceConfig = {
           ExecStart = "${lib.getExe package}";
           Restart = "on-failure";

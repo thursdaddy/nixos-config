@@ -13,6 +13,7 @@ _: {
       hyprlandSettings = {
         "$mod" = "SUPER";
 
+        exec-once = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP";
         animations = {
           enabled = true;
           bezier = [
@@ -163,6 +164,7 @@ _: {
           "workspace 4 silent, class:(Bitwarden)"
           "workspace 4 silent, class:(Proton Mail)"
           "workspace 5 silent, class:(discord)"
+          "workspace 5 silent, class:(Element)"
           "workspace 6 silent, class:(obsidian)"
           "workspace 8 silent, class:(Vivaldi-stable), initialTitle:(192.168.10.189_/)"
           "workspace 8 silent, class:(chrome-music.youtube.com__-Default)"
@@ -210,19 +212,29 @@ _: {
         };
 
         environment = {
+          etc."xdg/hypr/hyprland.conf".text = hyprlandConf;
+          sessionVariables = {
+            GTK_USE_PORTAL = "1";
+            NIXOS_OZONE_WL = "1";
+            QT_QPA_PLATFORM = "wayland;xcb";
+            XDG_CURRENT_DESKTOP = "Hyprland";
+            XDG_SESSION_DESKTOP = "Hyprland";
+            XDG_SESSION_TYPE = "wayland";
+          };
+          systemPackages = with pkgs; [
+            grim
+            slurp
+            wdisplays
+            wl-clipboard
+            xdg-utils
+            adwaita-icon-theme
+            hicolor-icon-theme
+            hyprpicker
+          ];
           variables = {
             HYPRLAND_CONFIG = "/etc/xdg/hypr/hyprland.conf";
           };
-          sessionVariables = {
-            NIXOS_OZONE_WL = "1";
-            XDG_CURRENT_SESSION = "hyprland";
-            XDG_SESSION_TYPE = "wayland";
-            QT_QPA_PLATFORM = "wayland-egl";
-            QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
-          };
         };
-
-        environment.etc."xdg/hypr/hyprland.conf".text = hyprlandConf;
 
         xdg.portal = {
           enable = true;
@@ -230,20 +242,7 @@ _: {
             pkgs.xdg-desktop-portal-gtk
             pkgs.xdg-desktop-portal-hyprland
           ];
-          config.common.default = "*";
         };
-
-        environment.systemPackages = with pkgs; [
-          grim
-          slurp
-          wdisplays
-          wl-clipboard
-          xdg-utils
-          adwaita-icon-theme
-          hicolor-icon-theme
-          hyprpicker
-          swaynotificationcenter
-        ];
       };
     };
 }
