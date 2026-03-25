@@ -43,6 +43,7 @@ _: {
         desktop = {
           amd = enabled;
           cursor = enabled;
+          greetd = enabled;
           hypridle = enabled;
           hyprland = enabled;
           hyprlock = enabled;
@@ -51,7 +52,6 @@ _: {
             enable = true;
             theme."mine" = enabled;
           };
-          sddm = enabled;
         };
 
         apps = {

@@ -202,8 +202,6 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
-        services.displayManager.sddm.wayland.enable = lib.mkIf config.mine.desktop.sddm.enable true;
-
         programs.hyprland = {
           enable = true;
           xwayland.enable = true;
