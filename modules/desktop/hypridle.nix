@@ -10,21 +10,26 @@
     let
       cfg = config.mine.desktop.hypridle;
 
-      patchedPkg = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.hypridle-patched;
-      notify-message = "${lib.getExe' pkgs.libnotify "notify-send"} \"$(date '+%A %I:%M:%S')\"";
+      # https://github.com/hyprwm/hypridle/pull/191
+      # patchedPkg = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.hypridle-patched;
 
+      # Having ongoing issues with hypridle crashing hyprlock and from looking at logs
+      # it seems like hypridle is not behaving properly when its executing commands simliar to:
+      # https://github.com/hyprwm/hypridle/issues/166
+
+      # I don't seem to have these issues when managed via systemd-lock-handler and
+      # systemd.user.service in hyprlock.nix
       hypridleSettings = {
         general = {
-          before_sleep_cmd = "${lib.getExe' pkgs.systemd "loginctl"} lock-session";
-          after_sleep_cmd = "${lib.getExe' pkgs.systemd "hyprctl"} dispatch dpms on";
-          lock_cmd = "${lib.getExe' pkgs.busybox "pidof"} hyprlock || ${lib.getExe pkgs.hyprlock}";
+          before_sleep_cmd = "";
+          after_sleep_cmd = "";
+          lock_cmd = "";
         };
 
         listener = [
           {
             timeout = 300;
             on-timeout = "${lib.getExe' pkgs.systemd "loginctl"} lock-session";
-            on-resume = "${notify-message} \"HyprIdle: Screen Unlocked!\"";
           }
           {
             timeout = 600;
@@ -58,19 +63,52 @@
             ConditionEnvironment = "WAYLAND_DISPLAY";
           };
           serviceConfig = {
-            ExecStart = "${lib.getExe patchedPkg}";
+            ExecStart = "${lib.getExe pkgs.hypridle}";
             Type = "simple";
             Restart = "always";
             RestartSec = "10s";
+            X-Restart-Triggers = [
+              config.environment.etc.${etcPath}.source
+            ];
           };
         };
 
-        environment.systemPackages = [
-          patchedPkg
-        ];
+        environment = {
+          etc."${etcPath}".text = hypridleConf;
+          systemPackages = [
+            pkgs.hypridle
+          ];
+        };
 
-        environment.etc."${etcPath}".text = hypridleConf;
-
+        systemd.services.ssh-inhibit = {
+          description = "Inhibit sleep while SSH sessions are active";
+          after = [
+            "network.target"
+            "sshd.service"
+          ];
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            Type = "simple";
+            ExecStart = pkgs.writeShellScript "ssh-inhibit-loop" ''
+              while true; do
+                # Check if there are any active SSH sessions using 'who' or 'ss'
+                if ${pkgs.procps}/bin/w -h | ${pkgs.gnugrep}/bin/grep -q 'pts/'; then
+                  # If sessions exist, start an inhibitor that lasts for 70 seconds
+                  # (slightly longer than the loop to ensure continuous coverage)
+                  ${pkgs.systemd}/bin/systemd-inhibit \
+                    --what=idle:sleep \
+                    --who="SSH Monitor" \
+                    --why="Active SSH session detected" \
+                    --mode=block \
+                    ${pkgs.coreutils}/bin/sleep 70 &
+                fi
+                sleep 60
+              done
+            '';
+            Restart = "always";
+            User = "root";
+          };
+        };
       };
     };
 }

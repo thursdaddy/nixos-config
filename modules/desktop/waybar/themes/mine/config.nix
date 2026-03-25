@@ -1,6 +1,11 @@
 _: {
   flake.modules.nixos.desktop =
-    { config, lib, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       cfg = config.mine.desktop.waybar.theme.mine;
 
@@ -58,7 +63,7 @@ _: {
           };
           on-click = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0";
           on-click-middle = "wpctl set-volume @DEFAULT_AUDIO_SINK@ .85";
-          on-click-right = "pavucontrol";
+          on-click-right = "${lib.getExe pkgs.pavucontrol}";
         };
         "tray" = {
           icon-size = 17;

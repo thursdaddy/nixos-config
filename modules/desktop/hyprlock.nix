@@ -8,7 +8,6 @@
       ...
     }:
     let
-      inherit (config.mine.base) user;
       inherit (inputs.self.packages.${pkgs.stdenv.hostPlatform.system}) wallpapers;
 
       cfg = config.mine.desktop.hyprlock;
@@ -18,8 +17,13 @@
           ignore_empty_input = true;
         };
 
+        animations = {
+          enabled = true;
+        };
+
         background = [
           {
+            monitor = "";
             path = "${wallpapers}/blue_astronaut_in_space.png";
           }
         ];
@@ -44,7 +48,7 @@
 
         label = {
           monitor = "DP-1";
-          text = ''echo "<b>$(date +'%_I:%M:%S')</b>"'';
+          text = ''cmd[update:10] echo "<b>$(date +'%_I:%M:%S')</b>"'';
           text_align = "center";
           color = "rgba(255, 255, 255, 1.0)";
           font_size = "80";
@@ -57,6 +61,13 @@
 
       hyprlockConf = lib.thurs.toHyprconf {
         attrs = hyprlockSettings;
+        importantPrefixes = [
+          "$"
+          "bezier"
+          "monitor"
+          "size"
+          "source"
+        ];
       };
 
       etcDir = "xdg/hypr/hyprlock.conf";
@@ -67,57 +78,37 @@
       };
 
       config = lib.mkIf cfg.enable {
-        environment.systemPackages = [
-          pkgs.hyprlock
-        ];
-
-        environment.etc."${etcDir}".text = hyprlockConf;
-
-        systemd.services.lock-on-suspend = {
-          description = "Lock on suspend";
-          wantedBy = [
-            "sleep.target"
-            "suspend.target"
-            "hibernate.target"
-            "hybrid-sleep.target"
+        environment = {
+          etc."${etcDir}".text = hyprlockConf;
+          systemPackages = [
+            pkgs.hyprlock
           ];
-          before = [
-            "sleep.target"
-            "suspend.target"
-            "hibernate.target"
-            "hybrid-sleep.target"
-          ];
-          environment = {
-            DISPLAY = ":0";
-            WAYLAND_DISPLAY = "wayland-1";
-            XDG_RUNTIME_DIR = "/run/user/1000";
-          };
-          serviceConfig = {
-            Type = "simple";
-            ExecStart = "${lib.getExe' pkgs.busybox "pidof"} hyprlock || ${lib.getExe pkgs.hyprlock}";
-            User = user.name;
-          };
         };
 
-        # hyprlock needs a second to complete before suspending
-        systemd.services.sleep-before-suspend = {
-          description = "Sleep before suspend";
-          wantedBy = [
-            "sleep.target"
-            "suspend.target"
-            "hibernate.target"
-            "hybrid-sleep.target"
-          ];
+        security.pam.services.hyprlock = { };
+
+        services.systemd-lock-handler.enable = true;
+
+        systemd.user.services.hyprlock-targets = {
+          description = "Hyprlock managed via targets and systemd-lock-handler";
           before = [
             "sleep.target"
-            "suspend.target"
-            "hibernate.target"
-            "hybrid-sleep.target"
+            "lock.target"
           ];
+          wantedBy = [
+            "sleep.target"
+            "lock.target"
+          ];
+          onSuccess = [ "unlock.target" ];
           serviceConfig = {
-            Type = "simple";
-            ExecStartPre = "${lib.getExe' pkgs.coreutils "sleep"} 1";
-            ExecStart = "${lib.getExe' pkgs.coreutils "true"}";
+            Type = "forking";
+            Environment = [
+              "WAYLAND_DISPLAY=wayland-1"
+              "XDG_RUNTIME_DIR=/run/user/1000"
+            ];
+            ExecCondition = "${pkgs.bash}/bin/bash -c '! ${lib.getExe' pkgs.busybox "pidof"} hyprlock'";
+            ExecStart = "${pkgs.bash}/bin/bash -c '${lib.getExe pkgs.hyprlock} --grace 3 & sleep 0.5'";
+            Restart = "no";
           };
         };
       };

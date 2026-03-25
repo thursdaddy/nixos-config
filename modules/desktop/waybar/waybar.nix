@@ -33,7 +33,6 @@ _: {
           bindsTo = [ "graphical-session.target" ];
           wantedBy = [ "graphical-session.target" ];
           serviceConfig = {
-            ConditionEnvironment = "WAYLAND_DISPLAY";
             Type = "simple";
             ExecStart = "${pkgs.waybar}/bin/waybar -c /etc/waybar/config -s /etc/waybar/style.css";
             ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";

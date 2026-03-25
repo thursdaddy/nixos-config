@@ -45,8 +45,8 @@ _: {
           "$mod_SHIFT, O, exec, obsidian"
           "$mod_SHIFT, P, exec, plex-desktop"
           "$mod_SHIFT, Q, killactive"
-          "$mod_SHIFT, X, exec, loginctl lock-session && sleep 2 && hyprctl dispatch dpms off && hyprlock"
-          "$mod_SHIFT, Z, exec, loginctl lock-session && sleep 2 && hyprctl dispatch dpms off && systemctl suspend"
+          "$mod_SHIFT, X, exec, loginctl lock-session"
+          "$mod_SHIFT, Z, exec, systemctl suspend"
           "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} --app=https://youtube.com"
           "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} --app=https://music.youtube.com"
           # Mouse Focus

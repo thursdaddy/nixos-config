@@ -19,7 +19,7 @@ _: {
         bindsTo = [ "graphical-session.target" ];
         wantedBy = [ "graphical-session.target" ];
         serviceConfig = {
-          ExecStart = "${lib.getExe pkgs.solaar}";
+          ExecStart = "${lib.getExe pkgs.solaar} -w hide";
           Restart = "on-failure";
           RestartSec = "2s";
           KillMode = "mixed";

@@ -14,9 +14,9 @@
       hyprpaperSettings = {
         splash = false;
         preload = [
+          "${wallpapers}/Kurzgesagt_Galaxies.png"
           "${wallpapers}/blue_astronaut_in_space.png"
           "${wallpapers}/blue_mountains.jpg"
-          "${wallpapers}/Kurzgesagt_Galaxies.png"
         ];
 
         wallpaper = [
@@ -28,9 +28,13 @@
 
       hyprpaperConf = lib.thurs.toHyprconf {
         attrs = hyprpaperSettings;
+        importantPrefixes = [
+          "$"
+          "monitor"
+        ];
       };
 
-      etcDir = "hypr/hyprpaper.conf";
+      etcPath = "xdg/hypr/hyprpaper.conf";
     in
     {
       options.mine.desktop.hyprpaper = {
@@ -38,11 +42,12 @@
       };
 
       config = lib.mkIf cfg.enable {
-        environment.systemPackages = [
-          pkgs.hyprpaper
-        ];
-
-        environment.etc."${etcDir}".text = hyprpaperConf;
+        environment = {
+          etc."${etcPath}".text = hyprpaperConf;
+          systemPackages = [
+            pkgs.hyprpaper
+          ];
+        };
 
         systemd.user.services.hyprpaper = {
           description = "autostart service for hyprpaper";
@@ -50,13 +55,17 @@
           after = [ "graphical-session.target" ];
           bindsTo = [ "graphical-session.target" ];
           wantedBy = [ "graphical-session.target" ];
-          serviceConfig = {
+          reloadIfChanged = true;
+          restartTriggers = [
+            config.environment.etc.${etcPath}.source
+          ];
+          unitConfig = {
             ConditionEnvironment = "WAYLAND_DISPLAY";
-            ExecStart = "${pkgs.hyprpaper}/bin/hyprpaper -c /etc/${etcDir}";
+          };
+          serviceConfig = {
+            ExecStart = "${lib.getExe pkgs.hyprpaper}";
+            ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
             Restart = "always";
-            X-Restart-Triggers = [
-              config.environment.etc.${etcDir}.source
-            ];
           };
         };
       };
