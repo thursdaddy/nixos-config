@@ -214,7 +214,6 @@ _: {
         environment = {
           etc."xdg/hypr/hyprland.conf".text = hyprlandConf;
           sessionVariables = {
-            GTK_USE_PORTAL = "1";
             NIXOS_OZONE_WL = "1";
             QT_QPA_PLATFORM = "wayland;xcb";
             XDG_CURRENT_DESKTOP = "Hyprland";
@@ -239,7 +238,6 @@ _: {
         xdg.portal = {
           enable = true;
           extraPortals = [
-            pkgs.xdg-desktop-portal-gtk
             pkgs.xdg-desktop-portal-hyprland
           ];
         };
