@@ -37,6 +37,25 @@ _: {
           backups = enabled;
           ollama = enabled;
           qemu-guest = enabled;
+          gitea-runner = {
+            enable = true;
+            runners = {
+              ${config.networking.hostName} = {
+                settings = {
+                  runner = {
+                    capacity = 10;
+                  };
+                  container = {
+                    privileged = true;
+                    force_pull = true;
+                    volumes = [
+                      "/var/run/docker.sock:/var/run/docker.sock"
+                    ];
+                  };
+                };
+              };
+            };
+          };
         };
       };
     };

@@ -352,11 +352,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774027738,
-        "narHash": "sha256-xOqHC8D386+tai4xZSarhCUYI6iK1WvrZ/E1+e0Oh+I=",
+        "lastModified": 1774891851,
+        "narHash": "sha256-FZNKPod1C7dvt2Fn4wzugDZMO+/Tj8c/yUXilHA46Po=",
         "owner": "thursdaddy",
         "repo": "nixos-thurs",
-        "rev": "59a91696762bddf039c09d8a9c3c3f4e424c05f3",
+        "rev": "aff157c36e9b1eb015e8fc4b9cc0a6a568e81a61",
         "type": "github"
       },
       "original": {
@@ -616,7 +616,7 @@
     "ssh-keys": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-JZhANekn70YYBSfh5KpB8nvoe2X05dVWD5HXWY0HKIQ=",
+        "narHash": "sha256-aZAzuihSI5OoXOfRLxH4n/uKKrokZsrU6QZYFXhLisg=",
         "type": "file",
         "url": "https://github.com/thursdaddy.keys"
       },

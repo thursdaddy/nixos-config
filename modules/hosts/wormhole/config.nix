@@ -50,26 +50,22 @@ _: {
         };
 
         services = {
-          backups = enabled;
-          gitlab-runner = {
+          gitea-runner = {
             enable = true;
             runners = {
-              docker = {
-                tags = [
-                  "${config.networking.hostName}"
-                  "docker"
-                ];
-                dockerVolumes = [
-                  "/var/run/docker.sock:/var/run/docker.sock"
-                ];
-              };
-              gitlab = {
-                tags = [
-                  "builder"
-                ];
-                dockerVolumes = [
-                  "/home/thurs/projects/nix/nixos-config/builds:/artifacts"
-                ];
+              ${config.networking.hostName} = {
+                settings = {
+                  runner = {
+                    capacity = 10;
+                  };
+                  container = {
+                    privileged = true;
+                    force_pull = true;
+                    volumes = [
+                      "/var/run/docker.sock:/var/run/docker.sock"
+                    ];
+                  };
+                };
               };
             };
           };

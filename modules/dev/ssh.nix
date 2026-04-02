@@ -32,6 +32,11 @@ _: {
             Port 2222
             IdentitiesOnly yes
             IdentityFile ${user.homeDir}/.ssh/git
+
+          Host gitea.thurs.pw
+            Port 222
+            IdentitiesOnly yes
+            IdentityFile ${user.homeDir}/.ssh/git
         '';
       }
       // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {

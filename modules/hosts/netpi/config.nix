@@ -23,6 +23,25 @@ _: {
         };
 
         services = {
+          docker = enabled;
+          gitea-runner = {
+            enable = true;
+            runners = {
+              "${config.networking.hostName}-stable" = {
+                labels = [
+                  "ansible-stable:docker://gitea.thurs.pw/docker/ansible:v0.2.0"
+                ];
+                settings = {
+                  container = {
+                    privileged = true;
+                    volumes = [
+                      "/var/run/docker.sock:/var/run/docker.sock"
+                    ];
+                  };
+                };
+              };
+            };
+          };
           traefik = enabled;
           tailscale = {
             useRoutingFeatures = "server";

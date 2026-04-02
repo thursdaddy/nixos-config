@@ -20,6 +20,7 @@ _: {
         };
 
         containers = {
+          gitea = enabled;
           grafana = enabled;
           prometheus = enabled;
           traefik = enabled;

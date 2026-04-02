@@ -44,6 +44,7 @@ _: {
       config = lib.mkIf cfg.enable {
         virtualisation.oci-containers.containers."${name}" = {
           image = "gitlab/gitlab-ce:${version}-ce.0";
+          hostname = "${name}";
           ports = [
             "80"
             "443"
