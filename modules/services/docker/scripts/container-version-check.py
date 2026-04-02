@@ -27,11 +27,14 @@ def get_latest_release(api_url, container_name, repo_url):
     headers = {}
     token_path = "/run/secrets/github/TOKEN"
     if os.path.exists(token_path):
-        with open(token_path, "r") as f:
-            content = f.read().strip()
-            match = re.search(r"github\.com=(github_pat_\S+)$", content)
-        if match:
-            headers["Authorization"] = f"token {match.group(1)}"
+        try:
+            with open(token_path, "r") as f:
+                content = f.read().strip()
+                match = re.search(r"github\.com=(github_pat_\S+)$", content)
+            if match:
+                headers["Authorization"] = f"token {match.group(1)}"
+        except Exception as e:
+            print(f"Warning: Could not read GitHub token: {e}")
 
     try:
         response = requests.get(api_url, headers=headers)
@@ -70,19 +73,8 @@ def normalize_version(version):
     return re.sub(r"^v", "", version)
 
 
-def send_to_discord(embed_data):
-    webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
-    if not webhook_url:
-        print("No Discord webhook URL found.")
-        return
-    try:
-        requests.post(webhook_url, json={"embeds": embed_data}).raise_for_status()
-    except requests.RequestException as e:
-        print(f"Failed to send to Discord: {e}")
-
-
 def send_to_gotify(title, message):
-    """Send a notification to Gotify"""
+    """Send a notification to Gotify with Markdown support"""
     base_url = os.getenv("GOTIFY_URL")
     token = os.getenv("GOTIFY_APP_TOKEN")
 
@@ -90,10 +82,20 @@ def send_to_gotify(title, message):
         print("Missing GOTIFY_URL or GOTIFY_APP_TOKEN environment variables.")
         return
 
-    # Ensure URL is formatted correctly
     url = f"{base_url.rstrip('/')}/message?token={token}"
 
-    payload = {"title": title, "message": message, "priority": 5}
+    # Re-enabled markdown extras so links will be clickable.
+    # Line breaks are handled by adding two spaces at the end of lines in the main function.
+    payload = {
+        "title": title,
+        "message": message,
+        "priority": 5,
+        "extras": {
+            "client::display": {
+                "contentType": "text/markdown"
+            }
+        }
+    }
 
     try:
         requests.post(url, json=payload).raise_for_status()
@@ -105,24 +107,29 @@ def get_hostname():
     return socket.gethostname()
 
 
-def main(discord_flag, gotify_flag):
+def main(gotify_flag):
+    hostname = get_hostname()
+    up_to_date, outdated, missing_labels = [], [], []
+    gotify_lines = []
+
     try:
         client = docker.from_env()
         containers = client.containers.list()
     except Exception as e:
-        print(f"Error connecting to Docker: {e}")
+        error_msg = f"Error connecting to Docker: {e}"
+        print(error_msg)
+        if gotify_flag:
+            send_to_gotify(f"Docker Error: {hostname}", error_msg)
         return
 
     if not containers:
         return
 
-    hostname = get_hostname()
-    up_to_date, outdated, missing_labels = [], [], []
-
-    # Text lists for Gotify/Stdout
-    gotify_lines = []
-
     for container in containers:
+        # Skip containers with specific prefixes
+        if container.name.startswith("GITEA-ACTION") or container.name.startswith("buildx_buildkit"):
+            continue
+
         labels = container.labels
         if labels.get("enable.versions.check") == "false":
             continue
@@ -148,10 +155,16 @@ def main(discord_flag, gotify_flag):
         if current_v == latest_v:
             up_to_date.append(f"{container.name:<20} {current_v}")
         else:
-            outdated.append(f"{container.name:<20} {current_v} -> {latest_v}")
-            gotify_lines.append(f"📦 {container.name}: {current_v} -> {latest_v}")
+            # Build the release notes link
+            release_url = f"{repo_url}/releases/tag/{latest_tag}"
 
-    # STDOUT Reporting
+            # Print to console with URL
+            outdated.append(f"{container.name:<20} {current_v} -> {latest_v} ({release_url})")
+
+            # Markdown link format for Gotify: [link text](URL)
+            gotify_lines.append(f"📦 {container.name}: {current_v} -> [{latest_v}]({release_url})")
+
+    # Print to console
     print(f"Hostname: {hostname}\n" + "=" * 40)
     for title, log in [
         ("✅ Up-to-date", up_to_date),
@@ -163,21 +176,27 @@ def main(discord_flag, gotify_flag):
         for line in log:
             print(line)
 
-    # Notification Logic
-    if gotify_flag and (outdated or missing_labels):
-        msg = "\n".join(gotify_lines)
-        if missing_labels:
-            msg += f"\n\nMissing labels: {', '.join(missing_labels)}"
-        send_to_gotify(f"Updates Available: {hostname}", msg)
+    # Send to Gotify
+    if gotify_flag and (gotify_lines or missing_labels):
+        msg_parts = []
 
-    if discord_flag:
-        # (Discord logic from previous version remains here)
-        pass
+        if gotify_lines:
+            msg_parts.append("**Outdated Containers:**")
+            msg_parts.extend(gotify_lines)
+
+        if missing_labels:
+            if msg_parts:
+                msg_parts.append("")  # Spacer line
+            msg_parts.append("**Missing Labels:**")
+            msg_parts.extend([f"⚠️ {name}" for name in missing_labels])
+
+        # Joining with two spaces and a newline ("  \n") to force standard Markdown line-breaks
+        full_message = "  \n".join(msg_parts)
+        send_to_gotify(f"Updates Available: {hostname}", full_message)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--discord", action="store_true")
     parser.add_argument("--gotify", action="store_true")
     args = parser.parse_args()
-    main(args.discord, args.gotify)
+    main(args.gotify)
