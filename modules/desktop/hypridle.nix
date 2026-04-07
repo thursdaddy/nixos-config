@@ -10,9 +10,6 @@
     let
       cfg = config.mine.desktop.hypridle;
 
-      # https://github.com/hyprwm/hypridle/pull/191
-      # patchedPkg = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.hypridle-patched;
-
       # Having ongoing issues with hypridle crashing hyprlock and from looking at logs
       # it seems like hypridle is not behaving properly when its executing commands simliar to:
       # https://github.com/hyprwm/hypridle/issues/166

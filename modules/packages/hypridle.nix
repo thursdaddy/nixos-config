@@ -11,8 +11,8 @@
         src = pkgs.fetchFromGitHub {
           owner = "thursdaddy";
           repo = "hypridle";
-          rev = "d0f7778c4e74d2fc81bd219789291b80ebe47a4a";
-          hash = "sha256-aUGpceMR4LZX0aJL9VMXkEDxNTskoz09vGiTsPgHhxY=";
+          rev = "32e428cc9fa3da16f9871ce5f3128a3bbb4734ca";
+          hash = "sha256-55LtUi7FIrVjyQOWcs/YPdqUbUuPfpQNm6EfJSvdPes=";
         };
         patches = (oldAttrs.patches or [ ]) ++ [
           ./hypridle-segfault-latest.patch

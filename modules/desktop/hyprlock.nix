@@ -107,7 +107,7 @@
               "XDG_RUNTIME_DIR=/run/user/1000"
             ];
             ExecCondition = "${pkgs.bash}/bin/bash -c '! ${lib.getExe' pkgs.busybox "pidof"} hyprlock'";
-            ExecStart = "${pkgs.bash}/bin/bash -c '${lib.getExe pkgs.hyprlock} --grace 3 & sleep 0.5'";
+            ExecStart = "${pkgs.bash}/bin/bash -c '${lib.getExe pkgs.hyprlock} --grace 3 & sleep 1'";
             Restart = "no";
           };
         };
