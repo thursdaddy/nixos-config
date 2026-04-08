@@ -4,6 +4,7 @@
     imports = with config.flake.modules.nixos; [
       apps
       base
+      containers
       dev
       desktop
       services

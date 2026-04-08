@@ -25,7 +25,20 @@ _: {
               interface = "enp5s0";
             };
           };
+          nfs-mounts = {
+            enable = true;
+            mounts = {
+              "/mnt/backups" = {
+                device = "192.168.10.12:/fast/backups/${config.networking.hostName}";
+              };
+            };
+          };
           utils.sysadmin = enabled;
+        };
+
+        containers = {
+          traefik = enabled;
+          vaultwarden = enabled;
         };
 
         dev.tmux = {
@@ -59,6 +72,7 @@ _: {
         };
 
         services = {
+          backups = enabled;
           docker = enabled;
           gitea-runner = {
             enable = true;

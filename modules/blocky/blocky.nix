@@ -193,7 +193,7 @@
                   mapping = {
                     "attic.thurs.pw" = "192.168.10.60";
                     "bazarr.thurs.pw" = "192.168.10.12";
-                    "cloudbox.thurs.pw" = "100.114.10.49";
+                    "cloudbox.thurs.pw" = "100.71.122.112";
                     "deemix.thurs.pw" = "192.168.10.12";
                     "jellyfin.thurs.pw" = "192.168.10.189";
                     "lidarr.thurs.pw" = "192.168.10.12";

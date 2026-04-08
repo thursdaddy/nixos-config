@@ -99,15 +99,37 @@ _: {
           };
         };
 
+        systemd =
+          let
+            backup = lib.thurs.mkBackupService ({
+              inherit pkgs name;
+              extraPackages = [
+                pkgs.docker-client
+              ];
+              preStart = ''
+                docker exec -t paperless /bin/sh -c "document_exporter ./export -z -zn backup"
+              '';
+            });
+          in
+          {
+            services."backup-${name}" = backup.service;
+            timers."backup-${name}" = backup.timer;
+          };
+
         environment.etc =
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
               serviceName = "docker-${name}";
             };
+            alloyJournalBackup = lib.thurs.mkAlloyJournal {
+              name = "backup-${name}";
+              serviceName = "backup-${name}";
+            };
           in
           {
             "${alloyJournal.name}" = alloyJournal.value;
+            "${alloyJournalBackup.name}" = alloyJournalBackup.value;
           };
       };
     };

@@ -6,11 +6,18 @@ let
       config.allowUnfree = true;
     };
   };
+
+  customPkgs = final: prev: {
+    homelab-backup = inputs.self.packages.${final.stdenv.hostPlatform.system}.homelab-backup;
+  };
 in
 {
   flake.modules.generic.base =
     { pkgs, ... }:
     {
-      nixpkgs.overlays = [ unstablePkgs ];
+      nixpkgs.overlays = [
+        customPkgs
+        unstablePkgs
+      ];
     };
 }

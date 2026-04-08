@@ -27,11 +27,14 @@ _: {
           gitea-runner = {
             enable = true;
             runners = {
-              "${config.networking.hostName}-stable" = {
+              "${config.networking.hostName}" = {
                 labels = [
-                  "ansible-stable:docker://gitea.thurs.pw/docker/ansible:v0.2.0"
+                  "runner:docker://gitea.thurs.pw/docker/gitea-runner:v0.2.0"
                 ];
                 settings = {
+                  runner = {
+                    capacity = 4;
+                  };
                   container = {
                     privileged = true;
                     volumes = [

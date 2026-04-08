@@ -21,7 +21,6 @@ _: {
         };
 
         services = {
-          nginx = enabled;
           traefik = enabled;
           tailscale = {
             useRoutingFeatures = "server";

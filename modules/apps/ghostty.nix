@@ -24,11 +24,6 @@ _: {
         background-opacity = 0.95
         window-theme = system
 
-        # GTK / Linux Specific
-        gtk-titlebar = false
-        gtk-wide-tabs = true
-        adw-toolbar-style = raised-border
-
         # Typography
         font-family = "Monaspace Neon"
         font-size = 11

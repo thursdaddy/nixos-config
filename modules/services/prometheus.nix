@@ -51,7 +51,7 @@ _: {
         environment.etc =
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
-              inherit name;
+              name = "prom-exporter";
             };
           in
           builtins.listToAttrs [

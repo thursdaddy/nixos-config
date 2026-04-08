@@ -29,66 +29,69 @@ _: {
         };
       };
 
-      config = lib.mkMerge [
-        {
-          virtualisation = {
-            oci-containers.backend = "docker";
-            docker = {
-              enable = true;
-              autoPrune = {
+      config = lib.mkIf cfg.enable (
+        lib.mkMerge [
+          {
+            virtualisation = {
+              oci-containers.backend = "docker";
+              docker = {
                 enable = true;
-                dates = "daily";
-                flags = [ "--all" ];
-              };
-            };
-          };
-
-          users.users.${user.name}.extraGroups = [ "docker" ];
-        }
-
-        (
-          let
-            docker_version_script = builtins.readFile ./scripts/container-version-check.py;
-            docker_version_check = pkgs.writers.writePython3Bin "_container-version-check" {
-              flakeIgnore = [
-                "W503"
-                "E501"
-              ];
-              libraries = with pkgs.python3Packages; [
-                requests
-                docker
-              ];
-            } docker_version_script;
-          in
-          lib.mkIf cfg.scripts.check-versions {
-            environment.systemPackages = [
-              docker_version_check
-            ];
-
-            systemd.services.container-version-check = {
-              description = "container-version-check";
-              serviceConfig = {
-                Group = "docker";
-                EnvironmentFile = config.sops.templates."gotify.env".path;
-                ExecStart = "${docker_version_check}/bin/_container-version-check --gotify";
-                Type = "oneshot";
+                autoPrune = {
+                  enable = true;
+                  dates = "daily";
+                  flags = [ "--all" ];
+                };
               };
             };
 
-            sops = {
-              secrets = {
-                "gotify/URL" = { };
-                "gotify/token/CONTAINERS" = { };
-              };
-              templates = {
-                "gotify.env".content = ''
-                  GOTIFY_URL=${config.sops.placeholder."gotify/URL"}
-                  GOTIFY_APP_TOKEN=${config.sops.placeholder."gotify/token/CONTAINERS"}
-                '';
-              };
-            };
+            users.users.${user.name}.extraGroups = [ "docker" ];
           }
-        )
-      ];
+
+          (
+            let
+              docker_version_script = builtins.readFile ./scripts/container-version-check.py;
+              docker_version_check = pkgs.writers.writePython3Bin "_container-version-check" {
+                flakeIgnore = [
+                  "W503"
+                  "E501"
+                ];
+                libraries = with pkgs.python3Packages; [
+                  requests
+                  docker
+                ];
+              } docker_version_script;
+            in
+            lib.mkIf cfg.scripts.check-versions {
+              environment.systemPackages = [
+                docker_version_check
+              ];
+
+              systemd.services.container-version-check = {
+                description = "container-version-check";
+                serviceConfig = {
+                  Group = "docker";
+                  EnvironmentFile = config.sops.templates."gotify.env".path;
+                  ExecStart = "${docker_version_check}/bin/_container-version-check --gotify";
+                  Type = "oneshot";
+                  OnFailure = "backup-gotify-failure@%n.service";
+                };
+              };
+
+              sops = {
+                secrets = {
+                  "gotify/URL" = { };
+                  "gotify/token/CONTAINERS" = { };
+                };
+                templates = {
+                  "gotify.env".content = ''
+                    GOTIFY_URL=${config.sops.placeholder."gotify/URL"}
+                    GOTIFY_APP_TOKEN=${config.sops.placeholder."gotify/token/CONTAINERS"}
+                  '';
+                };
+              };
+            }
+          )
+        ]
+      );
     };
 }

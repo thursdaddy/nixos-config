@@ -17,6 +17,7 @@ _: {
         name = "grafana.ini";
         text = builtins.readFile ./grafana.ini;
       };
+
       grafana_provisioning = pkgs.stdenvNoCC.mkDerivation {
         name = "grafanaProvisioning";
         src = ./provisioning;
@@ -25,6 +26,7 @@ _: {
           cp -Rf ./* $out/
         '';
       };
+
     in
     {
       options.mine.containers.${name} = {
@@ -66,12 +68,50 @@ _: {
             "traefik.http.services.${name}.loadbalancer.server.port" = "3000";
             "enable.versions.check" = "false";
             "homelab.backup.enable" = "true";
-            "homelab.backup.path" = "${config.mine.containers.settings.configPath}";
-            "homelab.backup.path.ignore" = "grafana";
-            "homelab.backup.path.include" = "/cache/grafana";
+            "homelab.backup.path" = "${config.mine.containers.settings.configPath}/grafana/backup";
             "homelab.backup.retention.period" = "5";
           };
         };
+
+        systemd =
+          let
+            backup = lib.thurs.mkBackupService {
+              inherit pkgs;
+              inherit name;
+              extraPackages = [
+                pkgs.systemd
+                pkgs.rsync
+              ];
+              preStart = ''
+                systemctl stop docker-grafana
+                echo "Cleaning ${config.mine.containers.settings.configPath}/grafana/backup"
+                rm -rf ${config.mine.containers.settings.configPath}/grafana/backup
+                rsync -av --exclude='backup' ${config.mine.containers.settings.configPath}/grafana/data ${config.mine.containers.settings.configPath}/grafana/backup/
+                systemctl start docker-grafana
+                sleep 1
+              '';
+            };
+          in
+          {
+            services."backup-${name}" = backup.service;
+            timers."backup-${name}" = backup.timer;
+          };
+
+        environment.etc =
+          let
+            alloyJournal = lib.thurs.mkAlloyJournal {
+              inherit name;
+              serviceName = "docker-${name}";
+            };
+            alloyJournalBackup = lib.thurs.mkAlloyJournal {
+              name = "backup-${name}";
+              serviceName = "backup-${name}";
+            };
+          in
+          {
+            "${alloyJournal.name}" = alloyJournal.value;
+            "${alloyJournalBackup.name}" = alloyJournalBackup.value;
+          };
       };
     };
 }

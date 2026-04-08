@@ -72,11 +72,9 @@
         environment.etc."nix/path/nixpkgs".source = inputs.nixpkgs;
 
         documentation.man = {
-          # This part is safe on both
           enable = true;
         }
         // lib.optionalAttrs (!isDarwin) {
-          # This key is only ever defined/evaluated on NixOS
           generateCaches = lib.mkForce false;
         };
 

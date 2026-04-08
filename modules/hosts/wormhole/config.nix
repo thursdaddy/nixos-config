@@ -50,6 +50,7 @@ _: {
         };
 
         services = {
+          backups = enabled;
           gitea-runner = {
             enable = true;
             runners = {

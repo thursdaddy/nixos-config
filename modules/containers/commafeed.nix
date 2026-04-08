@@ -41,7 +41,7 @@ _: {
             "traefik.http.routers.${name}.tls" = "true";
             "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
             "traefik.http.routers.${name}.entrypoints" = "websecure";
-            "traefik.http.routers.${name}.rule" = "Host(`feed.${fqdn}`)";
+            "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
             "traefik.http.services.${name}.loadbalancer.server.port" = "8082";
             "org.opencontainers.image.version" = "${version}";
             "org.opencontainers.image.source" = "https://github.com/Athou/commafeed";

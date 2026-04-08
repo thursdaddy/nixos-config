@@ -168,8 +168,18 @@
           "python3.12-ecdsa-0.19.1"
         ];
 
-        systemd.tmpfiles.rules =
+        systemd =
           let
+            backup = lib.thurs.mkBackupService {
+              inherit pkgs;
+              name = "backup-home-assistant";
+              extraEnv = {
+                HOMELAB_BACKUP_ENABLE = "true";
+                HOMELAB_BACKUP_PATH = "/var/lib/hass/backups";
+                HOMELAB_BACKUP_RETENTION_PERIOD = "5";
+              };
+            };
+
             cfgDir = config.services.home-assistant.configDir;
             booleans = pkgs.writeText "booleans" (builtins.readFile ./configs/booleans.yaml);
             projector = pkgs.writeText "projector" (builtins.readFile ./configs/projector.yaml);
@@ -177,14 +187,18 @@
             template = pkgs.writeText "template" (builtins.readFile ./configs/template.yaml);
             utility = pkgs.writeText "utility" (builtins.readFile ./configs/utility.yaml);
           in
-          [
-            "f ${cfgDir}/automations.yaml 0400 hass hass -"
-            "L+ ${cfgDir}/booleans.yaml 0400 hass hass - ${booleans}"
-            "L+ ${cfgDir}/projector.yaml 0400 hass hass - ${projector}"
-            "L+ ${cfgDir}/sensor.yaml 0400 hass hass - ${sensor}"
-            "L+ ${cfgDir}/template.yaml 0400 hass hass - ${template}"
-            "L+ ${cfgDir}/utility.yaml 0400 hass hass - ${utility}"
-          ];
+          {
+            services."backup-home-assistant" = backup.service;
+            timers."backup-home-assistant" = backup.timer;
+            tmpfiles.rules = [
+              "f ${cfgDir}/automations.yaml 0400 hass hass -"
+              "L+ ${cfgDir}/booleans.yaml 0400 hass hass - ${booleans}"
+              "L+ ${cfgDir}/projector.yaml 0400 hass hass - ${projector}"
+              "L+ ${cfgDir}/sensor.yaml 0400 hass hass - ${sensor}"
+              "L+ ${cfgDir}/template.yaml 0400 hass hass - ${template}"
+              "L+ ${cfgDir}/utility.yaml 0400 hass hass - ${utility}"
+            ];
+          };
 
         environment.etc =
           let
@@ -208,12 +222,17 @@
               inherit name;
               path = "/var/lib/hass/home-assistant.log";
             };
+            alloyJournalBackup = lib.thurs.mkAlloyJournal {
+              name = "backup-home-assistant";
+              serviceName = "backup-home-assistant";
+            };
           in
           builtins.listToAttrs [
             traefikHass
             traefikEspHome
             alloyJournal
             alloyFileMatch
+            alloyJournalBackup
           ];
       };
     };

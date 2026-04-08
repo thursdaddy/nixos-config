@@ -75,6 +75,9 @@ _: {
               "--network=traefik"
               "--pull=always"
             ];
+            labels = {
+              "enable.versions.check" = "false";
+            };
           };
         };
 

@@ -22,7 +22,6 @@ _: {
         containers = {
           audiobookshelf = enabled;
           commafeed = enabled;
-          gitlab = enabled;
           greenbook = enabled;
           hoarder = enabled;
           open-webui = enabled;

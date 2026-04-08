@@ -3,6 +3,7 @@ _: {
     {
       config,
       lib,
+      pkgs,
       ...
     }:
     let
@@ -51,10 +52,38 @@ _: {
             "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
             "traefik.http.services.${name}.loadbalancer.server.port" = "80";
             "homelab.backup.enable" = "true";
-            "homelab.backup.path" = "${config.mine.containers.settings.configPath}";
+            "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}";
             "homelab.backup.retention.period" = "5";
           };
         };
+
+        systemd =
+          let
+            hostJupiter = lib.optionalAttrs (config.networking.hostName == "jupiter") {
+              extraPackages = [ pkgs.rsync ];
+              preStart = ''
+                rsync -avz --delete \
+                -e "${pkgs.openssh}/bin/ssh -i /home/thurs/.ssh/cloudbox -o StrictHostKeyChecking=no" \
+                thurs@cloudbox:/opt/configs/vaultwarden /opt/configs/
+              '';
+            };
+
+            backup = lib.thurs.mkBackupService ({
+              inherit pkgs name;
+              extraPackages = [
+                pkgs.docker-client
+              ]
+              ++ (hostJupiter.extraPackages or [ ]);
+              preStart = (hostJupiter.preStart or "") + ''
+                docker exec -t vaultwarden find /data -type f -iname "db_*" -mtime +3 -exec rm -v {} \;
+                docker exec -t vaultwarden /vaultwarden backup
+              '';
+            });
+          in
+          {
+            services."backup-${name}" = backup.service;
+            timers."backup-${name}" = backup.timer;
+          };
 
         sops = {
           secrets = {
@@ -75,9 +104,14 @@ _: {
               inherit name;
               serviceName = "docker-${name}";
             };
+            alloyJournalBackup = lib.thurs.mkAlloyJournal {
+              name = "backup-${name}";
+              serviceName = "backup-${name}";
+            };
           in
           {
             "${alloyJournal.name}" = alloyJournal.value;
+            "${alloyJournalBackup.name}" = alloyJournalBackup.value;
           };
       };
     };

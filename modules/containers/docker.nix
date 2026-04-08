@@ -10,7 +10,7 @@ _: {
           configPath = lib.mkOption {
             description = "Base path for storing container configs";
             type = lib.types.path;
-            default = "/opt/configs/";
+            default = "/opt/configs";
           };
         };
       };

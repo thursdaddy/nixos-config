@@ -37,6 +37,27 @@ _: {
 
         services = {
           backups = enabled;
+          gitea-runner = {
+            enable = true;
+            runners = {
+              "${config.networking.hostName}" = {
+                labels = [
+                  "runner:docker://gitea.thurs.pw/docker/gitea-runner:v0.2.0"
+                ];
+                settings = {
+                  runner = {
+                    capacity = 4;
+                  };
+                  container = {
+                    privileged = true;
+                    volumes = [
+                      "/var/run/docker.sock:/var/run/docker.sock"
+                    ];
+                  };
+                };
+              };
+            };
+          };
           traefik = enabled;
           sleep-on-lan = enabled;
         };

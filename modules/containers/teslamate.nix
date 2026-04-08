@@ -142,7 +142,7 @@ _: {
           };
 
           "${dbName}" = {
-            image = "postgres:17";
+            image = "postgres:18-trixie";
             ports = [ "5432" ];
             environment = {
               POSTGRES_USER = "teslamate";
@@ -156,7 +156,7 @@ _: {
               "--pull=always"
             ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/tesla-postgres:/var/lib/postgresql/data"
+              "${config.mine.containers.settings.configPath}/tesla-postgres:/var/lib/postgresql"
               "${config.mine.containers.settings.configPath}/tesla-postgres/db_dumps:/db_dumps"
             ];
             labels = {
@@ -192,6 +192,24 @@ _: {
             '';
           };
         };
+
+        systemd =
+          let
+            backup = lib.thurs.mkBackupService ({
+              inherit pkgs;
+              name = "tesla-postgres";
+              extraPackages = [
+                pkgs.docker-client
+              ];
+              preStart = ''
+                docker exec -t tesla-postgres /bin/sh -c "pg_dump -U teslamate -h localhost > /db_dumps/teslamate.sql"
+              '';
+            });
+          in
+          {
+            services."backup-${name}" = backup.service;
+            timers."backup-${name}" = backup.timer;
+          };
 
         environment.etc =
           let

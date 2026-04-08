@@ -18,7 +18,7 @@ _: {
             hostName = "cloudbox";
             ipv4Forwarding = enabled;
             meta = {
-              hostIp = "100.114.10.49";
+              hostIp = "100.71.122.112";
             };
           };
         };
@@ -37,26 +37,15 @@ _: {
         };
 
         services = {
-          gitlab-runner = {
+          backups = {
             enable = true;
-            runners = {
-              backup = {
-                tags = [
-                  "${config.networking.hostName}"
-                  "backup"
-                ];
-                dockerVolumes = [
-                  "/backups:/backups"
-                  "/opt/configs:/opt/configs:ro"
-                  "/var/run/docker.sock:/var/run/docker.sock"
-                ];
-              };
-            };
+            nfs-mount = false;
           };
           r53-updater = enabled;
           tailscale = {
             enable = true;
             useRoutingFeatures = "client";
+            sopsSecret = "tailscale/CLOUDBOX_AUTH_KEY";
             extraUpFlags = [
               "--accept-routes"
             ];

@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "greenbook";
-      version = "0.0.4";
+      version = "0.0.7";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
@@ -70,10 +70,10 @@ _: {
         };
 
         virtualisation.oci-containers.containers."${name}" = {
-          image = "reg.thurs.pw/homelab/greenbook:v${version}";
+          image = "gitea.thurs.pw/homelab/greenbook:v${version}";
           login = {
             username = "thurs";
-            registry = "reg.thurs.pw";
+            registry = "gitea.thurs.pw";
             passwordFile = config.sops.templates."registry_pass".path;
           };
           hostname = name;
@@ -107,14 +107,14 @@ _: {
             "traefik.http.services.${name}.loadbalancer.server.port" = "8000";
             "enable.versions.check" = "false";
             "homelab.backup.enable" = "true";
-            "homelab.backup.path" = "${config.mine.containers.settings.configPath}";
+            "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}";
             "homelab.backup.retention.period" = "5";
           };
         };
 
         sops = {
           secrets = {
-            "gitlab/REGISTRY_AUTH" = {
+            "gitea/ROBOT_TOKEN" = {
               owner = "thurs";
             };
             "paperless/API_TOKEN" = {
@@ -127,7 +127,7 @@ _: {
 
           templates = {
             "registry_pass".content = ''
-              ${config.sops.placeholder."gitlab/REGISTRY_AUTH"}
+              ${config.sops.placeholder."gitea/ROBOT_TOKEN"}
             '';
             "greenbook-app".content = ''
               PAPERLESS_AUTH_TOKEN=${config.sops.placeholder."paperless/API_TOKEN"}
@@ -139,15 +139,37 @@ _: {
           };
         };
 
+        systemd =
+          let
+            backup = lib.thurs.mkBackupService ({
+              inherit pkgs name;
+              extraPackages = [
+                pkgs.docker-client
+              ];
+              preStart = ''
+                docker exec greenbook-db /bin/sh -c "pg_dumpall -U receipts -h localhost > /db_dumps/receipts.sql"
+              '';
+            });
+          in
+          {
+            services."backup-${name}" = backup.service;
+            timers."backup-${name}" = backup.timer;
+          };
+
         environment.etc =
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
               serviceName = "docker-${name}";
             };
+            alloyJournalBackup = lib.thurs.mkAlloyJournal {
+              name = "backup-${name}";
+              serviceName = "backup-${name}";
+            };
           in
           {
             "${alloyJournal.name}" = alloyJournal.value;
+            "${alloyJournalBackup.name}" = alloyJournalBackup.value;
           };
       };
     };

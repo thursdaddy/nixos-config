@@ -18,6 +18,7 @@ _: {
           prom_token = config.sops.placeholder."hass/PROM_TOKEN";
         }
       );
+
     in
     {
       options.mine.containers.${name} = {
@@ -69,10 +70,7 @@ _: {
             "traefik.http.services.${name}.loadbalancer.server.port" = "9090";
             "enable.versions.check" = "false";
             "homelab.backup.enable" = "true";
-            "homelab.backup.path" = "${config.mine.containers.settings.configPath}";
-            "homelab.backup.path.ignore" = "prometheus";
-            "homelab.backup.path.include" =
-              "${config.mine.containers.settings.configPath}/prometheus/data/snapshots";
+            "homelab.backup.path" = "${config.mine.containers.settings.configPath}/prometheus/data/snapshots";
             "homelab.backup.retention.period" = "5";
           };
         };
@@ -83,6 +81,42 @@ _: {
         };
 
         networking.firewall.allowedTCPPorts = [ 9090 ];
+
+        systemd =
+          let
+            backup = lib.thurs.mkBackupService {
+              inherit pkgs;
+              inherit name;
+              extraPackages = [
+                pkgs.docker-client
+                pkgs.curl
+              ];
+              preStart = ''
+                docker exec -t prometheus find /prometheus/data/snapshots/ -type d -depth -exec rm -rf {} \; || true
+                curl -sS -XPOST http://localhost:9090/api/v1/admin/tsdb/snapshot
+              '';
+            };
+          in
+          {
+            services."backup-${name}" = backup.service;
+            timers."backup-${name}" = backup.timer;
+          };
+
+        environment.etc =
+          let
+            alloyJournal = lib.thurs.mkAlloyJournal {
+              inherit name;
+              serviceName = "docker-${name}";
+            };
+            alloyJournalBackup = lib.thurs.mkAlloyJournal {
+              name = "backup-${name}";
+              serviceName = "backup-${name}";
+            };
+          in
+          {
+            "${alloyJournal.name}" = alloyJournal.value;
+            "${alloyJournalBackup.name}" = alloyJournalBackup.value;
+          };
       };
     };
 }
