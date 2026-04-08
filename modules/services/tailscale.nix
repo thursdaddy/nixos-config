@@ -21,11 +21,11 @@ _: {
 
         authKeyFile = lib.mkOption {
           type = lib.types.path;
-          default = config.sops.secrets."${cfg.sopsKey}".path;
+          default = config.sops.secrets."${cfg.sopsSecret}".path;
           description = "Path to the Tailscale auth key file";
         };
 
-        sopsKey = lib.mkOption {
+        sopsSecret = lib.mkOption {
           type = lib.types.str;
           default = "tailscale/AUTH_KEY";
           description = "Sops secret key for tailscale auth";
@@ -73,13 +73,13 @@ _: {
           enable = true;
           package = pkgs.unstable.tailscale;
           openFirewall = true;
-          authKeyFile = cfg.authKeyFile;
+          inherit (cfg) authKeyFile;
           inherit (cfg) useRoutingFeatures;
           inherit (cfg) extraUpFlags;
           inherit (cfg) extraSetFlags;
         };
 
-        sops.secrets."${cfg.sopsKey}" = { };
+        sops.secrets."${cfg.sopsSecret}" = { };
 
         systemd.services.tailscaled-autoconnect-reload =
           lib.mkIf
