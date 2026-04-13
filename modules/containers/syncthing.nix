@@ -3,7 +3,7 @@ _: {
     { config, lib, ... }:
     let
       name = "syncthing";
-      version = "2.0.14";
+      version = "2.0.16";
 
       cfg = config.mine.containers.${name};
       subdomain = "${name}-${config.networking.hostName}";

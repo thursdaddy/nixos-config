@@ -91,6 +91,7 @@ _: {
                 pkgs.docker-client
                 pkgs.curl
               ];
+              # delete old snapshots, create new
               preStart = ''
                 docker exec -t prometheus find /prometheus/data/snapshots/ -type d -depth -exec rm -rf {} \; || true
                 curl -sS -XPOST http://localhost:9090/api/v1/admin/tsdb/snapshot
