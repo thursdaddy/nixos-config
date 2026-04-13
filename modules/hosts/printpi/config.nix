@@ -22,7 +22,6 @@ _: {
         services = {
           backups = enabled;
           traefik = enabled;
-          qemu-guest = enabled;
         };
       };
     };
