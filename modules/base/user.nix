@@ -112,7 +112,6 @@
       users.knownUsers = [ "${user.name}" ];
 
       programs = {
-        fish.enable = lib.mkIf (user.shell.package == pkgs.fish) true;
         zsh.enable = lib.mkIf (user.shell.package == pkgs.zsh) true;
       };
     };

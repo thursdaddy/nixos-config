@@ -45,6 +45,11 @@ _: {
             };
 
             users.users.${user.name}.extraGroups = [ "docker" ];
+            programs = lib.mkIf (user.shell.package == pkgs.fish) {
+              fish = {
+                shellAliases = config.mine.aliases.docker;
+              };
+            };
           }
 
           (

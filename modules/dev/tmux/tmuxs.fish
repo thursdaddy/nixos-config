@@ -1,4 +1,3 @@
-
 # start tmux session after cd'ing into the dir
 function tmux_session_start
   cd $argv
@@ -9,38 +8,48 @@ function tmux_session_start
        new-window\; \
        select-window -t :nvim
 
-  # tmux starts a window 0 when executing tmux new-session, i dont like it
-  if tmux has -t 0 2&>/dev/null
-    tmux kill-session -t 0
+  # Context-aware attach: use switch-client if already inside tmux
+  if set -q TMUX
+    tmux switch-client -t $SESSION
+  else
+    tmux attach -t $SESSION
   end
-
-  # attach to new custom session
-  tmux attach -t $SESSION
-
 end
 
 # select or create new tmux session
 function tmux_session_selector
-  if tmux list-sessions 2&> /dev/null
+  if tmux list-sessions 2>/dev/null
     set fzf_options "new-session" "running-sessions"
   else
     set fzf_options "new-session"
   end
 
-  set FZF_PROMPT (printf "%s\n" $fzf_options | fzf --prompt="")
+  set FZF_PROMPT (printf "%s\n" $fzf_options | fzf --prompt="Select action: ")
 
   switch "$FZF_PROMPT"
     case running-sessions
-      set sessions (tmux list-sessions | awk -F":" '{print $1}')
+      set sessions (tmux list-sessions -F '#{session_name}')
       set selected_session (printf "%s\n" $sessions | fzf --preview 'tmux list-windows -t {} -F \'#{window_index}:#{window_active} | #{window_name}   > #{pane_title}\'') || exit
-      tmux attach -t $selected_session
+
+      if set -q TMUX
+        tmux switch-client -t $selected_session
+      else
+        tmux attach -t $selected_session
+      end
 
     case new-session
+      # Assuming $tmuxs_paths is defined globally in your fish config
       set dirs (find $tmuxs_paths -depth -maxdepth 1 -type d)
-      set selected_dir (printf "%s\n" $dirs | fzf) || exit
+      set selected_dir (printf "%s\n" $dirs | fzf --prompt="Select project: ") || exit
       set basename (basename $selected_dir)
-      if tmux ls | awk -F':' '{print $1}' | grep -owx "$basename" 2&> /dev/null
-        tmux attach -t $basename
+
+      # Use native tmux has-session to check existence
+      if tmux has-session -t "$basename" 2>/dev/null
+        if set -q TMUX
+          tmux switch-client -t $basename
+        else
+          tmux attach -t $basename
+        end
       else
         tmux_session_start $selected_dir
       end
@@ -53,20 +62,24 @@ if not count $argv > /dev/null
 else
   # if arg is ., set pwd as path for tmux_session_start
   if string match -q "." $argv
-    set -g path $PWD
+    set path $PWD
   else
-    set -g path (find $tmuxs_paths -depth -maxdepth 1 -type d -iname $argv | head -n1)
+    set path (find $tmuxs_paths -depth -maxdepth 1 -type d -iname $argv | head -n1)
   end
 
   if test -z "$path"
     echo "Directory not found, starting selector"
     tmux_session_selector
   else
-    set -g basename (basename $path)
-    if tmux ls | awk -F':' '{print $1}' | grep -owx "$basename" 2&> /dev/null
+    set basename (basename $path)
+    if tmux has-session -t "$basename" 2>/dev/null
+      if set -q TMUX
+        tmux switch-client -t $basename
+      else
         tmux attach -t $basename
+      end
     else
-        tmux_session_start $path
+      tmux_session_start $path
     end
   end
 end

@@ -19,6 +19,7 @@ _: {
       programs.fish = {
         enable = true;
         promptInit = lib.mkIf pkgs.stdenv.isDarwin "starship init fish | source";
+        shellAliases = config.mine.aliases.eza // config.mine.aliases.systemctl;
         interactiveShellInit = ''
           set -U fish_greeting ""
           set -g fish_pager_color_prefix 444444
@@ -45,6 +46,13 @@ _: {
             /opt/homebrew/bin/brew shellenv | source
           end
           starship init fish | source
+
+          # Tokyo Dark fzf theme (with transparent bg for tmux popups)
+          set -gx FZF_DEFAULT_OPTS "$FZF_DEFAULT_OPTS "\
+          "--color=fg:#c0caf5,bg:-1,hl:#2ac3de "\
+          "--color=fg+:#c0caf5,bg+:#292e42,hl+:#2ac3de "\
+          "--color=info:#7aa2f7,prompt:#bb9af7,pointer:#bb9af7 "\
+          "--color=marker:#9ece6a,spinner:#ff007c,header:#7aa2f7"
         '';
       };
 
