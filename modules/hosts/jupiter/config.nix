@@ -21,6 +21,7 @@ _: {
 
         containers = {
           audiobookshelf = enabled;
+          pinepods = enabled;
           commafeed = enabled;
           greenbook = enabled;
           hoarder = enabled;
