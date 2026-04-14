@@ -50,9 +50,3 @@ hvac_time_filter:
   source: sensor.hvac_today
   name: HVAC Time Filter
   cycle: yearly
-hvac_daily_cost:
-  source: sensor.hvac_cost_tracker
-  name: HVAC Daily Costs
-hvac_monthly_cost:
-  source: sensor.hvac_cost_tracker
-  name: HVAC Monthly Costs

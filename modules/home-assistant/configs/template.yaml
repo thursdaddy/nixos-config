@@ -1,3 +1,14 @@
+- sensor:
+    - name: "HVAC Action"
+      state: "{{ state_attr('climate.nest', 'hvac_action') }}"
+      unique_id: hvac_action_tracker # Optional, but lets you edit settings in the UI
+
+    - name: "HVAC Cost Tracker"
+      unit_of_measurement: "$"
+      device_class: monetary
+      state: "0.00"
+      unique_id: hvac_cost_tracker_sensor
+
 - trigger:
     - platform: time
       at: "02:00:00"

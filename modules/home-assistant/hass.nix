@@ -26,6 +26,9 @@
         };
       };
 
+      disabledModules = [ "services/home-automation/home-assistant.nix" ];
+      imports = [ "${inputs.unstable}/nixos/modules/services/home-automation/home-assistant.nix" ];
+
       config = {
         mine.services = {
           appdaemon = enabled;
@@ -55,23 +58,23 @@
 
           home-assistant = {
             enable = true;
-            package =
-              (pkgs.home-assistant.override {
+            package = (
+              pkgs.unstable.home-assistant.override {
                 extraPackages =
                   py: with py; [
                     aioacaia
                     google-nest-sdm
                     govee-ble
+                    govee-local-api
                     grpcio
                     grpcio-tools
                     psutil-home-assistant
                     psycopg2
                     zlib-ng
+                    kegtron-ble
                   ];
-              }).overrideAttrs
-                (oldAttrs: {
-                  doInstallCheck = false;
-                });
+              }
+            );
             lovelaceConfigWritable = true;
             openFirewall = true;
             config = {
@@ -91,8 +94,8 @@
                 ];
               };
               input_boolean = "!include booleans.yaml";
-              lovelace.mode = "yaml";
               notify = "!include notify.yaml";
+              lovelace.resource_mode = "yaml";
               prometheus = {
                 namespace = "hass";
               };
@@ -110,7 +113,6 @@
             ];
             extraComponents = [
               "alert"
-              "bluetooth_tracker"
               "default_config"
               "device_tracker"
               "esphome"

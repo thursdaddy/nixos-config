@@ -14,37 +14,37 @@
   entity_id: sensor.hvac_activity
   state: "cooling"
   type: time
-  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
-  end: '{{ now() }}'
+  start: "{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}"
+  end: "{{ now() }}"
 
 - platform: history_stats
   name: HVAC Idle
   entity_id: sensor.hvac_activity
   state: "idle"
   type: time
-  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
-  end: '{{ now() }}'
+  start: "{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}"
+  end: "{{ now() }}"
 
 - platform: history_stats
   name: HVAC Heating
   entity_id: sensor.hvac_activity
   state: "heating"
   type: time
-  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
-  end: '{{ now() }}'
+  start: "{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}"
+  end: "{{ now() }}"
 
 - platform: history_stats
   name: HVAC Off
   entity_id: sensor.hvac_activity
   state: "off"
   type: time
-  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
-  end: '{{ now() }}'
+  start: "{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}"
+  end: "{{ now() }}"
 
 - platform: history_stats
   name: Heating Yesterday
   entity_id: sensor.hvac_activity
-  state: 'heating'
+  state: "heating"
   type: time
   end: "{{ today_at() }}"
   duration:
@@ -53,7 +53,7 @@
 - platform: history_stats
   name: Cooling Yesterday
   entity_id: sensor.hvac_activity
-  state: 'cooling'
+  state: "cooling"
   type: time
   end: "{{ today_at() }}"
   duration:
@@ -62,7 +62,7 @@
 - platform: history_stats
   name: Cooling Yesterday
   entity_id: sensor.hvac_activity
-  state: 'cooling'
+  state: "cooling"
   type: time
   end: "{{ today_at() }}"
   duration:

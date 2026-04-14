@@ -26,8 +26,6 @@ _: {
             "govee.env" = {
               path = "/var/lib/govee2mqtt/govee2mqtt.env";
               content = ''
-                GOVEE_EMAIL=${config.sops.placeholder."govee/EMAIL"}
-                GOVEE_PASSWORD=${config.sops.placeholder."govee/PASSWORD"}
                 GOVEE_API_KEY=${config.sops.placeholder."govee/API_KEY"}
                 GOVEE_MQTT_HOST=localhost
                 GOVEE_MQTT_USER=zigbee
