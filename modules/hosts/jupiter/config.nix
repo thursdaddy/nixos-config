@@ -25,6 +25,7 @@ _: {
           commafeed = enabled;
           greenbook = enabled;
           hoarder = enabled;
+          navidrome = enabled;
           open-webui = enabled;
           paperless = enabled;
           teslamate = enabled;
