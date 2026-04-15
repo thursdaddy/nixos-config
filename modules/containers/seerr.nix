@@ -6,8 +6,8 @@ _: {
       ...
     }:
     let
-      name = "overseerr";
-      version = "1.35.0";
+      name = "seerr";
+      version = "3.1.1";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
@@ -24,7 +24,7 @@ _: {
 
       config = lib.mkIf cfg.enable {
         virtualisation.oci-containers.containers."${name}" = {
-          image = "linuxserver/${name}:${version}";
+          image = "${name}/${name}:v${version}";
           ports = [
             "5055"
           ];
@@ -39,7 +39,7 @@ _: {
             "--dns=192.168.10.201"
           ];
           volumes = [
-            "${config.mine.containers.settings.configPath}/${name}:/config"
+            "${config.mine.containers.settings.configPath}/${name}:/app/config"
           ];
           labels = {
             "traefik.enable" = "true";
@@ -48,9 +48,6 @@ _: {
             "traefik.http.routers.${name}.entrypoints" = "websecure";
             "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
             "traefik.http.services.${name}.loadbalancer.server.port" = "5055";
-            "homelab.backup.enable" = "true";
-            "homelab.backup.path" = "${config.mine.containers.settings.configPath}";
-            "homelab.backup.retention.period" = "5";
           };
         };
 

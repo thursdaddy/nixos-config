@@ -26,7 +26,7 @@ _: {
         containers = {
           gatus = enabled;
           gotify = enabled;
-          overseerr = enabled;
+          seerr = enabled;
           traefik = {
             enable = true;
             rootDomainName = config.nixos-thurs.publicDomain;
