@@ -56,7 +56,8 @@ class BackupManager:
             self.logger.debug("Docker socket not reachable; Docker features disabled.")
             self.client = None
 
-        self.backup_base = Path(os.getenv("BACKUP_ROOT", "/mnt/backups"))
+        # This serves as the global system default
+        self.global_base = Path(os.getenv("HOMELAB_BACKUP_BASE_DEST", "/mnt/backups"))
 
     def _setup_logging(self) -> logging.Logger:
         logger = logging.getLogger("backrest")
@@ -134,10 +135,14 @@ class BackupManager:
         if not source_path:
             raise BackupError(f"Missing backup path for {name}")
 
+        # Resolve destination dynamically: Label -> Env Var -> Global Default
+        base_dest = self._get_config("homelab.backup.base.dest", container, self.global_base)
+
         config = {
             "target": name,
             "type": b_type,
             "source_path": source_path,
+            "base_destination": str(base_dest),
             "retention": int(
                 self._get_config("homelab.backup.retention.period", container, 5)
             ),
@@ -155,7 +160,7 @@ class BackupManager:
                 self.logger.info(f"  {key}: {value if value != '' else '(empty)'}")
             self.logger.info("-" * 30)
 
-        dest_dir = self.backup_base / b_type / name
+        dest_dir = Path(base_dest) / b_type / name
         self.execute_backup_logic(
             container, source_path, dest_dir, config, manual_name=name
         )
@@ -176,7 +181,6 @@ class BackupManager:
 
         source_path = Path(source)
 
-        # Added 'UTC' to mtime for better compatibility with different locales
         cmd: List[str] = [
             "tar",
             "--sort=name",
@@ -212,7 +216,6 @@ class BackupManager:
             env = os.environ.copy()
             env["GZIP"] = "-n"
 
-            # Enhanced error capturing
             result = subprocess.run(cmd, capture_output=True, text=True, env=env)
 
             if result.returncode != 0:
@@ -260,7 +263,10 @@ class BackupManager:
         retention = int(
             self._get_config("homelab.backup.retention.period", container, 5)
         )
-        dest_dir = self.backup_base / b_type / name
+
+        # Resolve destination for rotation as well
+        base_dest = self._get_config("homelab.backup.base.dest", container, self.global_base)
+        dest_dir = Path(base_dest) / b_type / name
 
         if not dest_dir.exists():
             return
@@ -306,7 +312,6 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    # Determine type based on environment variable if not explicitly set
     backup_type = args.type
     if not backup_type:
         backup_type = "path" if os.getenv("HOMELAB_BACKUP_ENABLE") else "docker"
