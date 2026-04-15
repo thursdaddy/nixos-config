@@ -10,23 +10,12 @@
     let
       cfg = config.mine.services.backups;
       inherit (config.mine.base) user;
-      homelab-backup = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.homelab-backup;
-
-      _gotify-alert = pkgs.writeShellApplication {
-        name = "gotify-alert";
-        runtimeInputs = with pkgs; [
-          curl
-          jq
-          nettools
-          coreutils
-        ];
-        text = builtins.readFile ./gotify-alert.sh;
-      };
-
+      homelabBackup = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.homelab-backup;
+      gotifyAlert = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.gotify-alert;
     in
     {
       options.mine.services.backups = {
-        enable = lib.mkEnableOption "Enable my internal backup stuff";
+        enable = lib.mkEnableOption "Enable backup script";
         nfs-mount = lib.mkOption {
           description = "Enable NFS mount";
           type = lib.types.bool;
@@ -35,6 +24,8 @@
       };
 
       config = lib.mkIf cfg.enable {
+        environment.systemPackages = [ homelabBackup ];
+
         mine = lib.mkIf cfg.nfs-mount {
           base = {
             nfs-mounts = {
@@ -47,8 +38,6 @@
             };
           };
         };
-
-        environment.systemPackages = [ homelab-backup ];
 
         sops = {
           secrets = {
@@ -71,7 +60,7 @@
             description = "Runs when a service fails.";
             serviceConfig = {
               Type = "oneshot";
-              ExecStart = "${lib.getExe _gotify-alert} %i";
+              ExecStart = "${lib.getExe gotifyAlert} %i";
               EnvironmentFile = config.sops.templates."gotify-backups.env".path;
             };
           };

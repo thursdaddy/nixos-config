@@ -78,8 +78,11 @@ def send_to_gotify(title, message):
     base_url = os.getenv("GOTIFY_URL")
     token = os.getenv("GOTIFY_APP_TOKEN")
 
+    print("\n\nSending notification via Gotify!")
     if not base_url or not token:
-        print("Missing GOTIFY_URL or GOTIFY_APP_TOKEN environment variables.")
+        print(
+            "\nCannot send notification, missing GOTIFY_URL or GOTIFY_APP_TOKEN environment variables."
+        )
         return
 
     url = f"{base_url.rstrip('/')}/message?token={token}"
@@ -90,11 +93,7 @@ def send_to_gotify(title, message):
         "title": title,
         "message": message,
         "priority": 5,
-        "extras": {
-            "client::display": {
-                "contentType": "text/markdown"
-            }
-        }
+        "extras": {"client::display": {"contentType": "text/markdown"}},
     }
 
     try:
@@ -110,7 +109,10 @@ def get_hostname():
 def main(gotify_flag):
     hostname = get_hostname()
     up_to_date, outdated, missing_labels = [], [], []
-    gotify_lines = []
+
+    # Split Gotify lines into two lists for formatting
+    gotify_outdated_lines = []
+    gotify_uptodate_lines = []
 
     try:
         client = docker.from_env()
@@ -127,7 +129,9 @@ def main(gotify_flag):
 
     for container in containers:
         # Skip containers with specific prefixes
-        if container.name.startswith("GITEA-ACTION") or container.name.startswith("buildx_buildkit"):
+        if container.name.startswith("GITEA-ACTION") or container.name.startswith(
+            "buildx_buildkit"
+        ):
             continue
 
         labels = container.labels
@@ -154,15 +158,21 @@ def main(gotify_flag):
 
         if current_v == latest_v:
             up_to_date.append(f"{container.name:<20} {current_v}")
+            # Add to Gotify up-to-date list
+            gotify_uptodate_lines.append(f"✅ {container.name}: {current_v}")
         else:
             # Build the release notes link
             release_url = f"{repo_url}/releases/tag/{latest_tag}"
 
             # Print to console with URL
-            outdated.append(f"{container.name:<20} {current_v} -> {latest_v} ({release_url})")
+            outdated.append(
+                f"{container.name:<20} {current_v} -> {latest_v} ({release_url})"
+            )
 
             # Markdown link format for Gotify: [link text](URL)
-            gotify_lines.append(f"📦 {container.name}: {current_v} -> [{latest_v}]({release_url})")
+            gotify_outdated_lines.append(
+                f"📦 {container.name}: {current_v} -> [{latest_v}]({release_url})"
+            )
 
     # Print to console
     print(f"Hostname: {hostname}\n" + "=" * 40)
@@ -177,12 +187,20 @@ def main(gotify_flag):
             print(line)
 
     # Send to Gotify
-    if gotify_flag and (gotify_lines or missing_labels):
+    if gotify_flag and (
+        gotify_outdated_lines or gotify_uptodate_lines or missing_labels
+    ):
         msg_parts = []
 
-        if gotify_lines:
+        if gotify_outdated_lines:
             msg_parts.append("**Outdated Containers:**")
-            msg_parts.extend(gotify_lines)
+            msg_parts.extend(gotify_outdated_lines)
+
+        if gotify_uptodate_lines:
+            if msg_parts:
+                msg_parts.append("")  # Spacer line
+            msg_parts.append("**Up-to-Date Containers:**")
+            msg_parts.extend(gotify_uptodate_lines)
 
         if missing_labels:
             if msg_parts:
@@ -192,7 +210,14 @@ def main(gotify_flag):
 
         # Joining with two spaces and a newline ("  \n") to force standard Markdown line-breaks
         full_message = "  \n".join(msg_parts)
-        send_to_gotify(f"Updates Available: {hostname}", full_message)
+
+        # Determine the title based on whether updates are actually available
+        if gotify_outdated_lines:
+            gotify_title = f"Updates Available: {hostname}"
+        else:
+            gotify_title = f"All Up-to-Date: {hostname}"
+
+        send_to_gotify(gotify_title, full_message)
 
 
 if __name__ == "__main__":

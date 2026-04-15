@@ -1,4 +1,5 @@
-_: {
+{ inputs, ... }:
+{
   flake.modules.nixos.services =
     {
       config,
@@ -9,7 +10,7 @@ _: {
     let
       inherit (config.mine.base) user;
       cfg = config.mine.services.docker;
-
+      gotifyAlert = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.gotify-alert;
     in
     {
       options.mine.services.docker = {
@@ -44,18 +45,19 @@ _: {
               };
             };
 
-            users.users.${user.name}.extraGroups = [ "docker" ];
             programs = lib.mkIf (user.shell.package == pkgs.fish) {
               fish = {
                 shellAliases = config.mine.aliases.docker;
               };
             };
+
+            users.users.${user.name}.extraGroups = [ "docker" ];
           }
 
           (
             let
-              docker_version_script = builtins.readFile ./scripts/container-version-check.py;
-              docker_version_check = pkgs.writers.writePython3Bin "_container-version-check" {
+              dockerVersionScript = builtins.readFile ./scripts/container-version-check.py;
+              dockerVersionCheck = pkgs.writers.writePython3Bin "_container-version-check" {
                 flakeIgnore = [
                   "W503"
                   "E501"
@@ -64,21 +66,43 @@ _: {
                   requests
                   docker
                 ];
-              } docker_version_script;
+              } dockerVersionScript;
             in
             lib.mkIf cfg.scripts.check-versions {
               environment.systemPackages = [
-                docker_version_check
+                dockerVersionCheck
               ];
 
-              systemd.services.container-version-check = {
-                description = "container-version-check";
-                serviceConfig = {
-                  Group = "docker";
-                  EnvironmentFile = config.sops.templates."gotify.env".path;
-                  ExecStart = "${docker_version_check}/bin/_container-version-check --gotify";
-                  Type = "oneshot";
-                  OnFailure = "backup-gotify-failure@%n.service";
+              systemd = {
+                services = {
+                  container-version-check = {
+                    description = "container-version-check";
+                    onFailure = [ "gotify-container-check@%n.service" ];
+                    serviceConfig = {
+                      Group = "docker";
+                      EnvironmentFile = config.sops.templates."gotify-container-check.env".path;
+                      ExecStart = "${lib.getExe dockerVersionCheck} --gotify";
+                      Type = "oneshot";
+                    };
+                  };
+
+                  "gotify-container-check@" = {
+                    description = "Runs when service fails.";
+                    serviceConfig = {
+                      Type = "oneshot";
+                      ExecStart = "${lib.getExe gotifyAlert} %i";
+                      EnvironmentFile = config.sops.templates."gotify-container-check.env".path;
+                    };
+                  };
+                };
+
+                timers.container-version-check = {
+                  description = "Schedule docker version checks.";
+                  timerConfig = {
+                    OnCalendar = "*-*-01/3 08:00:00";
+                    Persistent = true;
+                  };
+                  wantedBy = [ "timers.target" ];
                 };
               };
 
@@ -88,7 +112,7 @@ _: {
                   "gotify/token/CONTAINERS" = { };
                 };
                 templates = {
-                  "gotify.env".content = ''
+                  "gotify-container-check.env".content = ''
                     GOTIFY_URL=${config.sops.placeholder."gotify/URL"}
                     GOTIFY_APP_TOKEN=${config.sops.placeholder."gotify/token/CONTAINERS"}
                   '';
