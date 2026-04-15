@@ -20,9 +20,7 @@ _: {
           Restart = "on-failure";
           RestartSec = "5s";
           KillMode = "mixed";
-          Slice = "session.slice";
         };
       };
-
     };
 }
