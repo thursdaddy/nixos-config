@@ -352,11 +352,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1776234542,
-        "narHash": "sha256-DwbLzs08B96+8eoUmM7yxjXQfT9xCkBS5wy92BmB0Rc=",
+        "lastModified": 1776711326,
+        "narHash": "sha256-Fm2tPdsQjEk5SLToI9t/qD4o0BycfiLwOBLsKUMIzGM=",
         "owner": "thursdaddy",
         "repo": "nixos-thurs",
-        "rev": "1ac5b32ebef1ca93edad0c81cf0ad8be416a961b",
+        "rev": "805e474c44ac5c4281befc26f91db58bb0120e14",
         "type": "github"
       },
       "original": {

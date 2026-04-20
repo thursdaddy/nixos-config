@@ -1,0 +1,131 @@
+/* =========================================================
+   Nord Palette
+   ========================================================= */
+@define-color bg       rgba(46, 52, 64, 0.95);
+@define-color fg       #d8dee9;
+@define-color blue     #88c0d0;
+@define-color red      #bf616a;
+@define-color purple   #b48ead;
+@define-color hover    rgba(76, 86, 106, 0.9);
+@define-color card_bg  rgba(59, 66, 82, 0.95);
+
+/* =========================================================
+   Root & Popup
+   ========================================================= */
+window#swaync-control-center,
+window#swaync-notification-window,
+.background,
+.blanket {
+    background-color: transparent;
+    background: transparent;
+    border: none;
+}
+
+.control-center {
+    background-color: @bg;
+    color: @fg;
+    border-radius: 15px;
+    border: 1px solid @blue;
+    margin: 20px;
+}
+
+/* =========================================================
+   Individual Notifications
+   ========================================================= */
+.notification-row {
+    outline: none;
+    background: transparent;
+}
+
+.notification-background {
+    background-color: @card_bg;
+    border-radius: 10px;
+    margin: 10px;
+    border: 1px solid rgba(136, 192, 208, 0.2);
+}
+
+.notification {
+    background-color: transparent;
+    padding: 12px;
+}
+
+.notification label,
+.notification textview,
+.notification textview text {
+    background: transparent;
+    color: @fg;
+}
+
+/* =========================================================
+   FIXED: Grouped Notifications (Title BG & Rounded Cards)
+   ========================================================= */
+
+/* 1. Ensure the container and header boxes match the Control Center BG */
+.notification-group,
+.notification-group box,
+.notification-group-header,
+.notification-group-header box,
+#grouped-notifications,
+#grouped-notifications box {
+    background-color: @bg;
+    background: @bg;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+}
+
+/* 2. Specific Title Styling (notify-send) */
+.notification-group-header label {
+    color: @blue;
+    font-size: 1.25rem;
+    font-weight: bold;
+    background: transparent;
+    background-color: transparent;
+}
+
+/* 3. Restore the rounded message boxes INSIDE the group */
+.notification-group .notification-background {
+    background-color: @card_bg;
+    margin: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(136, 192, 208, 0.1);
+}
+
+/* 4. Cleanup buttons */
+.close-button,
+.collapse-button {
+    background-color: transparent;
+    color: @blue;
+}
+
+/* =========================================================
+   Header & Controls
+   ========================================================= */
+.widget-title,
+.widget-dnd {
+    padding: 10px 15px;
+}
+
+.widget-title label {
+    font-size: 1.1rem;
+    color: @blue;
+    font-weight: bold;
+}
+
+.widget-title > button {
+    background-color: @red;
+    color: @fg;
+    border-radius: 6px;
+    padding: 4px 12px;
+}
+
+.widget-dnd > switch {
+    background-color: #4c566a;
+    border-radius: 10px;
+}
+
+.widget-dnd > switch:checked {
+    background-color: @red;
+}
+
+scrollbar slider { background-color: #4c566a; border-radius: 10px; }

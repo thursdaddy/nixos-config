@@ -184,6 +184,18 @@ _: {
           "9, monitor:DP-1"
           "10, monitor:DP-1"
         ];
+
+        layerrule = [
+          "blur, waybar"
+          "ignorezero, waybar"
+          "unset, swaync-control-center"
+          "unset, swaync-notification-window"
+          "blur, swaync-control-center"
+          "ignorezero, swaync-control-center"
+          "blur, swaync-notification-window"
+          "ignorezero, swaync-notification-window"
+          "noanim, swaync-notification-window"
+        ];
       };
 
       hyprlandConf = lib.thurs.toHyprconf {

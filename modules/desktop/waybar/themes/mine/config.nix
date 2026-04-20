@@ -7,113 +7,149 @@ _: {
       ...
     }:
     let
-      cfg = config.mine.desktop.waybar.theme.mine;
+      cfg = config.mine.desktop.waybar.theme.mine or { };
 
       sharedModules = {
-        "mpd" = {
-          format = "  {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{stateIcon} {artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ";
-          interval = "10";
-          state-icons = {
-            paused = "";
-            playing = "";
+        "mpris" = {
+          player = "Supersonic";
+          format = "{player_icon} {dynamic}";
+          format-paused = "{status_icon} <i>{dynamic}</i>";
+          dynamic-order = [
+            "artist"
+            "album"
+            "title"
+          ];
+          dynamic-len = 60;
+          player-icons = {
+            default = " ";
+            Supersonic = "󰝚 ";
           };
+          status-icons = {
+            paused = " ";
+            playing = " ";
+            stopped = " ";
+          };
+          on-click = "${lib.getExe pkgs.playerctl} --player=Supersonic play-pause";
+          on-click-right = "${lib.getExe pkgs.playerctl} --player=Supersonic next";
+          on-click-middle = "${lib.getExe pkgs.playerctl} --player=Supersonic previous";
+        };
+        "hyprland/workspaces" = {
+          format = "{name}"; # Strictly only the workspace name/number
+          active-only = false;
+          all-outputs = false;
+          show-special = false;
+          on-click = "activate";
         };
         "hyprland/window" = {
           all-outputs = false;
           max-length = 40;
         };
+        "custom/weather" = {
+          exec = "/run/current-system/sw/bin/waybar-weather";
+          return-type = "json";
+          interval = 900;
+          on-click = "/run/current-system/sw/bin/waybar-weather --current";
+          on-click-middle = "/run/current-system/sw/bin/waybar-weather --ha";
+          on-click-right = "/run/current-system/sw/bin/waybar-weather --forecast";
+        };
         "custom/notification" = {
           tooltip = false;
           format = "{icon}";
           format-icons = {
-            notification = " <span foreground='red'><sup></sup></span>";
-            none = "  ";
-            dnd-notification = "<span foreground='red'><sup></sup></span>";
-            dnd-none = "  ";
-            inhibited-notification = " <span foreground='red'><sup></sup></span>";
-            inhibited-none = "  ";
-            dnd-inhibited-notification = "  <span foreground='red'><sup></sup></span>";
-            dnd-inhibited-none = "   ";
+            none = "  ";
+            notification = "<span foreground='red'><sup></sup></span> ";
+            dnd-notification = " <span foreground='red'><sup></sup></span> ";
+            dnd-none = "  ";
+            inhibited-notification = " <span foreground='red'><sup></sup></span> ";
+            inhibited-none = "  ";
+            dnd-inhibited-notification = " <span foreground='red'><sup></sup></span> ";
+            dnd-inhibited-none = "  ";
           };
           return-type = "json";
-          exec-if = "which /run/current-system/sw/bin/swaync-client";
-          exec = "/run/current-system/sw/bin/swaync-client -swb";
-          on-click = "/run/current-system/sw/bin/swaync-client -t -sw";
-          on-click-right = "/run/current-system/sw/bin/swaync-client -d -sw";
+          exec-if = "which ${lib.getExe' pkgs.swaynotificationcenter "swaync-client"}";
+          exec = "${lib.getExe' pkgs.swaynotificationcenter "swaync-client"} -swb";
+          on-click = "${lib.getExe' pkgs.swaynotificationcenter "swaync-client"} -t -sw";
+          on-click-right = "${lib.getExe' pkgs.swaynotificationcenter "swaync-client"} -d -sw";
+          on-click-middle = "${lib.getExe' pkgs.swaynotificationcenter "swaync-client"} -C -sw";
           escape = true;
         };
-        "wireplumber" = {
-          scroll-step = "5";
-          format = "{icon}  {volume}%";
-          format-bluetooth = "{icon} {volume}% ";
-          format-bluetooth-muted = " {icon}";
+        "pulseaudio" = {
+          scroll-step = 5;
+          format = "{icon}   {volume}%";
+          format-bluetooth = "{icon} {volume}%  ";
+          format-bluetooth-muted = "   {icon}";
           format-muted = " {volume}%";
           format-icons = {
-            headphone = "";
-            hands-free = "";
-            headset = "";
-            phone = "";
-            portable = "";
-            car = "";
             default = [
               ""
               ""
               ""
             ];
           };
-          on-click = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0";
-          on-click-middle = "wpctl set-volume @DEFAULT_AUDIO_SINK@ .85";
+          on-click = "${lib.getExe' pkgs.wireplumber "wpctl"} set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          on-click-middle = "${lib.getExe' pkgs.wireplumber "wpctl"} set-volume @DEFAULT_AUDIO_SINK@ .85";
           on-click-right = "${lib.getExe pkgs.pavucontrol}";
         };
         "tray" = {
           icon-size = 17;
-          spacing = 5;
+          spacing = 6;
         };
         "cpu" = {
-          format = " {usage}%";
+          format = "  {usage}%";
           interval = 3;
         };
         "memory" = {
-          format = "  {}%";
+          format = "  {}%";
           interval = 10;
         };
-        "clock" = {
-          format = "{:%Y-%m-%d %I:%M:%S %p}";
+        "clock#time" = {
+          format = "{:%I:%M:%S %p }";
+          interval = 1;
+        };
+        "clock#date" = {
+          format = "{:%a %m-%d  }";
           interval = 1;
         };
         "network" = {
           interval = 5;
           interface = "enp5s0";
-          format = "    ↓{bandwidthDownBytes} ↑{bandwidthUpBytes}  ";
+          format = "↓{bandwidthDownBytes} ↑{bandwidthUpBytes}";
         };
       };
 
-      main = {
+      universalLayout = {
+        layer = "top";
+        position = "bottom";
+        exclusive = true;
+        passthrough = false;
+
+        modules-left = [
+          "hyprland/workspaces"
+          "clock#date"
+          "custom/weather"
+        ];
+        modules-center = [
+          "clock#time"
+          "custom/notification"
+        ];
+        modules-right = [
+          "mpris"
+          "pulseaudio"
+          "cpu"
+          "memory"
+          "network"
+          "tray"
+        ];
+      };
+
+      main = universalLayout // {
         name = "main";
         output = [
           "DP-2"
           "!DP-1"
           "!DP-3"
         ];
-        layer = "top";
-        position = "bottom";
-        modules-left = [
-          "hyprland/workspaces"
-          "hyprland/window"
-        ];
-        modules-center = [ "mpd" ];
-        modules-right = [
-          "network"
-          "cpu"
-          "memory"
-          "wireplumber"
-          "clock"
-          "custom/notification"
-          "tray"
-        ];
         "hyprland/workspaces" = {
-          active-only = false;
-          all-outputs = false;
           persistent-workspaces = {
             "DP-2" = [
               1
@@ -125,25 +161,14 @@ _: {
         };
       };
 
-      side = {
+      side = universalLayout // {
         name = "side";
         output = [
           "!DP-2"
           "!DP-1"
           "DP-3"
         ];
-        layer = "top";
-        position = "bottom";
-        modules-left = [ "hyprland/workspaces" ];
-        modules-center = [ ];
-        modules-right = [
-          "clock"
-          "custom/notification"
-          "tray"
-        ];
         "hyprland/workspaces" = {
-          active-only = false;
-          all-outputs = false;
           persistent-workspaces = {
             "DP-3" = [
               5
@@ -154,31 +179,14 @@ _: {
         };
       };
 
-      top = {
+      top = universalLayout // {
         name = "top";
         output = [
           "!DP-2"
           "DP-1"
           "!DP-3"
         ];
-        layer = "top";
-        position = "bottom";
-        modules-left = [
-          "hyprland/workspaces"
-          "network"
-        ];
-        modules-center = [ "mpd" ];
-        modules-right = [
-          "cpu"
-          "memory"
-          "wireplumber"
-          "clock"
-          "custom/notification"
-          "tray"
-        ];
         "hyprland/workspaces" = {
-          active-only = false;
-          all-outputs = false;
           persistent-workspaces = {
             "DP-1" = [
               8
@@ -197,10 +205,10 @@ _: {
 
     in
     {
-      config = lib.mkIf cfg.enable {
+      config = lib.mkIf (cfg.enable or false) {
         environment.etc = {
           "waybar/config".text = builtins.toJSON combinedConfig;
-          "waybar/style.css".text = builtins.readFile ../origincode/style.css;
+          "waybar/style.css".text = builtins.readFile ./style.css;
         };
       };
     };

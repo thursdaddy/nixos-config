@@ -8,6 +8,20 @@ _: {
     }:
     let
       cfg = config.mine.desktop.waybar;
+      inherit (config.mine.base) user;
+
+      waybar-weather = pkgs.writeShellApplication {
+        name = "waybar-weather";
+        runtimeInputs = with pkgs; [
+          curl
+          cacert
+          jq
+          libnotify
+          coreutils
+          gawk
+        ];
+        text = builtins.readFile ./scripts/weather.sh;
+      };
     in
     {
       options.mine.desktop.waybar = {
@@ -16,11 +30,14 @@ _: {
           description = "Lazy attribute set of Waybar themes.";
           default = { };
           type = lib.types.attrsOf (
-            lib.types.submodule ({
-              options = {
-                enable = lib.mkEnableOption "this waybar theme";
-              };
-            })
+            lib.types.submodule (
+              { name, ... }:
+              {
+                options = {
+                  enable = lib.mkEnableOption "this waybar theme";
+                };
+              }
+            )
           );
         };
       };
@@ -48,7 +65,27 @@ _: {
 
         environment.systemPackages = [
           pkgs.adwaita-icon-theme
+          waybar-weather
         ];
+
+        sops = {
+          secrets."hass/WAYBAR_TOKEN" = { };
+          secrets."hass/LONGITUDE" = { };
+          secrets."hass/LATITUDE" = { };
+          templates."waybar-hass.token" = {
+            owner = "${user.name}";
+            content = ''
+              ${config.sops.placeholder."hass/WAYBAR_TOKEN"}
+            '';
+          };
+          templates."waybar-geo.env" = {
+            owner = "${user.name}";
+            content = ''
+              LON=${config.sops.placeholder."hass/LONGITUDE"}
+              LAT=${config.sops.placeholder."hass/LATITUDE"}
+            '';
+          };
+        };
       };
     };
 }

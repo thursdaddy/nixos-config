@@ -1,0 +1,104 @@
+/* =========================================================
+   Nord Palette (Arctic Ice Studio) - Smoked Glass
+   ========================================================= */
+@define-color bg       rgba(46, 52, 64, 0.15);
+@define-color fg       #d8dee9; /* Snow Storm */
+@define-color blue     #88c0d0; /* Frost Blue */
+@define-color purple   #b48ead;
+@define-color green    #a3be8c;
+@define-color red      #bf616a;
+@define-color yellow   #ebcb8b;
+@define-color inactive #4c566a;
+
+/* =========================================================
+   Global Styling
+   ========================================================= */
+* {
+    font-family: "JetBrainsMono Nerd Font", sans-serif;
+    font-size: 13px;
+    font-weight: normal;
+    border: none;
+    border-radius: 0;
+}
+
+window#waybar {
+    background: @bg;
+    color: @fg;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.8);
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.modules-left, .modules-center, .modules-right {
+    margin-bottom: 0px;
+    padding: 2px 12px;
+    border-radius: 12px;
+}
+
+#workspaces, #clock.time, #clock.date, #network, #pulseaudio, #window, #tray, #cpu, #memory, #custom-notification, #mpris {
+    padding: 0 5px;
+}
+
+/* =========================================================
+   Workspaces & Clock (Unified Blue)
+   ========================================================= */
+#workspaces button {
+    padding: 0 8px;
+    color: @fg;
+    background: transparent;
+}
+
+#workspaces button.active {
+    color: @blue;
+    font-weight: bold;
+    text-shadow: 0px 0px 8px rgba(136, 192, 208, 0.6);
+}
+
+#clock.time {
+    color: #88c0d0;
+}
+
+#clock.date {
+    color: @green;
+}
+
+/* =========================================================
+   Module Colors & Logic
+   ========================================================= */
+#window { color: @fg; }
+
+/* CPU & Memory - Fixed to White (@fg) */
+#cpu, #memory { color: @purple; }
+
+#network { color: @green; }
+#mpris { color: @purple; }
+
+/* PulseAudio Logic - Blue (@blue) */
+#pulseaudio {
+    color: @blue;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#pulseaudio.muted {
+    color: @red;
+    text-shadow: 0px 0px 6px rgba(191, 97, 106, 0.5);
+}
+
+/* Notification Logic */
+#custom-notification { color: @fg; }
+#custom-notification.notification { color: @blue; }
+
+#custom-notification.dnd-notification,
+#custom-notification.dnd-none,
+#custom-notification.inhibited-notification,
+#custom-notification.inhibited-none {
+    color: @red;
+    text-shadow: 0px 0px 6px rgba(191, 97, 106, 0.5);
+}
+
+@keyframes blink {
+    0% { color: @red; }
+    50% { color: @fg; }
+    100% { color: @red; }
+}
