@@ -4,6 +4,7 @@ _: {
       config,
       lib,
       modulesPath,
+      pkgs,
       ...
     }:
     {
@@ -25,7 +26,7 @@ _: {
             "usb_storage"
             "sd_mod"
           ];
-          kernelModules = [ ];
+          kernelModules = [ "amdgpu" ];
           verbose = false;
           luks.devices = {
             "luks-rpool-nvme-CT2000P5PSSD8_22393B9712C0-part2".device =
@@ -33,12 +34,14 @@ _: {
           };
         };
         kernelModules = [ "kvm-amd" ];
+        kernelPackages = pkgs.linuxPackages_zen;
         kernelParams = [
           "quiet"
           "loglevel=3"
           "rd.systemd.show_status=false"
           "rd.udev.log_level=3"
           "udev.log_priority=3"
+          "amd_pstate=active"
         ];
         loader.grub = {
           enable = true;
@@ -72,7 +75,10 @@ _: {
         };
       };
 
-      hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+      hardware = {
+        cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+        enableRedistributableFirmware = true;
+      };
 
       nixpkgs.hostPlatform = "x86_64-linux";
       system.stateVersion = "24.11";

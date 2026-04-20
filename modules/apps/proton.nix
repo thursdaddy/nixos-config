@@ -3,7 +3,7 @@ _: {
     { lib, pkgs, ... }:
     {
       environment.systemPackages = with pkgs; [
-        unstable.protonvpn-gui
+        unstable.proton-vpn
         protonmail-desktop
       ];
 
