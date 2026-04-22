@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "audiobookshelf";
-      version = "2.33.1";
+      version = "2.33.2";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";

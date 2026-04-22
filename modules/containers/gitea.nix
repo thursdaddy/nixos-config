@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "gitea";
-      version = "1.25.5";
+      version = "1.26.0";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";

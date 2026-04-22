@@ -9,17 +9,31 @@
     }:
     let
       name = "mealie";
-      version = "3.15.1";
+      version = "3.16.0";
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
     in
     {
-      options.mine.containers.${name} = {
-        enable = lib.mkEnableOption "${name}";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = name;
+      options.mine.containers = {
+        ${name} = {
+          enable = lib.mkEnableOption "${name}";
+          subdomain = lib.mkOption {
+            description = "Container url";
+            type = lib.types.str;
+            default = name;
+          };
+        };
+        "${name}-addon" = {
+          enable = lib.mkOption {
+            description = "Enable Blocky";
+            type = lib.types.bool;
+            default = true;
+          };
+          subdomain = lib.mkOption {
+            description = "Container url";
+            type = lib.types.str;
+            default = "mealie-export";
+          };
         };
       };
 
@@ -84,6 +98,30 @@
             labels = {
               "enable.versions.check" = "false";
             };
+          };
+
+          "${name}-addons" = {
+            image = "ghcr.io/razziel89/mealie-addons:latest";
+            ports = [
+              "9001:9000"
+            ];
+            volumes = [
+              "mealie-data"
+            ];
+            environment = {
+              MA_LISTEN_INTERFACE = ":9000";
+              MA_RETRIEVAL_LIMIT = "5";
+              MA_TIMEOUT_SECS = "60";
+              MA_STARTUP_GRACE_SECS = "30";
+              MEALIE_BASE_URL = "http://${name}";
+              MEALIE_RETRIEVAL_URL = "http://${name}:9000";
+              MEALIE_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb25nX3Rva2VuIjp0cnVlLCJpZCI6ImQyNmRmODNmLTcxZGMtNDViNy1hZDg3LWE4MzZlZDY1NDQwMiIsIm5hbWUiOiJtZWFsaWUtYWRkb24iLCJpbnRlZ3JhdGlvbl9pZCI6ImdlbmVyaWMiLCJleHAiOjE5MzQwNDgxMzF9.LbW48S2VJklxKm64fbIhoikWj6uQhiVY4rY4ocssIGs";
+              GIN_MODE = "release";
+            };
+            extraOptions = [
+              "--network=traefik"
+              "--pull=always"
+            ];
           };
         };
 

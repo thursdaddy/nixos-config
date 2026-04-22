@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "open-webui";
-      version = "0.8.12";
+      version = "0.9.1";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";

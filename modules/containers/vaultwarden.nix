@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "vaultwarden";
-      version = "1.35.6";
+      version = "1.35.7";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";

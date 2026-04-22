@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "commafeed";
-      version = "7.0.0";
+      version = "7.1.0";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";

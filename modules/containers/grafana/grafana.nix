@@ -88,7 +88,7 @@ _: {
                 rm -rf ${config.mine.containers.settings.configPath}/grafana/backup
                 rsync -av --exclude='backup' ${config.mine.containers.settings.configPath}/grafana/data ${config.mine.containers.settings.configPath}/grafana/backup/
                 systemctl start docker-grafana
-                sleep 1
+                sleep 15
               '';
             };
           in
