@@ -104,6 +104,9 @@ _: {
               POSTGRES_DB = "attic";
               PGDATA = "/var/lib/postgresql/data/pgdata";
             };
+            labels = {
+              "enable.versions.check" = "false";
+            };
           };
         };
       };

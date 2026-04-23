@@ -58,8 +58,8 @@ _: {
               };
             };
           };
-          traefik = enabled;
           sleep-on-lan = enabled;
+          traefik = enabled;
         };
       };
     };
