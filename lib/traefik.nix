@@ -3,13 +3,25 @@
   mkTraefikFile =
     {
       name,
-      domain ? (
-        config.mine.services.traefik.rootDomainName or config.mine.containers.traefik.rootDomainName
-      ),
-      ip ? "127.0.0.1",
       port,
       config,
-    }:
+      ...
+    }@args:
+    let
+      domain =
+        args.domain
+          or (config.mine.services.traefik.rootDomainName or config.mine.containers.traefik.rootDomainName);
+
+      ip =
+        args.ip or (
+          if config.mine.services.traefik.enable or false then
+            "127.0.0.1"
+          else if config.mine.containers.traefik.enable or false then
+            "host.docker.internal"
+          else
+            "127.0.0.1"
+        );
+    in
     {
       name = "traefik/providers/${name}.toml";
       value = {

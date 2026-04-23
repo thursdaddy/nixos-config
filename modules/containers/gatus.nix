@@ -38,6 +38,16 @@
           type = lib.types.str;
           default = name;
         };
+        endpointsFile = lib.mkOption {
+          description = "endpoints.yaml file";
+          type = lib.types.path;
+          default = config.nixos-thurs.gatus.publicEndpoints;
+        };
+        gotifyUrl = lib.mkOption {
+          description = "server URL for gotify";
+          type = lib.types.str;
+          default = "http://gotify";
+        };
       };
 
       config = lib.mkIf cfg.enable {
@@ -50,7 +60,7 @@
           templates."alerting.yaml".content = ''
             alerting:
               gotify:
-                server-url: http://gotify
+                server-url: ${cfg.gotifyUrl}
                 token: ${config.sops.placeholder."gotify/token/GATUS"}
                 priority: 10
               discord:
@@ -79,7 +89,7 @@
           volumes = [
             "${gatus_config_yaml}:/config/config.yaml"
             "${config.sops.templates."alerting.yaml".path}:/config/alerting.yaml"
-            "${config.nixos-thurs.gatus.endpoints}:/config/endpoints.yaml"
+            "${cfg.endpointsFile}:/config/endpoints.yaml"
           ];
           labels = {
             "traefik.enable" = "true";
@@ -88,7 +98,6 @@
             "traefik.http.routers.${name}.entrypoints" = "websecure";
             "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
             "traefik.http.services.${name}.loadbalancer.server.port" = "8080";
-            "traefik.http.routers.${name}.middlewares" = "basic-auth";
             "org.opencontainers.image.version" = "${version}";
             "org.opencontainers.image.source" = "https://github.com/TwiN/gatus";
           };

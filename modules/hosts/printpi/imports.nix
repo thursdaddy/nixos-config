@@ -5,8 +5,9 @@
       with config.flake.modules.nixos;
       [
         base
-        services
+        containers
         octoprint
+        services
       ]
       ++ [
         inputs.nixos-hardware.nixosModules.raspberry-pi-4

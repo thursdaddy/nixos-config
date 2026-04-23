@@ -24,14 +24,16 @@ _: {
         };
 
         containers = {
-          gatus = enabled;
+          gatus = {
+            enable = true;
+            endpointsFile = config.nixos-thurs.gatus.privateEndpoints;
+          };
           gotify = enabled;
           seerr = enabled;
           traefik = {
             enable = true;
             rootDomainName = config.nixos-thurs.publicDomain;
             awsEnvKeys = false;
-            basicAuth = true;
           };
           vaultwarden = enabled;
         };

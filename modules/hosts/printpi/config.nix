@@ -19,9 +19,17 @@ _: {
           };
         };
 
+        containers = {
+          gatus = {
+            enable = true;
+            endpointsFile = config.nixos-thurs.gatus.publicEndpoints;
+            gotifyUrl = "https://gotify.${config.nixos-thurs.publicDomain}";
+          };
+          traefik = enabled;
+        };
+
         services = {
           backups = enabled;
-          traefik = enabled;
         };
       };
     };

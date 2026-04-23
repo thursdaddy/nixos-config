@@ -129,7 +129,6 @@ _: {
               inherit config;
               name = cfg.beszel-hub.subdomain;
               port = cfg.beszel-hub.port;
-              ip = "host.docker.internal";
             };
           in
           {
