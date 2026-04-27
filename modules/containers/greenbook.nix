@@ -51,9 +51,6 @@ _: {
             ports = [
               "8000"
             ];
-            volumes = [
-              "${config.mine.containers.settings.configPath}/greenbook/app:/app/data"
-            ];
             extraOptions = [
               "--network=traefik"
               "--pull=always"
@@ -106,10 +103,6 @@ _: {
               PGDATA = "/var/lib/postgresql/data/pgdata";
             };
             labels = {
-              "enable.versions.check" = "false";
-              "homelab.backup.enable" = "true";
-              "homelab.backup.path" = "${config.mine.containers.settings.configPath}/greenbook/db_dumps";
-              "homelab.backup.retention.period" = "5";
               "traefik.enable" = "true";
               "traefik.tcp.routers.${dbName}.tls" = "true";
               "traefik.tcp.routers.${dbName}.tls.certresolver" = "letsencrypt";
@@ -117,6 +110,10 @@ _: {
               "traefik.tcp.routers.${dbName}.rule" =
                 "HostSNI(`${dbName}.${config.mine.containers.traefik.rootDomainName}`)";
               "traefik.tcp.services.${dbName}.loadbalancer.server.port" = "5432";
+              "enable.versions.check" = "false";
+              "homelab.backup.enable" = "true";
+              "homelab.backup.path" = "${config.mine.containers.settings.configPath}/greenbook/db_dumps";
+              "homelab.backup.retention.period" = "5";
             };
           };
 
