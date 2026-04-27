@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "gitea";
-      version = "1.26.0";
+      version = "1.26-nightly";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
@@ -33,6 +33,7 @@ _: {
             ];
             volumes = [
               "${config.mine.containers.settings.configPath}/gitea/web:/data"
+              "${config.mine.containers.settings.configPath}/gitea/backup:/backup"
             ];
             environment = {
               USER_UID = "1000";
@@ -57,6 +58,9 @@ _: {
               "traefik.http.routers.${name}.entrypoints" = "websecure";
               "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
               "traefik.http.services.${name}.loadbalancer.server.port" = "3000";
+              "homelab.backup.enable" = "true";
+              "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}/backup";
+              "homelab.backup.retention.period" = "5";
             };
           };
           "${name}-db" = {
@@ -95,15 +99,38 @@ _: {
           };
         };
 
+        systemd =
+          let
+            backup = lib.thurs.mkBackupService ({
+              inherit pkgs name;
+              extraPackages = [
+                pkgs.docker-client
+              ];
+              preStart = ''
+                find ${config.mine.containers.settings.configPath}/gitea/backup -type f -iname "gitea-dump*" -delete
+                docker exec -u git -w /backup gitea /app/gitea/gitea dump --skip-package-data -c /data/gitea/conf/app.ini
+              '';
+            });
+          in
+          {
+            services."backup-${name}" = backup.service;
+            timers."backup-${name}" = backup.timer;
+          };
+
         environment.etc =
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
               serviceName = "docker-${name}";
             };
+            alloyJournalBackup = lib.thurs.mkAlloyJournal {
+              name = "backup-${name}";
+              serviceName = "backup-${name}";
+            };
           in
           {
             "${alloyJournal.name}" = alloyJournal.value;
+            "${alloyJournalBackup.name}" = alloyJournalBackup.value;
           };
       };
     };
