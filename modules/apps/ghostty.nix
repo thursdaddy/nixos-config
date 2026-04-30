@@ -32,6 +32,8 @@ _: {
         font-feature = -liga
         font-feature = -calt
         font-feature = -dlig
+
+        copy-on-select = true
       '';
     in
     {

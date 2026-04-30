@@ -55,7 +55,21 @@ _: {
               }
 
               set -g default-command "${pkgs.fish}/bin/fish"
-            '';
+            ''
+            + (
+              if pkgs.stdenv.isLinux then
+                ''
+                  bind-key -T copy-mode-vi 'y' send -X copy-pipe-and-cancel "${pkgs.wl-clipboard}/bin/wl-copy"
+                  bind-key -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel "${pkgs.wl-clipboard}/bin/wl-copy"
+                ''
+              else if pkgs.stdenv.isDarwin then
+                ''
+                  bind-key -T copy-mode-vi 'y' send -X copy-pipe-and-cancel "pbcopy"
+                  bind-key -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel "pbcopy"
+                ''
+              else
+                ""
+            );
         };
       };
     };
