@@ -56,11 +56,17 @@ window#swaync-notification-window,
     color: @fg;
 }
 
-/* =========================================================
-   FIXED: Grouped Notifications (Title BG & Rounded Cards)
-   ========================================================= */
+.notification-content .summary,
+.notification-content .time,
+.notification-content .body {
+    margin-left: 15px;
+}
 
-/* 1. Ensure the container and header boxes match the Control Center BG */
+.body-image {
+    margin-top: 10px;
+    border-radius: 8px;
+}
+
 .notification-group,
 .notification-group box,
 .notification-group-header,
@@ -74,7 +80,6 @@ window#swaync-notification-window,
     box-shadow: none;
 }
 
-/* 2. Specific Title Styling (notify-send) */
 .notification-group-header label {
     color: @blue;
     font-size: 1.25rem;
@@ -83,7 +88,6 @@ window#swaync-notification-window,
     background-color: transparent;
 }
 
-/* 3. Restore the rounded message boxes INSIDE the group */
 .notification-group .notification-background {
     background-color: @card_bg;
     margin: 6px 10px;
@@ -91,7 +95,6 @@ window#swaync-notification-window,
     border: 1px solid rgba(136, 192, 208, 0.1);
 }
 
-/* 4. Cleanup buttons */
 .close-button,
 .collapse-button {
     background-color: transparent;

@@ -12,8 +12,8 @@ _: {
       sharedModules = {
         "mpris" = {
           player = "Supersonic";
-          format = "{player_icon} {dynamic}";
-          format-paused = "{status_icon} <i>{dynamic}</i>";
+          format = "  {player_icon} {dynamic}";
+          format-paused = "  {status_icon} <i>{dynamic}</i>";
           dynamic-order = [
             "artist"
             "album"
@@ -94,12 +94,21 @@ _: {
           icon-size = 17;
           spacing = 6;
         };
+        "temperature" = {
+          thermal-zone = 2;
+          hwmon-path = "/sys/class/hwmon/hwmon2/temp1_input";
+          critical-threshold = 70;
+          warning-threshold = 60;
+          format-critical = "{temperatureC}°C  ";
+          format-warning = "{temperatureC}°C  ";
+          format = "{temperatureC}°C  ";
+        };
         "cpu" = {
-          format = "  {usage}%";
+          format = "  {usage}% ";
           interval = 3;
         };
         "memory" = {
-          format = "  {}%";
+          format = "  {}% ";
           interval = 10;
         };
         "clock#time" = {
@@ -127,15 +136,16 @@ _: {
           "hyprland/workspaces"
           "clock#date"
           "custom/weather"
+          "mpris"
         ];
         modules-center = [
           "clock#time"
           "custom/notification"
         ];
         modules-right = [
-          "mpris"
           "pulseaudio"
           "cpu"
+          "temperature"
           "memory"
           "network"
           "tray"

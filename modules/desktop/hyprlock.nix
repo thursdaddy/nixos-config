@@ -81,7 +81,7 @@
         environment = {
           etc."${etcDir}".text = hyprlockConf;
           systemPackages = [
-            pkgs.hyprlock
+            pkgs.unstable.hyprlock
           ];
         };
 

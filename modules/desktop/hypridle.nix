@@ -73,7 +73,7 @@
         environment = {
           etc."${etcPath}".text = hypridleConf;
           systemPackages = [
-            pkgs.hypridle
+            pkgs.unstable.hypridle
           ];
         };
 

@@ -28,6 +28,7 @@ _: {
 
       environment.etc = {
         "xdg/swaync/style.css".source = ./style.css;
+
         "xdg/swaync/config.json".text = builtins.toJSON {
           "$schema" = "${pkgs.swaynotificationcenter}/etc/xdg/swaync/config.schema.json";
           "positionX" = "center";
@@ -39,6 +40,9 @@ _: {
           "control-center-height" = 500;
           "control-center-margin-top" = 15;
           "notification-window-width" = 400;
+          "notification-icon-size" = 36;
+          "notification-body-image-height" = 100;
+          "notification-body-image-width" = 200;
           "fit-empty-params" = true;
           "hide-on-clear" = false;
           "timeout" = 10;
@@ -64,6 +68,5 @@ _: {
           };
         };
       };
-
     };
 }

@@ -35,7 +35,7 @@ window#waybar {
     border-radius: 12px;
 }
 
-#workspaces, #clock.time, #clock.date, #network, #pulseaudio, #window, #tray, #cpu, #memory, #custom-notification, #mpris {
+#workspaces, #clock.time, #clock.date, #network, #pulseaudio, #window, #tray, #cpu, #memory, #temperature, #custom-notification, #mpris {
     padding: 0 5px;
 }
 
@@ -69,6 +69,19 @@ window#waybar {
 
 /* CPU & Memory - Fixed to White (@fg) */
 #cpu, #memory { color: @purple; }
+
+#temperature {
+    color: @purple; /* Default state */
+}
+
+#temperature.warning {
+    color: @yellow; /* Above 60°C */
+}
+
+#temperature.critical {
+    color: @red;    /* Above 70°C */
+    text-shadow: 0px 0px 6px rgba(191, 97, 106, 0.5); /* Matching your muted/dnd style */
+}
 
 #network { color: @green; }
 #mpris { color: @purple; }
