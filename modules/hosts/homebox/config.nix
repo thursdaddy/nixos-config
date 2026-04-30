@@ -37,6 +37,10 @@ _: {
 
         services = {
           backups = enabled;
+          docker = {
+            enable = true;
+            autoPrune = false;
+          };
           gitea-runner = {
             enable = true;
             runners = {

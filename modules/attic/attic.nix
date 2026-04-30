@@ -72,42 +72,29 @@ _: {
 
       networking.firewall.allowedTCPPorts = [ 5454 ];
 
-      virtualisation = {
-        docker = {
-          enable = true;
-          autoPrune = {
-            enable = true;
-            dates = "daily";
-            flags = [ "--all" ];
-          };
+      virtualisation.oci-containers.containers.attic-db = {
+        image = "postgres:17.6-alpine";
+        hostname = "attic-db";
+        ports = [
+          "0.0.0.0:54545:5432"
+        ];
+        volumes = [
+          "/opt/configs/attic/db:/var/lib/postgresql/data"
+        ];
+        extraOptions = [
+          "--network=traefik"
+          "--pull=always"
+        ];
+        environmentFiles = [
+          config.sops.templates."attic-db".path
+        ];
+        environment = {
+          POSTGRES_USER = "attic";
+          POSTGRES_DB = "attic";
+          PGDATA = "/var/lib/postgresql/data/pgdata";
         };
-        oci-containers = {
-          backend = "docker";
-          containers.attic-db = {
-            image = "postgres:17.6-alpine";
-            hostname = "attic-db";
-            ports = [
-              "0.0.0.0:54545:5432"
-            ];
-            volumes = [
-              "/opt/configs/attic/db:/var/lib/postgresql/data"
-            ];
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
-            ];
-            environmentFiles = [
-              config.sops.templates."attic-db".path
-            ];
-            environment = {
-              POSTGRES_USER = "attic";
-              POSTGRES_DB = "attic";
-              PGDATA = "/var/lib/postgresql/data/pgdata";
-            };
-            labels = {
-              "enable.versions.check" = "false";
-            };
-          };
+        labels = {
+          "enable.versions.check" = "false";
         };
       };
 

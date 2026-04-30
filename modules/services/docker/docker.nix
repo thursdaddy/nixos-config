@@ -15,6 +15,11 @@
     {
       options.mine.services.docker = {
         enable = lib.mkEnableOption "Enable Docker";
+        autoPrune = lib.mkOption {
+          description = "Enable autoPrune";
+          type = lib.types.bool;
+          default = true;
+        };
         scripts = lib.mkOption {
           default = { };
           description = "Docker related scripts";
@@ -37,7 +42,7 @@
               oci-containers.backend = "docker";
               docker = {
                 enable = true;
-                autoPrune = {
+                autoPrune = lib.mkIf cfg.autoPrune {
                   enable = true;
                   dates = "daily";
                   flags = [ "--all" ];
