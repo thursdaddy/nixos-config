@@ -41,7 +41,7 @@
 
         environment.systemPackages = with pkgs; [
           esptool
-          wakelan
+          wakeonlan
         ];
 
         services = {

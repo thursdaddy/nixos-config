@@ -258,7 +258,7 @@
 
           ${octoStream} = {
             serviceConfig = {
-              ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video0 --resolution=1920x1080 --desired-fps=60 --format=MJPEG --host=127.0.0.1 --port=${octoStreamCfg.port} --encoder=hw --workers=3 --persistent";
+              ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video0 --resolution=1920x1080 --desired-fps=60 --format=MJPEG --host=0.0.0.0 --port=${octoStreamCfg.port} --encoder=hw --workers=3 --persistent";
             };
             wantedBy = [ "multi-user.target" ];
             after = [ "network-online.target" ];
@@ -267,7 +267,7 @@
 
           ${cabinetStream} = {
             serviceConfig = {
-              ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video2 --resolution=1920x1080 --desired-fps=15 --format=MJPEG --host=127.0.0.1 --port=${cabinetStreamCfg.port} --encoder=hw --workers=3 --persistent";
+              ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video2 --resolution=1920x1080 --desired-fps=15 --format=MJPEG --host=0.0.0.0 --port=${cabinetStreamCfg.port} --encoder=hw --workers=3 --persistent";
             };
             wantedBy = [ "multi-user.target" ];
             after = [ "network-online.target" ];
@@ -319,6 +319,13 @@
           "video"
         ];
 
+        networking.firewall = {
+          allowedTCPPorts = [
+            8080
+            9090
+          ];
+        };
+
         environment.systemPackages = with pkgs; [
           ffmpeg
           v4l-utils # camera control
@@ -338,11 +345,13 @@
               inherit config;
               name = octoStreamCfg.subdomain;
               port = octoStreamCfg.port;
+              ip = "0.0.0.0";
             };
             traefikCabinetStream = lib.thurs.mkTraefikFile {
               inherit config;
               name = cabinetStreamCfg.subdomain;
               port = cabinetStreamCfg.port;
+              ip = "0.0.0.0";
             };
           in
           builtins.listToAttrs [

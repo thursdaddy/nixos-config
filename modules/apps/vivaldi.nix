@@ -3,7 +3,8 @@ _: {
     { pkgs, ... }:
     {
       environment.systemPackages = [
-        pkgs.unstable.vivaldi
+        pkgs.vivaldi
+        pkgs.vivaldi-ffmpeg-codecs
       ];
     };
 

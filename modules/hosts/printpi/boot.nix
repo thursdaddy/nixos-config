@@ -12,6 +12,9 @@ _: {
             "nfs"
           ];
         };
+        kernel.sysctl = {
+          "vm.mmap_rnd_bits" = 24;
+        };
         kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
         loader = {
           grub.enable = false;
