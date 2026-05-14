@@ -5,13 +5,13 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 1 * * 6'
+    - cron: "0 1 * * 6"
   workflow_dispatch:
 
 jobs:
   nix-build:
     name: Check Flake.lock
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:

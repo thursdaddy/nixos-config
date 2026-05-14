@@ -48,7 +48,7 @@ _: {
             labels =
               [ ]
               ++ lib.optionals pkgs.stdenv.hostPlatform.isx86_64 [
-                "ubuntu-act:docker://catthehacker/ubuntu:act-latest"
+                "ubuntu-latest:docker://catthehacker/ubuntu:act-latest"
                 "thurs-act:docker://gitea.thurs.pw/docker/ubuntu-act:latest"
                 "nix-runner:docker://gitea.thurs.pw/docker/nix-runner:latest"
               ]
