@@ -9,13 +9,17 @@
     }:
     let
       name = "gatus";
-      version = "5.35.0";
+      version = "5.36.0";
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
 
       gatus_config_yaml = pkgs.writeTextFile {
         name = "config.yaml";
         text = ''
+          metrics: true
+          storage:
+            type: sqlite
+            path: /data/history.db
           client:
             insecure: false
             ignore-redirect: false
@@ -59,6 +63,25 @@
           };
           templates."alerting.yaml".content = ''
             alerting:
+              custom:
+                url: "${cfg.gotifyUrl}/message?token=${config.sops.placeholder."gotify/token/GATUS"}"
+                method: "POST"
+                headers:
+                  Content-Type: "application/json"
+                body: |
+                  {
+                    "message": "[RESULT_CONDITIONS]\n\n**URL:** [ENDPOINT_URL]\n\n**Group:** [ENDPOINT_GROUP]",
+                    "extras": {
+                      "client::display": {
+                        "contentType": "text/markdown"
+                      }
+                    },
+                    [ALERT_TRIGGERED_OR_RESOLVED] [ENDPOINT_URL]"
+                  }
+                placeholders:
+                  ALERT_TRIGGERED_OR_RESOLVED:
+                    TRIGGERED: '"priority": 8, "title": "‼️ DOWN:'
+                    RESOLVED: '"priority": 4, "title": "✅ UP:'
               gotify:
                 server-url: ${cfg.gotifyUrl}
                 token: ${config.sops.placeholder."gotify/token/GATUS"}
@@ -90,6 +113,7 @@
             "${gatus_config_yaml}:/config/config.yaml"
             "${config.sops.templates."alerting.yaml".path}:/config/alerting.yaml"
             "${cfg.endpointsFile}:/config/endpoints.yaml"
+            "${config.mine.containers.settings.configPath}/${name}:/data"
           ];
           labels = {
             "traefik.enable" = "true";
