@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "traefik";
-      version = "3.7.0";
+      version = "3.7.1";
       rootDomainName = config.mine.containers.traefik.rootDomainName;
       fqdn = "${cfg.subdomain}.${rootDomainName}";
       cfg = config.mine.containers.${name};

@@ -4,6 +4,7 @@ _: {
     let
       name = "thelounge";
       cfg = config.mine.containers.${name};
+      version = "4.5.0";
 
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
     in
@@ -19,7 +20,7 @@ _: {
 
       config = lib.mkIf cfg.enable {
         virtualisation.oci-containers.containers."${name}" = {
-          image = "thelounge/thelounge:latest";
+          image = "thelounge/thelounge:${version}";
           ports = [
             "9000"
           ];

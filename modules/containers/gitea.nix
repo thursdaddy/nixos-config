@@ -42,7 +42,7 @@ _: {
               GITEA__database__HOST = "gitea-db:5432";
               GITEA__database__NAME = "gitea";
               GITEA__database__USER = "gitea";
-              GITEA__migrations__ALLOWED_DOMAINS = "git.thurs.pw, github.com";
+              GITEA__migrations__ALLOWED_DOMAINS = "git.thurs.pw, github.com, api.github.com";
             };
             environmentFiles = [
               config.sops.templates."gitea-web".path
@@ -61,6 +61,8 @@ _: {
               "homelab.backup.enable" = "true";
               "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}/backup";
               "homelab.backup.retention.period" = "5";
+              "org.opencontainers.image.version" = "${version}";
+              "org.opencontainers.image.source" = "https://github.com/go-gitea/gitea";
             };
           };
           "${name}-db" = {
