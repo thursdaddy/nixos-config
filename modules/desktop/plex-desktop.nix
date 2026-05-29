@@ -10,6 +10,7 @@ _: {
 
       environment.systemPackages = with pkgs; [
         plex-desktop
+        feishin
       ];
     };
 }

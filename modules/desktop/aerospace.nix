@@ -21,6 +21,7 @@ _: {
               layout = "bsp";
               auto_balance = "on";
               window_placement = "second_child";
+              on-focused-monitor-changed = [ "move-mouse monitor-lazy-center" ];
 
               # window border
               window_border = "on";

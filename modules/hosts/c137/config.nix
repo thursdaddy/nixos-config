@@ -10,6 +10,11 @@ _: {
       inherit (config.mine.base) user;
     in
     {
+
+      # networking.firewall.allowedTCPPorts = [
+      #   9999
+      # ];
+
       mine = {
         base = {
           bluetooth = enabled;
