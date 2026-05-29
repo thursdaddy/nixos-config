@@ -14,7 +14,7 @@
         description = "Backups for ${name}";
         environment = extraEnv;
         path = extraPackages;
-        onFailure = [ "gotify-backup-failure@%N.service" ];
+        onFailure = [ "gotify-failure@%N.service" ];
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${lib.getExe pkgs.homelab-backup} --backup --name ${name} --json";

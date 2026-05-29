@@ -56,7 +56,7 @@
         };
 
         systemd = {
-          services."gotify-backup-failure@" = {
+          services."gotify-failure@" = {
             description = "Runs when a service fails.";
             serviceConfig = {
               Type = "oneshot";
