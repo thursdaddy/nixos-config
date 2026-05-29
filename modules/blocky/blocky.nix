@@ -27,6 +27,7 @@
         "netpi1"
         "netpi2"
         "printpi"
+        "streambox"
       ];
 
       # Only crawl hosts that are in the list AND have a config defined
@@ -49,8 +50,6 @@
             else
               mineCfg.containers.traefik.rootDomainName or "thurs.pw";
 
-          hostIp = mineCfg.base.networking.meta.hostIp or "192.168.10.1";
-
           getMappings =
             attrs:
             let
@@ -63,8 +62,15 @@
               let
                 sub = v.subdomain or n;
                 fqdn = "${sub}.${rootDomain}";
+
+                tailscaleEntrypoint = v.tailscaleEntrypoint or false;
+                dynamicIp =
+                  if tailscaleEntrypoint then
+                    mineCfg.base.networking.meta.tailscaleIp or "100.100.0.0"
+                  else
+                    mineCfg.base.networking.meta.hostIp or "192.168.0.0";
               in
-              lib.nameValuePair fqdn hostIp
+              lib.nameValuePair fqdn dynamicIp
             ) enabled;
 
         in
@@ -192,17 +198,16 @@
                   filterUnmappedTypes = true;
                   mapping = {
                     "attic.thurs.pw" = "192.168.10.60";
-                    "bazarr.thurs.pw" = "192.168.10.12";
+                    "jellyfin.${config.nixos-thurs.publicDomain}" = "192.168.10.189";
                     "cloudbox.thurs.pw" = "100.71.122.112";
+                    # borrowbox entries
+                    "bazarr.thurs.pw" = "192.168.10.12";
                     "deemix.thurs.pw" = "192.168.10.12";
-                    "jellyfin.thurs.pw" = "192.168.10.189";
                     "lidarr.thurs.pw" = "192.168.10.12";
-                    "plex.thurs.pw" = "192.168.10.189";
                     "radarr.thurs.pw" = "192.168.10.12";
                     "readarr.thurs.pw" = "192.168.10.12";
                     "sabnzbd.thurs.pw" = "192.168.10.12";
                     "sonarr.thurs.pw" = "192.168.10.12";
-                    "tautulli.thurs.pw" = "192.168.10.189";
                   };
                 };
               };

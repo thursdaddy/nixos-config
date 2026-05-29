@@ -7,8 +7,8 @@ _: {
       ...
     }:
     let
-      name = "gotify";
-      version = "2.9.1";
+      name = "plex";
+      version = "1.43.2";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
@@ -19,12 +19,7 @@ _: {
         subdomain = lib.mkOption {
           description = "Container url";
           type = lib.types.str;
-          default = name;
-        };
-        tailscaleEntrypoint = lib.mkOption {
-          description = "Set traefik entrypoint to tailscale Ip";
-          type = lib.types.bool;
-          default = true;
+          default = "${name}";
         };
       };
 
@@ -34,37 +29,46 @@ _: {
             networks = [ "traefik-${name}" ];
           };
           "${name}" = {
-            image = "gotify/server:${version}";
+            image = "lscr.io/linuxserver/${name}:${version}";
             pull = "always";
-            hostname = name;
-            networks = [ "traefik-${name}" ];
-            ports = [
-              "80"
+            networks = [
+              "${name}"
+              "traefik-${name}"
             ];
-            volumes = [
-              "${config.mine.containers.settings.configPath}/gotify:/app/data/"
+            ports = [
+              "32400:32400"
+              "5353:5353/udp"
+              "8324:8324"
+              "32410:32410/udp"
+              "32412:32412/udp"
+              "32413:32413/udp"
+              "32414:32414/udp"
+              "32469:32469"
             ];
             environment = {
+              PUID = "1000";
+              PGID = "1000";
               TZ = config.time.timeZone;
-              GOTIFY_DATABASE_DIALECT = "sqlite3";
-              GOTIFY_DATABASE_CONNECTION = "data/gotify.db";
-              GOTIFY_DEFAULTUSER_NAME = "admin";
-              GOTIFY_DEFAULTUSER_PASS = "admin"; # only valid during first startup
-              GOTIFY_PASSSTRENGTH = "15";
-              GOTIFY_UPLOADEDIMAGESDIR = "data/images";
-              GOTIFY_PLUGINSDIR = "data/plugins";
-              GOTIFY_REGISTRATION = "false";
+              VERSION = "docker";
             };
+            devices = [
+              "/dev/dri:/dev/dri"
+            ];
+            volumes = [
+              "${config.mine.containers.settings.configPath}/${name}:/config"
+              "/media/shows:/media/shows"
+              "/media/movies:/media/movies"
+              "/media/youtube:/media/youtube"
+              "/fast/music:/media/music"
+            ];
             labels = {
               "traefik.enable" = "true";
               "traefik.docker.network" = "traefik-${name}";
               "traefik.http.routers.${name}.tls" = "true";
               "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "tailscale";
+              "traefik.http.routers.${name}.entrypoints" = "websecure";
               "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "80";
-              "org.opencontainers.image.version" = "${version}";
-              "org.opencontainers.image.source" = "https://github.com/gotify/server";
+              "traefik.http.services.${name}.loadbalancer.server.port" = "32400";
             };
           };
         };
@@ -83,13 +87,31 @@ _: {
               ];
             };
           };
-          docker-traefik = {
+          "docker-traefik" = {
             after = [ "init-docker-network-${name}.service" ];
             requires = [ "init-docker-network-${name}.service" ];
           };
           "docker-${name}" = {
             after = [ "init-docker-network-${name}.service" ];
             requires = [ "init-docker-network-${name}.service" ];
+          };
+        };
+
+        mine.base.nfs-mounts = {
+          enable = true;
+          mounts = {
+            "/media/shows" = {
+              device = "192.168.10.12:/media/shows";
+            };
+            "/media/movies" = {
+              device = "192.168.10.12:/media/movies";
+            };
+            "/media/music" = {
+              device = "192.168.10.12:/fast/music";
+            };
+            "/media/youtube" = {
+              device = "192.168.10.12:/media/youtube";
+            };
           };
         };
 

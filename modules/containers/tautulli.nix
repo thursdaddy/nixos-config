@@ -7,14 +7,14 @@ _: {
       ...
     }:
     let
-      name = "gotify";
-      version = "2.9.1";
+      name = "tautulli";
+      version = "2.17.1";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
     in
     {
-      options.mine.containers."${name}" = {
+      options.mine.containers.${name} = {
         enable = lib.mkEnableOption "${name}";
         subdomain = lib.mkOption {
           description = "Container url";
@@ -34,27 +34,24 @@ _: {
             networks = [ "traefik-${name}" ];
           };
           "${name}" = {
-            image = "gotify/server:${version}";
+            image = "lscr.io/linuxserver/${name}:${version}";
             pull = "always";
-            hostname = name;
-            networks = [ "traefik-${name}" ];
-            ports = [
-              "80"
+            hostname = "${name}";
+            networks = [
+              "${name}"
+              "traefik-${name}"
+              "plex"
             ];
-            volumes = [
-              "${config.mine.containers.settings.configPath}/gotify:/app/data/"
-            ];
+            ports = [ "8181" ];
             environment = {
               TZ = config.time.timeZone;
-              GOTIFY_DATABASE_DIALECT = "sqlite3";
-              GOTIFY_DATABASE_CONNECTION = "data/gotify.db";
-              GOTIFY_DEFAULTUSER_NAME = "admin";
-              GOTIFY_DEFAULTUSER_PASS = "admin"; # only valid during first startup
-              GOTIFY_PASSSTRENGTH = "15";
-              GOTIFY_UPLOADEDIMAGESDIR = "data/images";
-              GOTIFY_PLUGINSDIR = "data/plugins";
-              GOTIFY_REGISTRATION = "false";
+              PGID = "1000";
+              PUID = "1000";
             };
+            volumes = [
+              "${config.mine.containers.settings.configPath}/${name}:/config"
+              "${config.mine.containers.settings.configPath}/plex/Library/Application Support/Plex Media Server/Logs:/logs:ro"
+            ];
             labels = {
               "traefik.enable" = "true";
               "traefik.docker.network" = "traefik-${name}";
@@ -62,9 +59,9 @@ _: {
               "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
               "traefik.http.routers.${name}.entrypoints" = "tailscale";
               "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "80";
+              "traefik.http.services.${name}.loadbalancer.server.port" = "8181";
               "org.opencontainers.image.version" = "${version}";
-              "org.opencontainers.image.source" = "https://github.com/gotify/server";
+              "org.opencontainers.image.source" = "https://github.com/TwiN/tautulli";
             };
           };
         };
@@ -83,7 +80,7 @@ _: {
               ];
             };
           };
-          docker-traefik = {
+          "docker-traefik" = {
             after = [ "init-docker-network-${name}.service" ];
             requires = [ "init-docker-network-${name}.service" ];
           };

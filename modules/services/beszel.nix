@@ -17,25 +17,26 @@ _: {
           type = lib.types.submodule {
             options = {
               enable = lib.mkEnableOption "Beszel Hub";
-
               subdomain = lib.mkOption {
                 description = "Container url, used by blocky to create DNS entry";
                 type = lib.types.str;
                 default = "monitor";
               };
-
+              tailscaleEntrypoint = lib.mkOption {
+                description = "Set traefik entrypoint to tailscale Ip";
+                type = lib.types.bool;
+                default = true;
+              };
               dataDir = lib.mkOption {
                 type = lib.types.path;
                 default = "/opt/configs/beszel-hub";
                 description = "Path for stored data.";
               };
-
               listenAddress = lib.mkOption {
                 type = lib.types.str;
                 default = "0.0.0.0";
                 description = "Address for the webserver.";
               };
-
               port = lib.mkOption {
                 type = lib.types.port;
                 default = 8890;
@@ -55,7 +56,6 @@ _: {
                 default = true;
                 description = "Enable beszel agent";
               };
-
               port = lib.mkOption {
                 type = lib.types.port;
                 default = 45876;
@@ -66,74 +66,79 @@ _: {
         };
       };
 
-      config = lib.mkIf (cfg.beszel-hub.enable || cfg.beszel-agent.enable) {
-        environment.systemPackages = with pkgs; [
-          unstable.beszel
-        ];
+      config = lib.mkMerge [
+        (lib.mkIf (cfg.beszel-hub.enable || cfg.beszel-agent.enable) {
+          environment.systemPackages = with pkgs; [
+            unstable.beszel
+          ];
+        })
 
-        systemd.services.beszel-hub = lib.mkIf cfg.beszel-hub.enable {
-          description = "Beszel-Hub";
-          wantedBy = [ "multi-user.target" ]; # Standard for services
-          after = [ "network-online.target" ];
-          wants = [ "network-online.target" ];
-          environment = {
-            APP_URL = "https://monitor.thurs.pw";
-          };
-          serviceConfig = {
-            ExecStart = "${pkgs.unstable.beszel}/bin/beszel-hub serve --http ${cfg.beszel-hub.listenAddress}:${builtins.toString cfg.beszel-hub.port} --dir ${cfg.beszel-hub.dataDir}";
-            Type = "simple";
-            Restart = "always";
-            RestartSec = "5s";
-          };
-        };
+        (lib.mkIf cfg.beszel-hub.enable (
+          lib.mkMerge [
+            {
+              systemd.services.beszel-hub = {
+                description = "Beszel-Hub";
+                wantedBy = [ "multi-user.target" ]; # Standard for services
+                after = [ "network-online.target" ];
+                wants = [ "network-online.target" ];
+                environment = {
+                  APP_URL = "https://monitor.thurs.pw";
+                };
+                serviceConfig = {
+                  ExecStart = "${pkgs.unstable.beszel}/bin/beszel-hub serve --http ${cfg.beszel-hub.listenAddress}:${builtins.toString cfg.beszel-hub.port} --dir ${cfg.beszel-hub.dataDir}";
+                  Type = "simple";
+                  Restart = "always";
+                  RestartSec = "5s";
+                };
+              };
+            }
 
-        systemd.services.beszel-agent = lib.mkIf cfg.beszel-agent.enable {
-          description = "Beszel-Agent";
-          wantedBy = [ "multi-user.target" ];
-          after = [ "network-online.target" ];
-          wants = [ "network-online.target" ];
-          environment = {
-            PORT = "${builtins.toString cfg.beszel-agent.port}";
-            HUB_URL = "https://monitor.thurs.pw";
-          };
-          serviceConfig = {
-            EnvironmentFile = config.sops.templates."beszel-hub-pub-key".path;
-            ExecStart = "${pkgs.unstable.beszel}/bin/beszel-agent";
-            Type = "simple";
-            Restart = "always";
-            RestartSec = "5s";
-            X-Restart-Triggers = [
-              config.sops.templates."beszel-hub-pub-key".path
-            ];
-          };
-        };
-
-        networking.firewall.allowedTCPPorts = [
-          (lib.mkIf cfg.beszel-agent.enable cfg.beszel-hub.port)
-        ];
-
-        sops = {
-          secrets = {
-            "beszel/HUB_PUB_KEY" = { };
-            "beszel/TOKEN" = { };
-          };
-          templates."beszel-hub-pub-key".content = ''
-            KEY=${config.sops.placeholder."beszel/HUB_PUB_KEY"}
-            TOKEN=${config.sops.placeholder."beszel/TOKEN"}
-          '';
-        };
-
-        environment.etc =
-          let
-            traefik = lib.thurs.mkTraefikFile {
+            (lib.thurs.mkTraefikConfig {
               inherit config;
               name = cfg.beszel-hub.subdomain;
               port = cfg.beszel-hub.port;
+              tailscale = true;
+            })
+          ]
+        ))
+
+        (lib.mkIf cfg.beszel-agent.enable {
+          systemd.services.beszel-agent = {
+            description = "Beszel-Agent";
+            wantedBy = [ "multi-user.target" ];
+            after = [ "network-online.target" ];
+            wants = [ "network-online.target" ];
+            environment = {
+              PORT = "${builtins.toString cfg.beszel-agent.port}";
+              HUB_URL = "https://monitor.thurs.pw";
             };
-          in
-          {
-            "${traefik.name}" = lib.mkIf cfg.beszel-hub.enable traefik.value;
+            serviceConfig = {
+              EnvironmentFile = config.sops.templates."beszel-hub-pub-key".path;
+              ExecStart = "${pkgs.unstable.beszel}/bin/beszel-agent";
+              Type = "simple";
+              Restart = "always";
+              RestartSec = "5s";
+              X-Restart-Triggers = [
+                config.sops.templates."beszel-hub-pub-key".path
+              ];
+            };
           };
-      };
+
+          networking.firewall.allowedTCPPorts = [
+            cfg.beszel-hub.port
+          ];
+
+          sops = {
+            secrets = {
+              "beszel/HUB_PUB_KEY" = { };
+              "beszel/TOKEN" = { };
+            };
+            templates."beszel-hub-pub-key".content = ''
+              KEY=${config.sops.placeholder."beszel/HUB_PUB_KEY"}
+              TOKEN=${config.sops.placeholder."beszel/TOKEN"}
+            '';
+          };
+        })
+      ];
     };
 }

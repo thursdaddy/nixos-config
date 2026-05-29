@@ -42,6 +42,11 @@
           type = lib.types.str;
           default = name;
         };
+        tailscaleEntrypoint = lib.mkOption {
+          description = "Set traefik entrypoint to tailscale Ip";
+          type = lib.types.bool;
+          default = true;
+        };
         endpointsFile = lib.mkOption {
           description = "endpoints.yaml file";
           type = lib.types.path;
@@ -97,33 +102,63 @@
           '';
         };
 
-        virtualisation.oci-containers.containers."${name}" = {
-          image = "twinproduction/gatus:v${version}";
-          hostname = "${name}";
-          ports = [ "8080" ];
-          extraOptions = [
-            "--network=traefik"
-            "--pull=always"
-          ];
-          environment = {
-            GATUS_CONFIG_PATH = "/config";
-            GATUS_LOG_LEVEL = "WARN";
+        virtualisation.oci-containers.containers = {
+          traefik = {
+            networks = [ "traefik-${name}" ];
           };
-          volumes = [
-            "${gatus_config_yaml}:/config/config.yaml"
-            "${config.sops.templates."alerting.yaml".path}:/config/alerting.yaml"
-            "${cfg.endpointsFile}:/config/endpoints.yaml"
-            "${config.mine.containers.settings.configPath}/${name}:/data"
-          ];
-          labels = {
-            "traefik.enable" = "true";
-            "traefik.http.routers.${name}.tls" = "true";
-            "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-            "traefik.http.routers.${name}.entrypoints" = "websecure";
-            "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-            "traefik.http.services.${name}.loadbalancer.server.port" = "8080";
-            "org.opencontainers.image.version" = "${version}";
-            "org.opencontainers.image.source" = "https://github.com/TwiN/gatus";
+          "${name}" = {
+            image = "twinproduction/gatus:v${version}";
+            pull = "always";
+            hostname = "${name}";
+            networks = [
+              "traefik-${name}"
+            ];
+            ports = [ "8080" ];
+            environment = {
+              GATUS_CONFIG_PATH = "/config";
+              GATUS_LOG_LEVEL = "WARN";
+            };
+            volumes = [
+              "${gatus_config_yaml}:/config/config.yaml"
+              "${config.sops.templates."alerting.yaml".path}:/config/alerting.yaml"
+              "${cfg.endpointsFile}:/config/endpoints.yaml"
+              "${config.mine.containers.settings.configPath}/${name}:/data"
+            ];
+            labels = {
+              "traefik.enable" = "true";
+              "traefik.docker.network" = "traefik-${name}";
+              "traefik.http.routers.${name}.tls" = "true";
+              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
+              "traefik.http.routers.${name}.entrypoints" = "tailscale";
+              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
+              "traefik.http.services.${name}.loadbalancer.server.port" = "8080";
+              "org.opencontainers.image.version" = "${version}";
+              "org.opencontainers.image.source" = "https://github.com/TwiN/gatus";
+            };
+          };
+        };
+
+        systemd.services = {
+          "init-docker-network-${name}" = {
+            description = "Create Docker networks for Traefik isolation";
+            after = [ "docker.service" ];
+            wantedBy = [ "multi-user.target" ];
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+              ExecStart = [
+                "-${lib.getExe pkgs.docker} network create traefik-${name}"
+                "-${lib.getExe pkgs.docker} network create ${name}"
+              ];
+            };
+          };
+          docker-traefik = {
+            after = [ "init-docker-network-${name}.service" ];
+            requires = [ "init-docker-network-${name}.service" ];
+          };
+          "docker-${name}" = {
+            after = [ "init-docker-network-${name}.service" ];
+            requires = [ "init-docker-network-${name}.service" ];
           };
         };
 

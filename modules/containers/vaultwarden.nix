@@ -21,39 +21,54 @@ _: {
           type = lib.types.str;
           default = "bw";
         };
+        tailscaleEntrypoint = lib.mkOption {
+          description = "Set traefik entrypoint to tailscale Ip";
+          type = lib.types.bool;
+          default = true;
+        };
       };
 
       config = lib.mkIf cfg.enable {
-        virtualisation.oci-containers.containers."${name}" = {
-          image = "vaultwarden/server:${version}";
-          hostname = name;
-          ports = [ "80" ];
-          environment = {
-            DOMAIN = "https://${fqdn}";
-            SIGNUPS_ALLOWED = "false";
-            INVITATIONS_ALLOWED = "false";
-            SHOW_PASSWORD_HINT = "false";
+        virtualisation.oci-containers.containers = {
+          traefik = {
+            networks = [ "traefik-${name}" ];
           };
-          environmentFiles = [
-            config.sops.templates."vaultwarden.env".path
-          ];
-          extraOptions = [
-            "--network=traefik"
-            "--pull=always"
-          ];
-          volumes = [
-            "${config.mine.containers.settings.configPath}/vaultwarden:/data"
-          ];
-          labels = {
-            "traefik.enable" = "true";
-            "traefik.http.routers.${name}.tls" = "true";
-            "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-            "traefik.http.routers.${name}.entrypoints" = "websecure";
-            "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-            "traefik.http.services.${name}.loadbalancer.server.port" = "80";
-            "homelab.backup.enable" = "true";
-            "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}";
-            "homelab.backup.retention.period" = "5";
+          "${name}" = {
+            image = "vaultwarden/server:${version}";
+            pull = "always";
+            hostname = name;
+            networks = [ "traefik-${name}" ];
+            ports = [ "80" ];
+            environment = {
+              DOMAIN = "https://${fqdn}";
+              SIGNUPS_ALLOWED = "false";
+              INVITATIONS_ALLOWED = "false";
+              SHOW_PASSWORD_HINT = "false";
+            };
+            environmentFiles = [
+              config.sops.templates."vaultwarden.env".path
+            ];
+            volumes = [
+              "${config.mine.containers.settings.configPath}/vaultwarden:/data"
+            ];
+            labels = {
+              "traefik.enable" = "true";
+              "traefik.docker.network" = "traefik-${name}";
+              "traefik.http.routers.${name}.tls" = "true";
+              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
+              "traefik.http.routers.${name}.entrypoints" = "tailscale";
+              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
+              "traefik.http.services.${name}.loadbalancer.server.port" = "80";
+              "traefik.http.routers.${name}.middlewares" = "fail2ban";
+              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.bantime" = "3h";
+              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.findtime" = "5m";
+              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.maxretry" = "5";
+              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.statuscode" = "401";
+              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.enabled" = "true";
+              "homelab.backup.enable" = "true";
+              "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}";
+              "homelab.backup.retention.period" = "5";
+            };
           };
         };
 
@@ -81,7 +96,30 @@ _: {
             });
           in
           {
-            services."backup-${name}" = backup.service;
+            services = {
+              "backup-${name}" = backup.service;
+              "init-docker-network-${name}" = {
+                description = "Create Docker networks for Traefik isolation";
+                after = [ "docker.service" ];
+                wantedBy = [ "multi-user.target" ];
+                serviceConfig = {
+                  Type = "oneshot";
+                  RemainAfterExit = true;
+                  ExecStart = [
+                    "-${lib.getExe pkgs.docker} network create traefik-${name}"
+                    "-${lib.getExe pkgs.docker} network create ${name}"
+                  ];
+                };
+              };
+              docker-traefik = {
+                after = [ "init-docker-network-${name}.service" ];
+                requires = [ "init-docker-network-${name}.service" ];
+              };
+              "docker-${name}" = {
+                after = [ "init-docker-network-${name}.service" ];
+                requires = [ "init-docker-network-${name}.service" ];
+              };
+            };
             timers."backup-${name}" = backup.timer;
           };
 

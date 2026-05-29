@@ -10,16 +10,11 @@ _: {
       version = "3.2.0";
 
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
+      fqdn = "request.${config.mine.containers.traefik.rootDomainName}";
     in
     {
       options.mine.containers."${name}" = {
         enable = lib.mkEnableOption "${name}";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = "request";
-        };
       };
 
       config = lib.mkIf cfg.enable {

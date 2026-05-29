@@ -17,10 +17,17 @@ _: {
           type = lib.types.str;
           default = "localhost";
         };
-        meta.hostIp = lib.mkOption {
-          description = "Metadata used with blocky/traefik modules";
-          type = lib.types.str;
-          default = "100.100.100.100";
+        meta = {
+          hostIp = lib.mkOption {
+            description = "Metadata used with blocky/traefik modules";
+            type = lib.types.str;
+            default = "100.100.100.100";
+          };
+          tailscaleIp = lib.mkOption {
+            description = "Metadata used with container modules";
+            type = lib.types.str;
+            default = "100.100.100.100";
+          };
         };
         networkd.enable = lib.mkOption {
           description = "Enable systemd-networkd";

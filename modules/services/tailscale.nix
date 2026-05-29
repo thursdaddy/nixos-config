@@ -56,7 +56,7 @@ _: {
                 "--accept-routes=false"
               ];
               client = [
-                "--accept-routes=true"
+                "--accept-routes=false"
               ];
           '';
         };

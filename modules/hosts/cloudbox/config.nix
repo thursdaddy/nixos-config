@@ -18,7 +18,8 @@ _: {
             hostName = "cloudbox";
             ipv4Forwarding = enabled;
             meta = {
-              hostIp = "100.71.122.112";
+              tailscaleIp = "100.71.122.112";
+              hostIp = config.nixos-thurs.publicIp;
             };
           };
         };
@@ -32,8 +33,19 @@ _: {
           seerr = enabled;
           traefik = {
             enable = true;
-            rootDomainName = config.nixos-thurs.publicDomain;
             awsEnvKeys = false;
+            rootDomainName = config.nixos-thurs.publicDomain;
+            ports = [
+              "10.20.10.184:8082:8082"
+              "10.20.10.184:443:443"
+              "${config.mine.base.networking.meta.tailscaleIp}:443:8443"
+            ];
+            extraCmds = [
+              "--accesslog=true"
+              "--entrypoints.tailscale.address=:8443"
+              "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
+              "--experimental.plugins.fail2ban.version=v0.9.0"
+            ];
           };
           vaultwarden = enabled;
         };
