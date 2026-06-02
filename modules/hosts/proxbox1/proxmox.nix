@@ -11,7 +11,7 @@
 
       services.proxmox-ve = {
         enable = true;
-        ipAddress = config.mine.base.networking.meta.hostIp;
+        ipAddress = config.mine.homelab.proxbox1.hostIp;
       };
     };
 }

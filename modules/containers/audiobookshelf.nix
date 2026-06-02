@@ -71,7 +71,7 @@ _: {
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
           in
           {

@@ -77,15 +77,20 @@ _: {
             timers."backup-${name}" = backup.timer;
           };
 
+        mine.homelab.${config.networking.hostName} = {
+          apps.hass = {
+            traefik.static = {
+              z2m = {
+                inherit port;
+              };
+            };
+          };
+        };
+
         environment.etc =
           let
             alloyZ2MQTT = lib.thurs.mkAlloyJournal {
               inherit name;
-            };
-            traefikZ2MQTT = lib.thurs.mkTraefikFile {
-              inherit config;
-              name = subdomain;
-              inherit port;
             };
             alloyJournalBackup = lib.thurs.mkAlloyJournal {
               name = "backup-${name}";
@@ -95,7 +100,6 @@ _: {
           builtins.listToAttrs [
             alloyZ2MQTT
             alloyJournalBackup
-            traefikZ2MQTT
           ];
       };
     };

@@ -15,9 +15,6 @@ _: {
           nix.ghToken = enabled;
           networking = {
             hostName = "wormhole";
-            meta = {
-              hostIp = "192.168.10.51";
-            };
             wake-on-lan = {
               enable = true;
               interface = "ens19";
@@ -26,7 +23,13 @@ _: {
           utils.sysadmin = enabled;
         };
 
+        homelab.wormhole = {
+          hostIp = "192.168.10.51";
+          tailscaleIp = "100.74.229.91";
+        };
+
         containers = {
+          settings.backend = "podman";
           traefik = enabled;
           syncthing = {
             enable = true;
@@ -60,11 +63,7 @@ _: {
                     capacity = 10;
                   };
                   container = {
-                    privileged = true;
                     force_pull = true;
-                    volumes = [
-                      "/var/run/docker.sock:/var/run/docker.sock"
-                    ];
                   };
                 };
               };
@@ -82,9 +81,5 @@ _: {
           CI_SERVER_TOKEN=${config.sops.placeholder."gitlab/GITLAB_COM_RUNNER_TOKEN"}
         '';
       };
-
-      services.gitlab-runner.services."gitlab".authenticationTokenConfigFile =
-        lib.mkForce
-          config.sops.templates."gitlab-runner.token".path;
     };
 }

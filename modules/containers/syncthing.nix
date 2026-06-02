@@ -6,8 +6,7 @@ _: {
       version = "2.1.0";
 
       cfg = config.mine.containers.${name};
-      subdomain = "${name}-${config.networking.hostName}";
-      fqdn = "${subdomain}.${config.mine.containers.traefik.rootDomainName}";
+      subdomain = "syncthing-${config.networking.hostName}";
     in
     {
       options.mine.containers.${name} = lib.mkOption {
@@ -16,13 +15,6 @@ _: {
         type = lib.types.submodule {
           options = {
             enable = lib.mkEnableOption "${name}";
-
-            subdomain = lib.mkOption {
-              type = lib.types.str;
-              default = subdomain;
-              description = "Subdomain for syncthing.";
-            };
-
             volumePaths = lib.mkOption {
               type = lib.types.listOf lib.types.path;
               default = [ ];
@@ -33,18 +25,19 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
-        networking.firewall = {
-          allowedTCPPorts = [ 22000 ];
-          allowedUDPPorts = [
-            22000
-            21027
-          ];
+        mine.homelab.${config.networking.hostName} = {
+          apps.${name} = {
+            traefik.container = {
+              subDomain = "${subdomain}.${config.mine.containers.traefik.rootDomainName}";
+              port = 8384;
+            };
+          };
         };
 
         virtualisation.oci-containers.containers."${name}" = {
-          image = " syncthing/syncthing:${version}";
+          image = "syncthing/syncthing:${version}";
+          pull = "always";
           ports = [
-            "8384"
             "0.0.0.0:22000:22000/tcp"
             "0.0.0.0:22000:22000/udp"
             "0.0.0.0:21027:21027/udp"
@@ -52,23 +45,20 @@ _: {
           environment = {
             PGID = "1000";
             PUID = "1000";
+            TZ = config.time.timeZone;
           };
-          extraOptions = [
-            "--network=traefik"
-            "--pull=always"
-          ];
           volumes = [
             "${config.mine.containers.settings.configPath}/syncthing:/var/syncthing"
           ]
           ++ cfg.volumePaths;
-          labels = {
-            "traefik.enable" = "true";
-            "traefik.http.routers.${name}.tls" = "true";
-            "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-            "traefik.http.routers.${name}.entrypoints" = "websecure";
-            "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-            "traefik.http.services.${name}.loadbalancer.server.port" = "8384";
-          };
+        };
+
+        networking.firewall = {
+          allowedTCPPorts = [ 22000 ];
+          allowedUDPPorts = [
+            22000
+            21027
+          ];
         };
       };
     };

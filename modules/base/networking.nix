@@ -21,12 +21,17 @@ _: {
           hostIp = lib.mkOption {
             description = "Metadata used with blocky/traefik modules";
             type = lib.types.str;
-            default = "100.100.100.100";
+            default = "192.168.1.1";
           };
           tailscaleIp = lib.mkOption {
             description = "Metadata used with container modules";
             type = lib.types.str;
-            default = "100.100.100.100";
+            default = "100.100.1.1";
+          };
+          rootDomainName = lib.mkOption {
+            description = "Metadata used with traefik/blocky modules";
+            type = lib.types.str;
+            default = "thurs.pw";
           };
         };
         networkd.enable = lib.mkOption {

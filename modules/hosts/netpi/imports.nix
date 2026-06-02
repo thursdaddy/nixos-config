@@ -6,6 +6,7 @@
       [
         base
         blocky
+        containers
         services
       ]
       ++ [

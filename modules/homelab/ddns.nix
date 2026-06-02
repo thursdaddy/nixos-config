@@ -8,7 +8,7 @@
       ...
     }:
     let
-      cfg = config.mine.services.ddns;
+      cfg = config.mine.homelab.${config.networking.hostName}.services.ddns;
 
       gotifyAlert = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.gotify-alert;
       ddnsScript = pkgs.writers.writePython3Bin "route53-ddns" {
@@ -17,14 +17,10 @@
           boto3
           requests
         ];
-      } (builtins.readFile ./ddns.py);
+      } (builtins.readFile ./scripts/ddns.py);
     in
     {
-      options.mine.services.ddns = {
-        enable = lib.mkEnableOption "Enable AWS ddns";
-      };
-
-      config = lib.mkIf cfg.enable {
+      config = lib.mkIf cfg {
         systemd = {
           services = {
             route53-ddns = {

@@ -20,16 +20,18 @@ _: {
           bluetooth = enabled;
           nix.ghToken = enabled;
           networking = {
-            networkManager = enabled;
             hostName = "c137";
-            meta = {
-              hostIp = "192.168.10.137";
-            };
+            networkManager = enabled;
             wake-on-lan = {
               enable = true;
               interface = "enp5s0";
             };
           };
+          utils.sysadmin = enabled;
+        };
+
+        homelab.c137 = {
+          hostIp = "192.168.10.137";
           nfs-mounts = {
             enable = true;
             mounts = {
@@ -41,7 +43,6 @@ _: {
               };
             };
           };
-          utils.sysadmin = enabled;
         };
 
         dev.tmux = {
@@ -76,7 +77,6 @@ _: {
 
         services = {
           backups = enabled;
-          docker = enabled;
           gitea-runner = {
             enable = true;
             runners = {
@@ -86,11 +86,7 @@ _: {
                     capacity = 10;
                   };
                   container = {
-                    privileged = true;
                     force_pull = true;
-                    volumes = [
-                      "/var/run/docker.sock:/var/run/docker.sock"
-                    ];
                   };
                 };
               };

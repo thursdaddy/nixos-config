@@ -11,6 +11,7 @@ _: {
       version = "2.52.0";
 
       cfg = config.mine.containers.${name};
+      configPath = config.mine.containers.settings.configPath;
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
 
       prometheus_config = builtins.readFile (
@@ -23,11 +24,6 @@ _: {
     {
       options.mine.containers.${name} = {
         enable = lib.mkEnableOption "Enable prometheus container";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = name;
-        };
         version = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
           default = "latest";
@@ -41,16 +37,18 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
+        mine.homelab.${config.networking.hostName} = {
+          apps.prometheus = {
+            traefik.container.port = 9090;
+          };
+        };
+
         virtualisation.oci-containers.containers.prometheus = {
           user = "root";
           image = "prom/prometheus:v${version}";
-          hostname = "prometheus";
+          pull = "always";
           ports = [
             "0.0.0.0:9090:9090"
-          ];
-          extraOptions = [
-            "--network=traefik"
-            "--pull=always"
           ];
           cmd = [
             "--config.file=/etc/prometheus/prometheus.yml"
@@ -59,18 +57,12 @@ _: {
           ];
           volumes = [
             "${config.sops.templates."prometheus_config".path}:/etc/prometheus/prometheus.yml"
-            "${config.mine.containers.settings.configPath}/prometheus:/prometheus"
+            "${configPath}/prometheus:/prometheus"
           ];
           labels = {
-            "traefik.enable" = "true";
-            "traefik.http.routers.${name}.tls" = "true";
-            "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-            "traefik.http.routers.${name}.entrypoints" = "websecure";
-            "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-            "traefik.http.services.${name}.loadbalancer.server.port" = "9090";
             "enable.versions.check" = "false";
             "homelab.backup.enable" = "true";
-            "homelab.backup.path" = "${config.mine.containers.settings.configPath}/prometheus/data/snapshots";
+            "homelab.backup.path" = "${configPath}/prometheus/data/snapshots";
             "homelab.backup.retention.period" = "5";
           };
         };
@@ -107,7 +99,7 @@ _: {
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
             alloyJournalBackup = lib.thurs.mkAlloyJournal {
               name = "backup-${name}";

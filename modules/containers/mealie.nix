@@ -10,18 +10,16 @@
     let
       name = "mealie";
       version = "3.18.0";
+
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
+      configPath = config.mine.containers.settings.configPath;
+
+      fqdn = "${name}.${config.mine.homelab.${config.networking.hostName}.rootDomainName}";
     in
     {
       options.mine.containers = {
         ${name} = {
           enable = lib.mkEnableOption "${name}";
-          subdomain = lib.mkOption {
-            description = "Container url";
-            type = lib.types.str;
-            default = name;
-          };
         };
         "${name}-addon" = {
           enable = lib.mkOption {
@@ -29,23 +27,24 @@
             type = lib.types.bool;
             default = true;
           };
-          subdomain = lib.mkOption {
-            description = "Container url";
-            type = lib.types.str;
-            default = "mealie-export";
-          };
         };
       };
 
       config = lib.mkIf cfg.enable {
+        mine.homelab.${config.networking.hostName} = {
+          apps.${name} = {
+            traefik.container = {
+              port = 9000;
+            };
+          };
+        };
+
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "ghcr.io/mealie-recipes/${name}:v${version}";
-            ports = [
-              "9000"
-            ];
+            pull = "always";
             volumes = [
-              "${config.mine.containers.settings.configPath}/${name}/app:/app/data"
+              "${configPath}/${name}/app:/app/data"
             ];
             environment = {
               "ALLOW_SIGNUP" = "false";
@@ -62,24 +61,14 @@
             environmentFiles = [
               config.sops.templates."mealie-db.env".path
             ];
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
-            ];
-            labels = {
-              "traefik.enable" = "true";
-              "traefik.http.routers.${name}.tls" = "true";
-              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "websecure";
-              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "9000";
-            };
           };
 
           "${name}-db" = {
             image = "docker.io/library/postgres:17";
+            pull = "always";
+            networks = [ name ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/${name}/postgres:/var/lib/postgresql/data"
+              "${configPath}/${name}/postgres:/var/lib/postgresql/data"
             ];
             ports = [
               "5432"
@@ -91,10 +80,6 @@
             environmentFiles = [
               config.sops.templates."mealie-db.env".path
             ];
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
-            ];
             labels = {
               "enable.versions.check" = "false";
             };
@@ -102,11 +87,10 @@
 
           "${name}-addons" = {
             image = "ghcr.io/razziel89/mealie-addons:latest";
+            pull = "always";
+            networks = [ name ];
             ports = [
               "9001:9000"
-            ];
-            volumes = [
-              "mealie-data"
             ];
             environment = {
               MA_LISTEN_INTERFACE = ":9000";
@@ -118,10 +102,6 @@
               MEALIE_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb25nX3Rva2VuIjp0cnVlLCJpZCI6ImQyNmRmODNmLTcxZGMtNDViNy1hZDg3LWE4MzZlZDY1NDQwMiIsIm5hbWUiOiJtZWFsaWUtYWRkb24iLCJpbnRlZ3JhdGlvbl9pZCI6ImdlbmVyaWMiLCJleHAiOjE5MzQwNDgxMzF9.LbW48S2VJklxKm64fbIhoikWj6uQhiVY4rY4ocssIGs";
               GIN_MODE = "release";
             };
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
-            ];
           };
         };
 
@@ -140,7 +120,7 @@
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
           in
           {

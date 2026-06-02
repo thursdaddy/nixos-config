@@ -7,63 +7,63 @@ _: {
       ...
     }:
     let
-      name = "tesla";
+      name = "teslamate";
       version = "3.0.0";
 
-      cfg = config.mine.containers."${name}mate";
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
-
-      grafanaName = "tesla-grafana";
-      grafanaCfg = config.mine.containers.${grafanaName};
-      grafanaFqdn = "${grafanaCfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
-
-      dbName = "tesla-postgres";
-      dbCfg = config.mine.containers.${dbName};
-      dbFqdn = "${dbCfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
+      cfg = config.mine.containers.teslamate;
+      configPath = config.mine.containers.settings.configPath;
     in
     {
       options.mine.containers = {
-        "${name}mate" = {
+        "${name}" = {
           enable = lib.mkEnableOption "${name}";
-          subdomain = lib.mkOption {
-            description = "Container url";
-            type = lib.types.str;
-            default = "teslamate";
-          };
         };
-        ${grafanaName} = {
+        tesla-grafana = {
           enable = lib.mkOption {
             description = "This is for blocky to create a DNS entry";
             type = lib.types.bool;
             default = cfg.enable;
           };
-          subdomain = lib.mkOption {
-            description = "Container url";
-            type = lib.types.str;
-            default = "tesla";
-          };
         };
-        ${dbName} = {
+        tesla-postgres = {
           enable = lib.mkOption {
             description = "This is for blocky to create a DNS entry";
             type = lib.types.bool;
             default = cfg.enable;
-          };
-          subdomain = lib.mkOption {
-            description = "Container url";
-            type = lib.types.str;
-            default = "tesla-db";
           };
         };
       };
 
       config = lib.mkIf cfg.enable {
+        mine.homelab.${config.networking.hostName} = {
+          apps = {
+            ${name} = {
+              traefik.container = {
+                port = 4000;
+                subDomain = "teslamate";
+              };
+            };
+            teslamate-grafana = {
+              traefik.container = {
+                port = 3000;
+                subDomain = "tesla";
+              };
+            };
+            teslamate-postgres = {
+              traefik.container = {
+                port = 5432;
+                subDomain = "tesla-db";
+              };
+            };
+          };
+        };
+
         virtualisation.oci-containers.containers = {
-          "${name}" = {
+          ${name} = {
             image = "teslamate/teslamate:${version}";
             ports = [ "4000" ];
             environment = {
-              DATABASE_HOST = "tesla-postgres";
+              DATABASE_HOST = "teslamate-postgres";
               DATABASE_NAME = "teslamate";
               DATABASE_USER = "teslamate";
               MQTT_HOST = "tesla-mosquitto";
@@ -71,78 +71,56 @@ _: {
             environmentFiles = [
               config.sops.templates."tesla.env".path
             ];
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
-            ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/teslamate/:/opt/app/import"
+              "${configPath}/teslamate/:/opt/app/import"
             ];
-            labels = {
-              "traefik.enable" = "true";
-              "traefik.http.routers.${name}.tls" = "true";
-              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "websecure";
-              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "4000";
-            };
           };
 
-          "${grafanaName}" = {
+          "teslamate-grafana" = {
             image = "teslamate/grafana:${version}";
+            pull = "always";
+            networks = [ name ];
             ports = [ "3000" ];
             environment = {
               PUID = "472";
               PGID = "472";
               TZ = "America/Phoenix";
               DATABASE_NAME = "teslamate";
-              DATABASE_HOST = "tesla-postgres";
+              DATABASE_HOST = "teslamate-postgres";
               DATABASE_USER = "teslamate";
             };
             environmentFiles = [
               config.sops.templates."grafana.env".path
             ];
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
-            ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/tesla-grafana:/var/lib/grafana"
+              "${configPath}/tesla-grafana:/var/lib/grafana"
             ];
             labels = {
-              "traefik.enable" = "true";
-              "traefik.http.routers.${grafanaName}.tls" = "true";
-              "traefik.http.routers.${grafanaName}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${grafanaName}.entrypoints" = "websecure";
-              "traefik.http.routers.${grafanaName}.rule" = "Host(`${grafanaFqdn}`)";
-              "traefik.http.services.${grafanaName}.loadbalancer.server.port" = "3000";
               "enable.versions.check" = "false";
             };
           };
 
-          "tesla-mosquitto" = {
+          "teslamate-mosquitto" = {
             image = "eclipse-mosquitto:2";
+            pull = "always";
+            networks = [ name ];
             hostname = "tesla-mosquitto";
-            ports = [ "1883" ];
             environment = {
               PUID = "1883";
               PGID = "1883";
             };
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
-            ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/tesla-mosquitto/conf:/mosquitto/config"
-              "${config.mine.containers.settings.configPath}/tesla-mosquitto/data:/mosquitto/data"
+              "${configPath}/tesla-mosquitto/conf:/mosquitto/config"
+              "${configPath}/tesla-mosquitto/data:/mosquitto/data"
             ];
             labels = {
               "enable.versions.check" = "false";
             };
           };
 
-          "${dbName}" = {
+          "teslamate-postgres" = {
             image = "postgres:18-trixie";
+            networks = [ name ];
             ports = [ "5432" ];
             environment = {
               POSTGRES_USER = "teslamate";
@@ -151,24 +129,14 @@ _: {
             environmentFiles = [
               config.sops.templates."postgres.env".path
             ];
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
-            ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/tesla-postgres:/var/lib/postgresql"
-              "${config.mine.containers.settings.configPath}/tesla-postgres/db_dumps:/db_dumps"
+              "${configPath}/tesla-postgres:/var/lib/postgresql"
+              "${configPath}/tesla-postgres/db_dumps:/db_dumps"
             ];
             labels = {
-              "traefik.enable" = "true";
-              "traefik.http.routers.${dbName}.tls" = "true";
-              "traefik.http.routers.${dbName}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${dbName}.entrypoints" = "websecure";
-              "traefik.http.routers.${dbName}.rule" = "Host(`${dbFqdn}`)";
-              "traefik.http.services.${dbName}.loadbalancer.server.port" = "5432";
               "enable.versions.check" = "false";
               "homelab.backup.enable" = "true";
-              "homelab.backup.path" = "${config.mine.containers.settings.configPath}/tesla-postgres/db_dumps";
+              "homelab.backup.path" = "${configPath}/tesla-postgres/db_dumps";
               "homelab.backup.retention.period" = "5";
             };
           };
@@ -197,12 +165,13 @@ _: {
           let
             backup = lib.thurs.mkBackupService ({
               inherit pkgs;
-              name = "tesla-postgres";
+              name = "teslamate-postgres";
               extraPackages = [
                 pkgs.docker-client
+                pkgs.podman
               ];
               preStart = ''
-                docker exec -t tesla-postgres /bin/sh -c "pg_dump -U teslamate -h localhost > /db_dumps/teslamate.sql"
+                ${config.mine.containers.settings.backend} exec -t teslamate-postgres /bin/sh -c "pg_dump -U teslamate -h localhost > /db_dumps/teslamate.sql"
               '';
             });
           in
@@ -215,15 +184,15 @@ _: {
           let
             alloyJournalTeslaMate = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
             alloyJournalTeslaGrafana = lib.thurs.mkAlloyJournal {
-              name = grafanaName;
-              serviceName = "docker-${grafanaName}";
+              name = "teslamate-grafana";
+              serviceName = "${config.mine.containers.settings.backend}-tesla-grafana";
             };
             alloyJournalTeslaDb = lib.thurs.mkAlloyJournal {
-              name = dbName;
-              serviceName = "docker-${dbName}";
+              name = "teslamate-postgres";
+              serviceName = "${config.mine.containers.settings.backend}-tesla-postgres";
             };
           in
           builtins.listToAttrs [

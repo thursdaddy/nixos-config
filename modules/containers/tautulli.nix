@@ -11,82 +11,42 @@ _: {
       version = "2.17.1";
 
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
+      configPath = config.mine.containers.settings.configPath;
     in
     {
       options.mine.containers.${name} = {
         enable = lib.mkEnableOption "${name}";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = name;
-        };
-        tailscaleEntrypoint = lib.mkOption {
-          description = "Set traefik entrypoint to tailscale Ip";
-          type = lib.types.bool;
-          default = true;
-        };
       };
 
       config = lib.mkIf cfg.enable {
-        virtualisation.oci-containers.containers = {
-          traefik = {
-            networks = [ "traefik-${name}" ];
+        mine.homelab.${config.networking.hostName} = {
+          apps.${name}.traefik.container = {
+            port = 8181;
+            tailscale = true;
           };
+        };
+
+        virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "lscr.io/linuxserver/${name}:${version}";
             pull = "always";
-            hostname = "${name}";
+            hostname = name;
             networks = [
-              "${name}"
-              "traefik-${name}"
               "plex"
             ];
-            ports = [ "8181" ];
             environment = {
               TZ = config.time.timeZone;
               PGID = "1000";
               PUID = "1000";
             };
             volumes = [
-              "${config.mine.containers.settings.configPath}/${name}:/config"
-              "${config.mine.containers.settings.configPath}/plex/Library/Application Support/Plex Media Server/Logs:/logs:ro"
+              "${configPath}/${name}:/config"
+              "${configPath}/plex/Library/Application Support/Plex Media Server/Logs:/logs:ro"
             ];
             labels = {
-              "traefik.enable" = "true";
-              "traefik.docker.network" = "traefik-${name}";
-              "traefik.http.routers.${name}.tls" = "true";
-              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "tailscale";
-              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "8181";
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/TwiN/tautulli";
             };
-          };
-        };
-
-        systemd.services = {
-          "init-docker-network-${name}" = {
-            description = "Create Docker networks for Traefik isolation";
-            after = [ "docker.service" ];
-            wantedBy = [ "multi-user.target" ];
-            serviceConfig = {
-              Type = "oneshot";
-              RemainAfterExit = true;
-              ExecStart = [
-                "-${lib.getExe pkgs.docker} network create traefik-${name}"
-                "-${lib.getExe pkgs.docker} network create ${name}"
-              ];
-            };
-          };
-          "docker-traefik" = {
-            after = [ "init-docker-network-${name}.service" ];
-            requires = [ "init-docker-network-${name}.service" ];
-          };
-          "docker-${name}" = {
-            after = [ "init-docker-network-${name}.service" ];
-            requires = [ "init-docker-network-${name}.service" ];
           };
         };
 
@@ -94,7 +54,7 @@ _: {
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
           in
           {

@@ -20,11 +20,6 @@ _: {
     {
       options.mine.services.loki = {
         enable = lib.mkEnableOption "Grafana Loki";
-        subdomain = lib.mkOption {
-          description = "Container url, used by blocky to create DNS entry";
-          type = lib.types.str;
-          default = name;
-        };
       };
 
       config = lib.mkIf cfg.enable {
@@ -34,32 +29,34 @@ _: {
           dataDir = "/mnt/data/loki";
         };
 
-        networking.firewall.allowedTCPPorts = [ 3100 ];
+        networking.firewall.allowedTCPPorts = [ port ];
 
-        mine.base.nfs-mounts = {
-          mounts = {
-            "/mnt/data/loki" = {
-              device = "192.168.10.12:/fast/data/loki";
+        mine = {
+          base.nfs-mounts = {
+            mounts = {
+              "/mnt/data/loki" = {
+                device = "192.168.10.12:/fast/data/loki";
+              };
+            };
+          };
+          homelab.${config.networking.hostName} = {
+            apps.loki = {
+              traefik.static.loki = {
+                inherit port;
+              };
             };
           };
         };
 
         environment.etc =
           let
-            traefik = lib.thurs.mkTraefikFile {
-              inherit config;
-              inherit name;
-              inherit port;
-            };
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
             };
           in
           builtins.listToAttrs [
-            traefik
             alloyJournal
           ];
-
       };
     };
 }

@@ -5,6 +5,7 @@ _: {
       lib,
       hostName,
       hostIp,
+      tailscaleIp,
       ...
     }:
     let
@@ -13,20 +14,23 @@ _: {
     {
 
       mine = {
-        base = {
-          networking = {
-            inherit hostName;
-            meta = {
-              inherit hostIp;
-            };
+        base.networking = {
+          inherit hostName;
+        };
+
+        homelab.${hostName} = {
+          inherit hostIp;
+          inherit tailscaleIp;
+        };
+
+        containers = {
+          settings = {
+            backend = "podman";
+            autoPrune = false;
           };
         };
 
         services = {
-          docker = {
-            enable = true;
-            autoPrune = false;
-          };
           gitea-runner = {
             enable = true;
             runners = {
@@ -35,14 +39,12 @@ _: {
                   "runner:docker://gitea.thurs.pw/docker/gitea-runner:v0.2.3"
                 ];
                 settings = {
+                  container = {
+                    network = "gitea-runner-net";
+                    options = "--dns=${config.mine.homelab.${config.networking.hostName}.hostIp}";
+                  };
                   runner = {
                     capacity = 4;
-                  };
-                  container = {
-                    privileged = true;
-                    volumes = [
-                      "/var/run/docker.sock:/var/run/docker.sock"
-                    ];
                   };
                 };
               };

@@ -3,27 +3,25 @@ _: {
     { config, lib, ... }:
     let
       name = "thelounge";
-      cfg = config.mine.containers.${name};
       version = "4.5.0";
 
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
+      cfg = config.mine.containers.${name};
     in
     {
       options.mine.containers.${name} = {
         enable = lib.mkEnableOption "thelounge IRC client";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = "irc";
-        };
       };
 
       config = lib.mkIf cfg.enable {
+        mine.homelab.${config.networking.hostName} = {
+          apps.${name}.traefik.container = {
+            subDomain = "irc";
+            port = 9000;
+          };
+        };
         virtualisation.oci-containers.containers."${name}" = {
           image = "thelounge/thelounge:${version}";
-          ports = [
-            "9000"
-          ];
+          pull = "always";
           environment = {
             PUID = "1000";
             PGID = "1000";
@@ -31,18 +29,6 @@ _: {
           volumes = [
             "${config.mine.containers.settings.configPath}/thelounge:/var/opt/thelounge"
           ];
-          extraOptions = [
-            "--network=traefik"
-            "--pull=always"
-          ];
-          labels = {
-            "traefik.enable" = "true";
-            "traefik.http.routers.${name}.tls" = "true";
-            "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-            "traefik.http.routers.${name}.entrypoints" = "websecure";
-            "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-            "traefik.http.services.${name}.loadbalancer.server.port" = "9000";
-          };
         };
       };
     };

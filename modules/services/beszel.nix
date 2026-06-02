@@ -17,16 +17,6 @@ _: {
           type = lib.types.submodule {
             options = {
               enable = lib.mkEnableOption "Beszel Hub";
-              subdomain = lib.mkOption {
-                description = "Container url, used by blocky to create DNS entry";
-                type = lib.types.str;
-                default = "monitor";
-              };
-              tailscaleEntrypoint = lib.mkOption {
-                description = "Set traefik entrypoint to tailscale Ip";
-                type = lib.types.bool;
-                default = true;
-              };
               dataDir = lib.mkOption {
                 type = lib.types.path;
                 default = "/opt/configs/beszel-hub";
@@ -45,7 +35,6 @@ _: {
             };
           };
         };
-
         beszel-agent = lib.mkOption {
           default = { };
           description = "Beszel Agent settings.";
@@ -73,34 +62,31 @@ _: {
           ];
         })
 
-        (lib.mkIf cfg.beszel-hub.enable (
-          lib.mkMerge [
-            {
-              systemd.services.beszel-hub = {
-                description = "Beszel-Hub";
-                wantedBy = [ "multi-user.target" ]; # Standard for services
-                after = [ "network-online.target" ];
-                wants = [ "network-online.target" ];
-                environment = {
-                  APP_URL = "https://monitor.thurs.pw";
-                };
-                serviceConfig = {
-                  ExecStart = "${pkgs.unstable.beszel}/bin/beszel-hub serve --http ${cfg.beszel-hub.listenAddress}:${builtins.toString cfg.beszel-hub.port} --dir ${cfg.beszel-hub.dataDir}";
-                  Type = "simple";
-                  Restart = "always";
-                  RestartSec = "5s";
-                };
-              };
-            }
+        (lib.mkIf cfg.beszel-hub.enable ({
+          systemd.services.beszel-hub = {
+            description = "Beszel-Hub";
+            wantedBy = [ "multi-user.target" ]; # Standard for services
+            after = [ "network-online.target" ];
+            wants = [ "network-online.target" ];
+            environment = {
+              APP_URL = "https://monitor.thurs.pw";
+            };
+            serviceConfig = {
+              ExecStart = "${pkgs.unstable.beszel}/bin/beszel-hub serve --http ${cfg.beszel-hub.listenAddress}:${builtins.toString cfg.beszel-hub.port} --dir ${cfg.beszel-hub.dataDir}";
+              Type = "simple";
+              Restart = "always";
+              RestartSec = "5s";
+            };
+          };
 
-            (lib.thurs.mkTraefikConfig {
-              inherit config;
-              name = cfg.beszel-hub.subdomain;
-              port = cfg.beszel-hub.port;
-              tailscale = true;
-            })
-          ]
-        ))
+          mine.homelab.${config.networking.hostName} = {
+            apps.beszel = {
+              traefik.static = {
+                monitor.port = cfg.beszel-hub.port;
+              };
+            };
+          };
+        }))
 
         (lib.mkIf cfg.beszel-agent.enable {
           systemd.services.beszel-agent = {

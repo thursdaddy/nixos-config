@@ -202,19 +202,23 @@
             ];
           };
 
+        mine.homelab.${config.networking.hostName} = {
+          apps.hass = {
+            traefik.static = {
+              hass = {
+                port = 8090;
+                subDomain = "home";
+              };
+              esphome = {
+                port = 6052;
+              };
+            };
+          };
+        };
+
         environment.etc =
           let
             name = "hass";
-            traefikHass = lib.thurs.mkTraefikFile {
-              inherit config;
-              name = subdomain;
-              port = 8090;
-            };
-            traefikEspHome = lib.thurs.mkTraefikFile {
-              inherit config;
-              name = "esphome";
-              port = 6052;
-            };
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
               serviceName = "home-assistant";
@@ -230,8 +234,6 @@
             };
           in
           builtins.listToAttrs [
-            traefikHass
-            traefikEspHome
             alloyJournal
             alloyFileMatch
             alloyJournalBackup

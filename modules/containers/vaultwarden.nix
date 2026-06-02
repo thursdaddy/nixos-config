@@ -11,36 +11,33 @@ _: {
       version = "1.36.0";
 
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
+      traefikCfg = config.mine.homelab.${hostName}.apps.${name}.traefik;
+      hostName = config.networking.hostName;
     in
     {
-      options.mine.containers.vaultwarden = {
-        enable = lib.mkEnableOption "vaultwarden";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = "bw";
-        };
-        tailscaleEntrypoint = lib.mkOption {
-          description = "Set traefik entrypoint to tailscale Ip";
-          type = lib.types.bool;
-          default = true;
-        };
+      options.mine.containers.${name} = {
+        enable = lib.mkEnableOption "${name}";
       };
 
       config = lib.mkIf cfg.enable {
-        virtualisation.oci-containers.containers = {
-          traefik = {
-            networks = [ "traefik-${name}" ];
+        mine.homelab.${hostName} = {
+          apps.${name} = {
+            traefik.container = {
+              tailscale = true;
+              subDomain = "bw";
+              port = 80;
+            };
           };
+        };
+
+        virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "vaultwarden/server:${version}";
             pull = "always";
             hostname = name;
             networks = [ "traefik-${name}" ];
-            ports = [ "80" ];
             environment = {
-              DOMAIN = "https://${fqdn}";
+              DOMAIN = "https://${traefikCfg.container.subDomain}.${traefikCfg.domain}";
               SIGNUPS_ALLOWED = "false";
               INVITATIONS_ALLOWED = "false";
               SHOW_PASSWORD_HINT = "false";
@@ -52,13 +49,6 @@ _: {
               "${config.mine.containers.settings.configPath}/vaultwarden:/data"
             ];
             labels = {
-              "traefik.enable" = "true";
-              "traefik.docker.network" = "traefik-${name}";
-              "traefik.http.routers.${name}.tls" = "true";
-              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "tailscale";
-              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "80";
               "traefik.http.routers.${name}.middlewares" = "fail2ban";
               "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.bantime" = "3h";
               "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.findtime" = "5m";
@@ -96,30 +86,7 @@ _: {
             });
           in
           {
-            services = {
-              "backup-${name}" = backup.service;
-              "init-docker-network-${name}" = {
-                description = "Create Docker networks for Traefik isolation";
-                after = [ "docker.service" ];
-                wantedBy = [ "multi-user.target" ];
-                serviceConfig = {
-                  Type = "oneshot";
-                  RemainAfterExit = true;
-                  ExecStart = [
-                    "-${lib.getExe pkgs.docker} network create traefik-${name}"
-                    "-${lib.getExe pkgs.docker} network create ${name}"
-                  ];
-                };
-              };
-              docker-traefik = {
-                after = [ "init-docker-network-${name}.service" ];
-                requires = [ "init-docker-network-${name}.service" ];
-              };
-              "docker-${name}" = {
-                after = [ "init-docker-network-${name}.service" ];
-                requires = [ "init-docker-network-${name}.service" ];
-              };
-            };
+            services."backup-${name}" = backup.service;
             timers."backup-${name}" = backup.timer;
           };
 
@@ -140,7 +107,7 @@ _: {
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "podman-${name}";
             };
             alloyJournalBackup = lib.thurs.mkAlloyJournal {
               name = "backup-${name}";

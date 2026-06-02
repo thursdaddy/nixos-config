@@ -10,8 +10,8 @@
     let
       name = "gatus";
       version = "5.36.0";
+
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
 
       gatus_config_yaml = pkgs.writeTextFile {
         name = "config.yaml";
@@ -29,7 +29,7 @@
 
       alloyJournal = lib.thurs.mkAlloyJournal {
         inherit name;
-        serviceName = "docker-${name}";
+        serviceName = "${config.mine.containers.settings.backend}-${name}";
       };
     in
     {
@@ -37,16 +37,6 @@
 
       options.mine.containers.${name} = {
         enable = lib.mkEnableOption "${name}";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = name;
-        };
-        tailscaleEntrypoint = lib.mkOption {
-          description = "Set traefik entrypoint to tailscale Ip";
-          type = lib.types.bool;
-          default = true;
-        };
         endpointsFile = lib.mkOption {
           description = "endpoints.yaml file";
           type = lib.types.path;
@@ -60,6 +50,34 @@
       };
 
       config = lib.mkIf cfg.enable {
+        mine.homelab.${config.networking.hostName} = {
+          apps.${name} = {
+            traefik.container = {
+              tailscale = true;
+              port = 8080;
+            };
+          };
+        };
+
+        virtualisation.oci-containers.containers = {
+          "${name}" = {
+            image = "twinproduction/gatus:v${version}";
+            pull = "always";
+            hostname = "${name}";
+            environment = {
+              GATUS_CONFIG_PATH = "/config";
+              GATUS_LOG_LEVEL = "WARN";
+              TZ = config.time.timeZone;
+            };
+            volumes = [
+              "${gatus_config_yaml}:/config/config.yaml"
+              "${config.sops.templates."alerting.yaml".path}:/config/alerting.yaml"
+              "${cfg.endpointsFile}:/config/endpoints.yaml"
+              "${config.mine.containers.settings.configPath}/${name}:/data"
+            ];
+          };
+        };
+
         sops = {
           secrets = {
             "discord/monitoring/WEBHOOK_URL" = { };
@@ -100,66 +118,6 @@
                   send-on-resolved: true
                   description: "healthcheck failed 2 times in a row"
           '';
-        };
-
-        virtualisation.oci-containers.containers = {
-          traefik = {
-            networks = [ "traefik-${name}" ];
-          };
-          "${name}" = {
-            image = "twinproduction/gatus:v${version}";
-            pull = "always";
-            hostname = "${name}";
-            networks = [
-              "traefik-${name}"
-            ];
-            ports = [ "8080" ];
-            environment = {
-              GATUS_CONFIG_PATH = "/config";
-              GATUS_LOG_LEVEL = "WARN";
-            };
-            volumes = [
-              "${gatus_config_yaml}:/config/config.yaml"
-              "${config.sops.templates."alerting.yaml".path}:/config/alerting.yaml"
-              "${cfg.endpointsFile}:/config/endpoints.yaml"
-              "${config.mine.containers.settings.configPath}/${name}:/data"
-            ];
-            labels = {
-              "traefik.enable" = "true";
-              "traefik.docker.network" = "traefik-${name}";
-              "traefik.http.routers.${name}.tls" = "true";
-              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "tailscale";
-              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "8080";
-              "org.opencontainers.image.version" = "${version}";
-              "org.opencontainers.image.source" = "https://github.com/TwiN/gatus";
-            };
-          };
-        };
-
-        systemd.services = {
-          "init-docker-network-${name}" = {
-            description = "Create Docker networks for Traefik isolation";
-            after = [ "docker.service" ];
-            wantedBy = [ "multi-user.target" ];
-            serviceConfig = {
-              Type = "oneshot";
-              RemainAfterExit = true;
-              ExecStart = [
-                "-${lib.getExe pkgs.docker} network create traefik-${name}"
-                "-${lib.getExe pkgs.docker} network create ${name}"
-              ];
-            };
-          };
-          docker-traefik = {
-            after = [ "init-docker-network-${name}.service" ];
-            requires = [ "init-docker-network-${name}.service" ];
-          };
-          "docker-${name}" = {
-            after = [ "init-docker-network-${name}.service" ];
-            requires = [ "init-docker-network-${name}.service" ];
-          };
         };
 
         environment.etc."${alloyJournal.name}" = alloyJournal.value;

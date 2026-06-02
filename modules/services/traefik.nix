@@ -9,25 +9,30 @@ _: {
     let
       cfg = config.mine.services.traefik;
       acmeStorage = "/var/lib/traefik/acme.json";
-      envFileContents = ''
-        AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."aws/traefik/AWS_SECRET_ACCESS_KEY"}
-        AWS_ACCESS_KEY_ID=${config.sops.placeholder."aws/traefik/AWS_ACCESS_KEY_ID"}
-        AWS_HOSTED_ZONE_ID=${config.sops.placeholder."aws/traefik/AWS_HOSTED_ZONE_ID"}
-        AWS_REGION="us-west-2";
-      '';
+
     in
     {
       options.mine.services.traefik = {
-        enable = lib.mkEnableOption "Enable Traefik system service.";
-        rootDomainName = lib.mkOption {
-          description = "Root domain name";
+        enable = lib.mkEnableOption "Enable Traefik via native systemd service";
+        subdomain = lib.mkOption {
+          description = "Service subdomain";
           type = lib.types.str;
-          default = "thurs.pw";
+          default = "traefik-${config.networking.hostName}";
+        };
+        dashboard = lib.mkOption {
+          description = "Enable dashboard";
+          type = lib.types.bool;
+          default = true;
         };
         dnsChallengeProvider = lib.mkOption {
-          description = "Base path for storing container configs";
+          description = "Provider for ACME DNS challenge";
           type = lib.types.str;
           default = "route53";
+        };
+        awsEnvKeys = lib.mkOption {
+          description = "Traefik requires keys to update Route53 records.";
+          type = lib.types.bool;
+          default = true;
         };
       };
 
@@ -36,21 +41,19 @@ _: {
           enable = true;
           environmentFiles = [ config.sops.templates."traefik.keys.env".path ];
           staticConfigOptions = {
+            log.level = "INFO";
             global = {
               checkNewVersion = false;
               sendAnonymousUsage = false;
             };
-
-            log.level = "INFO";
 
             api = {
               dashboard = false;
               insecure = false;
             };
 
-            # Note: Nix handles the directory setup, but you define it here
             providers.file = {
-              directory = "/etc/traefik/providers";
+              directory = "/etc/traefik/static";
               watch = true;
             };
 
@@ -88,6 +91,15 @@ _: {
           };
         };
 
+        networking.firewall.allowedTCPPorts = [
+          80
+          443
+        ];
+
+        systemd.tmpfiles.rules = [
+          "f ${acmeStorage} 0600 traefik traefik - -"
+        ];
+
         sops = {
           secrets = {
             "aws/traefik/AWS_ACCESS_KEY_ID" = { };
@@ -95,45 +107,14 @@ _: {
             "aws/traefik/AWS_HOSTED_ZONE_ID" = { };
           };
           templates = {
-            "traefik.keys.env".content = envFileContents;
+            "traefik.keys.env".content = ''
+              AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."aws/traefik/AWS_SECRET_ACCESS_KEY"}
+              AWS_ACCESS_KEY_ID=${config.sops.placeholder."aws/traefik/AWS_ACCESS_KEY_ID"}
+              AWS_HOSTED_ZONE_ID=${config.sops.placeholder."aws/traefik/AWS_HOSTED_ZONE_ID"}
+              AWS_REGION=us-west-2;
+            '';
           };
         };
-
-        networking.firewall.allowedTCPPorts = [
-          80
-          443
-        ];
-
-        users.users.traefik.extraGroups = lib.mkIf (
-          config.virtualisation.oci-containers.backend == "docker"
-        ) [ "docker" ];
-
-        systemd.tmpfiles.rules = [
-          "f ${acmeStorage} 0600 traefik traefik - -"
-        ];
-
-        environment.etc."traefik/providers/traefik.toml".text = ''
-          [http.routers]
-            [http.routers.traefik]
-              rule = "Host(`traefik.${config.mine.services.traefik.rootDomainName}`)"
-              entryPoints = ["websecure"]
-              service = "api@internal"
-              [http.routers.traefik.tls]
-                certResolver = "letsencrypt"
-                [[http.routers.traefik.tls.domains]]
-                  main = "${config.mine.services.traefik.rootDomainName}"
-                  sans = ["*.${config.mine.services.traefik.rootDomainName}"]
-
-            [http.routers.http-catchall]
-              rule = "HostRegexp(`^.+\\.${config.mine.services.traefik.rootDomainName}`)"
-              entryPoints = ["web"]
-              middlewares = ["redirect-to-https"]
-              service = "noop@internal"
-
-          [http.middlewares]
-            [http.middlewares.redirect-to-https.redirectScheme]
-              scheme = "https"
-        '';
       };
     };
 }

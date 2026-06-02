@@ -11,29 +11,30 @@ _: {
       version = "1.26.1";
 
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
+      configPath = config.mine.containers.settings.configPath;
     in
     {
       options.mine.containers.${name} = {
         enable = lib.mkEnableOption "${name}";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = "gitea";
-        };
       };
 
       config = lib.mkIf cfg.enable {
+        mine.homelab.${config.networking.hostName} = {
+          apps.gitea = {
+            traefik.container.port = 3000;
+          };
+        };
+
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "gitea/gitea:${version}";
+            pull = "always";
             ports = [
-              "3000"
               "222:22"
             ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/gitea/web:/data"
-              "${config.mine.containers.settings.configPath}/gitea/backup:/backup"
+              "${configPath}/gitea/web:/data"
+              "${configPath}/gitea/backup:/backup"
             ];
             environment = {
               USER_UID = "1000";
@@ -47,28 +48,21 @@ _: {
             environmentFiles = [
               config.sops.templates."gitea-web".path
             ];
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
-            ];
             labels = {
-              "traefik.enable" = "true";
-              "traefik.http.routers.${name}.tls" = "true";
-              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "websecure";
-              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "3000";
               "homelab.backup.enable" = "true";
-              "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}/backup";
+              "homelab.backup.path" = "${configPath}/${name}/backup";
               "homelab.backup.retention.period" = "5";
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/go-gitea/gitea";
             };
           };
+
           "${name}-db" = {
             image = "docker.io/library/postgres:14";
+            pull = "always";
+            networks = [ "${name}" ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/gitea/postgres:/var/lib/postgresql/data"
+              "${configPath}/gitea/postgres:/var/lib/postgresql/data"
             ];
             environment = {
               POSTGRES_DB = "gitea";
@@ -76,10 +70,6 @@ _: {
             };
             environmentFiles = [
               config.sops.templates."gitea-db".path
-            ];
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
             ];
             labels = {
               "enable.versions.check" = "false";
@@ -109,7 +99,7 @@ _: {
                 pkgs.docker-client
               ];
               preStart = ''
-                find ${config.mine.containers.settings.configPath}/gitea/backup -type f -iname "gitea-dump*" -delete
+                find ${configPath}/gitea/backup -type f -iname "gitea-dump*" -delete
                 docker exec -u git -w /backup gitea /app/gitea/gitea dump --skip-package-data -c /data/gitea/conf/app.ini
               '';
             });
@@ -123,7 +113,7 @@ _: {
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "podman-${name}";
             };
             alloyJournalBackup = lib.thurs.mkAlloyJournal {
               name = "backup-${name}";

@@ -11,43 +11,29 @@ _: {
       version = "1.4.28";
 
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
+      configPath = config.mine.containers.settings.configPath;
     in
     {
       options.mine.containers."${name}" = {
         enable = lib.mkEnableOption "${name}";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = "${name}";
-        };
-        tailscaleEntrypoint = lib.mkOption {
-          description = "Set traefik entrypoint to tailscale Ip";
-          type = lib.types.bool;
-          default = true;
-        };
       };
 
       config = lib.mkIf cfg.enable {
-        virtualisation.docker = {
-          extraOptions = "--default-ulimit nofile=65536:65536";
+        mine.homelab.${config.networking.hostName} = {
+          apps.${name}.traefik.container = {
+            port = 3000;
+            tailscale = true;
+          };
         };
 
         virtualisation.oci-containers.containers = {
-          traefik = {
-            networks = [ "traefik-${name}" ];
-          };
           "${name}" = {
             image = "ghcr.io/connorgallopo/${name}:${version}";
             hostname = name;
-            ports = [ "3000" ];
             networks = [
-              "${name}"
-              "traefik-${name}"
               "jellyfin"
               "plex"
             ];
-            pull = "always";
             dependsOn = [
               "${name}-db"
               "${name}-redis"
@@ -64,17 +50,10 @@ _: {
               config.sops.templates."tracearr.env".path
             ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/${name}/app:/app/backend/backup-data"
+              "${configPath}/${name}/app:/app/backend/backup-data"
             ];
             labels = {
-              "traefik.enable" = "true";
-              "traefik.docker.network" = "traefik-${name}";
-              "traefik.http.routers.${name}.tls" = "true";
-              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "tailscale";
-              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
               "traefik.http.routers.${name}.observability.accesslogs" = "false";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "3000";
             };
           };
 
@@ -82,12 +61,12 @@ _: {
             image = "timescale/timescaledb-ha:pg18.1-ts2.25.0";
             pull = "always";
             hostname = "${name}-db";
-            networks = [ "${name}" ];
+            networks = [ name ];
             ports = [
               "5432"
             ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/${name}/db:/home/postgres/pgdata/data"
+              "${configPath}/${name}/db:/home/postgres/pgdata/data"
             ];
             extraOptions = [
               "--shm-size=512mb"
@@ -118,9 +97,9 @@ _: {
           "${name}-redis" = {
             image = "docker.io/library/redis:8-alpine";
             pull = "always";
-            networks = [ "${name}" ];
+            networks = [ name ];
             volumes = [
-              "${config.mine.containers.settings.configPath}/${name}/redis:/data"
+              "${configPath}/${name}/redis:/data"
             ];
             cmd = [
               "redis-server"
@@ -153,43 +132,11 @@ _: {
           };
         };
 
-        systemd.services = {
-          init-docker-network-tracearr = {
-            description = "Create Docker networks for Traefik isolation";
-            after = [ "docker.service" ];
-            wantedBy = [ "multi-user.target" ];
-            serviceConfig = {
-              Type = "oneshot";
-              RemainAfterExit = true;
-              ExecStart = [
-                "-${lib.getExe pkgs.docker} network create traefik-${name}"
-                "-${lib.getExe pkgs.docker} network create ${name}"
-              ];
-            };
-          };
-          "docker-traefik" = {
-            after = [ "init-docker-network-${name}.service" ];
-            requires = [ "init-docker-network-${name}.service" ];
-          };
-          "docker-${name}" = {
-            after = [ "init-docker-network-${name}.service" ];
-            requires = [ "init-docker-network-${name}.service" ];
-          };
-          "docker-${name}-db" = {
-            after = [ "init-docker-network-${name}.service" ];
-            requires = [ "init-docker-network-${name}.service" ];
-          };
-          "docker-${name}-redis" = {
-            after = [ "init-docker-network-${name}.service" ];
-            requires = [ "init-docker-network-${name}.service" ];
-          };
-        };
-
         environment.etc =
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
           in
           {

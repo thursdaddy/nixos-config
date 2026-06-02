@@ -10,17 +10,16 @@ _: {
     in
     {
       mine = {
-        base = {
-          networking = {
-            hostName = "streambox";
-            meta = {
-              hostIp = "192.168.10.189";
-              tailscaleIp = "100.89.208.50";
-            };
-          };
+        base.networking.hostName = "streambox";
+
+        homelab.streambox = {
+          services.ddns = true;
+          hostIp = "192.168.10.189";
+          tailscaleIp = "100.89.208.50";
         };
 
         containers = {
+          settings.backend = "podman";
           jellyfin = enabled;
           jellystat = enabled;
           navidrome = enabled;
@@ -30,14 +29,8 @@ _: {
           tracearr = enabled;
           traefik = {
             enable = true;
-            ports = [
-              "${config.mine.base.networking.meta.tailscaleIp}:443:8443"
-              "${config.mine.base.networking.meta.hostIp}:443:443"
-              "${config.mine.base.networking.meta.hostIp}:8082:8082"
-            ];
+            dashboard = true;
             extraCmds = [
-              "--accesslog=true"
-              "--entrypoints.tailscale.address=:8443"
               "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
               "--experimental.plugins.fail2ban.version=v0.9.0"
             ];
@@ -46,8 +39,13 @@ _: {
 
         services = {
           backups = enabled;
-          ddns = enabled;
         };
+      };
+
+      services.resolved = {
+        extraConfig = ''
+          MulticastDNS=no
+        '';
       };
     };
 }

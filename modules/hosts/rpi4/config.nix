@@ -11,14 +11,7 @@ _: {
     {
 
       mine = {
-        base = {
-          networking = {
-            hostName = "rpi4";
-            meta = {
-              hostIp = "192.168.10.103";
-            };
-          };
-        };
+        base.networking.hostName = "rpi4";
 
         services = {
           traefik = enabled;

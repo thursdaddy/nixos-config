@@ -53,12 +53,17 @@ _: {
         };
       };
 
-      hardware.graphics = {
-        enable = true;
-        extraPackages = with pkgs; [
-          intel-media-driver
-          vpl-gpu-rt
-        ];
+      hardware = {
+        enableRedistributableFirmware = true;
+        graphics = {
+          enable = true;
+          extraPackages = with pkgs; [
+            intel-media-driver
+            intel-vaapi-driver
+            vpl-gpu-rt
+            libvdpau-va-gl
+          ];
+        };
       };
 
       environment.sessionVariables = {

@@ -11,7 +11,6 @@ _: {
       version = "0.32.0";
 
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
     in
     {
       options.mine.containers.${name} = {
@@ -24,19 +23,26 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
+        mine.homelab.${config.networking.hostName} = {
+          apps.hoarder = {
+            traefik = {
+              container = {
+                port = 3000;
+              };
+            };
+          };
+        };
+
         virtualisation.oci-containers.containers = {
           "hoarder" = {
             image = "ghcr.io/karakeep-app/karakeep:${version}";
-            ports = [
-              "3000"
-            ];
+            pull = "always";
+            networks = [ "traefik" ];
             volumes = [
               "${config.mine.containers.settings.configPath}/hoarder:/data"
             ];
             extraOptions = [
-              "--network=traefik"
               "--add-host=host.docker.internal:host-gateway"
-              "--pull=always"
             ];
             environment = {
               NEXTAUTH_URL = "https://hoarder.${config.mine.containers.traefik.rootDomainName}";
@@ -54,12 +60,6 @@ _: {
               config.sops.templates."hoarder.env".path
             ];
             labels = {
-              "traefik.enable" = "true";
-              "traefik.http.routers.${name}.tls" = "true";
-              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "websecure";
-              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "3000";
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/hoarder-app/hoarder";
               "homelab.backup.enable" = "false";
@@ -70,11 +70,9 @@ _: {
 
           "hoarder-chrome" = {
             image = "gcr.io/zenika-hub/alpine-chrome:123";
+            pull = "always";
+            networks = [ "traefik" ];
             hostname = "chrome";
-            extraOptions = [
-              "--network=traefik"
-              "--pull=always"
-            ];
             cmd = [
               "--no-sandbox"
               "--disable-gpu"
@@ -91,10 +89,9 @@ _: {
 
           "hoarder-meilisearch" = {
             image = "getmeili/meilisearch:v1.11.1";
+            pull = "always";
+            networks = [ "traefik" ];
             hostname = "meilisearch";
-            extraOptions = [
-              "--network=traefik"
-            ];
             environment = {
               MEILI_NO_ANALYTICS = "true";
             };
@@ -120,7 +117,7 @@ _: {
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
           in
           {

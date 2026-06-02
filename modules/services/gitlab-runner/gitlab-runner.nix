@@ -10,14 +10,12 @@ _: {
       cfg = config.mine.services.gitlab-runner;
 
       runner_cfg_path = "/etc/gitlab-runner";
-      runner_script = builtins.readFile ./runner.py;
       runner_registration = pkgs.writers.writePython3Bin "_gitlab-runner" {
         doCheck = false;
         libraries = with pkgs.python3Packages; [
           requests
         ];
-      } runner_script;
-
+      } (builtins.readFile ./runner.py);
     in
     {
       options.mine.services.gitlab-runner = {

@@ -10,13 +10,7 @@
     let
       name = "blocky";
       port = 4000;
-      cfg = config.mine.services.${name};
 
-      # Check nixosConfigurations for "enabled" services and/or containers with a set
-      # "subdomain" option. If found, uses subdomain value combined with
-      # config.mine.*.traefik.rootDomainName and mapped to
-      # config.mine.base.networking.meta.hostIp. These generate an attr set
-      # used to in blockys customDNS.mapping entries.
       allConfigs = inputs.self.nixosConfigurations or { };
 
       includedHosts = [
@@ -30,56 +24,65 @@
         "streambox"
       ];
 
-      # Only crawl hosts that are in the list AND have a config defined
       targetHosts = lib.filterAttrs (
-        name: v: (builtins.elem name includedHosts) && (v ? config)
+        hostName: v: (builtins.elem hostName includedHosts) && (v ? config)
       ) allConfigs;
 
       scrapeNixosConfigurations =
         hostName: hostValue:
         let
           mineCfg = hostValue.config.mine or { };
+          hostData = mineCfg.homelab.${hostName} or { };
+          rootDomain = hostData.rootDomainName or "thurs.pw";
+          hostIp = hostData.hostIp or "192.168.0.0";
+          tsIp = hostData.tailscaleIp or "100.100.0.0";
 
-          serviceTraefikEnabled = mineCfg.services.traefik.enable or false;
-          containerTraefikEnabled = mineCfg.containers.traefik.enable or false;
-          traefikEnabled = serviceTraefikEnabled || containerTraefikEnabled;
-
-          rootDomain =
-            if serviceTraefikEnabled then
-              mineCfg.services.traefik.rootDomainName or "thurs.pw"
-            else
-              mineCfg.containers.traefik.rootDomainName or "thurs.pw";
-
-          getMappings =
-            attrs:
-            let
-              enabled = lib.filterAttrs (
-                n: v: n != "settings" && (v.subdomain or null) != null && (v.enable or false)
-              ) attrs;
-            in
-            lib.mapAttrs' (
-              n: v:
-              let
-                sub = v.subdomain or n;
-                fqdn = "${sub}.${rootDomain}";
-
-                tailscaleEntrypoint = v.tailscaleEntrypoint or false;
-                dynamicIp =
-                  if tailscaleEntrypoint then
-                    mineCfg.base.networking.meta.tailscaleIp or "100.100.0.0"
-                  else
-                    mineCfg.base.networking.meta.hostIp or "192.168.0.0";
-              in
-              lib.nameValuePair fqdn dynamicIp
-            ) enabled;
+          homelabApps = hostData.apps or { };
 
         in
-        if traefikEnabled then
-          lib.recursiveUpdate (getMappings (mineCfg.containers or { })) (
-            getMappings (mineCfg.services or { })
-          )
-        else
-          { };
+        lib.foldl' lib.recursiveUpdate { } (
+          lib.mapAttrsToList (
+            appName: appConfig:
+            let
+              domain =
+                if (appConfig.traefik.domain or "") != "" && (appConfig.traefik.domain or "") != rootDomain then
+                  appConfig.traefik.domain
+                else
+                  rootDomain;
+
+              # 1. Map Static Routes
+              staticRoutes = appConfig.traefik.static or { };
+              staticMap = lib.mapAttrs' (
+                routeName: routeConfig:
+                let
+                  sub = if (routeConfig.subDomain or "") != "" then routeConfig.subDomain else routeName;
+                  fqdn = "${sub}.${domain}";
+                  isTailscale = routeConfig.tailscale or false;
+                  targetIp = if isTailscale then tsIp else hostIp;
+                in
+                lib.nameValuePair fqdn targetIp
+              ) staticRoutes;
+
+              # 2. Map Container Routes
+              c = appConfig.traefik.container or { };
+              containerMap =
+                if (c.port or null) != null || (c.tailscale or false) || (c.subDomain or "") != "" then
+                  let
+                    sub = if (c.subDomain or "") != "" then c.subDomain else appName;
+                    fqdn = "${sub}.${domain}";
+                    isTailscale = c.tailscale or false;
+                    targetIp = if isTailscale then tsIp else hostIp;
+                  in
+                  {
+                    "${fqdn}" = targetIp;
+                  }
+                else
+                  { };
+
+            in
+            lib.recursiveUpdate staticMap containerMap
+          ) homelabApps
+        );
 
       scrapedCustomDnsMapping = lib.foldl' lib.recursiveUpdate { } (
         lib.mapAttrsToList scrapeNixosConfigurations targetHosts
@@ -92,11 +95,6 @@
           description = "Enable Blocky";
           type = lib.types.bool;
           default = true;
-        };
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = "${name}-${config.mine.base.networking.hostName}";
         };
       };
 
@@ -170,7 +168,7 @@
                 };
 
                 ports = {
-                  dns = 53;
+                  dns = "${config.mine.homelab.${config.networking.hostName}.hostIp}:53";
                   http = 4000;
                   tls = 853;
                 };
@@ -200,7 +198,6 @@
                     "attic.thurs.pw" = "192.168.10.60";
                     "jellyfin.${config.nixos-thurs.publicDomain}" = "192.168.10.189";
                     "cloudbox.thurs.pw" = "100.71.122.112";
-                    # borrowbox entries
                     "bazarr.thurs.pw" = "192.168.10.12";
                     "deemix.thurs.pw" = "192.168.10.12";
                     "lidarr.thurs.pw" = "192.168.10.12";
@@ -233,15 +230,9 @@
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
             };
-            traefik = lib.thurs.mkTraefikFile {
-              inherit config;
-              name = cfg.subdomain;
-              inherit port;
-            };
           in
           builtins.listToAttrs [
             alloyJournal
-            traefik
           ];
       };
     };

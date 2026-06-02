@@ -7,6 +7,35 @@ import docker
 import requests
 
 
+def get_container_client():
+    """Attempt to connect to Docker, falling back to Podman sockets if necessary."""
+    # 1. Try standard environment (works for Docker natively, or Podman if DOCKER_HOST is set)
+    try:
+        client = docker.from_env()
+        client.ping()
+        return client
+    except Exception:
+        pass
+
+    # 2. Try common Podman socket locations if standard connection fails
+    uid = os.getuid()
+    sockets = [
+        "/run/podman/podman.sock",  # Rootful Podman
+        f"/run/user/{uid}/podman/podman.sock",  # Rootless Podman
+    ]
+
+    for sock in sockets:
+        if os.path.exists(sock):
+            try:
+                client = docker.DockerClient(base_url=f"unix://{sock}")
+                client.ping()
+                return client
+            except Exception:
+                continue
+
+    raise Exception("Could not connect to Docker or Podman daemon.")
+
+
 def convert_to_api_url(repo_url, container_name):
     """Convert a GitHub repository URL to an API URL for querying the latest release or tags"""
     if "github.com" in repo_url:
@@ -115,13 +144,13 @@ def main(gotify_flag):
     gotify_uptodate_lines = []
 
     try:
-        client = docker.from_env()
+        client = get_container_client()
         containers = client.containers.list()
     except Exception as e:
-        error_msg = f"Error connecting to Docker: {e}"
+        error_msg = f"Error connecting to Container Engine: {e}"
         print(error_msg)
         if gotify_flag:
-            send_to_gotify(f"Docker Error: {hostname}", error_msg)
+            send_to_gotify(f"Container Engine Error: {hostname}", error_msg)
         return
 
     if not containers:

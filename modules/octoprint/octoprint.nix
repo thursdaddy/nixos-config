@@ -10,69 +10,57 @@
     let
       name = "octoprint";
       cfg = config.mine.services.${name};
-      port = "5000";
 
-      octoStream = "octostream";
-      octoStreamCfg = config.mine.services.${octoStream};
-      cabinetStream = "cabinetstream";
-      cabinetStreamCfg = config.mine.services.${cabinetStream};
+      hostName = config.networking.hostName;
+      traefikCfg = config.mine.homelab.${hostName}.apps.octoprint.traefik.static;
     in
     {
-      options.mine.services = {
-        ${name} = {
-          enable = lib.mkOption {
-            description = "Enable ${name}";
-            type = lib.types.bool;
-            default = true;
-          };
-          subdomain = lib.mkOption {
-            description = "Container url, used by blocky to create DNS entry";
-            type = lib.types.str;
-            default = name;
-          };
-          port = lib.mkOption {
-            description = "Port";
-            type = lib.types.str;
-            default = port;
-          };
-        };
-        ${octoStream} = {
-          enable = lib.mkOption {
-            description = "Enable ${octoStream}";
-            type = lib.types.bool;
-            default = true;
-          };
-          subdomain = lib.mkOption {
-            description = "Stream url, used by blocky to create DNS entry";
-            type = lib.types.str;
-            default = octoStream;
-          };
-          port = lib.mkOption {
-            description = "Port";
-            type = lib.types.str;
-            default = "8080";
-          };
-        };
-        ${cabinetStream} = {
-          enable = lib.mkOption {
-            description = "Enable ${cabinetStream}";
-            type = lib.types.bool;
-            default = true;
-          };
-          subdomain = lib.mkOption {
-            description = "Stream url, used by blocky to create DNS entry";
-            type = lib.types.str;
-            default = cabinetStream;
-          };
-          port = lib.mkOption {
-            description = "Port";
-            type = lib.types.str;
-            default = "9090";
-          };
+      options.mine.services.octoprint = {
+        enable = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = "Enable Octoprint";
         };
       };
 
       config = lib.mkIf cfg.enable {
+        mine = {
+          homelab.${hostName} = {
+            apps.octoprint = {
+              traefik = {
+                static = {
+                  octoprint = {
+                    port = 5000;
+                  };
+                  stream-octo = {
+                    port = 8080;
+                    ip = "0.0.0.0";
+                  };
+                  stream-cabinet = {
+                    port = 9090;
+                    ip = "0.0.0.0";
+                  };
+                };
+              };
+            };
+            nfs-mounts = {
+              enable = true;
+              mounts = {
+                "/opt/configs" = {
+                  device = "192.168.10.12:/fast/configs/printpi";
+                  options = [
+                    "auto"
+                    "rw"
+                    "defaults"
+                    "_netdev"
+                    "x-systemd.automount"
+                  ];
+                };
+              };
+            };
+          };
+        };
+
         services.octoprint = {
           enable = true;
           # some octoprint plugins are not backwards compatible with python 3.13 as the "future" module is not supported in python 3.13
@@ -230,22 +218,6 @@
             ];
         };
 
-        mine.base.nfs-mounts = {
-          enable = true;
-          mounts = {
-            "/opt/configs" = {
-              device = "192.168.10.12:/fast/configs/printpi";
-              options = [
-                "auto"
-                "rw"
-                "defaults"
-                "_netdev"
-                "x-systemd.automount"
-              ];
-            };
-          };
-        };
-
         systemd.services = {
           octoprint = {
             after = lib.mkForce [ "mount-configs.service" ];
@@ -256,18 +228,18 @@
             serviceConfig.AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
           };
 
-          ${octoStream} = {
+          stream-octo = {
             serviceConfig = {
-              ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video0 --resolution=1920x1080 --desired-fps=60 --format=MJPEG --host=0.0.0.0 --port=${octoStreamCfg.port} --encoder=hw --workers=3 --persistent";
+              ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video0 --resolution=1920x1080 --desired-fps=60 --format=MJPEG --host=0.0.0.0 --port=${builtins.toString traefikCfg.stream-octo.port} --encoder=hw --workers=3 --persistent";
             };
             wantedBy = [ "multi-user.target" ];
             after = [ "network-online.target" ];
             requires = [ "network-online.target" ];
           };
 
-          ${cabinetStream} = {
+          stream-cabinet = {
             serviceConfig = {
-              ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video2 --resolution=1920x1080 --desired-fps=15 --format=MJPEG --host=0.0.0.0 --port=${cabinetStreamCfg.port} --encoder=hw --workers=3 --persistent";
+              ExecStart = "${pkgs.unstable.ustreamer}/bin/ustreamer --device=/dev/video2 --resolution=1920x1080 --desired-fps=15 --format=MJPEG --host=0.0.0.0 --port=${builtins.toString traefikCfg.stream-cabinet.port} --encoder=hw --workers=3 --persistent";
             };
             wantedBy = [ "multi-user.target" ];
             after = [ "network-online.target" ];
@@ -336,29 +308,9 @@
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
             };
-            traefikOctoPrint = lib.thurs.mkTraefikFile {
-              inherit config;
-              name = cfg.subdomain;
-              inherit port;
-            };
-            traefikOctoStream = lib.thurs.mkTraefikFile {
-              inherit config;
-              name = octoStreamCfg.subdomain;
-              port = octoStreamCfg.port;
-              ip = "0.0.0.0";
-            };
-            traefikCabinetStream = lib.thurs.mkTraefikFile {
-              inherit config;
-              name = cabinetStreamCfg.subdomain;
-              port = cabinetStreamCfg.port;
-              ip = "0.0.0.0";
-            };
           in
           builtins.listToAttrs [
             alloyJournal
-            traefikOctoPrint
-            traefikOctoStream
-            traefikCabinetStream
           ];
       };
     };

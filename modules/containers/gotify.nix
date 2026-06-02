@@ -11,36 +11,29 @@ _: {
       version = "2.9.1";
 
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
     in
     {
       options.mine.containers."${name}" = {
         enable = lib.mkEnableOption "${name}";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = name;
-        };
-        tailscaleEntrypoint = lib.mkOption {
-          description = "Set traefik entrypoint to tailscale Ip";
-          type = lib.types.bool;
-          default = true;
-        };
       };
 
       config = lib.mkIf cfg.enable {
-        virtualisation.oci-containers.containers = {
-          traefik = {
-            networks = [ "traefik-${name}" ];
+        mine = {
+          homelab.${config.networking.hostName} = {
+            apps.gotify = {
+              traefik.container = {
+                tailscale = true;
+                port = 80;
+              };
+            };
           };
+        };
+
+        virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "gotify/server:${version}";
             pull = "always";
             hostname = name;
-            networks = [ "traefik-${name}" ];
-            ports = [
-              "80"
-            ];
             volumes = [
               "${config.mine.containers.settings.configPath}/gotify:/app/data/"
             ];
@@ -56,40 +49,9 @@ _: {
               GOTIFY_REGISTRATION = "false";
             };
             labels = {
-              "traefik.enable" = "true";
-              "traefik.docker.network" = "traefik-${name}";
-              "traefik.http.routers.${name}.tls" = "true";
-              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "tailscale";
-              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "80";
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/gotify/server";
             };
-          };
-        };
-
-        systemd.services = {
-          "init-docker-network-${name}" = {
-            description = "Create Docker networks for Traefik isolation";
-            after = [ "docker.service" ];
-            wantedBy = [ "multi-user.target" ];
-            serviceConfig = {
-              Type = "oneshot";
-              RemainAfterExit = true;
-              ExecStart = [
-                "-${lib.getExe pkgs.docker} network create traefik-${name}"
-                "-${lib.getExe pkgs.docker} network create ${name}"
-              ];
-            };
-          };
-          docker-traefik = {
-            after = [ "init-docker-network-${name}.service" ];
-            requires = [ "init-docker-network-${name}.service" ];
-          };
-          "docker-${name}" = {
-            after = [ "init-docker-network-${name}.service" ];
-            requires = [ "init-docker-network-${name}.service" ];
           };
         };
 
@@ -97,7 +59,7 @@ _: {
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
           in
           {

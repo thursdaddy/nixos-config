@@ -11,38 +11,29 @@ _: {
       version = "7.1.0";
 
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
+      port = 8082;
     in
     {
       options.mine.containers.${name} = {
         enable = lib.mkEnableOption "${name}";
-        subdomain = lib.mkOption {
-          description = "Container url";
-          type = lib.types.str;
-          default = "feed";
-        };
       };
 
       config = lib.mkIf cfg.enable {
+        mine.homelab.${config.networking.hostName} = {
+          apps.${name}.traefik.container = {
+            subDomain = "feed";
+            inherit port;
+          };
+        };
+
         virtualisation.oci-containers.containers."${name}" = {
           image = "athou/commafeed:${version}-h2";
-          ports = [
-            "8082"
-          ];
+          pull = "always";
+          networks = [ "traefik" ];
           volumes = [
             "${config.mine.containers.settings.configPath}/commafeed:/commafeed/data"
           ];
-          extraOptions = [
-            "--network=traefik"
-            "--pull=always"
-          ];
           labels = {
-            "traefik.enable" = "true";
-            "traefik.http.routers.${name}.tls" = "true";
-            "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-            "traefik.http.routers.${name}.entrypoints" = "websecure";
-            "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-            "traefik.http.services.${name}.loadbalancer.server.port" = "8082";
             "org.opencontainers.image.version" = "${version}";
             "org.opencontainers.image.source" = "https://github.com/Athou/commafeed";
           };
@@ -52,7 +43,7 @@ _: {
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
-              serviceName = "docker-${name}";
+              serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
           in
           {
