@@ -5,10 +5,18 @@ _: {
       ...
     }:
     {
-      security.pam.u2f = {
-        enable = true;
-        settings.cue = true;
+      security.pam = {
+        u2f = {
+          enable = true;
+          settings.cue = true;
+        };
+
+        rssh.enable = true;
+
+        services.sudo = {
+          u2fAuth = true;
+          rssh = true;
+        };
       };
-      security.pam.services.sudo.u2fAuth = true;
     };
 }
