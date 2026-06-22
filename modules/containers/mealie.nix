@@ -42,7 +42,7 @@
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "ghcr.io/mealie-recipes/${name}:v${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             volumes = [
               "${configPath}/${name}/app:/app/data"
             ];
@@ -65,7 +65,7 @@
 
           "${name}-db" = {
             image = "docker.io/library/postgres:17";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ name ];
             volumes = [
               "${configPath}/${name}/postgres:/var/lib/postgresql/data"
@@ -87,7 +87,7 @@
 
           "${name}-addons" = {
             image = "ghcr.io/razziel89/mealie-addons:latest";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ name ];
             ports = [
               "9001:9000"

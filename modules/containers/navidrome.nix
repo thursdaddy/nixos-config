@@ -38,7 +38,7 @@ _: {
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "deluan/navidrome:${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             volumes = [
               "/mnt/music:/music"
               "${configPath}/${name}/data:/data"

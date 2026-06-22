@@ -36,7 +36,7 @@ _: {
         virtualisation.oci-containers.containers = {
           "hoarder" = {
             image = "ghcr.io/karakeep-app/karakeep:${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ "traefik" ];
             volumes = [
               "${config.mine.containers.settings.configPath}/hoarder:/data"
@@ -70,7 +70,7 @@ _: {
 
           "hoarder-chrome" = {
             image = "gcr.io/zenika-hub/alpine-chrome:123";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ "traefik" ];
             hostname = "chrome";
             cmd = [
@@ -89,7 +89,7 @@ _: {
 
           "hoarder-meilisearch" = {
             image = "getmeili/meilisearch:v1.11.1";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ "traefik" ];
             hostname = "meilisearch";
             environment = {

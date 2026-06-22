@@ -28,7 +28,7 @@ _: {
         mine.homelab.${config.networking.hostName} = {
           apps.${name} = {
             traefik.container = {
-              subDomain = "${subdomain}.${config.mine.containers.traefik.rootDomainName}";
+              subDomain = subdomain;
               port = 8384;
             };
           };
@@ -36,7 +36,7 @@ _: {
 
         virtualisation.oci-containers.containers."${name}" = {
           image = "syncthing/syncthing:${version}";
-          pull = "always";
+          pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
           ports = [
             "0.0.0.0:22000:22000/tcp"
             "0.0.0.0:22000:22000/udp"

@@ -29,7 +29,7 @@ _: {
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "cyfershepard/${name}:${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             dependsOn = [ "${name}-db" ];
             networks = [
               "jellyfin"

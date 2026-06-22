@@ -49,7 +49,7 @@ _: {
 
         virtualisation.oci-containers.containers.attic-db = {
           image = "postgres:17.6-alpine";
-          pull = "always";
+          pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
           hostname = "attic-db";
           ports = [
             "0.0.0.0:54545:5432"

@@ -86,7 +86,7 @@ _: {
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "traefik:${version}";
-            # pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             dependsOn = lib.mkIf (ociBackend == "podman") [ "docker-socket-proxy" ];
             networks = lib.mkIf (ociBackend == "podman") [
               "docker-proxy"

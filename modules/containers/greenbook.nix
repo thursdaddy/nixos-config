@@ -39,7 +39,7 @@ _: {
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "gitea.thurs.pw/homelab/greenbook:v${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ "traefik" ];
             login = {
               username = "thurs";
@@ -68,7 +68,7 @@ _: {
 
           "${name}-db" = {
             image = "postgres:17.6-alpine";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ "traefik" ];
             volumes = [
               "${config.mine.containers.settings.configPath}/greenbook/db:/var/lib/postgresql/data"

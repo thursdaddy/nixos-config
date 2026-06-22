@@ -46,7 +46,7 @@ _: {
         virtualisation.oci-containers.containers.prometheus = {
           user = "root";
           image = "prom/prometheus:v${version}";
-          pull = "always";
+          pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
           ports = [
             "0.0.0.0:9090:9090"
           ];

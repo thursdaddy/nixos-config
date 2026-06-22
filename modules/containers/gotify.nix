@@ -32,7 +32,7 @@ _: {
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "gotify/server:${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             hostname = name;
             volumes = [
               "${config.mine.containers.settings.configPath}/gotify:/app/data/"

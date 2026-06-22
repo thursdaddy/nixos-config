@@ -33,7 +33,7 @@ _: {
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "vaultwarden/server:${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             hostname = name;
             networks = [ "traefik-${name}" ];
             environment = {

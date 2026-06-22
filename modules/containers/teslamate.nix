@@ -78,7 +78,7 @@ _: {
 
           "teslamate-grafana" = {
             image = "teslamate/grafana:${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ name ];
             ports = [ "3000" ];
             environment = {
@@ -102,7 +102,7 @@ _: {
 
           "teslamate-mosquitto" = {
             image = "eclipse-mosquitto:2";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ name ];
             hostname = "tesla-mosquitto";
             environment = {

@@ -28,7 +28,7 @@ _: {
 
         virtualisation.oci-containers.containers."${name}" = {
           image = "athou/commafeed:${version}-h2";
-          pull = "always";
+          pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
           networks = [ "traefik" ];
           volumes = [
             "${config.mine.containers.settings.configPath}/commafeed:/commafeed/data"

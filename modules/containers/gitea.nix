@@ -28,7 +28,7 @@ _: {
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "gitea/gitea:${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             ports = [
               "222:22"
             ];
@@ -59,7 +59,7 @@ _: {
 
           "${name}-db" = {
             image = "docker.io/library/postgres:14";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ "${name}" ];
             volumes = [
               "${configPath}/gitea/postgres:/var/lib/postgresql/data"
@@ -97,10 +97,11 @@ _: {
               inherit pkgs name;
               extraPackages = [
                 pkgs.docker-client
+                pkgs.podman
               ];
               preStart = ''
                 find ${configPath}/gitea/backup -type f -iname "gitea-dump*" -delete
-                docker exec -u git -w /backup gitea /app/gitea/gitea dump --skip-package-data -c /data/gitea/conf/app.ini
+                ${config.mine.containers.settings.backend} exec -u git -w /backup gitea /app/gitea/gitea dump --skip-package-data -c /data/gitea/conf/app.ini
               '';
             });
           in

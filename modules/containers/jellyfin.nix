@@ -3,7 +3,6 @@ _: {
     {
       config,
       lib,
-      pkgs,
       ...
     }:
     let
@@ -53,7 +52,7 @@ _: {
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "lscr.io/linuxserver/${name}:${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             hostname = name;
             ports = [
               "8920"

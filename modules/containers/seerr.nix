@@ -27,7 +27,7 @@ _: {
         };
         virtualisation.oci-containers.containers."${name}" = {
           image = "${name}/${name}:v${version}";
-          pull = "always";
+          pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
           environment = {
             PUID = "1000";
             PGID = "1000";

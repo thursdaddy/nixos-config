@@ -59,7 +59,7 @@ _: {
 
           "${name}-db" = {
             image = "timescale/timescaledb-ha:pg18.1-ts2.25.0";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             hostname = "${name}-db";
             networks = [ name ];
             ports = [
@@ -96,7 +96,7 @@ _: {
 
           "${name}-redis" = {
             image = "docker.io/library/redis:8-alpine";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ name ];
             volumes = [
               "${configPath}/${name}/redis:/data"

@@ -43,7 +43,7 @@ _: {
         virtualisation.oci-containers.containers = {
           "${name}" = {
             image = "madeofpendletonwool/pinepods:${version}";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             environmentFiles = [
               config.sops.templates."pinepods-web".path
             ];
@@ -80,7 +80,7 @@ _: {
           "${name}-valkey" = {
             image = "valkey/valkey:8-alpine";
             hostname = "${name}-valkey";
-            pull = "always";
+            pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [
               "${name}"
             ];
