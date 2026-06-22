@@ -62,7 +62,7 @@ _: {
           ];
         })
 
-        (lib.mkIf cfg.beszel-hub.enable ({
+        (lib.mkIf cfg.beszel-hub.enable {
           systemd.services.beszel-hub = {
             description = "Beszel-Hub";
             wantedBy = [ "multi-user.target" ]; # Standard for services
@@ -86,7 +86,7 @@ _: {
               };
             };
           };
-        }))
+        })
 
         (lib.mkIf cfg.beszel-agent.enable {
           systemd.services.beszel-agent = {

@@ -28,9 +28,10 @@ _: {
         };
       };
 
+      mine.base.networking.hostName = "aarch64-sd";
+
       networking = {
         hostId = "00000000";
-        defaultGateway = "192.168.10.1";
         nameservers = [
           "192.168.10.201"
           "192.168.10.60"
@@ -49,10 +50,6 @@ _: {
           grub.enable = false;
           generic-extlinux-compatible.enable = true;
         };
-      };
-
-      mine = {
-        dev.crush.enable = false;
       };
     };
 }

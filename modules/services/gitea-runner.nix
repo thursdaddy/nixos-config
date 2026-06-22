@@ -66,6 +66,7 @@ _: {
             }) cfg.runners;
           };
         };
+
         systemd.services."init-${ociBackend}-gitea-runner-net" = {
           description = "Create ${ociBackend} network gitea-runner-net";
           wantedBy = [ "multi-user.target" ];

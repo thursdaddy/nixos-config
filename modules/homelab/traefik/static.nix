@@ -104,31 +104,19 @@ _: {
 
         systemd.services = lib.mkMerge [
           {
-            "docker-traefik" =
-              lib.mkIf (traefikContainerRunning && ociBackend == "docker" && staticRoutes != [ ])
-                {
-                  restartTriggers = map (route: route.configFile) staticRoutes;
-                };
-
-            "podman-traefik" =
-              lib.mkIf (traefikContainerRunning && ociBackend == "podman" && staticRoutes != [ ])
-                {
-                  restartTriggers = map (route: route.configFile) staticRoutes;
-                };
+            "${ociBackend}-traefik" = lib.mkIf (traefikContainerRunning && staticRoutes != [ ]) {
+              restartTriggers = map (route: route.configFile) staticRoutes;
+            };
           }
         ];
 
-        virtualisation.oci-containers = {
-          containers = lib.mkMerge [
+        virtualisation.oci-containers.containers.traefik =
+          lib.mkIf (traefikContainerRunning && staticRoutes != [ ])
             {
-              traefik = lib.mkIf (traefikContainerRunning && staticRoutes != [ ]) {
-                cmd = [ "--providers.file.directory=/static" ];
-                volumes = map (route: "${route.configFile}:/static/${route.identifier}.toml:ro") staticRoutes;
-                extraOptions = [ "--add-host=host.docker.internal:host-gateway" ];
-              };
-            }
-          ];
-        };
+              cmd = [ "--providers.file.directory=/static" ];
+              volumes = map (route: "${route.configFile}:/static/${route.identifier}.toml:ro") staticRoutes;
+              extraOptions = [ "--add-host=host.docker.internal:host-gateway" ];
+            };
       };
     };
 }

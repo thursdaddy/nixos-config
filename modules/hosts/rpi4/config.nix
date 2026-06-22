@@ -1,7 +1,6 @@
 _: {
   configurations.nixos.rpi4.module =
     {
-      config,
       lib,
       ...
     }:

@@ -15,13 +15,17 @@ NC='\033[0m' # No Color
 rebuild () {
   if [[ "${HOSTNAME:-$HOST}" == "$TARGET" ]]; then
     printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
-    sudo nixos-rebuild --flake .\#"$TARGET" --no-reexec --use-substitutes switch
+    sudo nixos-rebuild --flake .\#"$TARGET" --no-reexec --use-substitutes switch "${EXTRA_ARGS[@]}"
   elif [[ "$TARGET" == "mbp" ]]; then
     printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
-    sudo darwin-rebuild --flake .\#mbp switch
+    # Prompt for sudo early so the user can walk away
+    sudo -v
+    # Build as standard user to keep evaluation cache working, then activate as root
+    darwin-rebuild --flake .\#mbp build "${EXTRA_ARGS[@]}"
+    sudo ./result/activate
   else
     printf "${BLUE}Rebuilding... ${ORANGE}${TARGET} (remote)${NC}\n"
-    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --no-reexec --use-substitutes --sudo switch
+    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --no-reexec --use-substitutes --sudo switch "${EXTRA_ARGS[@]}"
   fi
 }
 
@@ -125,10 +129,18 @@ fi
 # flakes are married to git
 git add .
 
+CMD=${1:-help}
 TARGET=${2:-null}
 INPUT=${2:-null}
 
-case $1 in
+if [ $# -ge 2 ]; then
+  shift 2
+  EXTRA_ARGS=("$@")
+else
+  EXTRA_ARGS=()
+fi
+
+case $CMD in
   help)
     print_help
     ;;

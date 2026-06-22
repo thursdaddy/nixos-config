@@ -11,22 +11,31 @@ _: {
       inherit (config.mine.base) user;
     in
     {
+      nix.linux-builder = {
+        enable = true;
+        systems = [
+          "aarch64-linux"
+          "x86_64-linux"
+        ];
+        config = {
+          boot.binfmt.emulatedSystems = [ "x86_64-linux" ];
+        };
+      };
+
+      nix.settings.trusted-users = [ "@admin" ];
 
       mine = {
         base = {
           nix.ghToken = enabled;
         };
 
-        desktop.aerospace = enabled;
-
         dev.tmux = {
           sessionizer = {
             enable = true;
             searchPaths = [
-              "${user.homeDir}/projects/nix"
-              "${user.homeDir}/projects/cloud"
-              "${user.homeDir}/projects/homelab"
-              "${user.homeDir}/projects/personal"
+              "${user.homeDir}/dev/nix"
+              "${user.homeDir}/dev/cloud"
+              "${user.homeDir}/dev/homelab"
             ];
           };
         };

@@ -17,18 +17,18 @@ local input:
 update input:
     @./nix.sh update {{input}}
 
-rebuild target:
+rebuild target +args="":
     #!/usr/bin/env bash
     if [ "{{target}}" == "all" ]; then
         for h in {{hosts}}; do
-            ./nix.sh rebuild "$h"
+            ./nix.sh rebuild "$h" {{args}}
         done
     elif [ "{{target}}" == "blocky" ]; then
         for h in {{blocky_hosts}}; do
-            ./nix.sh rebuild "$h"
+            ./nix.sh rebuild "$h" {{args}}
         done
     else
-        ./nix.sh rebuild "{{target}}"
+        ./nix.sh rebuild "{{target}}" {{args}}
     fi
 
 attic input:

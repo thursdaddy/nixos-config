@@ -12,14 +12,12 @@ _: {
           nix.ghToken = enabled;
         };
 
-        home-manager = {
-          tmux = {
-            sessionizer = {
-              enable = true;
-              searchPaths = [
-                "${user.homeDir}/"
-              ];
-            };
+        dev = {
+          tmux.sessionizer = {
+            enable = true;
+            searchPaths = [
+              "${user.homeDir}/"
+            ];
           };
         };
       };

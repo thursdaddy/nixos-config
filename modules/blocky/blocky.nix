@@ -4,7 +4,6 @@
     {
       config,
       lib,
-      pkgs,
       ...
     }:
     let
@@ -14,6 +13,7 @@
       allConfigs = inputs.self.nixosConfigurations or { };
 
       includedHosts = [
+        "c137"
         "cloudbox"
         "homebox"
         "jupiter"
@@ -22,6 +22,7 @@
         "netpi2"
         "printpi"
         "streambox"
+        "wormhole"
       ];
 
       targetHosts = lib.filterAttrs (
@@ -197,6 +198,7 @@
                   mapping = {
                     "attic.thurs.pw" = "192.168.10.60";
                     "jellyfin.${config.nixos-thurs.publicDomain}" = "192.168.10.189";
+                    "mpd.thurs.pw" = allConfigs.streambox.config.mine.homelab.streambox.tailscaleIp;
                     "cloudbox.thurs.pw" = "100.71.122.112";
                     "bazarr.thurs.pw" = "192.168.10.12";
                     "deemix.thurs.pw" = "192.168.10.12";
@@ -205,6 +207,7 @@
                     "readarr.thurs.pw" = "192.168.10.12";
                     "sabnzbd.thurs.pw" = "192.168.10.12";
                     "sonarr.thurs.pw" = "192.168.10.12";
+                    "sync-borrowbox.thurs.pw" = "192.168.10.12";
                   };
                 };
               };
