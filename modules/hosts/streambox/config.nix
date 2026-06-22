@@ -13,7 +13,6 @@ _: {
         base.networking.hostName = "streambox";
 
         homelab.streambox = {
-          services.ddns = true;
           hostIp = "192.168.10.189";
           tailscaleIp = "100.89.208.50";
         };
@@ -39,6 +38,8 @@ _: {
 
         services = {
           backups = enabled;
+          ddns = enabled;
+          mpd = enabled;
         };
       };
 

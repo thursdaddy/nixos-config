@@ -13,7 +13,6 @@ _: {
         base.networking.hostName = "printpi";
 
         homelab.printpi = {
-          services.container-version-check = true;
           hostIp = "192.168.10.185";
           tailscaleIp = "100.100.56.18";
         };

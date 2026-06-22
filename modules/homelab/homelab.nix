@@ -32,20 +32,6 @@ _: {
                   default = "thurs.pw";
                 };
 
-                services = lib.mkOption {
-                  default = { };
-                  description = "Homelab related scripts";
-                  type = lib.types.submodule {
-                    options = {
-                      container-version-check = lib.mkOption {
-                        type = lib.types.bool;
-                        default = (config.virtualisation.docker.enable || config.virtualisation.podman.enable);
-                      };
-                      ddns = lib.mkEnableOption "DDNS";
-                    };
-                  };
-                };
-
                 # HOST specific: config.mine.homelab.${config.networking.hostName}.nfs-mounts
                 nfs-mounts = {
                   enable = lib.mkEnableOption "NFS mounts";

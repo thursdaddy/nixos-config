@@ -1,5 +1,4 @@
-{ inputs, ... }:
-{
+_: {
   flake.modules.nixos.services =
     {
       lib,
@@ -8,7 +7,7 @@
       ...
     }:
     let
-      cfg = config.mine.homelab.${config.networking.hostName}.services.ddns;
+      cfg = config.mine.services.ddns;
 
       gotifyAlert = pkgs.gotify-alert;
       ddnsScript = pkgs.writers.writePython3Bin "route53-ddns" {
@@ -17,10 +16,14 @@
           boto3
           requests
         ];
-      } (builtins.readFile ./scripts/ddns.py);
+      } (builtins.readFile ./ddns.py);
     in
     {
-      config = lib.mkIf cfg {
+      options.mine.services.ddns = {
+        enable = lib.mkEnableOption "Enable DDNS";
+      };
+
+      config = lib.mkIf cfg.enable {
         systemd = {
           services = {
             route53-ddns = {
