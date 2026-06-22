@@ -106,7 +106,7 @@
               utility_meter = "!include utility.yaml";
             };
             customComponents = [
-              inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.hass-gotify
+              pkgs.hass-gotify
             ];
             customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
               apexcharts-card

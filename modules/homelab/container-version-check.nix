@@ -10,7 +10,7 @@
     let
       inherit (config.mine.base) user;
       cfg = config.mine.homelab.${config.networking.hostName}.services.container-version-check;
-      gotifyAlert = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.gotify-alert;
+      gotifyAlert = pkgs.gotify-alert;
     in
     {
       config = lib.mkMerge [

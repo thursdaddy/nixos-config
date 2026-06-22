@@ -10,8 +10,8 @@
     let
       cfg = config.mine.services.backups;
       inherit (config.mine.base) user;
-      homelabBackup = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.homelab-backup;
-      gotifyAlert = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.gotify-alert;
+      homelabBackup = pkgs.homelab-backup;
+      gotifyAlert = pkgs.gotify-alert;
     in
     {
       options.mine.services.backups = {

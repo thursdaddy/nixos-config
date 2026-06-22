@@ -1,13 +1,4 @@
-{
-  perSystem =
-    {
-      config,
-      pkgs,
-      system,
-      ...
-    }:
-    {
-      packages.octoprint312 =
+{ pkgs }:
         (pkgs.octoprint.override {
           python3 = pkgs.python312;
         }).override
@@ -411,6 +402,4 @@
                 dontUsePytestCheck = true;
               };
             };
-          };
-    };
-}
+          }

@@ -10,7 +10,7 @@
     let
       cfg = config.mine.homelab.${config.networking.hostName}.services.ddns;
 
-      gotifyAlert = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.gotify-alert;
+      gotifyAlert = pkgs.gotify-alert;
       ddnsScript = pkgs.writers.writePython3Bin "route53-ddns" {
         doCheck = false;
         libraries = with pkgs.python3Packages; [

@@ -8,7 +8,7 @@
       ...
     }:
     let
-      inherit (inputs.self.packages.${pkgs.stdenv.hostPlatform.system}) wallpapers;
+      inherit (pkgs) wallpapers;
 
       cfg = config.mine.desktop.hyprlock;
 
@@ -82,6 +82,7 @@
           etc."${etcDir}".text = hyprlockConf;
           systemPackages = [
             pkgs.unstable.hyprlock
+            pkgs.systemd-lock-handler
           ];
         };
 

@@ -55,7 +55,7 @@
           gh
           (
             if pkgs.stdenv.hostPlatform.isDarwin then
-              inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.darwinGit
+              pkgs.darwinGit
             else
               pkgs.git
           )

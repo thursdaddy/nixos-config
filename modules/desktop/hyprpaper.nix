@@ -8,7 +8,7 @@
       ...
     }:
     let
-      inherit (inputs.self.packages.${pkgs.stdenv.hostPlatform.system}) wallpapers;
+      inherit (pkgs) wallpapers;
       cfg = config.mine.desktop.hyprpaper;
 
       hyprpaperSettings = {

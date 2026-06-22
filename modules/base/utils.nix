@@ -36,7 +36,7 @@
             dig
             file
             gnupg
-            inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.siomon
+            pkgs.siomon
             ncdu
             nmap
             p7zip

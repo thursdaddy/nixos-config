@@ -8,7 +8,14 @@ let
   };
 
   customPkgs = final: prev: {
-    homelab-backup = inputs.self.packages.${final.stdenv.hostPlatform.system}.homelab-backup;
+    darwinGit = final.callPackage ../packages/darwinGit { pkgs = final; };
+    gotify-alert = final.callPackage ../packages/gotify-alert { pkgs = final; };
+    hass-gotify = final.home-assistant.python.pkgs.callPackage ../packages/hass-gotify { };
+    homelab-backup = final.callPackage ../packages/homelab-backup { pkgs = final; };
+    hypridle-patched = final.callPackage ../packages/hypridle { pkgs = final; };
+    octoprint312 = final.callPackage ../packages/octoprint312 { pkgs = final; };
+    siomon = final.callPackage ../packages/siomon { pkgs = final; };
+    wallpapers = final.callPackage ../packages/wallpapers { pkgs = final; };
     input-remapper = prev.input-remapper.overrideAttrs (oldAttrs: {
       postPatch = (oldAttrs.postPatch or "") + ''
         # Swap the imports and exception names directly

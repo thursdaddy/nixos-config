@@ -48,15 +48,39 @@ class BackupManager:
         self.dry_run = dry_run
         self.json_logs = json_logs
         self.logger = self._setup_logging()
+        self.client = None
 
-        try:
-            self.client = docker.from_env()
-            self.client.ping()
-        except Exception:
-            self.logger.debug("Docker socket not reachable; Docker features disabled.")
-            self.client = None
+        uid = os.getuid()
 
-        # This serves as the global system default
+        # Prioritize Rootless Podman -> Rootful Podman -> Standard Docker
+        socket_paths = [
+            f"unix:///run/user/{uid}/podman/podman.sock",
+            "unix:///run/podman/podman.sock",
+            "unix:///var/run/docker.sock",
+        ]
+
+        for sock in socket_paths:
+            try:
+                self.client = docker.DockerClient(base_url=sock)
+                self.client.ping()
+                # Optional: self.logger.debug(f"Connected to container engine via {sock}")
+                break
+            except Exception:
+                self.client = None
+
+        # Ultimate fallback: check environment variables (e.g., DOCKER_HOST)
+        if not self.client:
+            try:
+                self.client = docker.from_env()
+                self.client.ping()
+            except Exception:
+                self.client = None
+
+        if not self.client:
+            self.logger.debug(
+                "Container socket not reachable; engine-specific features disabled."
+            )
+
         self.global_base = Path(os.getenv("HOMELAB_BACKUP_BASE_DEST", "/mnt/backups"))
 
     def _setup_logging(self) -> logging.Logger:
@@ -119,7 +143,7 @@ class BackupManager:
 
         if b_type == "docker":
             if not self.client:
-                raise BackupError("Docker is inaccessible.")
+                raise BackupError("Docker/Podman API is inaccessible.")
             try:
                 container = self.client.containers.get(name)
             except docker.errors.NotFound:
@@ -136,7 +160,9 @@ class BackupManager:
             raise BackupError(f"Missing backup path for {name}")
 
         # Resolve destination dynamically: Label -> Env Var -> Global Default
-        base_dest = self._get_config("homelab.backup.base.dest", container, self.global_base)
+        base_dest = self._get_config(
+            "homelab.backup.base.dest", container, self.global_base
+        )
 
         config = {
             "target": name,
@@ -264,8 +290,9 @@ class BackupManager:
             self._get_config("homelab.backup.retention.period", container, 5)
         )
 
-        # Resolve destination for rotation as well
-        base_dest = self._get_config("homelab.backup.base.dest", container, self.global_base)
+        base_dest = self._get_config(
+            "homelab.backup.base.dest", container, self.global_base
+        )
         dest_dir = Path(base_dest) / b_type / name
 
         if not dest_dir.exists():
