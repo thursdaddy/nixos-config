@@ -50,17 +50,17 @@ _: {
         let
           backup = lib.thurs.mkBackupService {
             inherit pkgs;
-            name = "obsidian";
+            name = "notes";
             extraEnv = {
               HOMELAB_BACKUP_ENABLE = "true";
-              HOMELAB_BACKUP_PATH = "${user.homeDir}/documents/notes";
+              HOMELAB_BACKUP_PATH = "${user.homeDir}/notes";
               HOMELAB_BACKUP_RETENTION_PERIOD = "5";
             };
           };
         in
         {
           services = {
-            backup-obsidian-file = backup.service;
+            backup-notes = backup.service;
 
             backup-obsidian-git = {
               description = "Automated Git backup for Obsidian notes";
@@ -70,7 +70,7 @@ _: {
                 User = "${user.name}";
                 Group = "${user.name}";
                 ExecStart = "${lib.getExe backupScript}";
-                WorkingDirectory = "${user.homeDir}/documents/notes/thurs";
+                WorkingDirectory = "${user.homeDir}/notes/obsidian/thurs";
               };
               environment = {
                 GIT_TERMINAL_PROMPT = "0";
@@ -79,7 +79,7 @@ _: {
           };
 
           timers = {
-            backup-obsidian-file = backup.timer;
+            backup-notes = backup.timer;
 
             backup-obsidian-git = {
               description = "Run obsidian daily backup";
@@ -95,8 +95,8 @@ _: {
       environment.etc =
         let
           alloyJournalFile = lib.thurs.mkAlloyJournal {
-            name = "backup_obsidian_file";
-            serviceName = "backup-obsidian-file";
+            name = "backup_notes_files";
+            serviceName = "backup-notes";
           };
           alloyJournalGit = lib.thurs.mkAlloyJournal {
             name = "backup_obsidian_git";

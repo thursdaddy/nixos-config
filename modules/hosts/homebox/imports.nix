@@ -6,7 +6,6 @@
       base
       blocky
       containers
-      dev
       home-assistant
       services
     ];

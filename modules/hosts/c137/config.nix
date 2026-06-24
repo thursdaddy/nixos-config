@@ -101,7 +101,45 @@ _: {
             };
           };
           sleep-on-lan = enabled;
-          syncthing = enabled;
+          syncthing = {
+            enable = true;
+            folders = {
+              "dev-homelab" = {
+                path = "${user.homeDir}/dev/homelab";
+                devices = [
+                  "mbp"
+                  "wormhole"
+                ];
+                ignorePerms = true;
+              };
+              "dev-nix" = {
+                path = "${user.homeDir}/dev/nix";
+                devices = [
+                  "mbp"
+                  "wormhole"
+                ];
+                ignorePerms = true;
+              };
+              "dev-cloud" = {
+                path = "${user.homeDir}/dev/cloud";
+                devices = [
+                  "mbp"
+                  "wormhole"
+                ];
+                ignorePerms = true;
+              };
+              "notes" = {
+                path = "${user.homeDir}/notes";
+                devices = [
+                  "mbp"
+                  "pixel7-pro"
+                  "wormhole"
+                ];
+                ignorePerms = true;
+              };
+            };
+          };
+          traefik = enabled;
         };
       };
     };

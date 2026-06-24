@@ -57,7 +57,13 @@ _: {
             };
 
             entryPoints = {
-              web.address = ":80";
+              web = {
+                address = ":80";
+                http.redirections.entryPoint = {
+                  to = "websecure";
+                  scheme = "https";
+                };
+              };
               websecure = {
                 address = ":443";
                 transport.respondingTimeouts = {
@@ -110,7 +116,7 @@ _: {
               AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."aws/traefik/AWS_SECRET_ACCESS_KEY"}
               AWS_ACCESS_KEY_ID=${config.sops.placeholder."aws/traefik/AWS_ACCESS_KEY_ID"}
               AWS_HOSTED_ZONE_ID=${config.sops.placeholder."aws/traefik/AWS_HOSTED_ZONE_ID"}
-              AWS_REGION=us-west-2;
+              AWS_REGION=us-west-2
             '';
           };
         };

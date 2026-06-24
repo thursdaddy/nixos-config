@@ -27,23 +27,6 @@ _: {
           tailscaleIp = "100.96.164.35";
         };
 
-        containers = {
-          traefik = {
-            enable = true;
-            dashboard = true;
-          };
-        };
-
-        dev = {
-          tmux.sessionizer = {
-            enable = true;
-            searchPaths = [
-              "${user.homeDir}/"
-              "/var/lib/"
-            ];
-          };
-        };
-
         services = {
           backups = enabled;
           gitea-runner = {
@@ -53,10 +36,6 @@ _: {
                 labels = [
                   "runner:docker://gitea.thurs.pw/docker/gitea-runner:v0.2.3"
                 ];
-                container = {
-                  network = "gitea-runner-net";
-                  options = "--dns=${config.mine.homelab.${config.networking.hostName}.hostIp}";
-                };
                 settings = {
                   runner = {
                     capacity = 4;
@@ -66,6 +45,21 @@ _: {
             };
           };
           sleep-on-lan = enabled;
+          syncthing = {
+            enable = true;
+            folders = {
+              "appd" = {
+                path = "${user.homeDir}/appdaemon";
+                devices = [
+                  "mbp"
+                  "c137"
+                  "wormhole"
+                ];
+                ignorePerms = true;
+              };
+            };
+          };
+          traefik = enabled;
         };
       };
     };

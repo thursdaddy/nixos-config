@@ -31,28 +31,67 @@ _: {
         containers = {
           settings.backend = "podman";
           traefik = enabled;
-          syncthing = {
-            enable = true;
-            volumePaths = [
-              "${user.homeDir}/projects:/projects"
-              "${user.homeDir}/documents/notes/:/notes"
-            ];
-          };
         };
 
         dev.tmux = {
           sessionizer = {
             enable = true;
             searchPaths = [
-              "${user.homeDir}/projects/nix"
-              "${user.homeDir}/projects/cloud"
-              "${user.homeDir}/projects/homelab"
-              "${user.homeDir}/projects/personal"
+              "${user.homeDir}/dev/nix"
+              "${user.homeDir}/dev/cloud"
+              "${user.homeDir}/dev/homelab"
+              "${user.homeDir}/notes"
             ];
           };
         };
 
         services = {
+          syncthing = {
+            enable = true;
+            folders = {
+              "appd" = {
+                path = "${user.homeDir}/appdaemon";
+                devices = [
+                  "mbp"
+                  "c137"
+                ];
+                ignorePerms = true;
+              };
+              "dev-homelab" = {
+                path = "${user.homeDir}/dev/homelab";
+                devices = [
+                  "mbp"
+                  "c137"
+                ];
+                ignorePerms = true;
+              };
+              "dev-nix" = {
+                path = "${user.homeDir}/dev/nix";
+                devices = [
+                  "mbp"
+                  "c137"
+                ];
+                ignorePerms = true;
+              };
+              "dev-cloud" = {
+                path = "${user.homeDir}/dev/cloud";
+                devices = [
+                  "mbp"
+                  "c137"
+                ];
+                ignorePerms = true;
+              };
+              "notes" = {
+                path = "${user.homeDir}/notes";
+                devices = [
+                  "mbp"
+                  "pixel7-pro"
+                  "c137"
+                ];
+                ignorePerms = true;
+              };
+            };
+          };
           backups = enabled;
           gitea-runner = {
             enable = true;

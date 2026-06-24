@@ -68,7 +68,7 @@ _: {
 
               entryPoint =
                 if homelabConfig.traefik.static.${routeName}.tailscale or false then "tailscale" else "websecure";
-              identifier = "${name}-${routeName}";
+              identifier = "${routeName}";
 
               configFile = pkgs.writeText "traefik-static-${identifier}.toml" ''
                 [http.routers]
@@ -105,6 +105,9 @@ _: {
         systemd.services = lib.mkMerge [
           {
             "${ociBackend}-traefik" = lib.mkIf (traefikContainerRunning && staticRoutes != [ ]) {
+              restartTriggers = map (route: route.configFile) staticRoutes;
+            };
+            traefik = lib.mkIf (config.mine.services.traefik.enable or false && staticRoutes != [ ]) {
               restartTriggers = map (route: route.configFile) staticRoutes;
             };
           }

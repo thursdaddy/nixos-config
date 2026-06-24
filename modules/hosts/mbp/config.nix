@@ -3,7 +3,6 @@ _: {
     {
       config,
       lib,
-      pkgs,
       ...
     }:
     let
@@ -33,6 +32,7 @@ _: {
           sessionizer = {
             enable = true;
             searchPaths = [
+              "${user.homeDir}/dev/"
               "${user.homeDir}/dev/nix"
               "${user.homeDir}/dev/cloud"
               "${user.homeDir}/dev/homelab"
