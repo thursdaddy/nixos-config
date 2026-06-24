@@ -121,7 +121,57 @@ _: {
           key = "\"*c";
           action = "*dd";
         }
+        {
+          mode = "n";
+          key = "<leader>vc";
+          action = "<CMD>lua _G.toggle_cheatsheet()<CR>";
+          options.desc = "Toggle Cheatsheet";
+        }
       ];
+
+      extraConfigLua = ''
+        local cheatsheet_buf = nil
+        local cheatsheet_win = nil
+
+        _G.toggle_cheatsheet = function()
+          if cheatsheet_win and vim.api.nvim_win_is_valid(cheatsheet_win) then
+            vim.api.nvim_win_close(cheatsheet_win, true)
+            cheatsheet_win = nil
+            return
+          end
+
+          if not cheatsheet_buf or not vim.api.nvim_buf_is_valid(cheatsheet_buf) then
+            cheatsheet_buf = vim.api.nvim_create_buf(false, true)
+            vim.api.nvim_buf_call(cheatsheet_buf, function()
+              vim.cmd("read ${./cheatsheet.md}")
+              vim.cmd("0d_") -- delete empty first line
+            end)
+            vim.bo[cheatsheet_buf].filetype = "markdown"
+            vim.bo[cheatsheet_buf].modifiable = false
+          end
+
+          local width = math.floor(vim.o.columns * 0.95)
+          local height = math.floor(vim.o.lines * 0.9)
+          local col = math.floor((vim.o.columns - width) / 2)
+          local row = math.floor((vim.o.lines - height) / 2)
+
+          cheatsheet_win = vim.api.nvim_open_win(cheatsheet_buf, true, {
+            relative = "editor",
+            width = width,
+            height = height,
+            col = col,
+            row = row,
+            style = "minimal",
+            border = "rounded",
+          })
+          
+          vim.wo[cheatsheet_win].conceallevel = 2
+          vim.wo[cheatsheet_win].concealcursor = "nc"
+          
+          vim.keymap.set('n', 'q', _G.toggle_cheatsheet, { buffer = cheatsheet_buf, noremap = true, silent = true })
+          vim.keymap.set('n', '<Esc>', _G.toggle_cheatsheet, { buffer = cheatsheet_buf, noremap = true, silent = true })
+        end
+      '';
     };
   };
 }

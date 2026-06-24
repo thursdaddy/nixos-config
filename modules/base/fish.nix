@@ -47,12 +47,74 @@ _: {
           end
           starship init fish | source
 
-          # Tokyo Dark fzf theme (with transparent bg for tmux popups)
+          # Zoxide integration
+          if type -q zoxide
+            zoxide init fish | source
+          end
+
+          # Gruvbox Dark fzf theme (with transparent bg for tmux popups)
           set -gx FZF_DEFAULT_OPTS "$FZF_DEFAULT_OPTS "\
-          "--color=fg:#c0caf5,bg:-1,hl:#2ac3de "\
-          "--color=fg+:#c0caf5,bg+:#292e42,hl+:#2ac3de "\
-          "--color=info:#7aa2f7,prompt:#bb9af7,pointer:#bb9af7 "\
-          "--color=marker:#9ece6a,spinner:#ff007c,header:#7aa2f7"
+          "--color=fg:#ebdbb2,bg:-1,hl:#fabd2f "\
+          "--color=fg+:#ebdbb2,bg+:#3c3836,hl+:#fabd2f "\
+          "--color=info:#83a598,prompt:#b8bb26,pointer:#fe8019 "\
+          "--color=marker:#fe8019,spinner:#fe8019,header:#83a598"
+
+          # Tmux integration: Highlight pane title in status bar when long command finishes
+          if set -q TMUX
+            function tmux_preexec --on-event fish_preexec
+              if set -q tmux_pane_is_red
+                tmux set-option -p -t "$TMUX_PANE" @pane_finished 0
+                set -e tmux_pane_is_red
+              end
+            end
+            function tmux_postexec --on-event fish_postexec
+              # CMD_DURATION is in milliseconds (3000ms = 3 seconds)
+              if set -q CMD_DURATION; and test "$CMD_DURATION" -gt 3000
+                tmux set-option -p -t "$TMUX_PANE" @pane_finished 1
+                set -g tmux_pane_is_red 1
+              end
+            end
+
+            # Rename tmux window to the SSH hostname
+            function ssh
+              set -l host
+              set -l skip_next 0
+              for arg in $argv
+                if test "$skip_next" -eq 1
+                  set skip_next 0
+                  continue
+                end
+                switch $arg
+                  case '-b' '-c' '-D' '-E' '-e' '-F' '-I' '-i' '-J' '-L' '-l' '-m' '-O' '-o' '-p' '-R' '-S' '-w'
+                    set skip_next 1
+                  case '-*'
+                    continue
+                  case '*'
+                    if not set -q host[1]
+                      set host $arg
+                    end
+                end
+              end
+
+              if set -q host[1]
+                set host (string split -r -m1 "@" $host)[-1]
+                tmux rename-window "$host"
+              end
+
+              command ssh $argv
+
+              if set -q host[1]
+                tmux set-window-option automatic-rename on
+              end
+            end
+          else if set -q SSH_TTY; and test "$TERM" = "screen" -o "$TERM" = "screen-256color" -o "$TERM" = "tmux" -o "$TERM" = "tmux-256color"
+            # If we are on a remote host via SSH inside a tmux terminal, automatically ring the bell for long-running commands
+            function tmux_remote_postexec --on-event fish_postexec
+              if set -q CMD_DURATION; and test "$CMD_DURATION" -gt 3000
+                printf "\a"
+              end
+            end
+          end
         '';
       };
 

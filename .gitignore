@@ -3,3 +3,4 @@ result
 builds/
 secrets/
 nixos.qcow*
+.antigravitycli/*

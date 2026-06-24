@@ -39,7 +39,8 @@ _: {
           (lib.mkIf (cfg.sessionizer.enable && user.shell.package == pkgs.fish) tmuxs_fish)
           pkgs.tmux
           pkgs.fzf
-        ];
+          pkgs.gitmux
+        ] ++ lib.optionals cfg.sessionizer.enable [ pkgs.zoxide ];
 
         programs.tmux = {
           enable = true;

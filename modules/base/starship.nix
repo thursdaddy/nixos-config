@@ -27,7 +27,7 @@ _: {
         direnv = {
           disabled = false;
           format = "[ $symbol$loaded$denied  ]($style)";
-          style = "fg:#FF8700";
+          style = "fg:#fe8019";
           symbol = " ";
           allowed_msg = "";
           loaded_msg = "";
@@ -40,28 +40,28 @@ _: {
           disabled = false;
           format = "[ $symbol$pyenv_prefix($version)($virtualenv) ]($style)";
           symbol = " ";
-          style = "fg:#81A2BE";
+          style = "fg:#83a598";
         };
 
         aws = {
           disabled = false;
           format = "[ $symbol($profile)$region ]($style)";
           symbol = "  ";
-          style = "fg:#81A2BE";
+          style = "fg:#83a598";
         };
 
         vagrant = {
           disabled = false;
           format = "[ $symbol($version) ]($style)";
           symbol = " ";
-          style = "fg:#81A2BE";
+          style = "fg:#83a598";
         };
 
         terraform = {
           disabled = false;
           format = "[ $symbol($workspace) ]($style)";
           symbol = " ";
-          style = "fg:#81A2BE";
+          style = "fg:#83a598";
         };
 
         os = {
@@ -75,8 +75,8 @@ _: {
         status = {
           style = "italic";
           disabled = false;
-          symbol = "[](fg:#D54E53)";
-          success_symbol = "[](fg:#A7AF63)";
+          symbol = "[](fg:#fb4934)";
+          success_symbol = "[](fg:#b8bb26)";
           format = "[$int]($style)";
         };
 
@@ -89,54 +89,54 @@ _: {
 
         username = {
           show_always = true;
-          style_user = "fg:#A7AF63";
-          style_root = "bold fg:#D54E53";
+          style_user = "fg:#b8bb26";
+          style_root = "bold fg:#fb4934";
           format = "[$user]($style)";
         };
 
         hostname = {
           ssh_only = false;
-          style = "fg:#A7AF63";
+          style = "fg:#b8bb26";
           format = "[@$hostname]($style)";
         };
 
         cmd_duration = {
           disabled = false;
           format = "[  $duration  ]($style)";
-          style = "fg:#F0C674";
+          style = "fg:#fabd2f";
         };
 
         nix_shell = {
           disabled = false;
-          style = "fg:#FFD687";
+          style = "fg:#fabd2f";
           symbol = " ";
           format = "[$symbol$state ]($style)";
         };
 
         git_branch = {
           symbol = " ";
-          style = "fg:#A7AF63";
+          style = "fg:#b8bb26";
           format = "[$symbol$branch]($style)";
         };
 
         git_status = {
           disabled = false;
-          style = "fg:#F0C674";
+          style = "fg:#fabd2f";
           format = "[($stashed$deleted$renamed$modified$staged$untracked$ahead_behind)]($style)";
           staged = "+$count ";
           modified = "!$count ";
-          deleted = "[✘$count ](fg:#D54E53)";
-          stashed = "[*$count ](fg:#A8AF63)";
-          renamed = "[$count ](fg:#Ff8700)";
-          untracked = "[?$count ](fg:#81A2BE)";
-          ahead = "[⇡$count ](fg:#A7AF63)";
-          behind = "[⇣$count ](fg:#FF8700)";
+          deleted = "[✘$count ](fg:#fb4934)";
+          stashed = "[*$count ](fg:#b8bb26)";
+          renamed = "[$count ](fg:#fe8019)";
+          untracked = "[?$count ](fg:#83a598)";
+          ahead = "[⇡$count ](fg:#b8bb26)";
+          behind = "[⇣$count ](fg:#fe8019)";
           diverged = "⇕ ⇡$ahead_count ⇣$behind_count ";
         };
 
         directory = {
           format = "[ $path]($style)";
-          style = "fg:#81A2BE";
+          style = "fg:#83a598";
           truncate_to_repo = false;
           truncation_length = 5;
           truncation_symbol = "…/";
@@ -145,7 +145,7 @@ _: {
         time = {
           disabled = false;
           time_format = "%R:%S";
-          style = "fg:#81A2BE";
+          style = "fg:#83a598";
           format = "[    $time]($style)";
         };
       };
