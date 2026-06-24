@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "teslamate";
-      version = "3.0.0";
+      version = "4.0.1";
 
       cfg = config.mine.containers.teslamate;
       configPath = config.mine.containers.settings.configPath;
@@ -18,14 +18,14 @@ _: {
         "${name}" = {
           enable = lib.mkEnableOption "${name}";
         };
-        tesla-grafana = {
+        teslamate-grafana = {
           enable = lib.mkOption {
             description = "This is for blocky to create a DNS entry";
             type = lib.types.bool;
             default = cfg.enable;
           };
         };
-        tesla-postgres = {
+        teslamate-postgres = {
           enable = lib.mkOption {
             description = "This is for blocky to create a DNS entry";
             type = lib.types.bool;
@@ -76,7 +76,7 @@ _: {
             ];
           };
 
-          "teslamate-grafana" = {
+          teslamate-grafana = {
             image = "teslamate/grafana:${version}";
             pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ name ];
@@ -100,7 +100,7 @@ _: {
             };
           };
 
-          "teslamate-mosquitto" = {
+          teslamate-mosquitto = {
             image = "eclipse-mosquitto:2";
             pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             networks = [ name ];
@@ -188,11 +188,11 @@ _: {
             };
             alloyJournalTeslaGrafana = lib.thurs.mkAlloyJournal {
               name = "teslamate-grafana";
-              serviceName = "${config.mine.containers.settings.backend}-tesla-grafana";
+              serviceName = "${config.mine.containers.settings.backend}-teslamate-grafana";
             };
             alloyJournalTeslaDb = lib.thurs.mkAlloyJournal {
               name = "teslamate-postgres";
-              serviceName = "${config.mine.containers.settings.backend}-tesla-postgres";
+              serviceName = "${config.mine.containers.settings.backend}-teslamate-postgres";
             };
           in
           builtins.listToAttrs [
