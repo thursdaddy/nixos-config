@@ -69,6 +69,11 @@ _: {
                           default = false;
                           description = "Attach via tailscale interface";
                         };
+                        labels = lib.mkOption {
+                          type = lib.types.attrsOf lib.types.anything;
+                          default = { };
+                          description = "Extra Traefik labels to apply (converted to TOML)";
+                        };
                       };
                     }
                   );

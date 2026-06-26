@@ -9,6 +9,39 @@ _: {
       cfg = config.mine.services.traefik;
       acmeStorage = "/var/lib/traefik/acme.json";
 
+      # Convert extraCmds into attributes for staticConfigOptions
+      parseCmds = cmds:
+        let
+          # Helper to split string at the first '='
+          splitEq = str:
+            let
+              parts = lib.splitString "=" str;
+              key = lib.head parts;
+              val = lib.concatStringsSep "=" (lib.tail parts);
+            in
+            { inherit key val; };
+
+          cmdList = map (cmd:
+            let
+              stripped = lib.removePrefix "--" cmd;
+              kv = splitEq stripped;
+              # Split path by dot
+              pathRaw = lib.splitString "." kv.key;
+              # Map lowercase to camelCase where necessary
+              path = map (k: if k == "modulename" then "moduleName" else k) pathRaw;
+              # Coerce values (e.g. booleans or numbers)
+              lastPath = lib.last path;
+              coercedVal =
+                if kv.val == "true" then true
+                else if kv.val == "false" then false
+                else if (builtins.match "[0-9]+" kv.val != null && builtins.elem lastPath [ "port" "maxretry" "priority" "weight" ]) then builtins.fromJSON kv.val
+                else kv.val;
+            in
+            lib.setAttrByPath path coercedVal
+          ) (builtins.filter (cmd: lib.hasPrefix "--" cmd) cmds);
+        in
+        lib.foldl' lib.recursiveUpdate { } cmdList;
+
     in
     {
       options.mine.services.traefik = {
@@ -33,13 +66,18 @@ _: {
           type = lib.types.bool;
           default = true;
         };
+        extraCmds = lib.mkOption {
+          description = "Extra command line arguments to pass to Traefik";
+          type = lib.types.listOf lib.types.str;
+          default = [ ];
+        };
       };
 
       config = lib.mkIf cfg.enable {
         services.traefik = {
           enable = true;
           environmentFiles = [ config.sops.templates."traefik.keys.env".path ];
-          staticConfigOptions = {
+          staticConfigOptions = lib.recursiveUpdate {
             log.level = "INFO";
             global = {
               checkNewVersion = false;
@@ -93,13 +131,24 @@ _: {
               addServicesLabels = true;
               entryPoint = "metrics";
             };
-          };
+          } (parseCmds cfg.extraCmds);
         };
 
         networking.firewall.allowedTCPPorts = [
           80
           443
         ];
+
+        environment.etc."traefik/static/middlewares.yaml".text = ''
+          http:
+            middlewares:
+              local-only:
+                ipAllowList:
+                  sourceRange:
+                    - "127.0.0.1/32"
+                    - "192.168.10.0/24"
+                    - "100.64.0.0/10"
+        '';
 
         systemd.tmpfiles.rules = [
           "f ${acmeStorage} 0600 traefik traefik - -"

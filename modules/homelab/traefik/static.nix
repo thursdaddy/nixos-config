@@ -39,6 +39,26 @@ _: {
         else
           "";
 
+      parseLabels = labels:
+        let
+          labelList = lib.mapAttrsToList (key: val: { inherit key val; }) labels;
+          traefikLabels = builtins.filter (x: lib.hasPrefix "traefik." x.key) labelList;
+          toNested = { key, val }:
+            let
+              cleanKey = lib.removePrefix "traefik." key;
+              path = lib.splitString "." cleanKey;
+              lastPath = lib.last path;
+              coercedVal =
+                if val == "true" || val == true then true
+                else if val == "false" || val == false then false
+                else if builtins.elem lastPath [ "middlewares" "entrypoints" ] && builtins.isString val then lib.splitString "," val
+                else if (builtins.isString val && builtins.match "[0-9]+" val != null && builtins.elem lastPath [ "port" "maxretry" "priority" "weight" ]) then builtins.fromJSON val
+                else val;
+            in
+            lib.setAttrByPath path coercedVal;
+        in
+        lib.foldl' (acc: x: lib.recursiveUpdate acc (toNested x)) { } traefikLabels;
+
       staticRoutes = lib.flatten (
         lib.mapAttrsToList (
           name: homelabConfig:
@@ -70,21 +90,23 @@ _: {
                 if homelabConfig.traefik.static.${routeName}.tailscale or false then "tailscale" else "websecure";
               identifier = "${routeName}";
 
-              configFile = pkgs.writeText "traefik-static-${identifier}.toml" ''
-                [http.routers]
-                  [http.routers.${identifier}]
-                    rule = "Host(`${subdomain}.${domain}`)"
-                    service = "${identifier}"
-                    entryPoints = ["${entryPoint}"]
-                    [http.routers.${identifier}.tls]
-                      certResolver = "letsencrypt"
+              defaultConfig = {
+                http = {
+                  routers."${identifier}" = {
+                    rule = "Host(`${subdomain}.${domain}`)";
+                    service = identifier;
+                    entryPoints = [ entryPoint ];
+                    tls.certResolver = "letsencrypt";
+                  };
+                  services."${identifier}".loadBalancer.servers = [
+                    { url = "http://${ip}:${builtins.toString routeConfig.port}"; }
+                  ];
+                };
+              };
 
-                [http.services]
-                  [http.services.${identifier}.loadBalancer]
-                    [[http.services.${identifier}.loadBalancer.servers]]
-                      url = "http://${ip}:${builtins.toString routeConfig.port}"
+              routeConfigAttrs = lib.recursiveUpdate defaultConfig (parseLabels routeConfig.labels);
 
-              '';
+              configFile = pkgs.writeText "traefik-static-${identifier}.yaml" (lib.generators.toYAML {} routeConfigAttrs);
             in
             {
               inherit routeName configFile identifier;
@@ -98,7 +120,7 @@ _: {
       config = {
         environment.etc = builtins.listToAttrs (
           map (
-            route: lib.nameValuePair "traefik/static/${route.identifier}.toml" { source = route.configFile; }
+            route: lib.nameValuePair "traefik/static/${route.identifier}.yaml" { source = route.configFile; }
           ) staticRoutes
         );
 
@@ -117,7 +139,7 @@ _: {
           lib.mkIf (traefikContainerRunning && staticRoutes != [ ])
             {
               cmd = [ "--providers.file.directory=/static" ];
-              volumes = map (route: "${route.configFile}:/static/${route.identifier}.toml:ro") staticRoutes;
+              volumes = map (route: "${route.configFile}:/static/${route.identifier}.yaml:ro") staticRoutes;
               extraOptions = [ "--add-host=host.docker.internal:host-gateway" ];
             };
       };

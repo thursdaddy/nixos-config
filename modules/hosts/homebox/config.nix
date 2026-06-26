@@ -25,7 +25,20 @@ _: {
         homelab.homebox = {
           hostIp = "192.168.10.60";
           tailscaleIp = "100.96.164.35";
+          apps = {
+            syncthing.traefik.static.syncthing.labels = {
+              "traefik.http.routers.syncthing.middlewares" = "local-only";
+            };
+            hass.traefik.static.z2m.labels = {
+              "traefik.http.routers.z2m.middlewares" = "local-only";
+            };
+            hass.traefik.static.esphome.labels = {
+              "traefik.http.routers.esphome.middlewares" = "local-only";
+            };
+          };
         };
+
+
 
         services = {
           backups = enabled;
@@ -59,7 +72,13 @@ _: {
               };
             };
           };
-          traefik = enabled;
+          traefik = {
+            enable = true;
+            extraCmds = [
+              "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
+              "--experimental.plugins.fail2ban.version=v0.9.0"
+            ];
+          };
         };
       };
     };

@@ -10,6 +10,9 @@ _: {
       inherit (config.mine.base) user;
 
       allDevices = {
+        "homebox" = {
+          id = "FFXYAVE-7IO5OB5-EDKGGFS-GHAYCDM-RBLQD32-EWZQKIQ-3GWEOIH-YOINMAC";
+        };
         "wormhole" = {
           id = "25VZXUA-7CDBEMH-K6VHAB2-J6HRAP4-REKJSX6-IMHP2PP-GW4AX2P-CGZAGQ5";
         };

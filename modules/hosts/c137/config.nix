@@ -45,14 +45,18 @@ _: {
           };
         };
 
+        containers = {
+          settings.backend = "docker";
+        };
+
         dev.tmux = {
           sessionizer = {
             enable = true;
             searchPaths = [
-              "${user.homeDir}/projects/nix"
-              "${user.homeDir}/projects/cloud"
-              "${user.homeDir}/projects/homelab"
-              "${user.homeDir}/projects/personal"
+              "${user.homeDir}/dev/nix"
+              "${user.homeDir}/dev/cloud"
+              "${user.homeDir}/dev/homelab"
+              "${user.homeDir}/dev/personal"
             ];
           };
         };

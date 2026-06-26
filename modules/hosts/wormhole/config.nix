@@ -54,6 +54,7 @@ _: {
                 devices = [
                   "mbp"
                   "c137"
+                  "homebox"
                 ];
                 ignorePerms = true;
               };
