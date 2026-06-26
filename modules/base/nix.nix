@@ -23,6 +23,11 @@
       };
 
       config = {
+        nixpkgs.config.permittedInsecurePackages = [
+          "docker-28.5.2"
+          "electron-39.8.10"
+          "python3.12-ecdsa-0.19.1"
+        ];
         nix = {
           extraOptions = ''
             warn-dirty = false

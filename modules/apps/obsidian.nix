@@ -7,12 +7,6 @@ _: {
       ...
     }:
     {
-      nixpkgs.config = {
-        permittedInsecurePackages = [
-          "electron-25.9.0"
-        ];
-      };
-
       systemd.user.services.obsidian = {
         description = "Obsidian Desktop Autostart";
         after = [ "graphical-session.target" ];
