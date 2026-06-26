@@ -3,6 +3,7 @@ _: {
     {
       config,
       lib,
+      pkgs,
       ...
     }:
     let
@@ -10,11 +11,6 @@ _: {
       inherit (config.mine.base) user;
     in
     {
-
-      # networking.firewall.allowedTCPPorts = [
-      #   9999
-      # ];
-
       mine = {
         base = {
           bluetooth = enabled;
@@ -144,6 +140,39 @@ _: {
             };
           };
           traefik = enabled;
+        };
+      };
+
+      # networking.firewall.allowedTCPPorts = [
+      #   9999
+      # ];
+
+      environment.systemPackages = [
+        pkgs.process-compose
+        pkgs.qemu_kvm
+      ];
+
+      networking.firewall = {
+        enable = lib.mkForce false;
+        extraCommands = ''
+          iptables -I FORWARD 1 -i br+ -j ACCEPT
+          iptables -I FORWARD 1 -o br+ -j ACCEPT
+        '';
+      };
+      networking.firewall.trustedInterfaces = [ "docker0" ];
+
+      virtualisation.docker.storageDriver = "overlay2";
+      fileSystems."/var/lib/docker" = {
+        device = "/dev/zvol/NIXROOT/docker";
+        fsType = "ext4";
+      };
+
+      virtualisation.libvirtd = {
+        enable = true;
+        qemu = {
+          package = pkgs.qemu_kvm;
+          runAsRoot = true;
+          swtpm.enable = true; # Required for Windows 11 / Secure boot
         };
       };
     };

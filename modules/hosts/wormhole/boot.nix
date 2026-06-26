@@ -49,13 +49,18 @@ _: {
           ];
         };
 
-        "/home/thurs/projects" = {
-          device = "/dev/disk/by-label/PROJECTS";
+        "/home/thurs" = {
+          device = "/dev/disk/by-label/HOME";
           fsType = "ext4";
         };
       };
 
-      swapDevices = [ ];
+      swapDevices = [
+        {
+          device = "/var/lib/swapfile";
+          size = 8192;
+        }
+      ];
 
       nixpkgs.hostPlatform = "x86_64-linux";
       system.stateVersion = "24.11";
