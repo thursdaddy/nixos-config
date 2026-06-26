@@ -72,6 +72,11 @@ _: {
               if set -q CMD_DURATION; and test "$CMD_DURATION" -gt 3000
                 tmux set-option -p -t "$TMUX_PANE" @pane_finished 1
                 set -g tmux_pane_is_red 1
+                if set -q SSH_TTY
+                  # Send the bell to the outer tmux session
+                  printf "\a"
+                  printf "\ePtmux;\a\e\\"
+                end
               end
             end
 
@@ -107,11 +112,12 @@ _: {
                 tmux set-window-option automatic-rename on
               end
             end
-          else if set -q SSH_TTY; and test "$TERM" = "screen" -o "$TERM" = "screen-256color" -o "$TERM" = "tmux" -o "$TERM" = "tmux-256color"
-            # If we are on a remote host via SSH inside a tmux terminal, automatically ring the bell for long-running commands
+          else if set -q SSH_TTY
+            # If we are on a remote host via SSH, automatically ring the bell for long-running commands
             function tmux_remote_postexec --on-event fish_postexec
               if set -q CMD_DURATION; and test "$CMD_DURATION" -gt 3000
                 printf "\a"
+                printf "\ePtmux;\a\e\\"
               end
             end
           end

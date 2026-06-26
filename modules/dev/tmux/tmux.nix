@@ -10,10 +10,10 @@ _: {
       cfg = config.mine.dev.tmux;
       inherit (config.mine.base) user;
 
-      tmuxs_paths = builtins.concatStringsSep " " cfg.sessionizer.searchPaths;
-      tmuxs_fish = pkgs.writers.writeFishBin "tmuxs" ''
-        set tmuxs_paths ${tmuxs_paths}
-        ${builtins.readFile ./tmuxs.fish}
+      tmuxs_py = pkgs.writeScriptBin "tmuxs" ''
+        #!${pkgs.python3}/bin/python3
+        SEARCH_PATHS = ${builtins.toJSON cfg.sessionizer.searchPaths}
+        ${builtins.replaceStrings [ "SEARCH_PATHS = []" ] [ "" ] (builtins.readFile ./tmuxs.py)}
       '';
     in
     {
@@ -36,7 +36,7 @@ _: {
 
       config = {
         environment.systemPackages = [
-          (lib.mkIf (cfg.sessionizer.enable && user.shell.package == pkgs.fish) tmuxs_fish)
+          (lib.mkIf cfg.sessionizer.enable tmuxs_py)
           pkgs.tmux
           pkgs.fzf
           pkgs.gitmux

@@ -16,6 +16,11 @@ _: {
             AddKeysToAgent yes
             ForwardAgent yes
             IdentityFile ${user.homeDir}/.ssh/id_ed25519
+            ControlMaster auto
+            ControlPath ~/.ssh/ssh-%r@%h:%p
+            ControlPersist 60m
+            ServerAliveInterval 30
+            ServerAliveCountMax 3
 
           Host github.com
             HostName github.com

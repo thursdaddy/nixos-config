@@ -10,7 +10,7 @@ for app in thurs
   if not tmux has-session -t $app 2>/dev/null
     set -l cols (tput cols 2>/dev/null; or echo 200)
     set -l lines (tput lines 2>/dev/null; or echo 50)
-    tmux new-session -d -x "$cols" -y "$lines" -s $app -n ferrosonic "fish -c 'while test -z \"\$(tmux list-clients -t $app 2>/dev/null)\"; sleep 0.5; end; clear; echo \"Launching Ferrosonic...\"; while not ferrosonic; echo \"ferrosonic crashed. Restarting in 2 seconds...\"; sleep 2; end'"\; new-window -c "$HOME/notes/obsidian/thurs" -n notes
+    tmux new-session -d -x "$cols" -y "$lines" -s $app -n ferrosonic "fish -c 'while test -z \"\$(tmux list-clients -t $app 2>/dev/null)\"; sleep 0.5; end; clear; echo \"Launching Ferrosonic...\"; while not ferrosonic; echo \"ferrosonic crashed. Restarting in 2 seconds...\"; sleep 2; end'" \; new-window -c "$HOME/notes/obsidian/thurs" -n notes
   end
 end
 
