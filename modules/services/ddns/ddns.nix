@@ -10,10 +10,10 @@ _: {
       cfg = config.mine.services.ddns;
 
       gotifyAlert = pkgs.gotify-alert;
-      ddnsScript = pkgs.writers.writePython3Bin "route53-ddns" {
+      ddnsScript = pkgs.writers.writePython3Bin "ddns" {
         doCheck = false;
         libraries = with pkgs.python3Packages; [
-          boto3
+          google-cloud-dns
           requests
         ];
       } (builtins.readFile ./ddns.py);
@@ -26,20 +26,23 @@ _: {
       config = lib.mkIf cfg.enable {
         systemd = {
           services = {
-            route53-ddns = {
-              description = "Route53 Dynamic DNS Updater";
+            ddns = {
+              description = "Dynamic DNS Updater";
               after = [ "network-online.target" ];
               wants = [ "network-online.target" ];
               onFailure = [ "gotify-ddns-failure@%N.service" ];
+              restartTriggers = [ config.sops.templates."ddns.env".file ];
               serviceConfig = {
                 Type = "oneshot";
+                RemainAfterExit = true;
                 EnvironmentFile = config.sops.templates."ddns.env".path;
                 ExecStart = "${lib.getExe ddnsScript}";
                 DynamicUser = true;
+                LoadCredential = "CREDENTIALS.JSON:${config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path}";
               };
             };
             "gotify-ddns-failure@" = {
-              description = "Runs when the route53-ddn service fails.";
+              description = "Runs when the ddns service fails.";
               serviceConfig = {
                 Type = "oneshot";
                 ExecStart = "${lib.getExe gotifyAlert} %i";
@@ -47,8 +50,8 @@ _: {
               };
             };
           };
-          timers.route53-ddns = {
-            description = "Run Route53 DDNS Updater periodically";
+          timers.ddns = {
+            description = "Run DDNS Updater periodically";
             wantedBy = [ "timers.target" ];
             timerConfig = {
               OnBootSec = "5min";
@@ -62,17 +65,14 @@ _: {
         sops = {
           secrets = {
             "ddns/DOMAINS" = { };
-            "aws/traefik/AWS_ACCESS_KEY_ID" = { };
-            "aws/traefik/AWS_SECRET_ACCESS_KEY" = { };
-            "aws/traefik/AWS_HOSTED_ZONE_ID" = { };
+            "gcp/traefik/PROJECT_ID" = { };
+            "gcp/traefik/CREDENTIALS.JSON" = { };
             "gotify/URL" = { };
             "gotify/token/DDNS" = { };
           };
           templates."ddns.env".content = ''
             DOMAINS=${config.sops.placeholder."ddns/DOMAINS"}
-            AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."aws/traefik/AWS_SECRET_ACCESS_KEY"}
-            AWS_ACCESS_KEY_ID=${config.sops.placeholder."aws/traefik/AWS_ACCESS_KEY_ID"}
-            AWS_DEFAULT_REGION="us-west-2"
+            GCP_PROJECT_ID=${config.sops.placeholder."gcp/traefik/PROJECT_ID"}
             GOTIFY_URL=${config.sops.placeholder."gotify/URL"}
             GOTIFY_APP_TOKEN=${config.sops.placeholder."gotify/token/DDNS"}
           '';
@@ -81,8 +81,8 @@ _: {
         environment.etc =
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
-              name = "route53-ddns";
-              serviceName = "route53-ddns";
+              name = "ddns";
+              serviceName = "ddns";
             };
           in
           builtins.listToAttrs [

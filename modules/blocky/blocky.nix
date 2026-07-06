@@ -199,7 +199,7 @@
                     "attic.thurs.pw" = "192.168.10.60";
                     "jellyfin.${config.nixos-thurs.publicDomain}" = "192.168.10.189";
                     "mpd.thurs.pw" = allConfigs.streambox.config.mine.homelab.streambox.tailscaleIp;
-                    "cloudbox.thurs.pw" = "100.71.122.112";
+                    "cloudbox.thurs.pw" = "100.111.82.27";
                     "bazarr.thurs.pw" = "192.168.10.12";
                     "deemix.thurs.pw" = "192.168.10.12";
                     "lidarr.thurs.pw" = "192.168.10.12";

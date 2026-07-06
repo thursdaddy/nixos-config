@@ -20,6 +20,11 @@ _: {
     {
       options.mine.services.gitlab-runner = {
         enable = lib.mkEnableOption "gitlab-runner";
+        url = lib.mkOption {
+          description = "GitLab Instance URL";
+          type = lib.types.str;
+          default = "https://git.thurs.pw";
+        };
         runners = lib.mkOption {
           description = "Gitlab-runners";
           default = { };
@@ -35,8 +40,13 @@ _: {
                   };
                   dockerVolumes = lib.mkOption {
                     type = lib.types.listOf lib.types.str;
-                    default = [ "" ];
+                    default = [ ];
                     description = "volumes to attach to runner";
+                  };
+                  configFile = lib.mkOption {
+                    type = lib.types.nullOr lib.types.str;
+                    default = null;
+                    description = "Path to file containing CI_SERVER_URL and CI_SERVER_TOKEN. If provided, skips runner.py registration.";
                   };
                 };
               }
@@ -64,7 +74,7 @@ _: {
                 RestartSec = "10s";
                 RemainAfterExit = true;
                 Environment = [
-                  "GITLAB_URL=https://git.thurs.pw"
+                  "GITLAB_URL=${cfg.url}"
                   "GITLAB_RUNNER_CONFIG_PATH=${runner_cfg_path}"
                 ];
                 EnvironmentFile = config.sops.templates."gitlab-runner.token".path;
@@ -73,10 +83,13 @@ _: {
                 ${lib.concatStringsSep "\n" (
                   lib.mapAttrsToList (
                     runnerName: runnerConfig:
-                    let
-                      tagList = lib.concatStringsSep "," runnerConfig.tags;
-                    in
-                    "/run/current-system/sw/bin/_gitlab-runner --register --name=${runnerName} --tags=${tagList}"
+                    if runnerConfig.configFile != null then
+                      "echo 'Skipping dynamic registration for ${runnerName} (configFile provided)'"
+                    else
+                      let
+                        tagList = lib.concatStringsSep "," runnerConfig.tags;
+                      in
+                      "/run/current-system/sw/bin/_gitlab-runner --register --name=${runnerName} --tags=${tagList}"
                   ) config.mine.services.gitlab-runner.runners
                 )}
               '';
@@ -89,7 +102,7 @@ _: {
           services = lib.mapAttrs (runnerName: runnerConfig: {
             description = "Gitlab Runner ${runnerName} on ${config.networking.hostName}.";
             requestConcurrency = 3;
-            authenticationTokenConfigFile = "${runner_cfg_path}/${runnerName}";
+            authenticationTokenConfigFile = if runnerConfig.configFile != null then runnerConfig.configFile else "${runner_cfg_path}/${runnerName}";
             executor = "docker";
             dockerImage = "alpine";
             dockerPullPolicy = "always";
@@ -111,6 +124,9 @@ _: {
         systemd.tmpfiles.rules = [
           "d ${runner_cfg_path} 0755 root root - -"
         ];
+
+        # Prevent gitlab-runner from auto-enabling docker if we're using podman
+        virtualisation.docker.enable = lib.mkIf (config.mine.containers.settings.backend == "podman") (lib.mkForce false);
 
         environment.systemPackages = [
           runner_registration

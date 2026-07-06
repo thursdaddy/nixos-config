@@ -30,7 +30,10 @@ _: {
 
         containers = {
           settings.backend = "podman";
-          traefik = enabled;
+          traefik = {
+            enable = true;
+            dnsChallengeProvider = "gcp";
+          };
         };
 
         dev.tmux = {
@@ -46,6 +49,21 @@ _: {
         };
 
         services = {
+          gitlab-runner = {
+            enable = true;
+            url = "https://gitlab.com";
+            runners = {
+              "wormhole" = {
+                configFile = config.sops.templates."gitlab-runner-wormhole".path;
+                tags = [
+                  "nix"
+                  "builder"
+                ];
+                dockerVolumes = [ "/home/thurs/dev/nix/nixos-config/builds:/artifacts" ];
+              };
+            };
+          };
+          nginx = enabled;
           syncthing = {
             enable = true;
             folders = {
@@ -117,10 +135,9 @@ _: {
         };
       };
 
-      # TODO: clean this up (need to add option for CI_SERVER_URL)
       sops = {
         secrets."gitlab/GITLAB_COM_RUNNER_TOKEN" = { };
-        templates."gitlab-runner.token".content = ''
+        templates."gitlab-runner-wormhole".content = ''
           CI_SERVER_URL=https://gitlab.com
           CI_SERVER_TOKEN=${config.sops.placeholder."gitlab/GITLAB_COM_RUNNER_TOKEN"}
         '';

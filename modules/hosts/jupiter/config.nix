@@ -29,10 +29,10 @@ _: {
           sparkyfitness = enabled;
           teslamate = enabled;
           thelounge = enabled;
-          seerr = enabled;
           traefik = {
             enable = true;
             dashboard = true;
+            dnsChallengeProvider = "gcp";
             extraPorts = [
               "${config.mine.homelab.jupiter.tailscaleIp}:443:8443"
               "${config.mine.homelab.jupiter.hostIp}:443:443"

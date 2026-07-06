@@ -92,8 +92,9 @@
           gnused
         ];
         text = ''
-          AGE_KEY=$(aws ssm get-parameter --region ${config.mine.base.sops.ageKeyFile.ageKeyInSSM.region} --no-cli-pager --name ${config.mine.base.sops.ageKeyFile.ageKeyInSSM.paramName} --with-decryption --query "Parameter.Value" | sed 's/\"//g')
-          echo "$AGE_KEY" > ${config.sops.age.keyFile}
+          set -x
+          mkdir -p "$(dirname "${config.sops.age.keyFile}")"
+          aws ssm get-parameter --endpoint-url https://ssm.us-west-2.api.aws --region ${config.mine.base.sops.ageKeyFile.ageKeyInSSM.region} --no-cli-pager --name ${config.mine.base.sops.ageKeyFile.ageKeyInSSM.paramName} --with-decryption --query "Parameter.Value" --output text > ${config.sops.age.keyFile}
         '';
       };
     in

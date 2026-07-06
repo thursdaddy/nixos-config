@@ -2,22 +2,25 @@ import logging
 import os
 import sys
 
-import boto3
 import requests
-from botocore.exceptions import ClientError
+from google.cloud import dns
+from google.api_core.exceptions import GoogleAPIError
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
-# Load Environment Variables
-# AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION
 DOMAINS_ENV = os.environ.get("DOMAINS")
 GOTIFY_URL = os.environ.get("GOTIFY_URL")
 GOTIFY_TOKEN = os.environ.get("GOTIFY_APP_TOKEN")
+GCP_PROJECT_ID = os.environ.get("GCP_PROJECT_ID")
 
-if not all([DOMAINS_ENV, GOTIFY_URL, GOTIFY_TOKEN]):
+cred_dir = os.environ.get("CREDENTIALS_DIRECTORY")
+if cred_dir and not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(cred_dir, "CREDENTIALS.JSON")
+
+if not all([DOMAINS_ENV, GOTIFY_URL, GOTIFY_TOKEN, GCP_PROJECT_ID]):
     logger.error(
-        "Missing required environment variables. Ensure DOMAINS, GOTIFY_URL, and GOTIFY_APP_TOKEN are set."
+        "Missing required environment variables. Ensure DOMAINS, GOTIFY_URL, GOTIFY_APP_TOKEN, and GCP_PROJECT_ID are set."
     )
     sys.exit(1)
 
@@ -48,67 +51,46 @@ def send_gotify_notification(title, message, priority=5):
         logger.error(f"Failed to send Gotify notification: {e}")
 
 
-def get_hosted_zone_id(client, domain):
-    """Finds the correct Route53 Hosted Zone ID for a given domain."""
+def get_hosted_zone(client, domain):
+    """Finds the correct GCP Managed Zone for a given domain."""
     try:
-        # Route53 zones end with a dot (e.g., "test.net.")
-        paginator = client.get_paginator("list_hosted_zones")
-        for page in paginator.paginate():
-            for zone in page["HostedZones"]:
-                if domain.endswith(zone["Name"].rstrip(".")):
-                    return zone["Id"]
-        logger.error(f"Could not find a Hosted Zone matching domain: {domain}")
+        for zone in client.list_zones():
+            if domain.endswith(zone.dns_name.rstrip(".")):
+                return zone
+        logger.error(f"Could not find a Managed Zone matching domain: {domain}")
         return None
-    except ClientError as e:
-        logger.error(f"AWS API Error looking up Hosted Zones: {e}")
+    except GoogleAPIError as e:
+        logger.error(f"GCP API Error looking up Managed Zones: {e}")
         return None
 
 
-def get_current_dns_ip(client, zone_id, domain):
-    """Fetches the current IP address registered in Route53 for the domain."""
+def get_current_record(zone, domain):
+    """Fetches the current A record registered in GCP for the domain."""
     try:
-        response = client.list_resource_record_sets(
-            HostedZoneId=zone_id,
-            StartRecordName=domain,
-            StartRecordType="A",
-            MaxItems="1",
+        for record in zone.list_resource_record_sets():
+            if record.name.rstrip(".") == domain and record.record_type == "A":
+                return record
+        return None
+    except GoogleAPIError as e:
+        logger.error(f"GCP API Error looking up DNS record for {domain}: {e}")
+        return None
+
+
+def update_dns_record(zone, domain, new_ip, old_record):
+    """Updates the GCP A record with the new IP."""
+    try:
+        changes = zone.changes()
+        if old_record:
+            changes.delete_record_set(old_record)
+        
+        new_record = zone.resource_record_set(
+            domain + ".", "A", 300, [new_ip]
         )
-        records = response.get("ResourceRecordSets", [])
-        if (
-            records
-            and records[0]["Name"].rstrip(".") == domain
-            and records[0]["Type"] == "A"
-        ):
-            return records[0]["ResourceRecords"][0]["Value"]
-        return None
-    except ClientError as e:
-        logger.error(f"AWS API Error looking up DNS record for {domain}: {e}")
-        return None
-
-
-def update_dns_record(client, zone_id, domain, new_ip):
-    """Updates the Route53 A record with the new IP."""
-    try:
-        response = client.change_resource_record_sets(
-            HostedZoneId=zone_id,
-            ChangeBatch={
-                "Comment": "Automated DDNS update",
-                "Changes": [
-                    {
-                        "Action": "UPSERT",
-                        "ResourceRecordSet": {
-                            "Name": domain,
-                            "Type": "A",
-                            "TTL": 300,
-                            "ResourceRecords": [{"Value": new_ip}],
-                        },
-                    }
-                ],
-            },
-        )
+        changes.add_record_set(new_record)
+        changes.create()
         return True
-    except ClientError as e:
-        logger.error(f"AWS API Error updating DNS record for {domain}: {e}")
+    except GoogleAPIError as e:
+        logger.error(f"GCP API Error updating DNS record for {domain}: {e}")
         return False
 
 
@@ -119,19 +101,20 @@ def main():
 
     logger.info(f"Current public IP is: {current_ip}")
 
-    r53_client = boto3.client("route53")
+    dns_client = dns.Client(project=GCP_PROJECT_ID)
     updates_made = []
     errors_encountered = []
 
     for domain in DOMAINS:
         logger.info(f"Checking domain: {domain}")
 
-        zone_id = get_hosted_zone_id(r53_client, domain)
-        if not zone_id:
-            errors_encountered.append(f"{domain}: Failed to find Hosted Zone.")
+        zone = get_hosted_zone(dns_client, domain)
+        if not zone:
+            errors_encountered.append(f"{domain}: Failed to find Managed Zone.")
             continue
 
-        dns_ip = get_current_dns_ip(r53_client, zone_id, domain)
+        old_record = get_current_record(zone, domain)
+        dns_ip = old_record.rrdatas[0] if old_record and old_record.rrdatas else None
 
         if dns_ip == current_ip:
             logger.info(f"[{domain}] IP matches ({current_ip}). No update needed.")
@@ -141,10 +124,10 @@ def main():
             f"[{domain}] IP mismatch! DNS: {dns_ip} -> Current: {current_ip}. Updating..."
         )
 
-        success = update_dns_record(r53_client, zone_id, domain, current_ip)
+        success = update_dns_record(zone, domain, current_ip, old_record)
 
         if success:
-            logger.info(f"[{domain}] Successfully updated Route53.")
+            logger.info(f"[{domain}] Successfully updated GCP Cloud DNS.")
             updates_made.append(f"✅ {domain}: {dns_ip} -> {current_ip}")
         else:
             errors_encountered.append(f"❌ {domain}: Update failed.")

@@ -132,14 +132,17 @@ _: {
                 path = "${user.homeDir}/notes";
                 devices = [
                   "mbp"
-                  "pixel7-pro"
                   "wormhole"
                 ];
                 ignorePerms = true;
               };
             };
           };
-          traefik = enabled;
+          traefik = {
+            enable = true;
+            dashboard = true;
+            dnsChallengeProvider = "gcp";
+          };
         };
       };
 

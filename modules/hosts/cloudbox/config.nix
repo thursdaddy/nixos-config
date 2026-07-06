@@ -19,11 +19,19 @@ _: {
             hostName = "cloudbox";
             ipv4Forwarding = enabled;
           };
+          sops.ageKeyFile = {
+            path = "/var/lib/sops-age/keys.txt";
+            ageKeyInSSM = {
+              enable = true;
+              paramName = "/sops/age.key";
+              region = "us-west-2";
+            };
+          };
         };
 
         homelab.cloudbox = {
-          tailscaleIp = "100.71.122.112";
-          hostIp = config.nixos-thurs.publicIp;
+          tailscaleIp = "100.111.82.27";
+          hostIp = "10.20.10.191";
           rootDomainName = config.nixos-thurs.publicDomain;
         };
 
@@ -35,31 +43,28 @@ _: {
             gotifyUrl = "https://gotify.${config.nixos-thurs.publicDomain}";
           };
           gotify = enabled;
-          seerr = enabled;
           traefik = {
             enable = true;
+            enableIpv6 = true;
             awsEnvKeys = false;
             dashboard = true;
+            dnsChallengeProvider = "gcp";
+            dnsResolvers = "[2606:4700:4700::1111]:53,[2001:4860:4860::8888]:53";
             extraPorts = [
               "${config.mine.homelab.${config.networking.hostName}.tailscaleIp}:443:8443"
-              "10.20.10.184:8082:8082"
-              "10.20.10.184:443:443"
+              "${config.mine.homelab.${config.networking.hostName}.hostIp}:443:443"
             ];
             extraCmds = [
               "--accesslog=true"
               "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
               "--experimental.plugins.fail2ban.version=v0.9.0"
+              "--certificatesresolvers.letsencrypt.acme.dnschallenge.disablepropagationcheck=true"
+              "--certificatesresolvers.letsencrypt.acme.dnschallenge.delaybeforecheck=15"
             ];
           };
-          vaultwarden = enabled;
         };
 
         services = {
-          backups = {
-            enable = true;
-            nfs-mount = false;
-          };
-          r53-updater = enabled;
           tailscale = {
             enable = true;
             useRoutingFeatures = "client";

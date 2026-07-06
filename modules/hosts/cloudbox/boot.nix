@@ -22,6 +22,7 @@ _: {
       swapDevices = [
         {
           device = "/swap";
+          size = 2048;
         }
       ];
 

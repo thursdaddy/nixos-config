@@ -57,6 +57,12 @@ _: {
           type = lib.types.listOf lib.types.str;
           default = [ ];
         };
+        enableIpv6 = lib.mkEnableOption "Enable IPv6 for Traefik container and proxy network";
+        dnsResolvers = lib.mkOption {
+          description = "DNS resolvers for ACME challenge";
+          type = lib.types.str;
+          default = "1.1.1.1:53,8.8.8.8:53";
+        };
         extraLabels = lib.mkOption {
           description = "List of labels to append";
           type = lib.types.attrsOf lib.types.str;
@@ -94,15 +100,24 @@ _: {
             ports = cfg.extraPorts ++ [
               "0.0.0.0:80:80"
             ];
-            environmentFiles = lib.mkIf cfg.awsEnvKeys [
+            extraOptions = lib.mkIf cfg.enableIpv6 [
+              "--dns=2606:4700:4700::1111"
+              "--dns=2001:4860:4860::8888"
+            ];
+            environmentFiles = lib.mkIf (cfg.awsEnvKeys || cfg.dnsChallengeProvider == "gcp") [
               config.sops.templates."traefik.keys.env".path
             ];
-            environment = {
+            environment = lib.mkIf (cfg.dnsChallengeProvider == "route53") {
               AWS_REGION = "us-west-2";
             };
             volumes = [
               "${configPath}/${name}:/etc/traefik/"
               "/var/lib/traefik:/var/lib/traefik/"
+            ]
+            ++ lib.optionals (cfg.dnsChallengeProvider == "gcp") [
+              "${config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path}:${
+                config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path
+              }:ro"
             ];
             cmd =
               cfg.extraCmds
@@ -112,7 +127,11 @@ _: {
                 "--providers.docker.exposedbydefault=false"
                 "--providers.docker.endpoint=tcp://docker-socket-proxy:2375"
                 "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
-                "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=${cfg.dnsChallengeProvider}"
+                "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=${
+                  if cfg.dnsChallengeProvider == "gcp" then "gcloud" else cfg.dnsChallengeProvider
+                }"
+                "--certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=${cfg.dnsResolvers}"
+                "--certificatesresolvers.letsencrypt.acme.email=${config.mine.base.user.email}"
                 "--certificatesresolvers.letsencrypt.acme.storage=${acmeStorage}"
                 "--metrics.prometheus=true"
                 "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
@@ -179,7 +198,7 @@ _: {
               Type = "oneshot";
               RemainAfterExit = true;
               ExecStart = [
-                "-${lib.getExe pkgs.${ociBackend}} network create docker-proxy"
+                "-${lib.getExe pkgs.${ociBackend}} network create ${lib.optionalString cfg.enableIpv6 "--ipv6 "}docker-proxy"
               ];
             };
           };
@@ -195,21 +214,35 @@ _: {
 
         networking.firewall.allowedTCPPorts = [ 8082 ]; # prometheus exporter
 
-        sops = {
-          secrets = {
-            "aws/traefik/AWS_ACCESS_KEY_ID" = lib.mkIf cfg.awsEnvKeys { };
-            "aws/traefik/AWS_SECRET_ACCESS_KEY" = lib.mkIf cfg.awsEnvKeys { };
-          };
-          templates = {
-            "traefik.keys.env".content = (lib.mkIf cfg.awsEnvKeys) ''
-              AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."aws/traefik/AWS_SECRET_ACCESS_KEY"}
-              AWS_ACCESS_KEY_ID=${config.sops.placeholder."aws/traefik/AWS_ACCESS_KEY_ID"}
-            '';
-          };
-        };
+        sops = lib.mkMerge [
+          (lib.mkIf (cfg.dnsChallengeProvider == "route53" && cfg.awsEnvKeys) {
+            secrets = {
+              "aws/traefik/AWS_ACCESS_KEY_ID" = { };
+              "aws/traefik/AWS_SECRET_ACCESS_KEY" = { };
+            };
+            templates = {
+              "traefik.keys.env".content = ''
+                AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."aws/traefik/AWS_SECRET_ACCESS_KEY"}
+                AWS_ACCESS_KEY_ID=${config.sops.placeholder."aws/traefik/AWS_ACCESS_KEY_ID"}
+              '';
+            };
+          })
+          (lib.mkIf (cfg.dnsChallengeProvider == "gcp") {
+            secrets = {
+              "gcp/traefik/PROJECT_ID" = { };
+              "gcp/traefik/CREDENTIALS.JSON" = { };
+            };
+            templates = {
+              "traefik.keys.env".content = ''
+                GCE_PROJECT=${config.sops.placeholder."gcp/traefik/PROJECT_ID"}
+                GCE_SERVICE_ACCOUNT_FILE=${config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path}
+              '';
+            };
+          })
+        ];
 
         systemd.tmpfiles.rules = [
-          "f ${acmeStorage} 0600 traefik traefik - -"
+          "f ${acmeStorage} 0600 root root - -"
         ];
 
         environment.etc =

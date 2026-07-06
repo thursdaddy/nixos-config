@@ -31,8 +31,23 @@ rebuild () {
 
 build () {
   printf "\n${ORANGE}Building: ${WHITE}${TARGET}${NC}\n"
-  nix build .\#"${TARGET}" &&\
-    copy_artifact_path
+  case "$TARGET" in
+    ami)
+      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant amazon && copy_artifact_path
+      ;;
+    x86_64-iso)
+      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant iso && copy_artifact_path
+      ;;
+    aarch64-sd)
+      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant sd-aarch64 && copy_artifact_path
+      ;;
+    vm)
+      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant qcow && copy_artifact_path
+      ;;
+    *)
+      nix build .\#"${TARGET}" && copy_artifact_path
+      ;;
+  esac
 }
 
 attic () {
@@ -56,7 +71,7 @@ function copy_artifact_path {
   if [ -L ./result ]; then
     ARTIFACT_PATH=$(readlink ./result)
     # vhd = ami, zst = sd-aarch64
-    ARTIFACT=$(find "$ARTIFACT_PATH" -type f \( -iname '*.vhd' -o -iname '*.zst' -o -iname '*.iso' \))
+    ARTIFACT=$(find "$ARTIFACT_PATH" -type f \( -iname '*.vhd' -o -iname '*.zst' -o -iname '*.iso' -o -iname '*.qcow2' -o -iname '*.img' \))
     if [ ! -z "${ARTIFACT}" ]; then
       printf "\nCopy ${ARTIFACT} to builds/\n\n"
       sudo cp "$ARTIFACT" builds/

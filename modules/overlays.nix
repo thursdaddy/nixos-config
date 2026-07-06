@@ -31,6 +31,23 @@ let
         prev.lib.filter (p: (p.pname or "") != "setuptools") (oldAttrs.propagatedBuildInputs or [ ])
         ++ [ prev.python3Packages.packaging ];
     });
+
+    # Disable flaky timing tests in tenacity and nbmake which frequently fail on slower hardware (like the Raspberry Pi)
+    pythonPackagesExtensions =
+      (prev.pythonPackagesExtensions or [ ])
+      ++ prev.lib.optionals (prev.stdenv.hostPlatform.isAarch64) [
+        (python-final: python-prev: {
+          tenacity = python-prev.tenacity.overridePythonAttrs (oldAttrs: {
+            doCheck = false;
+            doInstallCheck = false;
+          });
+          nbmake = python-prev.nbmake.overridePythonAttrs (oldAttrs: {
+            doCheck = false;
+            doInstallCheck = false;
+            propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [ python-final.pytest ];
+          });
+        })
+      ];
   };
 
 in

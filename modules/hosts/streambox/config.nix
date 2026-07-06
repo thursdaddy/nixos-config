@@ -29,6 +29,7 @@ _: {
           traefik = {
             enable = true;
             dashboard = true;
+            dnsChallengeProvider = "gcp";
             extraCmds = [
               "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
               "--experimental.plugins.fail2ban.version=v0.9.0"

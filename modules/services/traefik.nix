@@ -114,7 +114,9 @@ _: {
 
             certificatesResolvers.letsencrypt.acme = {
               dnsChallenge = {
-                provider = "route53";
+                # Traefik internally requires "gcloud", so we map your "gcp" config back to it
+                provider = if cfg.dnsChallengeProvider == "gcp" then "gcloud" else cfg.dnsChallengeProvider;
+                resolvers = [ "1.1.1.1:53" "8.8.8.8:53" ];
               };
               storage = acmeStorage;
             };
@@ -154,21 +156,35 @@ _: {
           "f ${acmeStorage} 0600 traefik traefik - -"
         ];
 
-        sops = {
-          secrets = {
-            "aws/traefik/AWS_ACCESS_KEY_ID" = { };
-            "aws/traefik/AWS_SECRET_ACCESS_KEY" = { };
-            "aws/traefik/AWS_HOSTED_ZONE_ID" = { };
-          };
-          templates = {
-            "traefik.keys.env".content = ''
-              AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."aws/traefik/AWS_SECRET_ACCESS_KEY"}
-              AWS_ACCESS_KEY_ID=${config.sops.placeholder."aws/traefik/AWS_ACCESS_KEY_ID"}
-              AWS_HOSTED_ZONE_ID=${config.sops.placeholder."aws/traefik/AWS_HOSTED_ZONE_ID"}
-              AWS_REGION=us-west-2
-            '';
-          };
-        };
+        sops = lib.mkMerge [
+          (lib.mkIf (cfg.dnsChallengeProvider == "route53") {
+            secrets = {
+              "aws/traefik/AWS_ACCESS_KEY_ID" = { };
+              "aws/traefik/AWS_SECRET_ACCESS_KEY" = { };
+              "aws/traefik/AWS_HOSTED_ZONE_ID" = { };
+            };
+            templates = {
+              "traefik.keys.env".content = ''
+                AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."aws/traefik/AWS_SECRET_ACCESS_KEY"}
+                AWS_ACCESS_KEY_ID=${config.sops.placeholder."aws/traefik/AWS_ACCESS_KEY_ID"}
+                AWS_HOSTED_ZONE_ID=${config.sops.placeholder."aws/traefik/AWS_HOSTED_ZONE_ID"}
+                AWS_REGION=us-west-2
+              '';
+            };
+          })
+          (lib.mkIf (cfg.dnsChallengeProvider == "gcp") {
+            secrets = {
+              "gcp/traefik/PROJECT_ID" = { };
+              "gcp/traefik/CREDENTIALS.JSON" = { };
+            };
+            templates = {
+              "traefik.keys.env".content = ''
+                GCE_PROJECT=${config.sops.placeholder."gcp/traefik/PROJECT_ID"}
+                GCE_SERVICE_ACCOUNT_FILE=${config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path}
+              '';
+            };
+          })
+        ];
       };
     };
 }
