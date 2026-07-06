@@ -1,52 +1,114 @@
-heating_time_daily:
-  source: sensor.hvac_heating
-  name: Heating Time Daily
-  cycle: daily
-heating_time_weekly:
-  source: sensor.hvac_heating
-  name: Heating Time Weekly
-  cycle: weekly
-heating_time_monthly:
-  source: sensor.hvac_heating
-  name: Heating Time Monthly
-  cycle: monthly
-heating_time_yearly:
-  source: sensor.hvac_heating
-  name: Heating Time Yearly
-  cycle: yearly
-cooling_time_daily:
-  source: sensor.hvac_cooling
-  name: Cooling Time Daily
-  cycle: daily
-cooling_time_weekly:
-  source: sensor.hvac_cooling
-  name: Cooling Time Weekly
-  cycle: weekly
 cooling_time_monthly:
   source: sensor.hvac_cooling
   name: Cooling Time Monthly
   cycle: monthly
+
+cooling_cost_monthly:
+  source: sensor.hvac_cost_session
+  name: Cooling Cost Monthly
+  cycle: monthly
+
+cooling_cost_monthly_peak:
+  source: sensor.hvac_cost_peak_session
+  name: Cooling Cost Monthly Peak
+  cycle: monthly
+
+cooling_cost_monthly_off_peak:
+  source: sensor.hvac_cost_off_peak_session
+  name: Cooling Cost Monthly Off-Peak
+  cycle: monthly
+
+cooling_cost_monthly_super_off_peak:
+  source: sensor.hvac_cost_super_off_peak_session
+  name: Cooling Cost Monthly Super Off-Peak
+  cycle: monthly
+
+cooling_time_monthly_peak:
+  source: sensor.hvac_cooling_peak_session
+  name: Cooling Time Monthly Peak
+  cycle: monthly
+
+cooling_time_monthly_off_peak:
+  source: sensor.hvac_cooling_off_peak_session
+  name: Cooling Time Monthly Off-Peak
+  cycle: monthly
+
+cooling_time_monthly_super_off_peak:
+  source: sensor.hvac_cooling_super_off_peak_session
+  name: Cooling Time Monthly Super Off-Peak
+  cycle: monthly
+
+hvac_cost_tracker:
+  source: sensor.hvac_cost_session
+  name: AC Daily Running Cost
+  cycle: daily
+
+hvac_cost_peak:
+  source: sensor.hvac_cost_peak_session
+  name: AC Daily Peak Cost
+  cycle: daily
+
+hvac_cost_off_peak:
+  source: sensor.hvac_cost_off_peak_session
+  name: AC Daily Off-Peak Cost
+  cycle: daily
+
+hvac_cost_super_off_peak:
+  source: sensor.hvac_cost_super_off_peak_session
+  name: AC Daily Super Off-Peak Cost
+  cycle: daily
+
+hvac_cooling_peak:
+  source: sensor.hvac_cooling_peak_session
+  name: AC Daily Peak Runtime
+  cycle: daily
+
+hvac_cooling_off_peak:
+  source: sensor.hvac_cooling_off_peak_session
+  name: AC Daily Off-Peak Runtime
+  cycle: daily
+
+hvac_cooling_super_off_peak:
+  source: sensor.hvac_cooling_super_off_peak_session
+  name: AC Daily Super Off-Peak Runtime
+  cycle: daily
+
 cooling_time_yearly:
   source: sensor.hvac_cooling
   name: Cooling Time Yearly
   cycle: yearly
-idle_time_daily:
-  source: sensor.hvac_idle
-  name: Idle Time Daily
-  cycle: daily
-idle_time_weekly:
-  source: sensor.hvac_idle
-  name: Idle Time Weekly
-  cycle: weekly
-idle_time_monthly:
-  source: sensor.hvac_idle
-  name: Idle Time Monthly
-  cycle: monthly
-idle_time_yearly:
-  source: sensor.hvac_idle
-  name: Idle Time Yearly
+
+cooling_cost_yearly:
+  source: sensor.hvac_cost_session
+  name: Cooling Cost Yearly
   cycle: yearly
-hvac_time_filter:
-  source: sensor.hvac_today
-  name: HVAC Time Filter
+
+cooling_cost_yearly_peak:
+  source: sensor.hvac_cost_peak_session
+  name: Cooling Cost Yearly Peak
+  cycle: yearly
+
+cooling_cost_yearly_off_peak:
+  source: sensor.hvac_cost_off_peak_session
+  name: Cooling Cost Yearly Off-Peak
+  cycle: yearly
+
+cooling_cost_yearly_super_off_peak:
+  source: sensor.hvac_cost_super_off_peak_session
+  name: Cooling Cost Yearly Super Off-Peak
+  cycle: yearly
+
+cooling_time_yearly_peak:
+  source: sensor.hvac_cooling_peak_session
+  name: Cooling Time Yearly Peak
+  cycle: yearly
+
+cooling_time_yearly_off_peak:
+  source: sensor.hvac_cooling_off_peak_session
+  name: Cooling Time Yearly Off-Peak
+  cycle: yearly
+
+cooling_time_yearly_super_off_peak:
+  source: sensor.hvac_cooling_super_off_peak_session
+  name: Cooling Time Yearly Super Off-Peak
   cycle: yearly

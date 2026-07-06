@@ -30,11 +30,36 @@
       imports = [ "${inputs.unstable}/nixos/modules/services/home-automation/home-assistant.nix" ];
 
       config = {
-        mine.services = {
-          appdaemon = enabled;
-          govee2mqtt = enabled;
-          mqtt = enabled;
-          zigbee2mqtt = enabled;
+        mine = {
+          services = {
+            appdaemon = enabled;
+            govee2mqtt = enabled;
+            mqtt = enabled;
+            zigbee2mqtt = enabled;
+          };
+          homelab.${config.networking.hostName} = {
+            apps.hass = {
+              traefik.static = {
+                hass = {
+                  port = 8090;
+                  subDomain = "home";
+                  labels = {
+                    "traefik.http.routers.hass.middlewares" = "fail2ban,teslarewrite";
+                    "traefik.http.middlewares.teslarewrite.replacepathregex.regex" = "^/.well-known/appspecific/com.tesla.3p.public-key.pem$";
+                    "traefik.http.middlewares.teslarewrite.replacepathregex.replacement" = "/local/tesla/com.tesla.3p.public-key.pem";
+                    "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.bantime" = "3h";
+                    "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.findtime" = "5m";
+                    "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.maxretry" = "5";
+                    "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.statuscode" = "401";
+                    "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.enabled" = "true";
+                  };
+                };
+                esphome = {
+                  port = 6052;
+                };
+              };
+            };
+          };
         };
 
         users.users.${user.name}.extraGroups = [ "hass" ];
@@ -90,16 +115,32 @@
                 server_port = 8090;
                 use_x_forwarded_for = true;
                 trusted_proxies = [
-                  "0.0.0.0/0"
+                  "127.0.0.1"
+                  "100.64.0.0/10" # Tailscale subnet
+                  "192.168.10.0/24" # Local LAN subnet
                 ];
               };
               input_boolean = "!include booleans.yaml";
               notify = "!include notify.yaml";
+              google_assistant = "!include google_assistant.yaml";
               lovelace.resource_mode = "yaml";
               prometheus = {
                 namespace = "hass";
               };
               recorder.db_url = "postgresql://@/hass";
+              mcp_server = {
+                exposed_domains = [
+                  "binary_sensor"
+                  "climate"
+                  "device_tracker"
+                  "input_boolean"
+                  "light"
+                  "lock"
+                  "person"
+                  "sensor"
+                  "switch"
+                ];
+              };
               "switch projector" = "!include projector.yaml";
               sensor = "!include sensor.yaml";
               template = "!include template.yaml";
@@ -129,6 +170,8 @@
               "logger"
               "lovelace"
               "lutron_caseta"
+              "mcp"
+              "mcp_server"
               "met"
               "nws"
               "octoprint"
@@ -137,6 +180,7 @@
               "roborock"
               "sun"
               "telnet"
+              "tesla_fleet"
               "tplink"
               "unifi"
               "unifiprotect"
@@ -151,11 +195,18 @@
           secrets = {
             "gotify/URL" = { };
             "gotify/token/HASS" = { };
+            "google_assistant/SERVICE_ACCOUNT.JSON" = {
+              path = "/var/lib/hass/SERVICE_ACCOUNT.json";
+              owner = "hass";
+              restartUnits = [ "home-assistant.service" ];
+            };
+            "google_assistant/PROJECT_ID" = { };
           };
           templates = {
             "notify.yaml" = {
               path = "/var/lib/hass/notify.yaml";
               owner = "hass";
+              restartUnits = [ "home-assistant.service" ];
               content = ''
                 - name: "gotify"
                   platform: gotify
@@ -163,12 +214,22 @@
                   token: ${config.sops.placeholder."gotify/token/HASS"}
               '';
             };
+            "google_assistant.yaml" = {
+              path = "/var/lib/hass/google_assistant.yaml";
+              owner = "hass";
+              restartUnits = [ "home-assistant.service" ];
+              content = ''
+                project_id: ${config.sops.placeholder."google_assistant/PROJECT_ID"}
+                service_account: !include SERVICE_ACCOUNT.json
+                report_state: true
+                exposed_domains:
+                  - switch
+                  - light
+                  - input_boolean
+              '';
+            };
           };
         };
-
-        nixpkgs.config.permittedInsecurePackages = [
-          "python3.12-ecdsa-0.19.1"
-        ];
 
         systemd =
           let
@@ -192,6 +253,13 @@
           {
             services."backup-home-assistant" = backup.service;
             timers."backup-home-assistant" = backup.timer;
+            services.home-assistant.restartTriggers = [
+              booleans
+              projector
+              sensor
+              template
+              utility
+            ];
             tmpfiles.rules = [
               "f ${cfgDir}/automations.yaml 0400 hass hass -"
               "L+ ${cfgDir}/booleans.yaml 0400 hass hass - ${booleans}"
@@ -201,20 +269,6 @@
               "L+ ${cfgDir}/utility.yaml 0400 hass hass - ${utility}"
             ];
           };
-
-        mine.homelab.${config.networking.hostName} = {
-          apps.hass = {
-            traefik.static = {
-              hass = {
-                port = 8090;
-                subDomain = "home";
-              };
-              esphome = {
-                port = 6052;
-              };
-            };
-          };
-        };
 
         environment.etc =
           let

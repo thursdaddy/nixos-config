@@ -9,6 +9,7 @@ _: {
     let
       name = "appdaemon";
       cfg = config.mine.services.${name};
+      appDir = "${config.mine.base.user.homeDir}/appdaemon/";
     in
     {
       options.mine.services.appdaemon = {
@@ -20,8 +21,10 @@ _: {
           description = "Start AppDaemon";
           wantedBy = [ "multi-user.target" ];
           serviceConfig = {
-            User = "hass";
-            ExecStart = "${pkgs.appdaemon}/bin/appdaemon -c /var/lib/appdaemon/";
+            User = config.mine.base.user.name;
+            LogsDirectory = "appdaemon";
+            # Run appdaemon pointing to the appDir config directory
+            ExecStart = "${pkgs.appdaemon}/bin/appdaemon -c ${appDir}";
             Type = "simple";
             Restart = "on-failure";
             RestartSec = "3s";
@@ -36,8 +39,8 @@ _: {
           };
           templates = {
             "appdaemon_conf" = {
-              path = "/var/lib/appdaemon/appdaemon.yaml";
-              owner = "hass";
+              path = "${appDir}/appdaemon.yaml";
+              owner = config.mine.base.user.name;
               content = ''
                 appdaemon:
                   time_zone: ${config.time.timeZone}
@@ -57,13 +60,13 @@ _: {
                       token: ${config.sops.placeholder."hass/APPD_TOKEN"}
                 logs:
                   main_log:
-                    filename: /var/lib/appdaemon/logs/main.log
+                    filename: /var/log/appdaemon/main.log
                   access_log:
-                    filename: /var/lib/appdaemon/logs/access.log
+                    filename: /var/log/appdaemon/access.log
                   error_log:
-                    filename: /var/lib/appdaemon/logs/error.log
+                    filename: /var/log/appdaemon/error.log
                   diag_log:
-                    filename: /var/lib/appdaemon/logs/diag.log
+                    filename: /var/log/appdaemon/diag.log
                     log_generations: 5
                     log_size: 1024
                     format: "{asctime} {levelname:<8} {appname:<10}: {message}"
@@ -77,7 +80,7 @@ _: {
             alloyAppDaemon = lib.thurs.mkAlloyFileMatch {
               inherit config;
               inherit name;
-              path = "/var/lib/appdaemon/**/*.log";
+              path = "/var/log/appdaemon/*.log";
             };
           in
           builtins.listToAttrs [
