@@ -2,15 +2,11 @@ _: {
   configurations.nixos.netpi.module =
     {
       config,
-      lib,
       hostName,
       hostIp,
       tailscaleIp,
       ...
     }:
-    let
-      inherit (lib.thurs) enabled;
-    in
     {
 
       mine = {
@@ -50,7 +46,6 @@ _: {
               };
             };
           };
-          traefik = enabled;
           tailscale = {
             useRoutingFeatures = "server";
             extraUpFlags = [ "--advertise-routes=192.168.10.0/24" ];

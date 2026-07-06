@@ -63,6 +63,7 @@ _: {
                 devices = [
                   "mbp"
                   "c137"
+                  "borrowbox"
                 ];
                 ignorePerms = true;
               };
@@ -71,6 +72,7 @@ _: {
                 devices = [
                   "mbp"
                   "c137"
+                  "borrowbox"
                 ];
                 ignorePerms = true;
               };
@@ -79,6 +81,7 @@ _: {
                 devices = [
                   "mbp"
                   "c137"
+                  "borrowbox"
                 ];
                 ignorePerms = true;
               };
@@ -88,6 +91,7 @@ _: {
                   "mbp"
                   "pixel7-pro"
                   "c137"
+                  "borrowbox"
                 ];
                 ignorePerms = true;
               };

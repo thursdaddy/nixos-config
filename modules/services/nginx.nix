@@ -2,7 +2,6 @@ _: {
   flake.modules.nixos.services =
     {
       config,
-      pkgs,
       lib,
       ...
     }:
@@ -20,7 +19,7 @@ _: {
       config = lib.mkIf cfg.enable {
         mine.homelab.${config.networking.hostName} = {
           apps.nginx = {
-            traefik.static = {
+            traefik.static.nginx = {
               inherit port;
             };
           };
@@ -39,6 +38,10 @@ _: {
             ];
             root = "/var/www/my-site";
           };
+        };
+
+        services.logrotate.settings.nginx = {
+          su = lib.mkForce "root root";
         };
 
         environment.etc =

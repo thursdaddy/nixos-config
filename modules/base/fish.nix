@@ -10,7 +10,6 @@ _: {
       environment.systemPackages = with pkgs; [
         fishPlugins.colored-man-pages
         fishPlugins.done
-        # fishPlugins.fzf-fish #i https://github.com/NixOS/nixpkgs/issues/410069
         fishPlugins.forgit
         fishPlugins.grc
         grc
@@ -23,6 +22,14 @@ _: {
         interactiveShellInit = ''
           set -U fish_greeting ""
           set -g fish_pager_color_prefix 444444
+
+          if test -n "$SSH_TTY"; and test -n "$SSH_AUTH_SOCK"; and test "$SSH_AUTH_SOCK" != "$HOME/.ssh/ssh_auth_sock"
+            mkdir -p ~/.ssh
+            ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
+          end
+          if set -q TMUX; and test -S ~/.ssh/ssh_auth_sock
+            set -gx SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
+          end
 
           bind \cx beginning-of-line
           bind \cb backward-word

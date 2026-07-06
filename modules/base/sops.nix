@@ -77,7 +77,10 @@
     }:
     let
       ssm_systemd_config = lib.mkIf config.mine.base.sops.ageKeyFile.ageKeyInSSM.enable {
-        Environment = "SOPS_AGE_KEY_FILE=${config.sops.age.keyFile}";
+        Environment = [
+          "SOPS_AGE_KEY_FILE=${config.sops.age.keyFile}"
+          "AWS_CA_BUNDLE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+        ];
         ExecStartPre = ssm_systemd_script + "/bin/get-age-key-from-ssm";
       };
 

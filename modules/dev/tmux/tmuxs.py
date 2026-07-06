@@ -235,6 +235,12 @@ def start_or_attach_local(name, path=None):
 
 def handle_preview():
     item = sys.argv[2]
+    if item == "[Search Remote Sessions]":
+        print("Search for active tmux sessions on your configured remote hosts.")
+        return
+    if item.startswith("[No remote sessions found"):
+        print("No remote sessions are currently active. Press Enter or Esc to go back.")
+        return
     if " [" in item and item.endswith("]"):
         sess, host = item.rsplit(" [", 1)
         host = host[:-1]
@@ -273,6 +279,9 @@ def handle_preview():
 
 def handle_preview_window():
     target = sys.argv[2]
+    if target == "[No local windows found]":
+        print("No local windows are currently active.")
+        return
     if target.startswith("["):
         host, sess_win = target[1:].split("] ", 1)
         print(f"=== Remote Window Preview ({host}) ===")
@@ -306,56 +315,79 @@ def handle_dir_preview():
 
 
 def handle_running():
-    local_sessions = get_local_sessions()
-    remote_sessions = asyncio.run(get_all_remote_sessions())
-    all_sessions = local_sessions + remote_sessions
+    while True:
+        local_sessions = get_local_sessions()
+        all_sessions = local_sessions + ["[Search Remote Sessions]"]
 
-    if not all_sessions:
-        print("No running sessions found.")
-        return
+        selected = run_fzf(
+            all_sessions, prompt="󰖰  ", preview=f"{sys.argv[0]} --preview {{}}"
+        )
+        if not selected:
+            return
 
-    selected = run_fzf(
-        all_sessions, prompt="󰖰  ", preview=f"{sys.argv[0]} --preview {{}}"
-    )
-    if selected:
-        if " [" in selected and selected.endswith("]"):
-            sess, host = selected.rsplit(" [", 1)
-            host = host[:-1]
-            connect_remote(host, sess)
+        if selected == "[Search Remote Sessions]":
+            print("Fetching remote sessions...")
+            remote_sessions = asyncio.run(get_all_remote_sessions())
+            if not remote_sessions:
+                remote_sessions = ["[No remote sessions found - Back]"]
+            selected_remote = run_fzf(
+                remote_sessions, prompt="󰖰 (remote)  ", preview=f"{sys.argv[0]} --preview {{}}"
+            )
+            if not selected_remote or selected_remote.startswith("[No remote sessions found"):
+                continue
+
+            if " [" in selected_remote and selected_remote.endswith("]"):
+                sess, host = selected_remote.rsplit(" [", 1)
+                host = host[:-1]
+                connect_remote(host, sess)
+                return
         else:
             start_or_attach_local(selected)
+            return
 
 
 def handle_kill():
-    local_sessions = get_local_sessions()
-    remote_sessions = asyncio.run(get_all_remote_sessions())
-    all_sessions = local_sessions + remote_sessions
+    while True:
+        local_sessions = get_local_sessions()
+        all_sessions = local_sessions + ["[Search Remote Sessions]"]
 
-    if not all_sessions:
-        return
+        selected = run_fzf(
+            all_sessions, prompt="󰆴  ", preview=f"{sys.argv[0]} --preview {{}}"
+        )
+        if not selected:
+            return
 
-    selected = run_fzf(
-        all_sessions, prompt="󰆴  ", preview=f"{sys.argv[0]} --preview {{}}"
-    )
-    if selected:
-        if " [" in selected and selected.endswith("]"):
-            sess, host = selected.rsplit(" [", 1)
-            host = host[:-1]
-            # Fast async SSH kill command wrapped in sh -l -c to find the socket
-            remote_script = f"tmux kill-session -t {shlex.quote(sess)}"
-            subprocess.run(
-                [
-                    "ssh",
-                    "-o",
-                    "ConnectTimeout=2",
-                    "-o",
-                    "BatchMode=yes",
-                    host,
-                    f"sh -l -c {shlex.quote(remote_script)}",
-                ]
+        if selected == "[Search Remote Sessions]":
+            print("Fetching remote sessions...")
+            remote_sessions = asyncio.run(get_all_remote_sessions())
+            if not remote_sessions:
+                remote_sessions = ["[No remote sessions found - Back]"]
+            selected_remote = run_fzf(
+                remote_sessions, prompt="󰆴 (remote)  ", preview=f"{sys.argv[0]} --preview {{}}"
             )
+            if not selected_remote or selected_remote.startswith("[No remote sessions found"):
+                continue
+
+            if " [" in selected_remote and selected_remote.endswith("]"):
+                sess, host = selected_remote.rsplit(" [", 1)
+                host = host[:-1]
+                # Fast async SSH kill command wrapped in sh -l -c to find the socket
+                remote_script = f"tmux kill-session -t {shlex.quote(sess)}"
+                subprocess.run(
+                    [
+                        "ssh",
+                        "-o",
+                        "ConnectTimeout=2",
+                        "-o",
+                        "BatchMode=yes",
+                        host,
+                        f"sh -l -c {shlex.quote(remote_script)}",
+                    ]
+                )
+                return
         else:
             subprocess.run(["tmux", "kill-session", "-t", selected])
+            return
 
 
 def handle_new():
@@ -420,12 +452,10 @@ def handle_windows():
     # List all panes across all local sessions
     format_str = "#{session_name}:#{window_index}\t#{session_name}  ➜  #{window_name}  #{?#{==:#{pane_current_command},fish},,[#{pane_current_command}]}"
     out = run_cmd(["tmux", "list-panes", "-a", "-F", format_str])
-    local_choices = out.split("\n") if out else []
+    choices = out.split("\n") if out else []
 
-    remote_choices = asyncio.run(get_all_remote_windows())
-    choices = local_choices + remote_choices
     if not choices:
-        return
+        choices = ["[No local windows found]"]
 
     selected = run_fzf(
         choices,
@@ -433,15 +463,11 @@ def handle_windows():
         preview=f"{sys.argv[0]} --preview-window {{1}}",
         extra_args=["--delimiter=\t", "--with-nth=2"],
     )
-    if not selected:
+    if not selected or selected == "[No local windows found]":
         return
 
     target = selected.split("\t")[0]
-    if target.startswith("["):
-        host, sess_win = target[1:].split("] ", 1)
-        connect_remote(host, sess_win)
-    else:
-        run_cmd(["tmux", "switch-client", "-t", target])
+    run_cmd(["tmux", "switch-client", "-t", target])
 
 
 def main():
@@ -468,11 +494,16 @@ def main():
             # Handle direct session/dir launch (e.g. `tmuxs nixos-config`)
             arg = sys.argv[1]
             found_path = None
-            for p in SEARCH_PATHS:
-                full_path = os.path.join(p, arg)
-                if os.path.isdir(full_path):
-                    found_path = full_path
-                    break
+
+            if arg == ".":
+                found_path = os.getcwd()
+                arg = os.path.basename(found_path) or "root"
+            else:
+                for p in SEARCH_PATHS:
+                    full_path = os.path.join(p, arg)
+                    if os.path.isdir(full_path):
+                        found_path = full_path
+                        break
 
             if found_path:
                 start_or_attach_local(arg, found_path)

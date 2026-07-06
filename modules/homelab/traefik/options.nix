@@ -59,6 +59,11 @@ _: {
                           default = "";
                           description = "The subdomain, used in traefik and blocky config";
                         };
+                        dns = lib.mkOption {
+                          type = lib.types.bool;
+                          default = true;
+                          description = "Whether to register this subdomain in blocky customDNS";
+                        };
                         port = lib.mkOption { type = lib.types.int; };
                         ip = lib.mkOption {
                           type = lib.types.str;

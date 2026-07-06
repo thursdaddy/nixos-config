@@ -52,7 +52,7 @@
                   rootDomain;
 
               # 1. Map Static Routes
-              staticRoutes = appConfig.traefik.static or { };
+              staticRoutes = lib.filterAttrs (n: v: v.dns or true) (appConfig.traefik.static or { });
               staticMap = lib.mapAttrs' (
                 routeName: routeConfig:
                 let

@@ -60,10 +60,9 @@ _: {
               "1900:1900/udp"
             ];
             environment = {
+              DOCKER_MODS = "linuxserver/mods:jellyfin-opencl-intel";
               JELLYFIN_PublishedServerUrl = "https://${fqdn}";
               JELLYFIN_Network__KnownProxies = "10.89.8.0/24";
-              NVIDIA_DRIVER_CAPABILITIES = "all";
-              NVIDIA_VISIBLE_DEVICES = "all";
               PGID = "1000";
               PUID = "1000";
               TZ = config.time.timeZone;
