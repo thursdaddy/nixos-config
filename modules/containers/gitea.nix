@@ -100,8 +100,8 @@ _: {
                 pkgs.podman
               ];
               preStart = ''
-                find ${configPath}/gitea/backup -type f -iname "gitea-dump*" -delete
-                ${config.mine.containers.settings.backend} exec -u git -w /backup gitea /app/gitea/gitea dump --skip-package-data -c /data/gitea/conf/app.ini
+                rm -f ${configPath}/gitea/backup/gitea-backup.zip || true
+                ${config.mine.containers.settings.backend} exec -u git -w /backup gitea /app/gitea/gitea dump --skip-package-data -c /data/gitea/conf/app.ini -f /backup/gitea-backup.zip
               '';
             });
           in

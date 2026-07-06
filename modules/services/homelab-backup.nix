@@ -16,28 +16,10 @@
     {
       options.mine.services.backups = {
         enable = lib.mkEnableOption "Enable backup script";
-        nfs-mount = lib.mkOption {
-          description = "Enable NFS mount";
-          type = lib.types.bool;
-          default = true;
-        };
       };
 
       config = lib.mkIf cfg.enable {
         environment.systemPackages = [ homelabBackup ];
-
-        mine = lib.mkIf cfg.nfs-mount {
-          base = {
-            nfs-mounts = {
-              enable = true;
-              mounts = {
-                "/mnt/backups" = {
-                  device = "192.168.10.12:/fast/backups/${config.networking.hostName}";
-                };
-              };
-            };
-          };
-        };
 
         sops = {
           secrets = {

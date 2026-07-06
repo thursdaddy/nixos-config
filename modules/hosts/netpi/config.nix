@@ -32,7 +32,7 @@ _: {
             runners = {
               "${config.networking.hostName}" = {
                 labels = [
-                  "runner:docker://gitea.thurs.pw/docker/gitea-runner:v0.2.3"
+                  "runner:docker://gitea.thurs.pw/docker/gitea-runner:v0.3.0"
                 ];
                 settings = {
                   container = {

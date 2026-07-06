@@ -64,24 +64,15 @@ _: {
 
         systemd =
           let
-            hostJupiter = lib.optionalAttrs (config.networking.hostName == "jupiter") {
-              extraPackages = [ pkgs.rsync ];
-              preStart = ''
-                rsync -avz --delete \
-                -e "${pkgs.openssh}/bin/ssh -i /home/thurs/.ssh/cloudbox -o StrictHostKeyChecking=no" \
-                thurs@cloudbox:/opt/configs/vaultwarden /opt/configs/
-              '';
-            };
-
             backup = lib.thurs.mkBackupService ({
               inherit pkgs name;
               extraPackages = [
                 pkgs.docker-client
-              ]
-              ++ (hostJupiter.extraPackages or [ ]);
-              preStart = (hostJupiter.preStart or "") + ''
-                docker exec -t vaultwarden find /data -type f -iname "db_*" -mtime +3 -exec rm -v {} \;
+              ];
+              preStart = ''
+                docker exec -t vaultwarden find /data -type f -iname "db_*" -delete || true
                 docker exec -t vaultwarden /vaultwarden backup
+                docker exec -t vaultwarden sh -c 'mv /data/db_*.sqlite3 /data/db_backup.sqlite3 2>/dev/null || true'
               '';
             });
           in

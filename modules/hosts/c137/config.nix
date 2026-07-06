@@ -31,9 +31,6 @@ _: {
           nfs-mounts = {
             enable = true;
             mounts = {
-              "/mnt/backups" = {
-                device = "192.168.10.12:/fast/backups/${config.networking.hostName}";
-              };
               "/mnt/music" = {
                 device = "192.168.10.12:/fast/music";
               };

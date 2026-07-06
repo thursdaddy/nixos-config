@@ -119,11 +119,8 @@ class BackupManager:
             return "latest"
 
     def _calculate_checksum(self, file_path: Path) -> str:
-        sha256_hash = hashlib.sha256()
-        with open(file_path, "rb") as f:
-            for byte_block in iter(lambda: f.read(4096), b""):
-                sha256_hash.update(byte_block)
-        return sha256_hash.hexdigest()
+        # Kept for backward compatibility if needed, but unused by rsync
+        pass
 
     def _format_size(self, size_bytes: int) -> str:
         if size_bytes == 0:
@@ -138,10 +135,10 @@ class BackupManager:
     def run_backup(self, name: str, b_type: str) -> None:
         container = None
         enable_key = (
-            "homelab.backup.enable" if b_type == "docker" else "HOMELAB_BACKUP_ENABLE"
+            "homelab.backup.enable" if b_type == "docker" or b_type == "container" else "HOMELAB_BACKUP_ENABLE"
         )
 
-        if b_type == "docker":
+        if b_type == "docker" or b_type == "container":
             if not self.client:
                 raise BackupError("Docker/Podman API is inaccessible.")
             try:
@@ -163,6 +160,7 @@ class BackupManager:
         base_dest = self._get_config(
             "homelab.backup.base.dest", container, self.global_base
         )
+        ssh_dest = self._get_config("homelab.backup.ssh.dest", container, os.getenv("HOMELAB_BACKUP_SSH_DEST", ""))
 
         config = {
             "target": name,
@@ -186,146 +184,107 @@ class BackupManager:
                 self.logger.info(f"  {key}: {value if value != '' else '(empty)'}")
             self.logger.info("-" * 30)
 
-        dest_dir = Path(base_dest) / b_type / name
+        # Isolate new rsync paths from old tar paths
+        safe_b_type = "container" if b_type == "docker" else "file"
+
+        import socket
+        hostname = socket.gethostname()
+
+        if ssh_dest:
+            dest_dir = f"{ssh_dest}/{hostname}/{safe_b_type}/{name}/current"
+            is_ssh = True
+        else:
+            dest_dir = str(Path(base_dest) / safe_b_type / name / "current")
+            is_ssh = False
+
         self.execute_backup_logic(
-            container, source_path, dest_dir, config, manual_name=name
+            container, source_path, dest_dir, config, is_ssh, manual_name=name
         )
 
     def execute_backup_logic(
         self,
         container: Optional[Any],
         source: str,
-        dest: Path,
+        dest: str,
         config: Dict[str, Any],
+        is_ssh: bool,
         manual_name: str,
     ) -> None:
         container_name = container.name if container else manual_name
         image_version = self._get_image_version(container)
-        now_str = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        tar_filename = f"{now_str}-{container_name}-{image_version}.tar.gz"
-        full_dest_path = dest / tar_filename
-
         source_path = Path(source)
 
+        # 1. Write metadata JSON
+        metadata = {
+            "backup_timestamp": datetime.now().isoformat(),
+            "configuration": config,
+        }
+        if container:
+            metadata["image"] = image_version
+        else:
+            metadata["image"] = "N/A (Host Service)"
+
+        try:
+            if not self.dry_run:
+                with open(source_path / "backup_metadata.json", "w") as f:
+                    json.dump(metadata, f, indent=4)
+        except Exception as e:
+            self.logger.warning(f"Failed to write metadata JSON: {e}")
+
+        # 2. Build rsync command
         cmd: List[str] = [
-            "tar",
-            "--sort=name",
-            "--mtime=UTC 1970-01-01 00:00:00",
-            "-czf",
-            str(full_dest_path),
-            "-C",
-            str(source_path.parent),
-            source_path.name,
+            "rsync",
+            "-avz",
+            "--delete",
         ]
+
+        if is_ssh:
+            cmd.extend(["-e", "ssh -o StrictHostKeyChecking=accept-new"])
+        else:
+            # Local/NFS destination, ensure parent exists
+            Path(dest).parent.mkdir(parents=True, exist_ok=True)
 
         if config.get("ignore"):
             for ignore in config["ignore"].split(","):
                 if ignore.strip():
-                    cmd.insert(1, f"--exclude={ignore.strip()}")
+                    cmd.append(f"--exclude={ignore.strip()}")
 
-        if config.get("include"):
-            for include in config["include"].split(","):
-                if include.strip():
-                    cmd.append(include.strip())
+        # Source must have trailing slash to sync contents, not the directory itself
+        cmd.append(f"{source_path}/")
+        cmd.append(dest)
 
         if self.dry_run:
             self.logger.info(f"Dry-run command: {' '.join(cmd)}")
             return
 
         try:
-            dest.mkdir(parents=True, exist_ok=True)
-            existing_backups = sorted(
-                dest.glob("*.tar.gz"), key=os.path.getmtime, reverse=True
-            )
-            latest_existing = existing_backups[0] if existing_backups else None
-
-            env = os.environ.copy()
-            env["GZIP"] = "-n"
-
-            result = subprocess.run(cmd, capture_output=True, text=True, env=env)
+            result = subprocess.run(cmd, capture_output=True, text=True)
 
             if result.returncode != 0:
                 stderr_output = result.stderr.strip()
                 self.logger.error(
-                    f"Tar failed for {container_name}",
+                    f"Rsync failed for {container_name}",
                     {"stderr": stderr_output, "code": result.returncode},
                 )
-                raise BackupError(f"Tar command failed: {stderr_output}")
-
-            new_checksum = self._calculate_checksum(full_dest_path)
-
-            if latest_existing:
-                old_checksum = self._calculate_checksum(latest_existing)
-                if new_checksum == old_checksum:
-                    self.logger.info(
-                        f"No changes detected for {container_name}. Removing duplicate.",
-                        {"status": "skipped_duplicate", "container": container_name},
-                    )
-                    full_dest_path.unlink()
-                    return
+                raise BackupError(f"Rsync command failed: {stderr_output}")
 
             self.logger.info(
                 f"Backup successful: {container_name}",
                 {
                     "status": "success",
                     "container": container_name,
-                    "size_bytes": full_dest_path.stat().st_size,
+                    "destination": dest,
                 },
             )
 
         except Exception as e:
-            if full_dest_path.exists():
-                full_dest_path.unlink()
             raise BackupError(f"Execution failed: {str(e)}")
 
     def rotate_backups(self, b_type: str, name: str) -> None:
-        container = None
-        if b_type == "docker" and self.client:
-            try:
-                container = self.client.containers.get(name)
-            except:
-                pass
-
-        retention = int(
-            self._get_config("homelab.backup.retention.period", container, 5)
+        self.logger.info(
+            f"Rotation skipped for {name} - ZFS auto-snapshot manages retention natively.",
+            {"status": "skipped", "container": name}
         )
-
-        base_dest = self._get_config(
-            "homelab.backup.base.dest", container, self.global_base
-        )
-        dest_dir = Path(base_dest) / b_type / name
-
-        if not dest_dir.exists():
-            return
-
-        archives = sorted(dest_dir.glob("*.tar.gz"), key=os.path.getmtime, reverse=True)
-
-        if len(archives) > retention:
-            to_delete = archives[retention:]
-            for archive in to_delete:
-                if not self.dry_run:
-                    archive.unlink()
-                self.logger.info(
-                    f"Deleted old backup: {archive.name}", {"action": "deleted"}
-                )
-
-            archives = sorted(
-                dest_dir.glob("*.tar.gz"), key=os.path.getmtime, reverse=True
-            )
-
-        total_bytes = sum(a.stat().st_size for a in archives)
-        inventory = [{"name": a.name, "size_bytes": a.stat().st_size} for a in archives]
-
-        if self.json_logs:
-            self.logger.info(
-                f"Inventory for {name}",
-                {"total_size_bytes": total_bytes, "inventory": inventory},
-            )
-        else:
-            self.logger.info(f"--- Inventory for {name} ---")
-            for a in archives:
-                self.logger.info(f"  {a.name} ({self._format_size(a.stat().st_size)})")
-            self.logger.info(f"--- Total Size: {self._format_size(total_bytes)} ---")
 
 
 def main() -> None:

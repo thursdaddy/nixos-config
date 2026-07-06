@@ -64,7 +64,7 @@ _: {
 
             backup-obsidian-git = {
               description = "Automated Git backup for Obsidian notes";
-              onFailure = [ "gotify-backup-failure@%N.service" ];
+              onFailure = [ "gotify-failure@%N.service" ];
               serviceConfig = {
                 Type = "oneshot";
                 User = "${user.name}";

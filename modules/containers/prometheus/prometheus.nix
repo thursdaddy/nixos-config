@@ -62,7 +62,7 @@ _: {
           labels = {
             "enable.versions.check" = "false";
             "homelab.backup.enable" = "true";
-            "homelab.backup.path" = "${configPath}/prometheus/data/snapshots";
+            "homelab.backup.path" = "${configPath}/prometheus/data/snapshots/current_backup";
             "homelab.backup.retention.period" = "5";
           };
         };
@@ -85,8 +85,9 @@ _: {
               ];
               # delete old snapshots, create new
               preStart = ''
-                docker exec -t prometheus find /prometheus/data/snapshots/ -type d -depth -exec rm -rf {} \; || true
+                docker exec -t prometheus find /prometheus/data/snapshots/ -mindepth 1 -maxdepth 1 -exec rm -rf {} \; || true
                 curl -sS -XPOST http://localhost:9090/api/v1/admin/tsdb/snapshot
+                docker exec -t prometheus sh -c 'mv /prometheus/data/snapshots/20* /prometheus/data/snapshots/current_backup'
               '';
             };
           in
