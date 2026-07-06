@@ -15,6 +15,23 @@ _: {
         homelab.streambox = {
           hostIp = "192.168.10.189";
           tailscaleIp = "100.89.208.50";
+          apps.tesla-key = {
+            traefik.static.tesla-key = {
+              subDomain = "home";
+              dns = false;
+              ip = "100.96.164.35";
+              port = 8090;
+              labels = {
+                "traefik.http.routers.tesla-key.rule" =
+                  "Host(`home.${config.mine.homelab.streambox.rootDomainName}`) && PathPrefix(`/.well-known/appspecific/com.tesla.3p.public-key.pem`)";
+                "traefik.http.routers.tesla-key.middlewares" = "teslarewrite";
+                "traefik.http.middlewares.teslarewrite.replacepathregex.regex" =
+                  "^/.well-known/appspecific/com.tesla.3p.public-key.pem$";
+                "traefik.http.middlewares.teslarewrite.replacepathregex.replacement" =
+                  "/local/tesla/com.tesla.3p.public-key.pem";
+              };
+            };
+          };
         };
 
         containers = {
@@ -24,6 +41,7 @@ _: {
           navidrome = enabled;
           pinepods = enabled;
           plex = enabled;
+          seerr = enabled;
           tautulli = enabled;
           tracearr = enabled;
           traefik = {

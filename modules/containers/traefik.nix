@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "traefik";
-      version = "3.7.1";
+      version = "3.7.6";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;
@@ -122,7 +122,7 @@ _: {
             cmd =
               cfg.extraCmds
               ++ [
-                "--log.level=info"
+                "--log.level=INFO"
                 "--providers.docker=true"
                 "--providers.docker.exposedbydefault=false"
                 "--providers.docker.endpoint=tcp://docker-socket-proxy:2375"

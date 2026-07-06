@@ -19,27 +19,39 @@ _: {
       config = lib.mkIf cfg.enable {
         mine.homelab.${config.networking.hostName} = {
           apps.${name} = {
-            traefik.container = {
-              port = 5055;
-              subDomain = "request";
+            traefik = {
+              domain = config.nixos-thurs.publicDomain;
+              container = {
+                port = 5055;
+                subDomain = "request";
+              };
             };
           };
         };
+
         virtualisation.oci-containers.containers."${name}" = {
           image = "${name}/${name}:v${version}";
           pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
+          hostname = name;
+          networks = [
+            "jellyfin"
+          ];
           environment = {
             PUID = "1000";
             PGID = "1000";
             TZ = config.time.timeZone;
           };
-          extraOptions = [
-            "--dns=192.168.10.57"
-            "--dns=192.168.10.201"
-          ];
           volumes = [
             "${config.mine.containers.settings.configPath}/${name}:/app/config"
           ];
+          labels = {
+            "traefik.http.routers.${name}.middlewares" = "fail2ban";
+            "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.bantime" = "3h";
+            "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.findtime" = "5m";
+            "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.maxretry" = "5";
+            "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.statuscode" = "401";
+            "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.enabled" = "true";
+          };
         };
 
         environment.etc =
