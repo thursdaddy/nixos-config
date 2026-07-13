@@ -51,7 +51,6 @@ _: {
             labels = {
               "homelab.backup.enable" = "true";
               "homelab.backup.path" = "${configPath}/${name}/backup";
-              "homelab.backup.retention.period" = "5";
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/go-gitea/gitea";
             };

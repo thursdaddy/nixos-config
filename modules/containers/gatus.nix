@@ -52,9 +52,12 @@
       config = lib.mkIf cfg.enable {
         mine.homelab.${config.networking.hostName} = {
           apps.${name} = {
-            traefik.container = {
-              tailscale = true;
-              port = 8080;
+            traefik = {
+              domain = "thurs.pw";
+              container = {
+                tailscale = true;
+                port = 8080;
+              };
             };
           };
         };
@@ -86,25 +89,6 @@
           };
           templates."alerting.yaml".content = ''
             alerting:
-              custom:
-                url: "${cfg.gotifyUrl}/message?token=${config.sops.placeholder."gotify/token/GATUS"}"
-                method: "POST"
-                headers:
-                  Content-Type: "application/json"
-                body: |
-                  {
-                    "message": "[RESULT_CONDITIONS]\n\n**URL:** [ENDPOINT_URL]\n\n**Group:** [ENDPOINT_GROUP]",
-                    "extras": {
-                      "client::display": {
-                        "contentType": "text/markdown"
-                      }
-                    },
-                    [ALERT_TRIGGERED_OR_RESOLVED] [ENDPOINT_URL]"
-                  }
-                placeholders:
-                  ALERT_TRIGGERED_OR_RESOLVED:
-                    TRIGGERED: '"priority": 8, "title": "‼️ DOWN:'
-                    RESOLVED: '"priority": 4, "title": "✅ UP:'
               gotify:
                 server-url: ${cfg.gotifyUrl}
                 token: ${config.sops.placeholder."gotify/token/GATUS"}

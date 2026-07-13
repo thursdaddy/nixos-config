@@ -57,7 +57,6 @@ _: {
               "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.enabled" = "true";
               "homelab.backup.enable" = "true";
               "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}";
-              "homelab.backup.retention.period" = "5";
             };
           };
         };

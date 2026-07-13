@@ -90,7 +90,6 @@ _: {
               "org.opencontainers.image.source" = "https://github.com/paperless-ngx/paperless-ngx";
               "homelab.backup.enable" = "true";
               "homelab.backup.path" = "${config.mine.containers.settings.configPath}/paperless/user/export";
-              "homelab.backup.retention.period" = "5";
             };
             environment = {
               PAPERLESS_REDIS = "redis://paperless-ngx-broker:6379";

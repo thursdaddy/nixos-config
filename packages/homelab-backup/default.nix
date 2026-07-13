@@ -22,8 +22,11 @@ pkgs.stdenv.mkDerivation {
       --add-flags "$out/bin/.homelab-backup" \
       --prefix PATH : ${
         lib.makeBinPath [
+          pkgs.rsync
+          pkgs.openssh
           pkgs.gnutar
           pkgs.busybox
+          pkgs.sudo
         ]
       }
   '';

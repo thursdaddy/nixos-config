@@ -51,7 +51,6 @@ _: {
               "org.opencontainers.image.source" = "https://github.com/navidrome/navidrome";
               "homelab.backup.enable" = "true";
               "homelab.backup.path" = "${configPath}";
-              "homelab.backup.retention.period" = "5";
             };
           };
         };

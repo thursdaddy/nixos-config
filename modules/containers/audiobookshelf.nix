@@ -52,7 +52,6 @@ _: {
             "org.opencontainers.image.source" = "https://github.com/advplyr/audiobookshelf";
             "homelab.backup.enable" = "true";
             "homelab.backup.path" = "${config.mine.containers.settings.configPath}";
-            "homelab.backup.retention.period" = "5";
           };
         };
 

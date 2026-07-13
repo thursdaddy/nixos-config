@@ -137,7 +137,6 @@ _: {
               "enable.versions.check" = "false";
               "homelab.backup.enable" = "true";
               "homelab.backup.path" = "${configPath}/tesla-postgres/db_dumps";
-              "homelab.backup.retention.period" = "5";
             };
           };
         };

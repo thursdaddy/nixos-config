@@ -6,6 +6,8 @@ import logging
 import os
 import subprocess
 import sys
+import time
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -81,7 +83,7 @@ class BackupManager:
                 "Container socket not reachable; engine-specific features disabled."
             )
 
-        self.global_base = Path(os.getenv("HOMELAB_BACKUP_BASE_DEST", "/mnt/backups"))
+        self.global_base = os.getenv("HOMELAB_BACKUP_BASE_DEST")
 
     def _setup_logging(self) -> logging.Logger:
         logger = logging.getLogger("backrest")
@@ -109,28 +111,13 @@ class BackupManager:
             return container.labels[key]
         return os.getenv(env_key, default)
 
-    def _get_image_version(self, container: Optional[Any]) -> str:
+    def _get_image(self, container: Optional[Any]) -> str:
         if not container:
-            return "null"
+            return "N/A (Host Service)"
         try:
-            full_tag = container.image.tags[0]
-            return full_tag.split(":")[-1] if ":" in full_tag else "latest"
+            return container.image.tags[0]
         except (IndexError, AttributeError, TypeError):
-            return "latest"
-
-    def _calculate_checksum(self, file_path: Path) -> str:
-        # Kept for backward compatibility if needed, but unused by rsync
-        pass
-
-    def _format_size(self, size_bytes: int) -> str:
-        if size_bytes == 0:
-            return "0 B"
-        size_float = float(size_bytes)
-        for unit in ["B", "KB", "MB", "GB", "TB"]:
-            if size_float < 1024.0:
-                return f"{size_float:.2f} {unit}"
-            size_float /= 1024.0
-        return f"{size_float:.2f} PB"
+            return "unknown:latest"
 
     def run_backup(self, name: str, b_type: str) -> None:
         container = None
@@ -156,23 +143,34 @@ class BackupManager:
         if not source_path:
             raise BackupError(f"Missing backup path for {name}")
 
-        # Resolve destination dynamically: Label -> Env Var -> Global Default
-        base_dest = self._get_config(
-            "homelab.backup.base.dest", container, self.global_base
-        )
-        ssh_dest = self._get_config("homelab.backup.ssh.dest", container, os.getenv("HOMELAB_BACKUP_SSH_DEST", ""))
+        ssh_dest = self._get_config("homelab.backup.ssh.dest", container, os.getenv("HOMELAB_BACKUP_SSH_DEST", "thurs@192.168.10.12:/fast/backups"))
+
+        # Isolate new rsync paths from old tar paths
+        safe_b_type = "container" if b_type == "docker" else "file"
+
+        import socket
+        hostname = socket.gethostname()
+
+        if not ssh_dest:
+            raise BackupError("No SSH destination configured")
+
+        dest_dir = f"{ssh_dest}/{hostname}/{safe_b_type}/{name}"
 
         config = {
             "target": name,
             "type": b_type,
             "source_path": source_path,
-            "base_destination": str(base_dest),
-            "retention": int(
-                self._get_config("homelab.backup.retention.period", container, 5)
-            ),
-            "include": self._get_config("homelab.backup.path.include", container, ""),
-            "ignore": self._get_config("homelab.backup.path.ignore", container, ""),
+            "destination": dest_dir,
+            "image": self._get_image(container),
         }
+
+        include_path = self._get_config("homelab.backup.path.include", container, "")
+        if include_path:
+            config["include"] = include_path
+
+        ignore_path = self._get_config("homelab.backup.path.ignore", container, "")
+        if ignore_path:
+            config["ignore"] = ignore_path
 
         if self.json_logs:
             self.logger.info(
@@ -184,21 +182,8 @@ class BackupManager:
                 self.logger.info(f"  {key}: {value if value != '' else '(empty)'}")
             self.logger.info("-" * 30)
 
-        # Isolate new rsync paths from old tar paths
-        safe_b_type = "container" if b_type == "docker" else "file"
-
-        import socket
-        hostname = socket.gethostname()
-
-        if ssh_dest:
-            dest_dir = f"{ssh_dest}/{hostname}/{safe_b_type}/{name}/current"
-            is_ssh = True
-        else:
-            dest_dir = str(Path(base_dest) / safe_b_type / name / "current")
-            is_ssh = False
-
         self.execute_backup_logic(
-            container, source_path, dest_dir, config, is_ssh, manual_name=name
+            container, source_path, dest_dir, config, manual_name=name
         )
 
     def execute_backup_logic(
@@ -207,11 +192,9 @@ class BackupManager:
         source: str,
         dest: str,
         config: Dict[str, Any],
-        is_ssh: bool,
         manual_name: str,
     ) -> None:
         container_name = container.name if container else manual_name
-        image_version = self._get_image_version(container)
         source_path = Path(source)
 
         # 1. Write metadata JSON
@@ -219,10 +202,6 @@ class BackupManager:
             "backup_timestamp": datetime.now().isoformat(),
             "configuration": config,
         }
-        if container:
-            metadata["image"] = image_version
-        else:
-            metadata["image"] = "N/A (Host Service)"
 
         try:
             if not self.dry_run:
@@ -236,13 +215,11 @@ class BackupManager:
             "rsync",
             "-avz",
             "--delete",
+            "--mkpath",
+            "--stats",
         ]
 
-        if is_ssh:
-            cmd.extend(["-e", "ssh -o StrictHostKeyChecking=accept-new"])
-        else:
-            # Local/NFS destination, ensure parent exists
-            Path(dest).parent.mkdir(parents=True, exist_ok=True)
+        cmd.extend(["-e", "ssh -i /etc/ssh/ssh_host_ed25519_key -o StrictHostKeyChecking=accept-new"])
 
         if config.get("ignore"):
             for ignore in config["ignore"].split(","):
@@ -257,16 +234,38 @@ class BackupManager:
             self.logger.info(f"Dry-run command: {' '.join(cmd)}")
             return
 
+        start_time = time.time()
         try:
             result = subprocess.run(cmd, capture_output=True, text=True)
+            duration = round(time.time() - start_time, 2)
 
             if result.returncode != 0:
                 stderr_output = result.stderr.strip()
                 self.logger.error(
                     f"Rsync failed for {container_name}",
-                    {"stderr": stderr_output, "code": result.returncode},
+                    {"stderr": stderr_output, "code": result.returncode, "duration_seconds": duration},
                 )
                 raise BackupError(f"Rsync command failed: {stderr_output}")
+
+            # Parse rsync --stats output for Grafana dashboards
+            metrics = {
+                "duration_seconds": duration,
+                "bytes_sent": 0,
+                "bytes_received": 0,
+                "total_size": 0,
+            }
+
+            sent_match = re.search(r'Total bytes sent: ([\d,]+)', result.stdout)
+            if sent_match:
+                metrics["bytes_sent"] = int(sent_match.group(1).replace(',', ''))
+            
+            recv_match = re.search(r'Total bytes received: ([\d,]+)', result.stdout)
+            if recv_match:
+                metrics["bytes_received"] = int(recv_match.group(1).replace(',', ''))
+            
+            size_match = re.search(r'Total file size: ([\d,]+)', result.stdout)
+            if size_match:
+                metrics["total_size"] = int(size_match.group(1).replace(',', ''))
 
             self.logger.info(
                 f"Backup successful: {container_name}",
@@ -274,23 +273,17 @@ class BackupManager:
                     "status": "success",
                     "container": container_name,
                     "destination": dest,
+                    "metrics": metrics
                 },
             )
 
         except Exception as e:
             raise BackupError(f"Execution failed: {str(e)}")
 
-    def rotate_backups(self, b_type: str, name: str) -> None:
-        self.logger.info(
-            f"Rotation skipped for {name} - ZFS auto-snapshot manages retention natively.",
-            {"status": "skipped", "container": name}
-        )
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Homelab Backup Coordinator")
     parser.add_argument("--backup", action="store_true")
-    parser.add_argument("--rotate", action="store_true")
     parser.add_argument("--type", choices=["docker", "path"])
     parser.add_argument("--name", required=True, help="Target name")
     parser.add_argument("--dry-run", action="store_true")
@@ -307,8 +300,6 @@ def main() -> None:
     try:
         if args.backup:
             manager.run_backup(args.name, backup_type)
-        if args.rotate:
-            manager.rotate_backups(backup_type, args.name)
     except Exception as e:
         manager.logger.critical(f"Backup sequence failed: {e}")
         sys.exit(1)

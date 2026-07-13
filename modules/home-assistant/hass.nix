@@ -239,7 +239,6 @@
               extraEnv = {
                 HOMELAB_BACKUP_ENABLE = "true";
                 HOMELAB_BACKUP_PATH = "/var/lib/hass/backups";
-                HOMELAB_BACKUP_RETENTION_PERIOD = "5";
               };
             };
 

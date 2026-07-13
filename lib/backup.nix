@@ -19,10 +19,7 @@
           Type = "oneshot";
           ExecStart = "${lib.getExe pkgs.homelab-backup} --backup --name ${name} --json";
         };
-        inherit preStart;
-        postStart =
-          "${lib.getExe pkgs.homelab-backup} --rotate --name ${name} --json"
-          + (lib.optionalString (postStart != "") "\n${postStart}");
+        inherit preStart postStart;
       };
 
       timer = {

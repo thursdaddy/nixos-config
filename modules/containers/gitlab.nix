@@ -82,7 +82,6 @@ _: {
             "homelab.backup.path" = "${config.mine.containers.settings.configPath}";
             "homelab.backup.path.ignore" = "gitlab,registry";
             "homelab.backup.path.include" = "${config.mine.containers.settings.configPath}/gitlab/data/backups";
-            "homelab.backup.retention.period" = "5";
           };
         };
 

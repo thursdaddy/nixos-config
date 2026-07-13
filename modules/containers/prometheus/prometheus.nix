@@ -63,7 +63,6 @@ _: {
             "enable.versions.check" = "false";
             "homelab.backup.enable" = "true";
             "homelab.backup.path" = "${configPath}/prometheus/data/snapshots/current_backup";
-            "homelab.backup.retention.period" = "5";
           };
         };
 

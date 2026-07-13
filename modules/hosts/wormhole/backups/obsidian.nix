@@ -54,7 +54,6 @@ _: {
             extraEnv = {
               HOMELAB_BACKUP_ENABLE = "true";
               HOMELAB_BACKUP_PATH = "${user.homeDir}/notes";
-              HOMELAB_BACKUP_RETENTION_PERIOD = "5";
             };
           };
         in

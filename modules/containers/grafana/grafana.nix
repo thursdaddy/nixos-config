@@ -69,7 +69,6 @@ _: {
             "enable.versions.check" = "false";
             "homelab.backup.enable" = "true";
             "homelab.backup.path" = "${configPath}/grafana/backup";
-            "homelab.backup.retention.period" = "5";
           };
         };
 

@@ -48,7 +48,6 @@ _: {
               extraEnv = {
                 HOMELAB_BACKUP_ENABLE = "true";
                 HOMELAB_BACKUP_PATH = "/var/lib/${name}";
-                HOMELAB_BACKUP_RETENTION_PERIOD = "5";
               };
             };
           in

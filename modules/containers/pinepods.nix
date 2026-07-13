@@ -72,7 +72,6 @@ _: {
               "org.opencontainers.image.source" = "https://github.com/madeofpendletonwool/PinePods";
               "homelab.backup.enable" = "true";
               "homelab.backup.path" = "${configPath}";
-              "homelab.backup.retention.period" = "5";
             };
           };
 
