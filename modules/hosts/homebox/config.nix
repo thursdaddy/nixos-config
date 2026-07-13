@@ -37,7 +37,6 @@ _: {
             };
           };
         };
-
         services = {
           backups = enabled;
           gitea-runner = {
@@ -74,11 +73,34 @@ _: {
             enable = true;
             dnsChallengeProvider = "gcp";
             extraCmds = [
+              "--entrypoints.tailscale.address=:8443"
               "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
               "--experimental.plugins.fail2ban.version=v0.9.0"
             ];
           };
         };
       };
+      
+      environment.etc."traefik/static/tesla-key.yaml".text = ''
+        http:
+          routers:
+            tesla-key:
+              rule: "Host(`homebox.fable-pinecone.ts.net`) && PathPrefix(`/.well-known/appspecific/com.tesla.3p.public-key.pem`)"
+              service: "tesla-key"
+              entryPoints:
+                - "tailscale"
+              middlewares:
+                - "teslarewrite"
+          middlewares:
+            teslarewrite:
+              replacePathRegex:
+                regex: "^/.well-known/appspecific/com.tesla.3p.public-key.pem$"
+                replacement: "/local/tesla/com.tesla.3p.public-key.pem"
+          services:
+            tesla-key:
+              loadBalancer:
+                servers:
+                  - url: "http://127.0.0.1:8090"
+      '';
     };
 }
