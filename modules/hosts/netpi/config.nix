@@ -24,9 +24,21 @@ _: {
             backend = "podman";
             autoPrune = false;
           };
+
+          traefik = {
+            enable = true;
+          };
         };
 
         services = {
+          keepalived = {
+            enable = true;
+            state = if hostName == "netpi1" then "MASTER" else "BACKUP";
+            priority = if hostName == "netpi1" then 150 else 100;
+            virtualIp = "192.168.10.53/24";
+            interface = "end0";
+          };
+          
           gitea-runner = {
             enable = true;
             runners = {

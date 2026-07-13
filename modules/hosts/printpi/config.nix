@@ -19,11 +19,7 @@ _: {
 
         containers = {
           settings.backend = "podman";
-          gatus = {
-            enable = true;
-            endpointsFile = config.nixos-thurs.gatus.publicEndpoints;
-            gotifyUrl = "https://gotify.${config.nixos-thurs.publicDomain}";
-          };
+
           traefik = {
             enable = true;
             dashboard = true;
