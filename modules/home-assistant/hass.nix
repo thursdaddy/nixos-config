@@ -145,6 +145,26 @@
               sensor = "!include sensor.yaml";
               template = "!include template.yaml";
               utility_meter = "!include utility.yaml";
+              command_line = [
+                {
+                  binary_sensor = {
+                    name = "Gotify Connection";
+                    command = "${pkgs.curl}/bin/curl -sSf -m 5 https://gotify.${config.nixos-thurs.publicDomain}/ > /dev/null && echo ON || echo OFF";
+                    payload_on = "ON";
+                    payload_off = "OFF";
+                    scan_interval = 60;
+                  };
+                }
+                {
+                  binary_sensor = {
+                    name = "Gatus Connection";
+                    command = "${pkgs.curl}/bin/curl -sSf -m 5 https://gatus.thurs.pw/ > /dev/null && echo ON || echo OFF";
+                    payload_on = "ON";
+                    payload_off = "OFF";
+                    scan_interval = 60;
+                  };
+                }
+              ];
             };
             customComponents = [
               pkgs.hass-gotify
@@ -226,6 +246,7 @@
                   - switch
                   - light
                   - input_boolean
+                  - vacuum
               '';
             };
           };
