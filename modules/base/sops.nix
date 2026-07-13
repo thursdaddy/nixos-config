@@ -38,6 +38,20 @@
                 type = (lib.types.nullOr lib.types.path);
                 default = null;
               };
+              ageKeyInGCP = lib.mkOption {
+                description = "If age.key is in GCP Secret Manager";
+                default = { };
+                type = lib.types.submodule {
+                  options = {
+                    enable = lib.mkEnableOption "Runs systemd service to pull key from GCP Secret Manager";
+                    secretName = lib.mkOption {
+                      description = "GCP Secret name containing age key (e.g. sops-age-key)";
+                      type = (lib.types.nullOr lib.types.str);
+                      default = null;
+                    };
+                  };
+                };
+              };
               ageKeyInSSM = lib.mkOption {
                 description = "If age.key is in SSM";
                 default = { };
@@ -76,14 +90,6 @@
       ...
     }:
     let
-      ssm_systemd_config = lib.mkIf config.mine.base.sops.ageKeyFile.ageKeyInSSM.enable {
-        Environment = [
-          "SOPS_AGE_KEY_FILE=${config.sops.age.keyFile}"
-          "AWS_CA_BUNDLE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-        ];
-        ExecStartPre = ssm_systemd_script + "/bin/get-age-key-from-ssm";
-      };
-
       ssm_systemd_script = pkgs.writeShellApplication {
         name = "get-age-key-from-ssm";
         runtimeInputs = with pkgs; [
@@ -93,8 +99,29 @@
         ];
         text = ''
           set -x
-          mkdir -p "$(dirname "${config.sops.age.keyFile}")"
-          aws ssm get-parameter --endpoint-url https://ssm.us-west-2.api.aws --region ${config.mine.base.sops.ageKeyFile.ageKeyInSSM.region} --no-cli-pager --name ${config.mine.base.sops.ageKeyFile.ageKeyInSSM.paramName} --with-decryption --query "Parameter.Value" --output text > ${config.sops.age.keyFile}
+          if [ ! -s "${config.sops.age.keyFile}" ]; then
+            mkdir -p "$(dirname "${config.sops.age.keyFile}")"
+            aws ssm get-parameter --endpoint-url https://ssm.us-west-2.api.aws --region ${config.mine.base.sops.ageKeyFile.ageKeyInSSM.region} --no-cli-pager --name ${config.mine.base.sops.ageKeyFile.ageKeyInSSM.paramName} --with-decryption --query "Parameter.Value" --output text > ${config.sops.age.keyFile}
+          else
+            echo "SOPS key already exists at ${config.sops.age.keyFile}, skipping SSM fetch."
+          fi
+        '';
+      };
+
+      gcp_systemd_script = pkgs.writeShellApplication {
+        name = "get-age-key-from-gcp";
+        runtimeInputs = with pkgs; [
+          google-cloud-sdk
+          coreutils
+        ];
+        text = ''
+          set -x
+          if [ ! -s "${config.sops.age.keyFile}" ]; then
+            mkdir -p "$(dirname "${config.sops.age.keyFile}")"
+            gcloud secrets versions access latest --secret="${config.mine.base.sops.ageKeyFile.ageKeyInGCP.secretName}" > ${config.sops.age.keyFile}
+          else
+            echo "SOPS key already exists at ${config.sops.age.keyFile}, skipping GCP fetch."
+          fi
         '';
       };
     in
@@ -118,17 +145,28 @@
 
         systemd.services.decrypt-sops-after-network =
           lib.mkIf
-            (config.mine.base.sops.requires.network || config.mine.base.sops.ageKeyFile.ageKeyInSSM.enable)
+            (config.mine.base.sops.requires.network || config.mine.base.sops.ageKeyFile.ageKeyInSSM.enable || config.mine.base.sops.ageKeyFile.ageKeyInGCP.enable)
             {
               description = "Decrypt SOPS secrets after network is established";
               wantedBy = [ "multi-user.target" ];
               after = [ "network-online.target" ];
               requires = [ "network-online.target" ];
-              serviceConfig = ssm_systemd_config // {
+              serviceConfig = {
                 Type = "oneshot";
                 RemainAfterExit = true;
                 Restart = "on-failure";
                 RestartSec = "3s";
+              } // lib.optionalAttrs config.mine.base.sops.ageKeyFile.ageKeyInSSM.enable {
+                Environment = [
+                  "SOPS_AGE_KEY_FILE=${config.sops.age.keyFile}"
+                  "AWS_CA_BUNDLE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+                ];
+                ExecStartPre = ssm_systemd_script + "/bin/get-age-key-from-ssm";
+              } // lib.optionalAttrs config.mine.base.sops.ageKeyFile.ageKeyInGCP.enable {
+                Environment = [
+                  "SOPS_AGE_KEY_FILE=${config.sops.age.keyFile}"
+                ];
+                ExecStartPre = gcp_systemd_script + "/bin/get-age-key-from-gcp";
               };
               script = config.system.activationScripts.setupSecrets.text;
             };

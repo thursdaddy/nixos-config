@@ -98,6 +98,11 @@ _: {
                         default = null;
                         description = "Container port to route to. Setting this enables label generation.";
                       };
+                      dns = lib.mkOption {
+                        type = lib.types.bool;
+                        default = true;
+                        description = "Whether to register this subdomain in blocky customDNS";
+                      };
                       tailscale = lib.mkOption {
                         type = lib.types.bool;
                         default = false;

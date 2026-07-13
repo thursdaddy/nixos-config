@@ -14,7 +14,6 @@
 
       includedHosts = [
         "c137"
-        "cloudbox"
         "homebox"
         "jupiter"
         "kepler"
@@ -23,6 +22,8 @@
         "printpi"
         "streambox"
         "wormhole"
+        "gcloudbox"
+        "cloudbox"
       ];
 
       targetHosts = lib.filterAttrs (
@@ -67,7 +68,7 @@
               # 2. Map Container Routes
               c = appConfig.traefik.container or { };
               containerMap =
-                if (c.port or null) != null || (c.tailscale or false) || (c.subDomain or "") != "" then
+                if ((c.port or null) != null || (c.tailscale or false) || (c.subDomain or "") != "") && (c.dns or true) then
                   let
                     sub = if (c.subDomain or "") != "" then c.subDomain else appName;
                     fqdn = "${sub}.${domain}";
@@ -132,14 +133,10 @@
                 blocking = {
                   denylists = {
                     ads = [
-                      "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/multi.txt"
-                      "https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt"
-                      "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
-                      "http://sysctl.org/cameleon/hosts"
-                      "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt"
+                      "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.txt"
                     ];
                     special = [
-                      "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts"
+                      "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.txt"
                     ];
                   };
                   clientGroupsBlock = {
@@ -169,7 +166,11 @@
                 };
 
                 ports = {
-                  dns = "${config.mine.homelab.${config.networking.hostName}.hostIp}:53";
+                  dns = [
+                    "${config.mine.homelab.${config.networking.hostName}.hostIp}:53"
+                    "${config.mine.homelab.${config.networking.hostName}.tailscaleIp}:53"
+                    "192.168.10.53:53"
+                  ];
                   http = 4000;
                   tls = 853;
                 };
@@ -199,7 +200,11 @@
                     "attic.thurs.pw" = "192.168.10.60";
                     "jellyfin.${config.nixos-thurs.publicDomain}" = "192.168.10.189";
                     "mpd.thurs.pw" = allConfigs.streambox.config.mine.homelab.streambox.tailscaleIp;
-                    "cloudbox.thurs.pw" = "100.111.82.27";
+                    "gcloudbox" = allConfigs.gcloudbox.config.mine.homelab.gcloudbox.tailscaleIp;
+                    "gcloudbox.thurs.pw" = allConfigs.gcloudbox.config.mine.homelab.gcloudbox.tailscaleIp;
+                    "cloudbox" = allConfigs.cloudbox.config.mine.homelab.cloudbox.tailscaleIp;
+                    "cloudbox.thurs.pw" = allConfigs.cloudbox.config.mine.homelab.cloudbox.tailscaleIp;
+
                     "bazarr.thurs.pw" = "192.168.10.12";
                     "deemix.thurs.pw" = "192.168.10.12";
                     "lidarr.thurs.pw" = "192.168.10.12";
@@ -226,6 +231,7 @@
 
         boot.kernel.sysctl = {
           "net.ipv4.conf.all.forwarding" = true;
+          "net.ipv4.ip_nonlocal_bind" = 1;
         };
 
         environment.etc =

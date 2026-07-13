@@ -38,14 +38,15 @@ _: {
                 "configuration": {
                   "target": "opt_configs",
                   "type": "file",
-                  "source_path": "/opt/configs"
-                },
-                "image": "'$GOTIFY_IMAGE'"
+                  "source_path": "/opt/configs",
+                  "destination": "thurs@192.168.10.12:/fast/backups/cloudbox/file/opt/configs",
+                  "image": "'$GOTIFY_IMAGE'"
+                }
               }' > /tmp/cloudbox_staging/backup_metadata.json
 
               # Push to ZFS server (using --mkpath and sudo rsync to bypass root-owned ZFS dataset permissions)
               ${pkgs.rsync}/bin/rsync -avz --delete --mkpath --rsync-path="sudo rsync" -e "${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=accept-new" \
-                /tmp/cloudbox_staging/ ${user.name}@192.168.10.12:/fast/backups/cloudbox/file/opt/configs/current/
+                /tmp/cloudbox_staging/ ${user.name}@192.168.10.12:/fast/backups/cloudbox/file/opt/configs
             '';
           };
         };

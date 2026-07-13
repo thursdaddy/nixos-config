@@ -37,31 +37,6 @@ _: {
 
         containers = {
           settings.backend = "podman";
-          gatus = {
-            enable = true;
-            endpointsFile = config.nixos-thurs.gatus.privateEndpoints;
-            gotifyUrl = "https://gotify.${config.nixos-thurs.publicDomain}";
-          };
-          gotify = enabled;
-          traefik = {
-            enable = true;
-            enableIpv6 = true;
-            awsEnvKeys = false;
-            dashboard = true;
-            dnsChallengeProvider = "gcp";
-            dnsResolvers = "[2606:4700:4700::1111]:53,[2001:4860:4860::8888]:53";
-            extraPorts = [
-              "${config.mine.homelab.${config.networking.hostName}.tailscaleIp}:443:8443"
-              "${config.mine.homelab.${config.networking.hostName}.hostIp}:443:443"
-            ];
-            extraCmds = [
-              "--accesslog=true"
-              "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
-              "--experimental.plugins.fail2ban.version=v0.9.0"
-              "--certificatesresolvers.letsencrypt.acme.dnschallenge.disablepropagationcheck=true"
-              "--certificatesresolvers.letsencrypt.acme.dnschallenge.delaybeforecheck=15"
-            ];
-          };
         };
 
         services = {
@@ -71,6 +46,7 @@ _: {
             sopsSecret = "tailscale/CLOUDBOX_AUTH_KEY";
             extraUpFlags = [
               "--accept-routes"
+              "--accept-dns=false"
             ];
           };
         };
