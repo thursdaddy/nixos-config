@@ -39,10 +39,9 @@ _: {
           jellyfin = enabled;
           jellystat = enabled;
           navidrome = enabled;
+          nextpvr = enabled;
           pinepods = enabled;
-          plex = enabled;
           seerr = enabled;
-          tautulli = enabled;
           tracearr = enabled;
           traefik = {
             enable = true;
