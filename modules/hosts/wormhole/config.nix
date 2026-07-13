@@ -34,6 +34,7 @@ _: {
             enable = true;
             dnsChallengeProvider = "gcp";
           };
+          webdav.enable = true;
         };
 
         dev.tmux = {
