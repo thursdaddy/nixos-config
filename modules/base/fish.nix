@@ -18,7 +18,7 @@ _: {
       programs.fish = {
         enable = true;
         promptInit = lib.mkIf pkgs.stdenv.isDarwin "starship init fish | source";
-        shellAliases = config.mine.aliases.eza // config.mine.aliases.systemctl;
+        shellAliases = config.mine.aliases.eza // config.mine.aliases.systemctl // config.mine.aliases.journalctl;
         interactiveShellInit = ''
           set -U fish_greeting ""
           set -g fish_pager_color_prefix 444444

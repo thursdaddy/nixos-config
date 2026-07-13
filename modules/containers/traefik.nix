@@ -99,6 +99,7 @@ _: {
             ];
             ports = cfg.extraPorts ++ [
               "0.0.0.0:80:80"
+              "[::]:80:80"
             ];
             extraOptions = lib.mkIf cfg.enableIpv6 [
               "--dns=2606:4700:4700::1111"
@@ -170,6 +171,7 @@ _: {
           docker-socket-proxy = lib.mkIf (ociBackend == "podman") {
             image = "tecnativa/docker-socket-proxy:latest";
             hostname = "docker-socket-proxy";
+            user = "root:root";
             networks = [ "docker-proxy" ];
             volumes = [
               "/run/podman/podman.sock:/var/run/docker.sock:ro"
@@ -212,7 +214,13 @@ _: {
           };
         };
 
-        networking.firewall.allowedTCPPorts = [ 8082 ]; # prometheus exporter
+        networking.firewall = {
+          allowedTCPPorts = [
+            80
+            443
+            8082
+          ];
+        };
 
         sops = lib.mkMerge [
           (lib.mkIf (cfg.dnsChallengeProvider == "route53" && cfg.awsEnvKeys) {

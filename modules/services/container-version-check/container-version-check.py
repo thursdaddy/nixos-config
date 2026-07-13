@@ -129,6 +129,8 @@ def send_to_gotify(title, message):
         requests.post(url, json=payload).raise_for_status()
     except requests.RequestException as e:
         print(f"Failed to send to Gotify: {e}")
+        import sys
+        sys.exit(1)
 
 
 def get_hostname():
@@ -151,7 +153,8 @@ def main(gotify_flag):
         print(error_msg)
         if gotify_flag:
             send_to_gotify(f"Container Engine Error: {hostname}", error_msg)
-        return
+        import sys
+        sys.exit(1)
 
     if not containers:
         return

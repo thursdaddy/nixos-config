@@ -17,6 +17,7 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
+        networking.firewall.allowedTCPPorts = [ 5050 ];
         systemd.services.appdaemon = {
           description = "Start AppDaemon";
           wantedBy = [ "multi-user.target" ];
@@ -58,6 +59,9 @@ _: {
                       namespace: default
                       ha_url: https://home.thurs.pw
                       token: ${config.sops.placeholder."hass/APPD_TOKEN"}
+                http:
+                  url: http://0.0.0.0:5050
+                api:
                 logs:
                   main_log:
                     filename: /var/log/appdaemon/main.log

@@ -30,9 +30,11 @@ _: {
           "${name}" = {
             image = "ghcr.io/connorgallopo/${name}:${version}";
             hostname = name;
+            user = "1000:100";
             networks = [
               "jellyfin"
               "plex"
+              name
             ];
             dependsOn = [
               "${name}-db"
@@ -41,7 +43,7 @@ _: {
             environment = {
               CORS_ORIGIN = "*";
               HOST = "0.0.0.0";
-              LOG_LEVEL = "info";
+              LOG_LEVEL = "warn";
               PORT = "3000";
               REDIS_URL = "redis://${name}-redis:6379";
               TZ = config.time.timeZone;
@@ -97,6 +99,7 @@ _: {
           "${name}-redis" = {
             image = "docker.io/library/redis:8-alpine";
             pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
+            user = "1000:100";
             networks = [ name ];
             volumes = [
               "${configPath}/${name}/redis:/data"
@@ -111,6 +114,11 @@ _: {
             };
           };
         };
+
+        systemd.tmpfiles.rules = [
+          "Z ${configPath}/${name}/app 0755 thurs users -"
+          "Z ${configPath}/${name}/redis 0755 thurs users -"
+        ];
 
         sops = {
           secrets = {

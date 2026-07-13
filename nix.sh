@@ -35,6 +35,9 @@ build () {
     ami)
       nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant amazon && copy_artifact_path
       ;;
+    gce)
+      nix build .\#nixosConfigurations."${TARGET}".config.system.build.googleComputeImage && copy_artifact_path
+      ;;
     x86_64-iso)
       nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant iso && copy_artifact_path
       ;;
@@ -70,8 +73,8 @@ attic () {
 function copy_artifact_path {
   if [ -L ./result ]; then
     ARTIFACT_PATH=$(readlink ./result)
-    # vhd = ami, zst = sd-aarch64
-    ARTIFACT=$(find "$ARTIFACT_PATH" -type f \( -iname '*.vhd' -o -iname '*.zst' -o -iname '*.iso' -o -iname '*.qcow2' -o -iname '*.img' \))
+    # vhd = ami, zst = sd-aarch64, tar.gz = gce
+    ARTIFACT=$(find "$ARTIFACT_PATH" -type f \( -iname '*.vhd' -o -iname '*.zst' -o -iname '*.iso' -o -iname '*.qcow2' -o -iname '*.img' -o -iname '*.tar.gz' \))
     if [ ! -z "${ARTIFACT}" ]; then
       printf "\nCopy ${ARTIFACT} to builds/\n\n"
       sudo cp "$ARTIFACT" builds/

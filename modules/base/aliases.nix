@@ -51,10 +51,14 @@ _: {
           };
 
           systemctl = {
-            _sst = "sudo systemctl status";
-            _srs = "sudo systemctl restart";
-            _sstop = "sudo systemctl stop";
-            _sstart = "sudo systemctl start";
+            sstatus = "sudo systemctl status";
+            restart = "sudo systemctl restart";
+            stop = "sudo systemctl stop";
+            start = "sudo systemctl start";
+          };
+
+          journalctl = {
+            logs = "journalctl -fu";
           };
         };
       };

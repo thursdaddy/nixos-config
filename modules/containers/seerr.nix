@@ -40,6 +40,7 @@ _: {
             PUID = "1000";
             PGID = "1000";
             TZ = config.time.timeZone;
+            LOG_LEVEL = "info";
           };
           volumes = [
             "${config.mine.containers.settings.configPath}/${name}:/app/config"

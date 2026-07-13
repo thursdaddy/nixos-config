@@ -1,8 +1,8 @@
 host := `echo $(hostname)`
 
 # Define your machine lists as space-separated strings
-hosts := "streambox wormhole kepler jupiter netpi1 netpi2 printpi homebox c137 cloudbox"
-blocky_hosts := "netpi1 netpi2 homebox"
+hosts := "streambox wormhole kepler jupiter netpi1 netpi2 printpi homebox c137 gcloudbox cloudbox"
+blocky_hosts := "netpi1 netpi2"
 
 statix:
     @statix check

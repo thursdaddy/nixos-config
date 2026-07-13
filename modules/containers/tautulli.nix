@@ -38,6 +38,7 @@ _: {
               TZ = config.time.timeZone;
               PGID = "1000";
               PUID = "1000";
+              LOG_LEVEL = "info";
             };
             volumes = [
               "${configPath}/${name}:/config"

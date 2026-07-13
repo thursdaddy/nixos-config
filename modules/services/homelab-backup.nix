@@ -30,8 +30,8 @@
             "gotify-backups.env" = {
               owner = "${user.name}";
               content = ''
-                GOTIFY_URL=${config.sops.placeholder."gotify/URL"}
-                GOTIFY_APP_TOKEN=${config.sops.placeholder."gotify/token/BACKUPS"}
+                GOTIFY_URL="${config.sops.placeholder."gotify/URL"}"
+                GOTIFY_APP_TOKEN="${config.sops.placeholder."gotify/token/BACKUPS"}"
               '';
             };
           };
