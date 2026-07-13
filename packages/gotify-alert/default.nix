@@ -67,7 +67,8 @@ pkgs.writeShellApplication {
       }')
 
     curl \
-      -X POST "$GOTIFY_URL/message?token=$GOTIFY_APP_TOKEN" \
+      -X POST "$GOTIFY_URL/message" \
+      -H "X-Gotify-Key: $GOTIFY_APP_TOKEN" \
       -H "Content-Type: application/json" \
       -d "$PAYLOAD"
   '';
