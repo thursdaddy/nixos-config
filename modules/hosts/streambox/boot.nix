@@ -51,6 +51,11 @@ _: {
             "dmask=0022"
           ];
         };
+
+        "/mnt/pictures" = {
+          device = "/dev/disk/by-uuid/0d8ac643-3b49-499f-a380-6248428ad295";
+          fsType = "xfs";
+        };
       };
 
       hardware = {

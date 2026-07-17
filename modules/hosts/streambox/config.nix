@@ -19,6 +19,7 @@ _: {
 
         containers = {
           settings.backend = "podman";
+          immich = enabled;
           jellyfin = enabled;
           jellystat = enabled;
           navidrome = enabled;
