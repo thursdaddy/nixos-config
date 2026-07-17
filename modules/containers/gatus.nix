@@ -72,6 +72,9 @@
               GATUS_LOG_LEVEL = "WARN";
               TZ = config.time.timeZone;
             };
+            extraOptions = [
+              "--cap-add=NET_RAW"
+            ];
             volumes = [
               "${gatus_config_yaml}:/config/config.yaml"
               "${config.sops.templates."alerting.yaml".path}:/config/alerting.yaml"
@@ -88,20 +91,39 @@
             "gotify/URL" = { };
           };
           templates."alerting.yaml".content = ''
-            alerting:
-              gotify:
-                server-url: ${cfg.gotifyUrl}
-                token: ${config.sops.placeholder."gotify/token/GATUS"}
-                priority: 10
-              discord:
-                webhook-url: ${config.sops.placeholder."discord/monitoring/WEBHOOK_URL"}
-                default:
-                  enabled: true
-                  failure-threshold: 2
-                  success-threshold: 2
-                  send-on-resolved: true
-                  description: "healthcheck failed 2 times in a row"
-          '';
+          alerting:
+            custom:
+              url: "${cfg.gotifyUrl}/message?token=${config.sops.placeholder."gotify/token/GATUS"}"
+              method: "POST"
+              headers:
+                Content-Type: "application/json"
+              body: |
+                {
+                  "message": "[RESULT_CONDITIONS]\n\n**URL:** [ENDPOINT_URL]\n\n**Group:** [ENDPOINT_GROUP]",
+                  "extras": {
+                    "client::display": {
+                      "contentType": "text/markdown"
+                    }
+                  },
+                  [ALERT_TRIGGERED_OR_RESOLVED] [ENDPOINT_URL]"
+                }
+              placeholders:
+                ALERT_TRIGGERED_OR_RESOLVED:
+                  TRIGGERED: '"priority": 8, "title": "‼️ DOWN:'
+                  RESOLVED: '"priority": 4, "title": "✅ UP:'
+            gotify:
+              server-url: ${cfg.gotifyUrl}
+              token: ${config.sops.placeholder."gotify/token/GATUS"}
+              priority: 10
+            discord:
+              webhook-url: ${config.sops.placeholder."discord/monitoring/WEBHOOK_URL"}
+              default:
+                enabled: true
+                failure-threshold: 2
+                success-threshold: 2
+                send-on-resolved: true
+                description: "healthcheck failed 2 times in a row"
+        '';
         };
 
         environment.etc."${alloyJournal.name}" = alloyJournal.value;
