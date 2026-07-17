@@ -106,7 +106,7 @@ class BackupManager:
     def _get_config(
         self, key: str, container: Optional[Any] = None, default: Any = None
     ) -> Any:
-        env_key = key.upper().replace(".", "_")
+        env_key = key.upper().replace(".", "_").replace("-", "_")
         if container and key in container.labels:
             return container.labels[key]
         return os.getenv(env_key, default)
@@ -218,6 +218,14 @@ class BackupManager:
             "--mkpath",
             "--stats",
         ]
+
+        copy_unsafe = self._get_config("homelab.backup.rsync.copy-unsafe-links", container, "false")
+        if str(copy_unsafe).lower() == "true":
+            cmd.append("--copy-unsafe-links")
+
+        copy_links = self._get_config("homelab.backup.rsync.copy-links", container, "false")
+        if str(copy_links).lower() == "true":
+            cmd.append("--copy-links")
 
         cmd.extend(["-e", "ssh -i /etc/ssh/ssh_host_ed25519_key -o StrictHostKeyChecking=accept-new"])
 

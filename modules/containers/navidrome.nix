@@ -50,10 +50,21 @@ _: {
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/navidrome/navidrome";
               "homelab.backup.enable" = "true";
-              "homelab.backup.path" = "${configPath}";
+              "homelab.backup.path" = "${configPath}/${name}/data";
             };
           };
         };
+
+        systemd =
+          let
+            backup = lib.thurs.mkBackupService {
+              inherit pkgs name;
+            };
+          in
+          {
+            services."backup-${name}" = backup.service;
+            timers."backup-${name}" = backup.timer;
+          };
 
         environment.etc =
           let
@@ -61,9 +72,14 @@ _: {
               inherit name;
               serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
+            alloyJournalBackup = lib.thurs.mkAlloyJournal {
+              name = "backup-${name}";
+              serviceName = "backup-${name}";
+            };
           in
           {
             "${alloyJournal.name}" = alloyJournal.value;
+            "${alloyJournalBackup.name}" = alloyJournalBackup.value;
           };
       };
     };

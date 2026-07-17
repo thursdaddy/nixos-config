@@ -16,6 +16,11 @@
     {
       options.mine.services.backups = {
         enable = lib.mkEnableOption "Enable backup script";
+        dailyReport = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable daily backup report generation and push to Gotify";
+        };
       };
 
       config = lib.mkIf cfg.enable {
@@ -45,6 +50,24 @@
               ExecStart = "${lib.getExe gotifyAlert} %i";
               EnvironmentFile = config.sops.templates."gotify-backups.env".path;
             };
+          };
+
+          services."backup-report" = lib.mkIf cfg.dailyReport {
+            description = "Daily Backup Report Generator";
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "${pkgs.homelab-backup}/bin/homelab-backup-report";
+              EnvironmentFile = config.sops.templates."gotify-backups.env".path;
+            };
+          };
+
+          timers."backup-report" = lib.mkIf cfg.dailyReport {
+            description = "Daily Backup Report Timer";
+            timerConfig = {
+              OnCalendar = "08:00:00";
+              Persistent = true;
+            };
+            wantedBy = [ "timers.target" ];
           };
         };
       };

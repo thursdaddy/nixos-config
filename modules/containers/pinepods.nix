@@ -3,6 +3,7 @@ _: {
     {
       config,
       lib,
+      pkgs,
       ...
     }:
     let
@@ -71,7 +72,8 @@ _: {
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/madeofpendletonwool/PinePods";
               "homelab.backup.enable" = "true";
-              "homelab.backup.path" = "${configPath}";
+              "homelab.backup.path" = "${configPath}/${name}";
+              "homelab.backup.path.ignore" = "postgres/pgdata";
             };
           };
 
@@ -124,15 +126,37 @@ _: {
           };
         };
 
+        systemd =
+          let
+            backup = lib.thurs.mkBackupService {
+              inherit pkgs name;
+              extraPackages = [
+                pkgs.docker-client
+              ];
+              preStart = ''
+                docker exec pinepods-db /bin/sh -c "pg_dumpall -U postgres -h localhost > /var/lib/postgresql/data/backup.sql"
+              '';
+            };
+          in
+          {
+            services."backup-${name}" = backup.service;
+            timers."backup-${name}" = backup.timer;
+          };
+
         environment.etc =
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
               serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
+            alloyJournalBackup = lib.thurs.mkAlloyJournal {
+              name = "backup-${name}";
+              serviceName = "backup-${name}";
+            };
           in
           {
             "${alloyJournal.name}" = alloyJournal.value;
+            "${alloyJournalBackup.name}" = alloyJournalBackup.value;
           };
       };
     };

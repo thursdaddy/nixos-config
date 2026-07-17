@@ -62,8 +62,9 @@ _: {
             labels = {
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/hoarder-app/hoarder";
-              "homelab.backup.enable" = "false";
-              "homelab.backup.path" = "${config.mine.containers.settings.configPath}";
+              "homelab.backup.enable" = "true";
+              "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}";
+              "homelab.backup.path.ignore" = "assets,queue.db";
             };
           };
 
@@ -112,15 +113,31 @@ _: {
           '';
         };
 
+        systemd =
+          let
+            backup = lib.thurs.mkBackupService {
+              inherit pkgs name;
+            };
+          in
+          {
+            services."backup-${name}" = backup.service;
+            timers."backup-${name}" = backup.timer;
+          };
+
         environment.etc =
           let
             alloyJournal = lib.thurs.mkAlloyJournal {
               inherit name;
               serviceName = "${config.mine.containers.settings.backend}-${name}";
             };
+            alloyJournalBackup = lib.thurs.mkAlloyJournal {
+              name = "backup-${name}";
+              serviceName = "backup-${name}";
+            };
           in
           {
             "${alloyJournal.name}" = alloyJournal.value;
+            "${alloyJournalBackup.name}" = alloyJournalBackup.value;
           };
       };
     };

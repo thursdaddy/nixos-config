@@ -11,8 +11,8 @@ _: {
     in
     {
       systemd = {
-        services.backup-cloudbox = {
-          description = "Reverse tunnel rsync from cloudbox to ZFS server";
+        services.backup-gcloudbox = {
+          description = "Reverse tunnel rsync from gcloudbox to ZFS server";
           after = [ "network-online.target" ];
           wants = [ "network-online.target" ];
           onFailure = [ "gotify-failure@%N.service" ];
@@ -21,15 +21,14 @@ _: {
             User = "${user.name}";
             Group = "${user.name}";
             ExecStart = pkgs.writeShellScript "rsync-two-step-script" ''
-              mkdir -p /tmp/cloudbox_staging
+              mkdir -p /tmp/gcloudbox_staging
 
-              # Pull from cloudbox (using sudo rsync to ensure we can read all root-owned config files)
+              # Pull from gcloudbox (using sudo rsync to ensure we can read all root-owned config files)
               ${pkgs.rsync}/bin/rsync -avz --delete --rsync-path="sudo rsync" -e "${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=accept-new" \
-                cloudbox:/opt/configs/ /tmp/cloudbox_staging/
+                gcloudbox:/opt/configs/ /tmp/gcloudbox_staging/
 
-              # Fetch the exact image of the container running on cloudbox
-              # Using ps instead of inspect catches it even if the container is named slightly differently
-              GOTIFY_IMAGE=$(${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=accept-new cloudbox "sudo podman ps -a --format '{{.Image}}' --filter 'name=gotify' 2>/dev/null || sudo docker ps -a --format '{{.Image}}' --filter 'name=gotify' 2>/dev/null" | ${pkgs.gnugrep}/bin/grep "gotify/server" | ${pkgs.coreutils}/bin/head -n 1)
+              # Fetch the exact image of the container running on gcloudbox
+              GOTIFY_IMAGE=$(${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=accept-new gcloudbox "sudo podman ps -a --format '{{.Image}}' --filter 'name=gotify' 2>/dev/null || sudo docker ps -a --format '{{.Image}}' --filter 'name=gotify' 2>/dev/null" | ${pkgs.gnugrep}/bin/grep "gotify/server" | ${pkgs.coreutils}/bin/head -n 1)
               if [ -z "$GOTIFY_IMAGE" ]; then GOTIFY_IMAGE="gotify/server:unknown"; fi
 
               # Inject the metadata dynamically into the staging directory before push
@@ -39,20 +38,20 @@ _: {
                   "target": "opt_configs",
                   "type": "file",
                   "source_path": "/opt/configs",
-                  "destination": "thurs@192.168.10.12:/fast/backups/cloudbox/file/opt/configs",
+                  "destination": "thurs@192.168.10.12:/fast/backups/gcloudbox/file/opt/configs",
                   "image": "'$GOTIFY_IMAGE'"
                 }
-              }' > /tmp/cloudbox_staging/backup_metadata.json
+              }' > /tmp/gcloudbox_staging/backup_metadata.json
 
               # Push to ZFS server (using --mkpath and sudo rsync to bypass root-owned ZFS dataset permissions)
               ${pkgs.rsync}/bin/rsync -avz --delete --mkpath --rsync-path="sudo rsync" -e "${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=accept-new" \
-                /tmp/cloudbox_staging/ ${user.name}@192.168.10.12:/fast/backups/cloudbox/file/opt/configs
+                /tmp/gcloudbox_staging/ ${user.name}@192.168.10.12:/fast/backups/gcloudbox/file/opt/configs
             '';
           };
         };
 
-        timers.backup-cloudbox = {
-          description = "Run cloudbox daily backup";
+        timers.backup-gcloudbox = {
+          description = "Run gcloudbox daily backup";
           timerConfig = {
             OnCalendar = "daily";
             Persistent = true;
@@ -60,5 +59,16 @@ _: {
           wantedBy = [ "timers.target" ];
         };
       };
+
+      environment.etc =
+        let
+          alloyJournal = lib.thurs.mkAlloyJournal {
+            name = "backup_gcloudbox";
+            serviceName = "backup-gcloudbox";
+          };
+        in
+        {
+          "${alloyJournal.name}" = alloyJournal.value;
+        };
     };
 }

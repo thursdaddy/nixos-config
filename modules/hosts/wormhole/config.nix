@@ -116,7 +116,10 @@ _: {
               };
             };
           };
-          backups = enabled;
+          backups = {
+            enable = true;
+            dailyReport = true;
+          };
           gitea-runner = {
             enable = true;
             runners = {
