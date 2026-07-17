@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "pinepods";
-      version = "0.8.2";
+      version = "0.9.0";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;

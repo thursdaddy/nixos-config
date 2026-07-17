@@ -7,7 +7,7 @@ _: {
     }:
     let
       name = "jellyfin";
-      version = "10.11.10";
+      version = "10.11.11";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;

@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "navidrome";
-      version = "0.61.2";
+      version = "0.63.2";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;

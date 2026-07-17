@@ -8,11 +8,9 @@ _: {
     }:
     let
       name = "open-webui";
-      version = "0.9.5";
+      version = "0.10.2";
 
       cfg = config.mine.containers.${name};
-      fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
-
     in
     {
       options.mine.containers.${name} = {
@@ -25,6 +23,15 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
+        mine.homelab.${config.networking.hostName} = {
+          apps.${name} = {
+            traefik.container = {
+              subDomain = cfg.subdomain;
+              port = 8080;
+            };
+          };
+        };
+
         virtualisation.oci-containers.containers."${name}" = {
           image = "ghcr.io/open-webui/open-webui:v${version}";
           ports = [
@@ -34,18 +41,9 @@ _: {
             "${config.mine.containers.settings.configPath}/open-webui:/app/backend/data"
           ];
           extraOptions = [
-            "--network=traefik"
             "--add-host=host.docker.internal:host-gateway"
             "--pull=always"
           ];
-          labels = {
-            "traefik.enable" = "true";
-            "traefik.http.routers.open-webui.tls" = "true";
-            "traefik.http.routers.open-webui.tls.certresolver" = "letsencrypt";
-            "traefik.http.routers.open-webui.entrypoints" = "websecure";
-            "traefik.http.routers.open-webui.rule" = "Host(`${fqdn}`)";
-            "traefik.http.services.open-webui.loadbalancer.server.port" = "8080";
-          };
         };
 
         environment.etc =

@@ -7,7 +7,7 @@ _: {
     }:
     let
       name = "seerr";
-      version = "3.2.0";
+      version = "3.3.0";
 
       cfg = config.mine.containers.${name};
     in

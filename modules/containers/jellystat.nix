@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "jellystat";
-      version = "1.1.10";
+      version = "1.1.11";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;
@@ -46,6 +46,10 @@ _: {
             volumes = [
               "${configPath}/${name}/app:/app/backend/backup-data"
             ];
+            labels = {
+              "org.opencontainers.image.version" = "${version}";
+              "org.opencontainers.image.source" = "https://github.com/CyferShepard/Jellystat";
+            };
           };
 
           "${name}-db" = {

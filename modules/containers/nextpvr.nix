@@ -52,6 +52,9 @@ _: {
           extraOptions = [
             "--network=host" # Run in host network mode to allow HDHomeRun discovery
           ];
+          labels = {
+            "enable.versions.check" = "false";
+          };
         };
 
         networking.firewall.interfaces."podman+".allowedTCPPorts = [ 8866 ];

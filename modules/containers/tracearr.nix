@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "tracearr";
-      version = "1.4.28";
+      version = "1.4.31";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;

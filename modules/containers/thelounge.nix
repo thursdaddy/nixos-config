@@ -3,7 +3,7 @@ _: {
     { config, lib, ... }:
     let
       name = "thelounge";
-      version = "4.5.0";
+      version = "4.5.2";
 
       cfg = config.mine.containers.${name};
     in

@@ -9,7 +9,7 @@
     }:
     let
       name = "mealie";
-      version = "3.18.0";
+      version = "3.20.1";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;

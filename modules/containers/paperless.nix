@@ -27,14 +27,23 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
+        mine.homelab.${config.networking.hostName} = {
+          apps.${name} = {
+            traefik.container = {
+              subDomain = cfg.subdomain;
+              port = 8000;
+            };
+          };
+        };
+
         virtualisation.oci-containers.containers = {
           "paperless-ngx-broker" = {
             image = "docker.io/library/redis:${redisVersion}";
             volumes = [
               "${config.mine.containers.settings.configPath}/paperless/redis:/data"
             ];
+            networks = [ name ];
             extraOptions = [
-              "--network=traefik"
               "--pull=always"
             ];
             labels = {
@@ -52,8 +61,8 @@ _: {
               POSTGRES_USER = "paperless";
               POSTGRES_PASSWORD = "paperless";
             };
+            networks = [ name ];
             extraOptions = [
-              "--network=traefik"
               "--pull=always"
             ];
             labels = {
@@ -73,27 +82,18 @@ _: {
               "${config.mine.containers.settings.configPath}/paperless/user/consume:/usr/src/paperless/consume"
             ];
             extraOptions = [
-              "--network=traefik"
               "--pull=always"
             ];
             environment = {
               PAPERLESS_URL = "https://${fqdn}";
+              PAPERLESS_REDIS = "redis://paperless-ngx-broker:6379";
+              PAPERLESS_DBHOST = "paperless-ngx-db";
             };
             labels = {
-              "traefik.enable" = "true";
-              "traefik.http.routers.${name}.tls" = "true";
-              "traefik.http.routers.${name}.tls.certresolver" = "letsencrypt";
-              "traefik.http.routers.${name}.entrypoints" = "websecure";
-              "traefik.http.routers.${name}.rule" = "Host(`${fqdn}`)";
-              "traefik.http.services.${name}.loadbalancer.server.port" = "8000";
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/paperless-ngx/paperless-ngx";
               "homelab.backup.enable" = "true";
               "homelab.backup.path" = "${config.mine.containers.settings.configPath}/paperless/user/export";
-            };
-            environment = {
-              PAPERLESS_REDIS = "redis://paperless-ngx-broker:6379";
-              PAPERLESS_DBHOST = "paperless-ngx-db";
             };
           };
         };
