@@ -21,7 +21,6 @@ _: {
           settings.backend = "podman";
           gitea = enabled;
           grafana = enabled;
-          prometheus = enabled;
           traefik = {
             enable = true;
             dashboard = true;
@@ -38,6 +37,11 @@ _: {
           beszel-hub = enabled;
           loki = enabled;
           qemu-guest = enabled;
+          victoriametrics = {
+            enable = true;
+            subDomain = "vm-infra";
+            retentionPeriod = "2y";
+          };
         };
       };
     };

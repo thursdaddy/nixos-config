@@ -39,6 +39,20 @@ _: {
         };
         services = {
           backups = enabled;
+          victoriametrics = {
+            enable = true;
+            scrapeConfig = ''
+              scrape_configs:
+                - job_name: hass
+                  scrape_interval: 60s
+                  metrics_path: /api/prometheus
+                  authorization:
+                    credentials: "<SOPS:e7736e55519775257edab61c3f8621577e8c276104110e11be08886ddeb55c96:PLACEHOLDER>"
+                  scheme: https
+                  static_configs:
+                    - targets: ["home.thurs.pw"]
+            '';
+          };
           gitea-runner = {
             enable = true;
             runners = {
@@ -74,6 +88,7 @@ _: {
             dnsChallengeProvider = "gcp";
             extraCmds = [
               "--entrypoints.tailscale.address=:8443"
+              "--entrypoints.websecure.address=192.168.10.60:443"
               "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
               "--experimental.plugins.fail2ban.version=v0.9.0"
             ];
