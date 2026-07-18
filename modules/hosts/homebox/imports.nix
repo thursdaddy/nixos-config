@@ -2,7 +2,7 @@
 {
   configurations.nixos.homebox.module = {
     imports = with config.flake.modules.nixos; [
-      attic
+      celler
       base
       containers
       home-assistant

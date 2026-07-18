@@ -40,6 +40,40 @@ _: {
 
         services = {
           backups = enabled;
+          celler = {
+            enable = true;
+            replication = {
+              enable = true;
+              role = "standby";
+              primaryHost = "192.168.10.60";
+            };
+          };
+          keepalived = {
+            enable = true;
+            instances.celler = {
+              state = "BACKUP";
+              priority = 100;
+              virtualIp = "192.168.10.54/24";
+              interface = "enp3s0";
+              routerId = 54;
+              noPreempt = true;
+              notifyMaster = ''
+                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:443 || true
+                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:80 || true
+                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:443 || true
+                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:80 || true
+                /run/current-system/sw/bin/podman exec celler-db pg_ctl -D /var/lib/postgresql/data/pgdata promote || true
+                systemctl start cellerd.service
+              '';
+              notifyBackup = ''
+                systemctl stop cellerd.service
+                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:443 || true
+                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:80 || true
+                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:443 || true
+                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:80 || true
+              '';
+            };
+          };
           ddns = enabled;
           mpd = enabled;
         };
@@ -50,5 +84,6 @@ _: {
           MulticastDNS=no
         '';
       };
+      systemd.services.cellerd.wantedBy = lib.mkForce [ ];
     };
 }

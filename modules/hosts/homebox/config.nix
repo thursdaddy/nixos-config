@@ -39,6 +39,44 @@ _: {
         };
         services = {
           backups = enabled;
+          celler = {
+            enable = true;
+            replication = {
+              enable = true;
+              role = "primary";
+            };
+            backupSync = {
+              enable = true;
+              targetHost = "streambox";
+              interface = "eno1";
+            };
+          };
+          keepalived = {
+            enable = true;
+            instances.celler = {
+              state = "BACKUP";
+              priority = 150;
+              virtualIp = "192.168.10.54/24";
+              interface = "eno1";
+              routerId = 54;
+              noPreempt = true;
+              notifyMaster = ''
+                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:443 || true
+                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:80 || true
+                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:443 || true
+                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:80 || true
+                /run/current-system/sw/bin/podman exec celler-db pg_ctl -D /var/lib/postgresql/data/pgdata promote || true
+                systemctl start cellerd.service
+              '';
+              notifyBackup = ''
+                systemctl stop cellerd.service
+                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:443 || true
+                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:80 || true
+                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:443 || true
+                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:80 || true
+              '';
+            };
+          };
           victoriametrics = {
             enable = true;
             scrapeConfig = ''
@@ -117,5 +155,6 @@ _: {
                 servers:
                   - url: "http://127.0.0.1:8090"
       '';
+      systemd.services.cellerd.wantedBy = lib.mkForce [ ];
     };
 }

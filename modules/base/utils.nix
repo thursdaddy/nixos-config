@@ -10,6 +10,7 @@
     }:
     let
       cfg = config.mine.base.utils;
+      celler-client = inputs.celler.packages.${pkgs.stdenv.hostPlatform.system}.default;
     in
     {
       options.mine.base.utils = {
@@ -31,7 +32,7 @@
             wget
           ]
           ++ lib.optionals (cfg.sysadmin.enable) [
-            attic-client
+            celler-client
             bind
             dig
             file

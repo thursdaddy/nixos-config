@@ -67,9 +67,11 @@
             ];
           }
           // lib.optionalAttrs (cfg.substituters.enable) {
-            substituters = [ "https://attic.thurs.pw/local?priority=1" ];
+            substituters = [
+              "https://celler.thurs.pw/cache?priority=1"
+            ];
             trusted-public-keys = [
-              "local:itXoM4f8cbcC/kFOdbmj/P1mY5C9OICa+ociYA40j4E="
+              "cache:OTMXwxZdctbD2zI8bmqZRa/zNfcteUqgshBYUsQJtbBV/xXdMETpU1RiDhGHXmX98PMinNGZ69olEEpYFoorog=="
             ];
           };
         };

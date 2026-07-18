@@ -53,20 +53,20 @@ build () {
   esac
 }
 
-attic () {
-  /run/current-system/sw/bin/attic use local
+celler () {
+  celler use local
   if [[ $TARGET == "all" ]]; then
     hosts=$(nix flake show . --json 2>/dev/null | jq -r '.nixosConfigurations | keys[]')
     for host in $hosts; do
       clean_host=$(basename "${host%/}")
       echo "Building configuration for host: $clean_host"
       nix build .\#nixosConfigurations."$clean_host".config.system.build.toplevel
-      /run/current-system/sw/bin/attic push --jobs 20 --ignore-upstream-cache-filter local ./result || true
+      celler push --jobs 5 --ignore-upstream-cache-filter local ./result || true
     done
   else
     echo "Building configuration for host: $TARGET"
     nix build .\#nixosConfigurations."$TARGET".config.system.build.toplevel
-    /run/current-system/sw/bin/attic push --jobs 20  --ignore-upstream-cache-filter local ./result || true
+    celler push --jobs 5 --ignore-upstream-cache-filter local ./result || true
   fi
 }
 # copy result to builds/
@@ -174,7 +174,7 @@ case $CMD in
   rebuild)
     rebuild "$TARGET"
     ;;
-  attic)
-    attic "$TARGET"
+  celler)
+    celler "$TARGET"
     ;;
 esac

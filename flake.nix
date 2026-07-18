@@ -30,6 +30,9 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    celler = {
+      url = "github:celler-cache/celler";
+    };
     ssh-keys = {
       url = "https://github.com/thursdaddy.keys";
       flake = false;

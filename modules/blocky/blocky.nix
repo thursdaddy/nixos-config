@@ -198,6 +198,7 @@
                   filterUnmappedTypes = true;
                   mapping = {
                     "attic.thurs.pw" = "192.168.10.60";
+                    "celler.thurs.pw" = "192.168.10.54";
                     "jellyfin.${config.nixos-thurs.publicDomain}" = "192.168.10.189";
                     "mpd.thurs.pw" = allConfigs.streambox.config.mine.homelab.streambox.tailscaleIp;
                     "gcloudbox" = allConfigs.gcloudbox.config.mine.homelab.gcloudbox.tailscaleIp;
