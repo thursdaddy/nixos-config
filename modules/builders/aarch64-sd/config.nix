@@ -39,7 +39,15 @@ _: {
 
       boot = {
         initrd.allowMissingModules = true;
-        kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
+        kernelPackages = let
+          rpiKernel = pkgs.callPackage "${pkgs.path}/pkgs/os-specific/linux/kernel/linux-rpi.nix" {
+            kernelPatches = with pkgs.linuxKernel.kernelPatches; [
+              bridge_stp_helper
+              request_key_helper
+            ];
+            rpiVersion = 4;
+          };
+        in pkgs.linuxKernel.packagesFor rpiKernel;
         initrd.availableKernelModules = [
           "xhci_pci"
           "usbhid"
