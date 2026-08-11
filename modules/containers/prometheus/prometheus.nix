@@ -1,4 +1,5 @@
-_: {
+{ inputs, ... }:
+{
   flake.modules.nixos.containers =
     {
       config,
@@ -206,9 +207,9 @@ _: {
           description = "prometheus image version";
         };
         configFile = lib.mkOption {
-          type = lib.types.path;
-          default = ./prometheus.yml;
-          description = "prometheus config file path";
+          type = lib.types.nullOr lib.types.path;
+          default = null;
+          description = "prometheus config file path override. If null, a dynamic default config is generated.";
         };
       };
 

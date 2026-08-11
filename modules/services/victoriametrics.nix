@@ -1,4 +1,5 @@
-_: {
+{ inputs, ... }:
+{
   flake.modules.nixos.services =
     {
       config,
@@ -9,6 +10,166 @@ _: {
     let
       name = "victoriametrics";
       cfg = config.mine.services.${name};
+      allConfigs = inputs.self.nixosConfigurations or { };
+
+      defaultScrapeConfig =
+        let
+          includedHosts = [
+            "c137"
+            "homebox"
+            "jupiter"
+            "kepler"
+            "netpi1"
+            "netpi2"
+            "printpi"
+            "streambox"
+            "wormhole"
+            "gcloudbox"
+            "cloudbox"
+          ];
+
+          targetConfigs = lib.filterAttrs (
+            hostName: hostValue: (builtins.elem hostName includedHosts) && (hostValue ? config)
+          ) allConfigs;
+
+          getHostTarget = hostName: port:
+            let
+              hostCfg = targetConfigs.${hostName}.config.mine.homelab.${hostName} or { };
+              tailscaleIp = hostCfg.tailscaleIp or "";
+              hostIp = hostCfg.hostIp or "";
+              ip =
+                if hostName == "cloudbox" || hostName == "gcloudbox" then
+                  if tailscaleIp != "" then tailscaleIp else "${hostName}.thurs.pw"
+                else if hostIp != "" then
+                  hostIp
+                else
+                  "${hostName}.thurs.pw";
+            in
+            "${ip}:${toString port}";
+
+          nodeTargets = lib.mapAttrsToList (hostName: hostValue: {
+            targets = [ (getHostTarget hostName 9100) ];
+            labels = { instance = hostName; };
+          }) (lib.filterAttrs (hostName: hostValue:
+            hostValue.config.services.prometheus.exporters.node.enable or false
+          ) targetConfigs);
+
+          smartctlTargets = lib.mapAttrsToList (hostName: hostValue: {
+            targets = [ (getHostTarget hostName 9633) ];
+            labels = { instance = hostName; };
+          }) (lib.filterAttrs (hostName: hostValue:
+            hostValue.config.services.prometheus.exporters.smartctl.enable or false
+          ) targetConfigs);
+
+          zfsTargets = lib.mapAttrsToList (hostName: hostValue: {
+            targets = [ (getHostTarget hostName 9134) ];
+            labels = { instance = hostName; };
+          }) (lib.filterAttrs (hostName: hostValue:
+            hostValue.config.services.prometheus.exporters.zfs.enable or false
+          ) targetConfigs);
+
+          blockyHosts = lib.filterAttrs (hostName: hostValue:
+            hostValue.config.services.blocky.enable or false
+          ) targetConfigs;
+
+          blockyJobs = lib.mapAttrsToList (hostName: hostValue: {
+            job_name = "blocky-${hostName}";
+            static_configs = [
+              {
+                targets = [ (getHostTarget hostName 4000) ];
+                labels = { instance = hostName; };
+              }
+            ];
+          }) blockyHosts;
+
+          hasTraefik = hostValue:
+            (hostValue.config.services.traefik.enable or false) ||
+            (hostValue.config.mine.services.traefik.enable or false) ||
+            (hostValue.config.mine.containers.traefik.enable or false);
+
+          traefikHosts = lib.filterAttrs (hostName: hostValue: hasTraefik hostValue) targetConfigs;
+
+          traefikJobs = lib.mapAttrsToList (hostName: hostValue: {
+            job_name = "traefik-${hostName}";
+            static_configs = [
+              {
+                targets = [ (getHostTarget hostName 8082) ];
+                labels = { instance = hostName; };
+              }
+            ];
+          }) traefikHosts;
+
+          hasCrowdsec = hostValue:
+            hostValue.config.mine.containers.crowdsec.enable or false;
+
+          crowdsecHosts = lib.filterAttrs (hostName: hostValue: hasCrowdsec hostValue) targetConfigs;
+
+          crowdsecJobs = lib.mapAttrsToList (hostName: hostValue: {
+            job_name = "crowdsec-${hostName}";
+            static_configs = [
+              {
+                targets = [ (getHostTarget hostName 6060) ];
+                labels = { instance = hostName; };
+              }
+            ];
+          }) crowdsecHosts;
+
+          vmTargets = lib.mapAttrsToList (hostName: hostValue: {
+            targets = [ (getHostTarget hostName 8428) ];
+            labels = { instance = hostName; };
+          }) (lib.filterAttrs (hostName: hostValue:
+            hostValue.config.services.victoriametrics.enable or false
+          ) targetConfigs);
+
+          lokiTargets = lib.mapAttrsToList (hostName: hostValue: {
+            targets = [ (getHostTarget hostName 3100) ];
+            labels = { instance = hostName; };
+          }) (lib.filterAttrs (hostName: hostValue:
+            hostValue.config.services.loki.enable or false
+          ) targetConfigs);
+
+          alloyTargets = lib.mapAttrsToList (hostName: hostValue: {
+            targets = [ (getHostTarget hostName 12346) ];
+            labels = { instance = hostName; };
+          }) (lib.filterAttrs (hostName: hostValue:
+            hostValue.config.services.alloy.enable or false
+          ) targetConfigs);
+
+          yamlVal = {
+            scrape_configs = [
+              {
+                job_name = "node";
+                static_configs = nodeTargets;
+              }
+            ] ++ (lib.optionals (smartctlTargets != [ ]) [
+              {
+                job_name = "smartctl";
+                static_configs = smartctlTargets;
+              }
+            ]) ++ (lib.optionals (zfsTargets != [ ]) [
+              {
+                job_name = "zfs";
+                static_configs = zfsTargets;
+              }
+            ]) ++ (lib.optionals (vmTargets != [ ]) [
+              {
+                job_name = "victoriametrics";
+                static_configs = vmTargets;
+              }
+            ]) ++ (lib.optionals (lokiTargets != [ ]) [
+              {
+                job_name = "loki";
+                static_configs = lokiTargets;
+              }
+            ]) ++ (lib.optionals (alloyTargets != [ ]) [
+              {
+                job_name = "alloy";
+                static_configs = alloyTargets;
+              }
+            ]) ++ blockyJobs ++ traefikJobs ++ crowdsecJobs;
+          };
+        in
+        lib.generators.toYAML { } yamlVal;
     in
     {
       options.mine.services.${name} = {
@@ -20,7 +181,7 @@ _: {
         };
         scrapeConfig = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
-          default = builtins.readFile ./victoriametrics_system.yml;
+          default = defaultScrapeConfig;
           description = "Custom Prometheus scrape configuration content. If null, VictoriaMetrics will not scrape anything.";
         };
         subDomain = lib.mkOption {

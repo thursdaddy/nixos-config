@@ -10,18 +10,23 @@ _: {
       acmeStorage = "/var/lib/traefik/acme.json";
 
       # Convert extraCmds into attributes for staticConfigOptions
-      parseCmds = cmds:
+      parseCmds =
+        cmds:
         let
           # Helper to split string at the first '='
-          splitEq = str:
+          splitEq =
+            str:
             let
               parts = lib.splitString "=" str;
               key = lib.head parts;
               val = lib.concatStringsSep "=" (lib.tail parts);
             in
-            { inherit key val; };
+            {
+              inherit key val;
+            };
 
-          cmdList = map (cmd:
+          cmdList = map (
+            cmd:
             let
               stripped = lib.removePrefix "--" cmd;
               kv = splitEq stripped;
@@ -32,10 +37,24 @@ _: {
               # Coerce values (e.g. booleans or numbers)
               lastPath = lib.last path;
               coercedVal =
-                if kv.val == "true" then true
-                else if kv.val == "false" then false
-                else if (builtins.match "[0-9]+" kv.val != null && builtins.elem lastPath [ "port" "maxretry" "priority" "weight" ]) then builtins.fromJSON kv.val
-                else kv.val;
+                if kv.val == "true" then
+                  true
+                else if kv.val == "false" then
+                  false
+                else if
+                  (
+                    builtins.match "[0-9]+" kv.val != null
+                    && builtins.elem lastPath [
+                      "port"
+                      "maxretry"
+                      "priority"
+                      "weight"
+                    ]
+                  )
+                then
+                  builtins.fromJSON kv.val
+                else
+                  kv.val;
             in
             lib.setAttrByPath path coercedVal
           ) (builtins.filter (cmd: lib.hasPrefix "--" cmd) cmds);
@@ -61,6 +80,11 @@ _: {
           type = lib.types.str;
           default = "route53";
         };
+        enableCrowdsec = lib.mkOption {
+          description = "Enable CrowdSec bouncer middleware globally on the websecure entrypoint";
+          type = lib.types.bool;
+          default = false;
+        };
         awsEnvKeys = lib.mkOption {
           description = "Traefik requires keys to update Route53 records.";
           type = lib.types.bool;
@@ -77,80 +101,113 @@ _: {
         services.traefik = {
           enable = true;
           environmentFiles = [ config.sops.templates."traefik.keys.env".path ];
-          staticConfigOptions = lib.recursiveUpdate {
-            log.level = "INFO";
-            global = {
-              checkNewVersion = false;
-              sendAnonymousUsage = false;
-            };
+          staticConfigOptions =
+            let
+              baseConfig = {
+                log.level = "INFO";
+                global = {
+                  checkNewVersion = false;
+                  sendAnonymousUsage = false;
+                };
 
-            api = {
-              dashboard = false;
-              insecure = false;
-            };
+                api = {
+                  dashboard = false;
+                  insecure = false;
+                };
 
-            providers.file = {
-              directory = "/etc/traefik/static";
-              watch = true;
-            };
+                providers.file = {
+                  directory = "/etc/traefik/static";
+                  watch = true;
+                };
 
-            entryPoints = {
-              web = {
-                address = ":80";
-                http.redirections.entryPoint = {
-                  to = "websecure";
-                  scheme = "https";
+                entryPoints = {
+                  web = {
+                    address = ":80";
+                    http.redirections.entryPoint = {
+                      to = "websecure";
+                      scheme = "https";
+                    };
+                  };
+                  websecure = {
+                    address = ":443";
+                    transport.respondingTimeouts = {
+                      readTimeout = "3600s";
+                      writeTimeout = "3600s";
+                      idleTimeout = "3600s";
+                    };
+                  };
+                  metrics.address = ":8082";
+                };
+
+                certificatesResolvers.letsencrypt.acme = {
+                  dnsChallenge = {
+                    # Traefik internally requires "gcloud", so we map your "gcp" config back to it
+                    provider = if cfg.dnsChallengeProvider == "gcp" then "gcloud" else cfg.dnsChallengeProvider;
+                    resolvers = [
+                      "1.1.1.1:53"
+                      "8.8.8.8:53"
+                    ];
+                  };
+                  storage = acmeStorage;
+                };
+
+                metrics.prometheus = {
+                  buckets = [
+                    0.1
+                    0.3
+                    1.2
+                    5.0
+                  ];
+                  addEntryPointsLabels = true;
+                  addRoutersLabels = true;
+                  addServicesLabels = true;
+                  entryPoint = "metrics";
                 };
               };
-              websecure = {
-                address = ":443";
-                transport.respondingTimeouts = {
-                  readTimeout = "600s";
-                  idleTimeout = "600s";
+              crowdsecConfig = lib.optionalAttrs cfg.enableCrowdsec {
+                experimental.plugins.bouncer = {
+                  moduleName = "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin";
+                  version = "v1.6.0";
                 };
+                entryPoints.websecure.http.middlewares = [ "crowdsec-bouncer@file" ];
               };
-              metrics.address = ":8082";
-            };
-
-            certificatesResolvers.letsencrypt.acme = {
-              dnsChallenge = {
-                # Traefik internally requires "gcloud", so we map your "gcp" config back to it
-                provider = if cfg.dnsChallengeProvider == "gcp" then "gcloud" else cfg.dnsChallengeProvider;
-                resolvers = [ "1.1.1.1:53" "8.8.8.8:53" ];
-              };
-              storage = acmeStorage;
-            };
-
-            metrics.prometheus = {
-              buckets = [
-                0.1
-                0.3
-                1.2
-                5.0
-              ];
-              addEntryPointsLabels = true;
-              addRoutersLabels = true;
-              addServicesLabels = true;
-              entryPoint = "metrics";
-            };
-          } (parseCmds cfg.extraCmds);
+            in
+            lib.recursiveUpdate (lib.recursiveUpdate baseConfig (parseCmds cfg.extraCmds)) crowdsecConfig;
         };
 
         networking.firewall.allowedTCPPorts = [
           80
           443
+          8082
         ];
 
-        environment.etc."traefik/static/middlewares.yaml".text = ''
-          http:
-            middlewares:
-              local-only:
-                ipAllowList:
-                  sourceRange:
-                    - "127.0.0.1/32"
-                    - "192.168.10.0/24"
-                    - "100.64.0.0/10"
-        '';
+        environment.etc = lib.mkMerge [
+          (lib.mkIf cfg.enableCrowdsec {
+            "traefik/static/crowdsec.yaml".text = ''
+              http:
+                middlewares:
+                  crowdsec-bouncer:
+                    plugin:
+                      bouncer:
+                        enabled: true
+                        crowdsecLapiHost: "192.168.10.68:8080"
+                        crowdsecLapiKey: "poJwR4ieGKY+MO3FEvxkBa8rNooYyxKPxYE86mBrquc"
+                        crowdsecMode: "live"
+            '';
+          })
+          {
+            "traefik/static/middlewares.yaml".text = ''
+              http:
+                middlewares:
+                  local-only:
+                    ipAllowList:
+                      sourceRange:
+                        - "127.0.0.1/32"
+                        - "192.168.10.0/24"
+                        - "100.64.0.0/10"
+            '';
+          }
+        ];
 
         systemd.tmpfiles.rules = [
           "f ${acmeStorage} 0600 traefik traefik - -"
