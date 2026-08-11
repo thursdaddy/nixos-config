@@ -26,6 +26,7 @@ _: {
       mine = {
         base = {
           nix.ghToken = enabled;
+          sops.ageKeyFile.path = "${user.homeDir}/.config/sops/age/keys.txt";
         };
 
         dev.tmux = {

@@ -13,16 +13,17 @@ NC='\033[0m' # No Color
 
 #--option eval-cache false
 rebuild () {
-  if [[ "${HOSTNAME:-$HOST}" == "$TARGET" ]]; then
-    printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
-    sudo nixos-rebuild --flake .\#"$TARGET" --no-reexec --use-substitutes switch "${EXTRA_ARGS[@]}"
+  if [[ "${HOSTNAME:-$HOST}" =~ "$TARGET" ]]; then
+    if [[ "$TARGET" == "mbp" ]]; then
+      printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local darwin)${NC}\n"
+      sudo darwin-rebuild switch --flake .\#mbp "${EXTRA_ARGS[@]}"
+    else
+      printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local nixos)${NC}\n"
+      sudo nixos-rebuild --flake .\#"$TARGET" --no-reexec --use-substitutes switch "${EXTRA_ARGS[@]}"
+    fi
   elif [[ "$TARGET" == "mbp" ]]; then
-    printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local)${NC}\n"
-    # Prompt for sudo early so the user can walk away
-    sudo -v
-    # Build as standard user to keep evaluation cache working, then activate as root
-    darwin-rebuild --flake .\#mbp build "${EXTRA_ARGS[@]}"
-    sudo ./result/activate
+    printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local darwin)${NC}\n"
+    sudo darwin-rebuild switch --flake .\#mbp "${EXTRA_ARGS[@]}"
   else
     printf "${BLUE}Rebuilding... ${ORANGE}${TARGET} (remote)${NC}\n"
     nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --no-reexec --use-substitutes --sudo switch "${EXTRA_ARGS[@]}"
@@ -122,7 +123,7 @@ update_to_local_input () {
     local NIXOS_THURS_PATH="\/home\/thurs"
   fi
   # if github url is set, replace it
-  sed -i 's/      url = ".*'"${INPUT}"'.*/      url = "git+file:\/\/'"${NIXOS_THURS_PATH}"'\/projects\/nix\/'"${INPUT}"'\/";/g' flake.nix
+  sed -i 's/      url = ".*'"${INPUT}"'.*/      url = "git+file:\/\/'"${NIXOS_THURS_PATH}"'\/dev\/nix\/'"${INPUT}"'\/";/g' flake.nix
 
   # finally update
   nix flake update "${INPUT}"

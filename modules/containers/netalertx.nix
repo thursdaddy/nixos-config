@@ -8,6 +8,7 @@ _: {
     }:
     let
       name = "netalertx";
+      version = "26.8.5";
       cfg = config.mine.containers.${name};
       hostName = config.networking.hostName;
     in

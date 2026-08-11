@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "paperless";
-      version = "2.20.15";
+      version = "3.0.5";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";
@@ -89,6 +89,9 @@ _: {
               PAPERLESS_REDIS = "redis://paperless-ngx-broker:6379";
               PAPERLESS_DBHOST = "paperless-ngx-db";
             };
+            environmentFiles = [
+              config.sops.templates."paperless.env".path
+            ];
             labels = {
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/paperless-ngx/paperless-ngx";
@@ -96,6 +99,15 @@ _: {
               "homelab.backup.path" = "${config.mine.containers.settings.configPath}/paperless/user/export";
             };
           };
+        };
+
+        sops = {
+          secrets = {
+            "paperless/SECRET_KEY" = { };
+          };
+          templates."paperless.env".content = ''
+            PAPERLESS_SECRET_KEY=${config.sops.placeholder."paperless/SECRET_KEY"}
+          '';
         };
 
         systemd =

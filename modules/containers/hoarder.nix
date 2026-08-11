@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "hoarder";
-      version = "0.32.0";
+      version = "0.33.2";
 
       cfg = config.mine.containers.${name};
     in

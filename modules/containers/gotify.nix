@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "gotify";
-      version = "2.9.1";
+      version = "3.0.0";
 
       cfg = config.mine.containers.${name};
     in
