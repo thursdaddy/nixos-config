@@ -55,14 +55,9 @@ _: {
             labels = {
               "org.opencontainers.image.version" = "${version}";
               "org.opencontainers.image.source" = "https://github.com/gotify/server";
-              "traefik.http.routers.${name}.middlewares" = "${name}-ratelimit,fail2ban";
+              "traefik.http.routers.${name}.middlewares" = "crowdsec-bouncer@file,${name}-ratelimit";
               "traefik.http.middlewares.${name}-ratelimit.ratelimit.average" = "100";
               "traefik.http.middlewares.${name}-ratelimit.ratelimit.burst" = "250";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.bantime" = "3h";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.findtime" = "5m";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.maxretry" = "5";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.statuscode" = "401";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.enabled" = "true";
               "traefik.http.routers.${name}.entrypoints" = lib.mkForce "websecure,tailscale";
             };
           };

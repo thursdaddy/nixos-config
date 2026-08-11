@@ -31,9 +31,11 @@ _: {
             enable = true;
             dashboard = true;
             dnsChallengeProvider = "gcp";
+            enableCrowdsec = true;
             extraCmds = [
-              "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
-              "--experimental.plugins.fail2ban.version=v0.9.0"
+              "--accesslog=true"
+              "--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+              "--experimental.plugins.bouncer.version=v1.6.0"
             ];
           };
         };

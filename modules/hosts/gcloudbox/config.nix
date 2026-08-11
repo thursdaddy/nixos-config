@@ -46,6 +46,7 @@ _: {
           gotify = enabled;
           traefik = {
             enable = true;
+            enableCrowdsec = true;
             enableIpv6 = false;
             awsEnvKeys = false;
             dashboard = true;

@@ -43,9 +43,14 @@ _: {
           default = config.mine.homelab.${config.networking.hostName}.rootDomainName;
         };
         dnsChallengeProvider = lib.mkOption {
-          description = "Base path for storing container configs";
+          description = "Provider for ACME DNS challenge";
           type = lib.types.str;
-          default = "route53";
+          default = "gcp";
+        };
+        enableCrowdsec = lib.mkOption {
+          description = "Enable CrowdSec bouncer middleware globally on websecure entrypoint";
+          type = lib.types.bool;
+          default = false;
         };
         awsEnvKeys = lib.mkOption {
           description = "Traefik requires keys to update route53 records.";
@@ -119,6 +124,9 @@ _: {
               "${config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path}:${
                 config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path
               }:ro"
+            ]
+            ++ lib.optionals cfg.enableCrowdsec [
+              "${config.sops.templates."crowdsec-bouncer.yaml".path}:/static/crowdsec-bouncer.yaml:ro"
             ];
             cmd =
               cfg.extraCmds
@@ -144,6 +152,12 @@ _: {
                 "--entrypoints.websecure.address=:443"
                 "--entrypoints.web.address=:80"
                 "--entrypoints.tailscale.address=:8443"
+              ]
+              ++ lib.optionals cfg.enableCrowdsec [
+                "--entrypoints.websecure.http.middlewares=crowdsec-bouncer@file"
+                "--providers.file.directory=/static"
+                "--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+                "--experimental.plugins.bouncer.version=v1.6.0"
               ]
               ++ lib.optionals (cfg.dashboard) [
                 "--api=true"
@@ -211,6 +225,9 @@ _: {
           "${ociBackend}-traefik" = {
             requires = [ "create-traefik-proxy-network.service" ];
             after = [ "create-traefik-proxy-network.service" ];
+            restartTriggers = lib.optionals cfg.enableCrowdsec [
+              config.sops.templates."crowdsec-bouncer.yaml".file
+            ];
           };
         };
 
@@ -223,6 +240,30 @@ _: {
         };
 
         sops = lib.mkMerge [
+          (lib.mkIf cfg.enableCrowdsec {
+            secrets = {
+              "traefik/CROWDSEC_LAPI_KEY" = { };
+            };
+            templates = {
+              "crowdsec-bouncer.yaml" = {
+                owner = "thurs";
+                group = "users";
+                content = ''
+                  http:
+                    middlewares:
+                      crowdsec-bouncer:
+                        plugin:
+                          bouncer:
+                            enabled: true
+                            crowdsecLapiScheme: "https"
+                            crowdsecLapiHost: "crowdsec.${config.nixos-thurs.publicDomain}"
+                            crowdsecLapiTLSInsecureVerify: true
+                            crowdsecLapiKey: "${config.sops.placeholder."traefik/CROWDSEC_LAPI_KEY"}"
+                            crowdsecMode: "live"
+                '';
+              };
+            };
+          })
           (lib.mkIf (cfg.dnsChallengeProvider == "route53" && cfg.awsEnvKeys) {
             secrets = {
               "aws/traefik/AWS_ACCESS_KEY_ID" = { };
