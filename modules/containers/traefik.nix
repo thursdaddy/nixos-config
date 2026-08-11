@@ -99,17 +99,17 @@ _: {
             image = "traefik:${version}";
             pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             dependsOn = lib.mkIf (ociBackend == "podman") [ "docker-socket-proxy" ];
-            networks = lib.mkIf (ociBackend == "podman") [
-              "docker-proxy"
-            ];
+            networks = [ ];
             ports = cfg.extraPorts ++ [
               "0.0.0.0:80:80"
               "[::]:80:80"
             ];
-            extraOptions = lib.mkIf cfg.enableIpv6 [
+            extraOptions = (lib.optionals cfg.enableIpv6 [
               "--dns=2606:4700:4700::1111"
               "--dns=2001:4860:4860::8888"
-            ];
+            ]) ++ (lib.optionals (ociBackend == "podman") [
+              "--network=docker-proxy:ip=10.90.20.254"
+            ]);
             environmentFiles = lib.mkIf (cfg.awsEnvKeys || cfg.dnsChallengeProvider == "gcp") [
               config.sops.templates."traefik.keys.env".path
             ];
@@ -186,7 +186,10 @@ _: {
             image = "tecnativa/docker-socket-proxy:latest";
             hostname = "docker-socket-proxy";
             user = "root:root";
-            networks = [ "docker-proxy" ];
+            networks = [ ];
+            extraOptions = [
+              "--network=docker-proxy:ip=10.90.20.253"
+            ];
             volumes = [
               "/run/podman/podman.sock:/var/run/docker.sock:ro"
             ];
@@ -214,7 +217,8 @@ _: {
               Type = "oneshot";
               RemainAfterExit = true;
               ExecStart = [
-                "-${lib.getExe pkgs.${ociBackend}} network create ${lib.optionalString cfg.enableIpv6 "--ipv6 "}docker-proxy"
+                "-${lib.getExe pkgs.${ociBackend}} network rm docker-proxy"
+                "-${lib.getExe pkgs.${ociBackend}} network create --subnet=10.90.20.0/24 ${lib.optionalString cfg.enableIpv6 "--ipv6 "}docker-proxy"
               ];
             };
           };
