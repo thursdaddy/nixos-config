@@ -18,7 +18,7 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-thurs = {
-      url = "git+file:///Users/thurs/projects/nix/nixos-thurs/";
+      url = "github:thursdaddy/nixos-thurs/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixvim = {
