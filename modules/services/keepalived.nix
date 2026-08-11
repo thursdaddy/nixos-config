@@ -14,6 +14,31 @@ _: {
         NAME=$2
         STATE=$3
 
+        case "$STATE" in
+          "MASTER")
+            EMOJI="✅"
+            VERB="assumed"
+            ROLE="MASTER"
+            ;;
+          "BACKUP")
+            EMOJI="💤"
+            VERB="standing by for"
+            ROLE="BACKUP"
+            ;;
+          "FAULT")
+            EMOJI="💥"
+            VERB="entered"
+            ROLE="FAULT"
+            ;;
+          *)
+            EMOJI="⚪"
+            VERB="transitioned to"
+            ROLE="$STATE"
+            ;;
+        esac
+
+        MSG="$EMOJI **${config.networking.hostName}** $VERB **$NAME** ($ROLE)"
+
         # Gotify notification
         if [ -f ${config.sops.secrets."gotify/URL".path} ] && [ -f ${config.sops.secrets."gotify/token/KEEPALIVED".path} ]; then
           GOTIFY_URL=$(cat ${config.sops.secrets."gotify/URL".path})
@@ -21,7 +46,7 @@ _: {
 
           PAYLOAD=$( ${pkgs.jq}/bin/jq -n \
             --arg title "Keepalived: $NAME State Changed" \
-            --arg msg "Host **${config.networking.hostName}** transitioned to state **$STATE** for instance **$NAME**." \
+            --arg msg "$MSG" \
             '{
               title: $title,
               message: $msg,
@@ -33,10 +58,18 @@ _: {
               }
             }' )
 
-          ${pkgs.curl}/bin/curl -s -X POST "$GOTIFY_URL/message" \
-            -H "X-Gotify-Key: $GOTIFY_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD" || true
+          # Run notification in background to handle startup DNS/network latency
+          (
+            for i in {1..30}; do
+              if ${pkgs.curl}/bin/curl -s -f -X POST "$GOTIFY_URL/message" \
+                -H "X-Gotify-Key: $GOTIFY_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d "$PAYLOAD" >/dev/null 2>&1; then
+                exit 0
+              fi
+              sleep 2
+            done
+          ) &
         fi
 
         ${extraCommands}

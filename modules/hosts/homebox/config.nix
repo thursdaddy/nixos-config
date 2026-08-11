@@ -3,6 +3,7 @@ _: {
     {
       config,
       lib,
+      pkgs,
       ...
     }:
     let
@@ -53,6 +54,14 @@ _: {
           };
           keepalived = {
             enable = true;
+            vrrpScripts = {
+              check_celler = {
+                script = "${pkgs.postgresql}/bin/pg_isready -h 127.0.0.1 -p 54546";
+                interval = 5;
+                weight = -60;
+                user = "root";
+              };
+            };
             instances.celler = {
               state = "BACKUP";
               priority = 150;
@@ -60,20 +69,23 @@ _: {
               interface = "eno1";
               routerId = 54;
               noPreempt = true;
+              trackScripts = [ "check_celler" ];
               notifyMaster = ''
-                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:443 || true
-                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:80 || true
-                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:443 || true
-                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:80 || true
-                /run/current-system/sw/bin/podman exec celler-db pg_ctl -D /var/lib/postgresql/data/pgdata promote || true
+                TARGET_IP="${config.mine.homelab.homebox.hostIp}"
+                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
+                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
+                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
+                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
+                /run/current-system/sw/bin/podman exec -u postgres celler-db pg_ctl -D /var/lib/postgresql/data/pgdata promote || true
                 systemctl start cellerd.service
               '';
               notifyBackup = ''
                 systemctl stop cellerd.service
-                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:443 || true
-                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:80 || true
-                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:443 || true
-                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.homebox.hostIp}:80 || true
+                TARGET_IP="${config.mine.homelab.homebox.hostIp}"
+                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
+                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
+                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
+                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
               '';
             };
           };
@@ -96,7 +108,7 @@ _: {
             runners = {
               "${config.networking.hostName}" = {
                 labels = [
-                  "runner:docker://gitea.thurs.pw/docker/gitea-runner:v0.3.0"
+                  "runner:docker://gitea.thurs.pw/docker/gitea-runner:v0.3.1"
                 ];
                 settings = {
                   runner = {
@@ -126,7 +138,13 @@ _: {
             dnsChallengeProvider = "gcp";
             extraCmds = [
               "--entrypoints.tailscale.address=:8443"
+              "--entrypoints.tailscale.transport.respondingtimeouts.readtimeout=3600s"
+              "--entrypoints.tailscale.transport.respondingtimeouts.writetimeout=3600s"
+              "--entrypoints.tailscale.transport.respondingtimeouts.idletimeout=3600s"
               "--entrypoints.websecure.address=192.168.10.60:443"
+              "--entrypoints.websecure.transport.respondingtimeouts.readtimeout=3600s"
+              "--entrypoints.websecure.transport.respondingtimeouts.writetimeout=3600s"
+              "--entrypoints.websecure.transport.respondingtimeouts.idletimeout=3600s"
               "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
               "--experimental.plugins.fail2ban.version=v0.9.0"
             ];

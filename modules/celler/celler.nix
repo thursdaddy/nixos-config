@@ -156,6 +156,11 @@
               celler = {
                 inherit port;
                 dns = false; # Prevent blocky from auto-scraping host-specific IPs
+                labels = {
+                  "traefik.http.services.celler.loadbalancer.serverstransport" = "cellerTransport";
+                  "traefik.http.serversTransports.cellerTransport.forwardingTimeouts.responseHeaderTimeout" = "3600s";
+                  "traefik.http.serversTransports.cellerTransport.forwardingTimeouts.idleConnTimeout" = "3600s";
+                };
               };
             };
           };
