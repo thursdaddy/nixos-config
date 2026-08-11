@@ -13,16 +13,20 @@
 
       hyprpaperSettings = {
         splash = false;
-        preload = [
-          "${wallpapers}/Kurzgesagt_Galaxies.png"
-          "${wallpapers}/blue_astronaut_in_space.png"
-          "${wallpapers}/blue_mountains.jpg"
-        ];
-
+        ipc = true;
         wallpaper = [
-          "DP-1,${wallpapers}/Kurzgesagt_Galaxies.png"
-          "DP-2,${wallpapers}/blue_mountains.jpg"
-          "DP-3,${wallpapers}/blue_astronaut_in_space.png"
+          {
+            monitor = "DP-1";
+            path = "${wallpapers}/Kurzgesagt_Galaxies.png";
+          }
+          {
+            monitor = "DP-2";
+            path = "${wallpapers}/blue_mountains.jpg";
+          }
+          {
+            monitor = "DP-3";
+            path = "${wallpapers}/blue_astronaut_in_space.png";
+          }
         ];
       };
 
@@ -63,7 +67,7 @@
             ConditionEnvironment = "WAYLAND_DISPLAY";
           };
           serviceConfig = {
-            ExecStart = "${lib.getExe pkgs.hyprpaper}";
+            ExecStart = "${lib.getExe pkgs.hyprpaper} -c /etc/${etcPath}";
             ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
             Restart = "always";
           };
