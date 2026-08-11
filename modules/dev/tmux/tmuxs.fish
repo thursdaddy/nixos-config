@@ -5,12 +5,12 @@ set -gx FZF_DEFAULT_OPTS "$FZF_DEFAULT_OPTS "\
 "--color=info:#83a598,prompt:#b8bb26,pointer:#fe8019 "\
 "--color=marker:#fe8019,spinner:#fe8019,header:#83a598"
 
-# Ensure thurs session exists with ferrosonic and notes window
+# Ensure thurs session exists with notes window
 for app in thurs
   if not tmux has-session -t $app 2>/dev/null
     set -l cols (tput cols 2>/dev/null; or echo 200)
     set -l lines (tput lines 2>/dev/null; or echo 50)
-    tmux new-session -d -x "$cols" -y "$lines" -s $app -n ferrosonic "fish -c 'while test -z \"\$(tmux list-clients -t $app 2>/dev/null)\"; sleep 0.5; end; clear; echo \"Launching Ferrosonic...\"; while not ferrosonic; echo \"ferrosonic crashed. Restarting in 2 seconds...\"; sleep 2; end'" \; new-window -c "$HOME/notes/obsidian/thurs" -n notes
+    tmux new-session -d -x "$cols" -y "$lines" -s $app -c "$HOME/notes/obsidian/thurs" -n notes
   end
 end
 
@@ -53,7 +53,7 @@ end
 # select or create new tmux session
 function tmux_session_selector
   if tmux list-sessions 2>/dev/null
-    set fzf_options "new-session" "running-sessions" "kill-session"
+    set fzf_options "running-sessions" "new-session" "kill-session"
   else
     set fzf_options "new-session"
   end

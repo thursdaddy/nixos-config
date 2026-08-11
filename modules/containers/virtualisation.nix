@@ -43,14 +43,21 @@ _: {
           # Safely parse actual volume mounts to ensure we only create directories that are actively used
           systemd.tmpfiles.rules =
             let
-              allVolumes = lib.flatten (lib.mapAttrsToList (n: c: c.volumes) config.virtualisation.oci-containers.containers);
-              # Filter for volumes starting with our config path
-              configVolumes = lib.filter (v: lib.hasPrefix "${cfg.configPath}/" v) allVolumes;
-              # Extract host path (everything before the first colon)
-              hostPaths = lib.map (v: builtins.head (lib.splitString ":" v)) configVolumes;
-              uniquePaths = lib.unique hostPaths;
+              # Map each container definition to its volume rules with dynamic user/group ownership
+              containerRules = lib.mapAttrsToList (name: container:
+                let
+                  # Check if PUID and PGID are defined in container environment, otherwise default to host user/users
+                  puid = if container ? environment && container.environment ? PUID then container.environment.PUID else user.name;
+                  pgid = if container ? environment && container.environment ? PGID then container.environment.PGID else "users";
+
+                  # Find volume host paths starting with configPath
+                  configVolumes = lib.filter (v: lib.hasPrefix "${cfg.configPath}/" v) container.volumes;
+                  hostPaths = lib.map (v: builtins.head (lib.splitString ":" v)) configVolumes;
+                in
+                lib.map (path: "d ${path} 0755 ${puid} ${pgid} -") hostPaths
+              ) config.virtualisation.oci-containers.containers;
             in
-            lib.map (path: "d ${path} 0755 ${user.name} users -") uniquePaths;
+            lib.unique (lib.flatten containerRules);
         }
         {
           virtualisation.docker = lib.mkIf (cfg.backend == "docker") {

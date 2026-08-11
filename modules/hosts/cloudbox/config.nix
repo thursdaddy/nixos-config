@@ -14,7 +14,7 @@ _: {
 
       mine = {
         base = {
-          nix.substituters = disabled;
+          nix.substituters = enabled;
           networking = {
             hostName = "cloudbox";
             ipv4Forwarding = enabled;

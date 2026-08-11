@@ -63,6 +63,9 @@
         environment.systemPackages = with pkgs; [
           neovim
           git
+          cryptsetup
+          gnupg
+          pass
         ];
       };
     };

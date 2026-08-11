@@ -13,7 +13,7 @@ _: {
         base.networking.hostName = "jupiter";
 
         homelab.jupiter = {
-          hostIp = "192.168.10.15";
+          hostIp = "192.168.10.143";
           tailscaleIp = "100.78.22.112";
           apps.vaultwarden.traefik.container.tailscale = lib.mkForce false;
         };
@@ -23,6 +23,7 @@ _: {
           commafeed = enabled;
           greenbook = enabled;
           hoarder = enabled;
+          it-tools = enabled;
           mealie = enabled;
           open-webui = enabled;
           paperless = enabled;
@@ -36,6 +37,7 @@ _: {
             extraPorts = [
               "${config.mine.homelab.jupiter.tailscaleIp}:443:8443"
               "${config.mine.homelab.jupiter.hostIp}:443:443"
+              "${config.mine.homelab.jupiter.hostIp}:8082:8082"
             ];
             extraCmds = [
               "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"

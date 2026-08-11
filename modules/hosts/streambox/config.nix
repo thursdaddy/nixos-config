@@ -3,6 +3,7 @@ _: {
     {
       config,
       lib,
+      pkgs,
       ...
     }:
     let
@@ -19,6 +20,7 @@ _: {
 
         containers = {
           settings.backend = "podman";
+          audiobookshelf = enabled;
           immich = enabled;
           jellyfin = enabled;
           jellystat = enabled;
@@ -31,9 +33,11 @@ _: {
             enable = true;
             dashboard = true;
             dnsChallengeProvider = "gcp";
+            enableCrowdsec = true;
             extraCmds = [
-              "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
-              "--experimental.plugins.fail2ban.version=v0.9.0"
+              "--accesslog=true"
+              "--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+              "--experimental.plugins.bouncer.version=v1.6.0"
             ];
           };
         };
@@ -50,6 +54,14 @@ _: {
           };
           keepalived = {
             enable = true;
+            vrrpScripts = {
+              check_celler = {
+                script = "${pkgs.postgresql}/bin/pg_isready -h 127.0.0.1 -p 54546";
+                interval = 5;
+                weight = -60;
+                user = "root";
+              };
+            };
             instances.celler = {
               state = "BACKUP";
               priority = 100;
@@ -57,20 +69,23 @@ _: {
               interface = "enp3s0";
               routerId = 54;
               noPreempt = true;
+              trackScripts = [ "check_celler" ];
               notifyMaster = ''
-                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:443 || true
-                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:80 || true
-                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:443 || true
-                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:80 || true
-                /run/current-system/sw/bin/podman exec celler-db pg_ctl -D /var/lib/postgresql/data/pgdata promote || true
+                TARGET_IP="${config.mine.homelab.streambox.hostIp}"
+                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
+                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
+                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
+                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
+                /run/current-system/sw/bin/podman exec -u postgres celler-db pg_ctl -D /var/lib/postgresql/data/pgdata promote || true
                 systemctl start cellerd.service
               '';
               notifyBackup = ''
                 systemctl stop cellerd.service
-                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:443 || true
-                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:80 || true
-                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:443 || true
-                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination ${config.mine.homelab.streambox.hostIp}:80 || true
+                TARGET_IP="${config.mine.homelab.streambox.hostIp}"
+                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
+                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
+                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
+                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
               '';
             };
           };
@@ -80,9 +95,11 @@ _: {
       };
 
       services.resolved = {
-        extraConfig = ''
-          MulticastDNS=no
-        '';
+        settings = {
+          Resolve = {
+            MulticastDNS = "no";
+          };
+        };
       };
       systemd.services.cellerd.wantedBy = lib.mkForce [ ];
     };

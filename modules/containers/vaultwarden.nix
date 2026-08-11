@@ -49,12 +49,6 @@ _: {
               "${config.mine.containers.settings.configPath}/vaultwarden:/data"
             ];
             labels = {
-              "traefik.http.routers.${name}.middlewares" = "fail2ban";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.bantime" = "3h";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.findtime" = "5m";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.maxretry" = "5";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.statuscode" = "401";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.enabled" = "true";
               "homelab.backup.enable" = "true";
               "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}";
             };

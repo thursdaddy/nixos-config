@@ -71,7 +71,7 @@
               "https://celler.thurs.pw/cache?priority=1"
             ];
             trusted-public-keys = [
-              "cache:OTMXwxZdctbD2zI8bmqZRa/zNfcteUqgshBYUsQJtbBV/xXdMETpU1RiDhGHXmX98PMinNGZ69olEEpYFoorog=="
+              "cache:Vf8V3TBE6VNUYg4Rh15l/fDzIpzRmevaJRBKWBaKK6I="
             ];
           };
         };
@@ -82,7 +82,7 @@
           enable = true;
         }
         // lib.optionalAttrs (!isDarwin) {
-          generateCaches = lib.mkForce false;
+          cache.enable = lib.mkForce false;
         };
 
         sops.secrets."github/TOKEN" = lib.mkIf cfg.ghToken.enable {

@@ -1,17 +1,21 @@
 { pkgs }:
         (pkgs.octoprint.override {
           python3 = pkgs.python312;
-        }).override
-          {
-            packageOverrides = pyself: pysuper: {
-              # Ignore failing tests
-              aiohttp = pysuper.aiohttp.overrideAttrs (old: {
-                disabledTests = (old.disabledTests or [ ]) ++ [
-                  "test_proxy_functional"
-                  "test_client_middleware_digest_auth"
-                  "test_cookie_helpers"
-                ];
-              });
+        }).override {
+          packageOverrides = pyself: pysuper: {
+            pytestCheckHook = pkgs.lib.makeOverridable (args: pyself.toPythonModule (pkgs.makeSetupHook {
+              name = "pytest-check-hook";
+              propagatedBuildInputs = [ args.pytest ];
+            } (pkgs.writeText "empty-hook.sh" "pytestCheckPhase() { :; }"))) {
+              pytest = pyself.pytest;
+            };
+
+            # Disable checks for dependencies built under emulation
+            sentry-sdk = pysuper.sentry-sdk.overridePythonAttrs (old: { doCheck = false; });
+            pympler = pysuper.pympler.overridePythonAttrs (old: { doCheck = false; });
+            zeroconf = pysuper.zeroconf.overridePythonAttrs (old: { doCheck = false; });
+            pyrsistent = pysuper.pyrsistent.overridePythonAttrs (old: { doCheck = false; });
+            sarge = pysuper.sarge.overridePythonAttrs (old: { doCheck = false; });
 
               # Octoprint Python 3.12 Plugins
               camerasettings = pyself.buildPythonPackage rec {
@@ -267,12 +271,11 @@
                   rev = "${version}";
                   sha256 = "sha256-FsBI2Gzd/sYuU6rfaI0zJGk6k/YvmYirYXJivBSC474=";
                 };
-                propagatedBuildInputs = [
+                 propagatedBuildInputs = [
                   pyself.octoprint
                   pyself.peewee
                   pyself.qrcode
                   pyself.pillow
-                  pyself.future
                 ];
                 build-system = [ pyself.setuptools ];
                 doCheck = false;
@@ -341,7 +344,7 @@
                   rev = "${version}";
                   sha256 = "sha256-DBogfBGWW+UzLLssegWxH/8nYV9pCOZ8Em2K2HK/ocI=";
                 };
-                propagatedBuildInputs = [
+                 propagatedBuildInputs = [
                   pyself.octoprint
                   pyself.pillow
                   pyself.peewee
@@ -351,7 +354,6 @@
                   pyself.file-read-backwards
                   pyself.setuptools
                   pyself.awesome-slugify
-                  pyself.future
                 ];
                 doCheck = false;
                 pyproject = true;

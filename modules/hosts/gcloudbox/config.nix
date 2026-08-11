@@ -16,7 +16,7 @@ _: {
 
       mine = {
         base = {
-          nix.substituters = disabled;
+          nix.substituters = enabled;
           networking = {
             hostName = "gcloudbox";
             ipv4Forwarding = enabled;
@@ -46,6 +46,7 @@ _: {
           gotify = enabled;
           traefik = {
             enable = true;
+            enableCrowdsec = true;
             enableIpv6 = false;
             awsEnvKeys = false;
             dashboard = true;
@@ -54,12 +55,11 @@ _: {
             extraPorts = [
               "${config.mine.homelab.${config.networking.hostName}.tailscaleIp}:443:8443"
               "${config.mine.homelab.${config.networking.hostName}.hostIp}:443:443"
+              "${config.mine.homelab.${config.networking.hostName}.tailscaleIp}:8082:8082"
               "[::]:443:443"
             ];
             extraCmds = [
               "--accesslog=true"
-              "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
-              "--experimental.plugins.fail2ban.version=v0.9.0"
               "--certificatesresolvers.letsencrypt.acme.dnschallenge.disablepropagationcheck=true"
               "--certificatesresolvers.letsencrypt.acme.dnschallenge.delaybeforecheck=15"
             ];

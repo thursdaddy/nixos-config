@@ -15,7 +15,15 @@ _: {
         kernel.sysctl = {
           "vm.mmap_rnd_bits" = 24;
         };
-        kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
+        kernelPackages = let
+          rpiKernel = pkgs.callPackage "${pkgs.path}/pkgs/os-specific/linux/kernel/linux-rpi.nix" {
+            kernelPatches = with pkgs.linuxKernel.packages.linux_rpi4.kernelPatches or pkgs.linuxKernel.kernelPatches; [
+              bridge_stp_helper
+              request_key_helper
+            ];
+            rpiVersion = 4;
+          };
+        in pkgs.linuxKernel.packagesFor rpiKernel;
         loader = {
           grub.enable = false;
           generic-extlinux-compatible.enable = true;

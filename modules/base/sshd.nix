@@ -20,6 +20,7 @@ _: {
           settings = {
             PasswordAuthentication = false;
             PermitRootLogin = if cfg.root then "prohibit-password" else lib.mkDefault "no";
+            StreamLocalBindUnlink = "yes";
           };
         };
 

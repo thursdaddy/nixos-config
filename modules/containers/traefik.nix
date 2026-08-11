@@ -43,9 +43,14 @@ _: {
           default = config.mine.homelab.${config.networking.hostName}.rootDomainName;
         };
         dnsChallengeProvider = lib.mkOption {
-          description = "Base path for storing container configs";
+          description = "Provider for ACME DNS challenge";
           type = lib.types.str;
-          default = "route53";
+          default = "gcp";
+        };
+        enableCrowdsec = lib.mkOption {
+          description = "Enable CrowdSec bouncer middleware globally on websecure entrypoint";
+          type = lib.types.bool;
+          default = false;
         };
         awsEnvKeys = lib.mkOption {
           description = "Traefik requires keys to update route53 records.";
@@ -94,17 +99,17 @@ _: {
             image = "traefik:${version}";
             pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
             dependsOn = lib.mkIf (ociBackend == "podman") [ "docker-socket-proxy" ];
-            networks = lib.mkIf (ociBackend == "podman") [
-              "docker-proxy"
-            ];
+            networks = [ ];
             ports = cfg.extraPorts ++ [
               "0.0.0.0:80:80"
               "[::]:80:80"
             ];
-            extraOptions = lib.mkIf cfg.enableIpv6 [
+            extraOptions = (lib.optionals cfg.enableIpv6 [
               "--dns=2606:4700:4700::1111"
               "--dns=2001:4860:4860::8888"
-            ];
+            ]) ++ (lib.optionals (ociBackend == "podman") [
+              "--network=docker-proxy:ip=10.90.20.254"
+            ]);
             environmentFiles = lib.mkIf (cfg.awsEnvKeys || cfg.dnsChallengeProvider == "gcp") [
               config.sops.templates."traefik.keys.env".path
             ];
@@ -119,6 +124,9 @@ _: {
               "${config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path}:${
                 config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path
               }:ro"
+            ]
+            ++ lib.optionals cfg.enableCrowdsec [
+              "${config.sops.templates."crowdsec-bouncer.yaml".path}:/static/crowdsec-bouncer.yaml:ro"
             ];
             cmd =
               cfg.extraCmds
@@ -144,6 +152,12 @@ _: {
                 "--entrypoints.websecure.address=:443"
                 "--entrypoints.web.address=:80"
                 "--entrypoints.tailscale.address=:8443"
+              ]
+              ++ lib.optionals cfg.enableCrowdsec [
+                "--entrypoints.websecure.http.middlewares=crowdsec-bouncer@file"
+                "--providers.file.directory=/static"
+                "--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+                "--experimental.plugins.bouncer.version=v1.6.0"
               ]
               ++ lib.optionals (cfg.dashboard) [
                 "--api=true"
@@ -172,7 +186,10 @@ _: {
             image = "tecnativa/docker-socket-proxy:latest";
             hostname = "docker-socket-proxy";
             user = "root:root";
-            networks = [ "docker-proxy" ];
+            networks = [ ];
+            extraOptions = [
+              "--network=docker-proxy:ip=10.90.20.253"
+            ];
             volumes = [
               "/run/podman/podman.sock:/var/run/docker.sock:ro"
             ];
@@ -200,7 +217,8 @@ _: {
               Type = "oneshot";
               RemainAfterExit = true;
               ExecStart = [
-                "-${lib.getExe pkgs.${ociBackend}} network create ${lib.optionalString cfg.enableIpv6 "--ipv6 "}docker-proxy"
+                "-${lib.getExe pkgs.${ociBackend}} network rm docker-proxy"
+                "-${lib.getExe pkgs.${ociBackend}} network create --subnet=10.90.20.0/24 ${lib.optionalString cfg.enableIpv6 "--ipv6 "}docker-proxy"
               ];
             };
           };
@@ -211,6 +229,9 @@ _: {
           "${ociBackend}-traefik" = {
             requires = [ "create-traefik-proxy-network.service" ];
             after = [ "create-traefik-proxy-network.service" ];
+            restartTriggers = lib.optionals cfg.enableCrowdsec [
+              config.sops.templates."crowdsec-bouncer.yaml".file
+            ];
           };
         };
 
@@ -223,6 +244,30 @@ _: {
         };
 
         sops = lib.mkMerge [
+          (lib.mkIf cfg.enableCrowdsec {
+            secrets = {
+              "traefik/CROWDSEC_LAPI_KEY" = { };
+            };
+            templates = {
+              "crowdsec-bouncer.yaml" = {
+                owner = "thurs";
+                group = "users";
+                content = ''
+                  http:
+                    middlewares:
+                      crowdsec-bouncer:
+                        plugin:
+                          bouncer:
+                            enabled: true
+                            crowdsecLapiScheme: "https"
+                            crowdsecLapiHost: "crowdsec.${config.nixos-thurs.publicDomain}"
+                            crowdsecLapiTLSInsecureVerify: true
+                            crowdsecLapiKey: "${config.sops.placeholder."traefik/CROWDSEC_LAPI_KEY"}"
+                            crowdsecMode: "live"
+                '';
+              };
+            };
+          })
           (lib.mkIf (cfg.dnsChallengeProvider == "route53" && cfg.awsEnvKeys) {
             secrets = {
               "aws/traefik/AWS_ACCESS_KEY_ID" = { };

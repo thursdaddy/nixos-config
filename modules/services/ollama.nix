@@ -1,6 +1,6 @@
 _: {
   flake.modules.nixos.services =
-    { lib, config, ... }:
+    { lib, config, pkgs, ... }:
     let
       cfg = config.mine.services.ollama;
     in
@@ -14,7 +14,7 @@ _: {
           enable = true;
           host = "0.0.0.0";
           port = 11434;
-          acceleration = "rocm";
+          package = pkgs.ollama-rocm;
         };
 
         networking.firewall.allowedTCPPorts = [ 11434 ];

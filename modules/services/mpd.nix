@@ -21,22 +21,25 @@ _: {
       config = lib.mkIf cfg.enable {
         services.mpd = {
           enable = true;
-          musicDirectory = cfg.musicDirectory;
-          extraConfig = ''
-            audio_output {
-              type "httpd"
-              name "MPD HTTP Stream"
-              encoder "vorbis"
-              port "8000"
-              quality "5.0"
-              format "44100:16:1"
-              always_on "yes"
-              tags "yes"
-            }
-            auto_update "yes"
-          '';
-          network.listenAddress = "any";
-          network.port = 6600;
+          openFirewall = false;
+          settings = {
+            music_directory = cfg.musicDirectory;
+            bind_to_address = "any";
+            port = 6600;
+            audio_output = [
+              {
+                type = "httpd";
+                name = "MPD HTTP Stream";
+                encoder = "vorbis";
+                port = "8000";
+                quality = "5.0";
+                format = "44100:16:1";
+                always_on = "yes";
+                tags = "yes";
+              }
+            ];
+            auto_update = "yes";
+          };
         };
 
         networking.firewall.allowedTCPPorts = [

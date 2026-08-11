@@ -207,6 +207,7 @@
                     "cloudbox.thurs.pw" = allConfigs.cloudbox.config.mine.homelab.cloudbox.tailscaleIp;
 
                     "bazarr.thurs.pw" = "192.168.10.12";
+                    "books.thurs.pw" = "192.168.10.12";
                     "deemix.thurs.pw" = "192.168.10.12";
                     "lidarr.thurs.pw" = "192.168.10.12";
                     "radarr.thurs.pw" = "192.168.10.12";

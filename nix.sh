@@ -33,40 +33,58 @@ build () {
   printf "\n${ORANGE}Building: ${WHITE}${TARGET}${NC}\n"
   case "$TARGET" in
     ami)
-      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant amazon && copy_artifact_path
+      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant amazon "${EXTRA_ARGS[@]}" && copy_artifact_path
       ;;
     gce)
-      nix build .\#nixosConfigurations."${TARGET}".config.system.build.googleComputeImage && copy_artifact_path
+      nix build .\#nixosConfigurations."${TARGET}".config.system.build.googleComputeImage "${EXTRA_ARGS[@]}" && copy_artifact_path
       ;;
-    x86_64-iso)
-      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant iso && copy_artifact_path
+    x86_64-iso|aarch64-iso)
+      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant iso "${EXTRA_ARGS[@]}" && copy_artifact_path
       ;;
     aarch64-sd)
-      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant sd-aarch64 && copy_artifact_path
+      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant sd-aarch64 "${EXTRA_ARGS[@]}" && copy_artifact_path
       ;;
     vm)
-      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant qcow && copy_artifact_path
+      nixos-rebuild build-image --flake .\#"${TARGET}" --image-variant qcow "${EXTRA_ARGS[@]}" && copy_artifact_path
       ;;
     *)
-      nix build .\#"${TARGET}" && copy_artifact_path
+      nix build .\#"${TARGET}" "${EXTRA_ARGS[@]}" && copy_artifact_path
       ;;
   esac
 }
 
-celler () {
-  celler use local
+run_celler () {
+  if command -v celler &> /dev/null; then
+    celler use local:cache
+  else
+    echo "Warning: celler client is not installed. Skipping cache activation."
+  fi
+
+  local log_args=()
+  if [[ "$DEBUG" == "true" ]]; then
+    log_args+=("-L")
+  fi
+
   if [[ $TARGET == "all" ]]; then
     hosts=$(nix flake show . --json 2>/dev/null | jq -r '.nixosConfigurations | keys[]')
     for host in $hosts; do
       clean_host=$(basename "${host%/}")
       echo "Building configuration for host: $clean_host"
-      nix build .\#nixosConfigurations."$clean_host".config.system.build.toplevel
-      celler push --jobs 5 --ignore-upstream-cache-filter local ./result || true
+      nix build "${log_args[@]}" .\#nixosConfigurations."$clean_host".config.system.build.toplevel "${EXTRA_ARGS[@]}"
+      if command -v celler &> /dev/null; then
+        celler push --jobs 5 --ignore-upstream-cache-filter local:cache ./result || true
+      else
+        echo "Warning: celler client is not installed. Skipping cache push."
+      fi
     done
   else
     echo "Building configuration for host: $TARGET"
-    nix build .\#nixosConfigurations."$TARGET".config.system.build.toplevel
-    celler push --jobs 5 --ignore-upstream-cache-filter local ./result || true
+    nix build "${log_args[@]}" .\#nixosConfigurations."$TARGET".config.system.build.toplevel "${EXTRA_ARGS[@]}"
+    if command -v celler &> /dev/null; then
+      celler push --jobs 5 --ignore-upstream-cache-filter local:cache ./result || true
+    else
+      echo "Warning: celler client is not installed. Skipping cache push."
+    fi
   fi
 }
 # copy result to builds/
@@ -151,11 +169,18 @@ CMD=${1:-help}
 TARGET=${2:-null}
 INPUT=${2:-null}
 
+DEBUG=false
+EXTRA_ARGS=()
+
 if [ $# -ge 2 ]; then
   shift 2
-  EXTRA_ARGS=("$@")
-else
-  EXTRA_ARGS=()
+  for arg in "$@"; do
+    if [[ "$arg" == "--debug" ]]; then
+      DEBUG=true
+    else
+      EXTRA_ARGS+=("$arg")
+    fi
+  done
 fi
 
 case $CMD in
@@ -175,6 +200,6 @@ case $CMD in
     rebuild "$TARGET"
     ;;
   celler)
-    celler "$TARGET"
+    run_celler
     ;;
 esac

@@ -64,7 +64,7 @@ _: {
           "$mod, T, togglegroup"
           "$mod, C, changegroupactive, b"
           "$mod, V, changegroupactive, f"
-          "$mod_SHIFT, v, togglesplit"
+          "$mod_SHIFT, v, layoutmsg, togglesplit"
         ]
         ++ (
           # workspaces
@@ -111,7 +111,6 @@ _: {
         };
 
         dwindle = {
-          pseudotile = true; # Master switch for pseudotiling
           preserve_split = true; # Essential for manual control
           smart_resizing = true; # Makes resizing tiles feel more natural
         };
@@ -136,7 +135,7 @@ _: {
         };
 
         master = {
-          new_status = true;
+          new_status = "master";
         };
 
         misc = {
@@ -149,27 +148,27 @@ _: {
           "DP-3, 2560x1440@120, 3840x480, 1, transform, 3"
         ];
 
-        windowrulev2 = [
-          "fullscreen,class:(^steam_app_\d+$)"
-          "maximize, class:(Vivaldi-stable), initialTitle:(192.168.10.189_/)"
-          "maximize, class:(chrome-music.youtube.com__-Default)"
-          "maximize, class:(chrome-youtube.com__-Default)"
-          "nodim, class:(^steam_app_\d+$)"
-          "nodim, onworkspace:2"
-          "nodim, onworkspace:8"
-          "renderunfocused,class:(^steam_app_\d+$)"
-          "size 90%, class:(chrome-music.youtube.com__-Default)"
-          "size 90%, class:(chrome-youtube.com__-Default)"
-          "workspace 10 silent, class:(steam)"
-          "workspace 4 silent, class:(Bitwarden)"
-          "workspace 4 silent, class:(Proton Mail)"
-          "workspace 5 silent, class:(discord)"
-          "workspace 5 silent, class:(Element)"
-          "workspace 6 silent, class:(obsidian)"
-          "workspace 8 silent, class:(Vivaldi-stable), initialTitle:(192.168.10.189_/)"
-          "workspace 8 silent, class:(chrome-music.youtube.com__-Default)"
-          "workspace 8 silent, class:(chrome-youtube.com__-Default)"
-          "workspace 9, class:(^steam_app_\d+$)"
+        windowrule = [
+          "fullscreen 1, match:class ^steam_app_[0-9]+$"
+          "maximize 1, match:class Vivaldi-stable match:initial_title ^192.168.10.189/$"
+          "maximize 1, match:class chrome-music.youtube.com__-Default"
+          "maximize 1, match:class chrome-youtube.com__-Default"
+          "no_dim on, match:class ^steam_app_[0-9]+$"
+          "no_dim on, match:workspace 2"
+          "no_dim on, match:workspace 8"
+          "render_unfocused 1, match:class ^steam_app_[0-9]+$"
+          "size 90% 90%, match:class chrome-music.youtube.com__-Default"
+          "size 90% 90%, match:class chrome-youtube.com__-Default"
+          "workspace 10 silent, match:class steam"
+          "workspace 4 silent, match:class Bitwarden"
+          "workspace 4 silent, match:class \"Proton Mail\""
+          "workspace 5 silent, match:class discord"
+          "workspace 5 silent, match:class Element"
+          "workspace 6 silent, match:class obsidian"
+          "workspace 8 silent, match:class Vivaldi-stable match:initial_title ^192.168.10.189/$"
+          "workspace 8 silent, match:class chrome-music.youtube.com__-Default"
+          "workspace 8 silent, match:class chrome-youtube.com__-Default"
+          "workspace 9, match:class ^steam_app_[0-9]+$"
         ];
 
         workspace = [
@@ -186,15 +185,13 @@ _: {
         ];
 
         layerrule = [
-          "blur, waybar"
-          "ignorezero, waybar"
-          "unset, swaync-control-center"
-          "unset, swaync-notification-window"
-          "blur, swaync-control-center"
-          "ignorezero, swaync-control-center"
-          "blur, swaync-notification-window"
-          "ignorezero, swaync-notification-window"
-          "noanim, swaync-notification-window"
+          "blur on, match:namespace waybar"
+          "ignore_alpha 0.1, match:namespace waybar"
+          "blur on, match:namespace swaync-control-center"
+          "ignore_alpha 0.1, match:namespace swaync-control-center"
+          "blur on, match:namespace swaync-notification-window"
+          "ignore_alpha 0.1, match:namespace swaync-notification-window"
+          "no_anim on, match:namespace swaync-notification-window"
         ];
       };
 

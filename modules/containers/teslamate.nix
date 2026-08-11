@@ -177,6 +177,9 @@ _: {
           {
             services."backup-${name}" = backup.service;
             timers."backup-${name}" = backup.timer;
+            tmpfiles.rules = [
+              "d ${configPath}/tesla-grafana 0755 472 472 -"
+            ];
           };
 
         environment.etc =
@@ -193,11 +196,16 @@ _: {
               name = "teslamate-postgres";
               serviceName = "${config.mine.containers.settings.backend}-teslamate-postgres";
             };
+            alloyJournalTeslaMosquitto = lib.thurs.mkAlloyJournal {
+              name = "teslamate-mosquitto";
+              serviceName = "${config.mine.containers.settings.backend}-teslamate-mosquitto";
+            };
           in
           builtins.listToAttrs [
             alloyJournalTeslaMate
             alloyJournalTeslaGrafana
             alloyJournalTeslaDb
+            alloyJournalTeslaMosquitto
           ];
       };
     };

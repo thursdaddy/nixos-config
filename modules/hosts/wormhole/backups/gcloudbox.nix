@@ -23,12 +23,12 @@ _: {
             ExecStart = pkgs.writeShellScript "rsync-two-step-script" ''
               mkdir -p /tmp/gcloudbox_staging
 
-              # Pull from gcloudbox (using sudo rsync to ensure we can read all root-owned config files)
-              ${pkgs.rsync}/bin/rsync -avz --delete --rsync-path="sudo rsync" -e "${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=accept-new" \
+              # Pull from gcloudbox (no sudo needed as all directories under /opt/configs/ are readable by thurs)
+              ${pkgs.rsync}/bin/rsync -avz --delete -e "${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=accept-new" \
                 gcloudbox:/opt/configs/ /tmp/gcloudbox_staging/
 
-              # Fetch the exact image of the container running on gcloudbox
-              GOTIFY_IMAGE=$(${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=accept-new gcloudbox "sudo podman ps -a --format '{{.Image}}' --filter 'name=gotify' 2>/dev/null || sudo docker ps -a --format '{{.Image}}' --filter 'name=gotify' 2>/dev/null" | ${pkgs.gnugrep}/bin/grep "gotify/server" | ${pkgs.coreutils}/bin/head -n 1)
+              # Fetch the exact image of the container running on gcloudbox (without sudo by inspecting systemd unit config)
+              GOTIFY_IMAGE=$(${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=accept-new gcloudbox "systemctl cat podman-gotify | grep -o '/nix/store/.*-unit-script-podman-gotify-start/bin/podman-gotify-start' | xargs cat | grep -o 'gotify/server:[a-zA-Z0-9.-]*' | head -n 1")
               if [ -z "$GOTIFY_IMAGE" ]; then GOTIFY_IMAGE="gotify/server:unknown"; fi
 
               # Inject the metadata dynamically into the staging directory before push

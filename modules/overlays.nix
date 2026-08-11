@@ -10,7 +10,7 @@ let
   customPkgs = final: prev: {
     darwinGit = final.callPackage ../packages/darwinGit { pkgs = final; };
     gotify-alert = final.callPackage ../packages/gotify-alert { pkgs = final; };
-    hass-gotify = final.home-assistant.python.pkgs.callPackage ../packages/hass-gotify { };
+    hass-gotify = final.home-assistant.python3Packages.callPackage ../packages/hass-gotify { };
     homelab-backup = final.callPackage ../packages/homelab-backup { pkgs = final; };
     hypridle-patched = final.callPackage ../packages/hypridle { pkgs = final; };
     octoprint312 = final.callPackage ../packages/octoprint312 { pkgs = final; };
@@ -46,7 +46,40 @@ let
             doInstallCheck = false;
             propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [ python-final.pytest ];
           });
+          uuid6 = python-prev.uuid6.overridePythonAttrs (oldAttrs: {
+            doCheck = false;
+            doInstallCheck = false;
+          });
+          paho-mqtt = python-prev.paho-mqtt.overridePythonAttrs (oldAttrs: {
+            doCheck = false;
+            doInstallCheck = false;
+          });
         })
+        (python-final: python-prev:
+          if python-prev.python.pythonVersion == "3.12" then {
+            pytestCheckHook = python-final.toPythonModule (final.makeSetupHook {
+              name = "pytest-check-hook";
+              propagatedBuildInputs = [ python-final.pytest ];
+            } (final.writeText "empty-hook.sh" "pytestCheckPhase() { :; }"));
+
+            pytest7CheckHook = python-final.pytestCheckHook;
+            pytest8_3CheckHook = python-final.pytestCheckHook;
+
+            apsw = python-prev.apsw.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            peewee = python-prev.peewee.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            sentry-sdk = python-prev.sentry-sdk.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            pympler = python-prev.pympler.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            zeroconf = python-prev.zeroconf.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            pyrsistent = python-prev.pyrsistent.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            sarge = python-prev.sarge.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            aiohttp = python-prev.aiohttp.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            pytest-benchmark = python-prev.pytest-benchmark.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            limits = python-prev.limits.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            flask-limiter = python-prev.flask-limiter.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            jaraco-test = python-prev.jaraco-test.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            importlib-resources = python-prev.importlib-resources.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+            nbmake = python-prev.nbmake.overridePythonAttrs (old: { doCheck = false; doInstallCheck = false; dontUsePytestCheck = true; });
+          } else {})
       ];
   };
 

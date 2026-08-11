@@ -82,12 +82,7 @@ _: {
               "/media/music:/media/music:ro"
             ];
             labels = {
-              "traefik.http.routers.${name}.middlewares" = "fail2ban,jellyfin-sec";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.bantime" = "3h";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.findtime" = "5m";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.maxretry" = "5";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.statuscode" = "401";
-              "traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.enabled" = "true";
+              "traefik.http.routers.${name}.middlewares" = "crowdsec-bouncer@file,jellyfin-sec";
               "traefik.http.middlewares.jellyfin-sec.headers.customResponseHeaders.X-Robots-Tag" =
                 "noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex";
               "traefik.http.middlewares.jellyfin-sec.headers.STSSeconds" = "315360000";
