@@ -41,6 +41,15 @@ _: {
             serial = {
               port = "/dev/ttyUSB0";
             };
+            # Workaround for upstream regression in zigbee-herdsman-converters (introduced in June 2026).
+            # Upstream completely removed ZCL reporting (fz.lock) for Wyze WLCKG1 (Ford) to avoid the hourly false locked state report,
+            # assuming the lock always reports state via raw cluster 64512 frames.
+            # However, under this lock's firmware/setup, it does not send those raw frames during operation and only reports via ZCL.
+            # wyze_lock.js restores the standard fz.lock converter so state updates function correctly.
+            # TODO: PR a proper fix upstream that filters false hourly check-ins instead of disabling ZCL reporting entirely.
+            external_converters = [
+              "wyze_lock.js"
+            ];
           };
         };
 

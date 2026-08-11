@@ -17,6 +17,8 @@ _: {
           "docker"
         else
           "";
+
+      disableDnsFlag = if ociBackend == "podman" then " --disable-dns" else "";
     in
     {
       options.mine.services.${name} = {
@@ -67,18 +69,37 @@ _: {
           };
         };
 
-        systemd.services."init-${ociBackend}-gitea-runner-net" = {
-          description = "Create ${ociBackend} network gitea-runner-net";
-          wantedBy = [ "multi-user.target" ];
-          before = [ "gitea-actions-runner.service" ];
-          serviceConfig = {
-            Type = "oneshot";
-            RemainAfterExit = true;
-            ExecStart = [
-              "-${lib.getExe pkgs.${ociBackend}} network create --disable-dns gitea-runner-net"
-            ];
-          };
-        };
+        systemd.services = lib.mkMerge [
+          {
+            "init-${ociBackend}-gitea-runner-net" = {
+              description = "Create ${ociBackend} network gitea-runner-net";
+              wantedBy = [ "multi-user.target" ];
+              before = map (runnerName: "gitea-runner-${runnerName}.service") (lib.attrNames cfg.runners);
+              serviceConfig = {
+                Type = "oneshot";
+                ExecStart = [
+                  "${pkgs.bash}/bin/bash -c '${lib.getExe pkgs.${ociBackend}} network inspect gitea-runner-net >/dev/null 2>&1 || ${lib.getExe pkgs.${ociBackend}} network create${disableDnsFlag} gitea-runner-net'"
+                ];
+              };
+            };
+          }
+          (lib.mapAttrs' (runnerName: runnerConfig:
+            lib.nameValuePair "gitea-runner-${runnerName}" {
+              wants = [ "init-${ociBackend}-gitea-runner-net.service" ];
+              after = [ "init-${ociBackend}-gitea-runner-net.service" ];
+              serviceConfig.ExecStartPre = [
+                "${pkgs.bash}/bin/bash -c '${lib.getExe pkgs.${ociBackend}} network inspect gitea-runner-net >/dev/null 2>&1 || ${lib.getExe pkgs.${ociBackend}} network create${disableDnsFlag} gitea-runner-net'"
+              ];
+            }
+          ) cfg.runners)
+        ];
+
+        environment.etc = lib.mapAttrs' (runnerName: runnerConfig:
+          lib.thurs.mkAlloyJournal {
+            name = "gitea-runner-${runnerName}";
+            serviceName = "gitea-runner-${runnerName}";
+          }
+        ) cfg.runners;
 
         sops = {
           secrets."gitea/RUNNER_TOKEN" = { };

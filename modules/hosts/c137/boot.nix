@@ -34,7 +34,8 @@ _: {
           };
         };
         kernelModules = [ "kvm-amd" ];
-        kernelPackages = pkgs.linuxPackages_zen;
+        kernelPackages = pkgs.linuxPackages;
+        zfs.forceImportRoot = false;
         kernelParams = [
           "quiet"
           "loglevel=3"

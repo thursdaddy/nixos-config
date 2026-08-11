@@ -53,6 +53,9 @@
 
         systemPackages = with pkgs; [
           gh
+          unstable.hunk
+          gnupg
+          pass
           (
             if pkgs.stdenv.hostPlatform.isDarwin then
               pkgs.darwinGit

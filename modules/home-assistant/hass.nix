@@ -128,19 +128,6 @@
                 namespace = "hass";
               };
               recorder.db_url = "postgresql://@/hass";
-              mcp_server = {
-                exposed_domains = [
-                  "binary_sensor"
-                  "climate"
-                  "device_tracker"
-                  "input_boolean"
-                  "light"
-                  "lock"
-                  "person"
-                  "sensor"
-                  "switch"
-                ];
-              };
               "switch projector" = "!include projector.yaml";
               sensor = "!include sensor.yaml";
               template = "!include template.yaml";

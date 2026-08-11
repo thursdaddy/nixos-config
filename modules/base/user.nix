@@ -58,6 +58,7 @@
         environment.variables = {
           EDITOR = "nvim";
           VISUAL = "nvim";
+          PASSWORD_STORE_DIR = "${user.homeDir}/dev/homelab/secrets";
         };
       };
     };

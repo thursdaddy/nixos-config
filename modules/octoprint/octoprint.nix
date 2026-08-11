@@ -63,7 +63,7 @@
 
         services.octoprint = {
           enable = true;
-          # some octoprint plugins are not backwards compatible with python 3.13 as the "future" module is not supported in python 3.13
+          # Custom OctoPrint package (runs on Python 3.12 because various legacy plugins rely on the deprecated "future" library)
           package = pkgs.octoprint312;
           openFirewall = true;
           extraConfig = {

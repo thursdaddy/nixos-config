@@ -1,11 +1,12 @@
 _: {
   flake.modules.generic.nixvim =
-    { lib, config, ... }:
+    { lib, config, pkgs, ... }:
     let
       inherit (config.mine.base) user;
     in
     {
       programs.nixvim = {
+        nixpkgs.source = pkgs.path;
         opts = {
           # numbers
           relativenumber = true;

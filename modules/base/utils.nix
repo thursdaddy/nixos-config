@@ -18,6 +18,10 @@
       };
 
       config = {
+        environment.interactiveShellInit = ''
+          export GPG_TTY=$(tty)
+        '';
+
         environment.systemPackages =
           with pkgs;
           [
@@ -48,7 +52,7 @@
           ++ lib.optionals (!pkgs.stdenv.hostPlatform.isAarch64 && cfg.sysadmin.enable) [ rar ]
           ++ lib.optionals (options ? mine.dev) [
             glow
-            nixfmt-rfc-style
+            nixfmt
             nixpkgs-fmt
             shellcheck
             statix

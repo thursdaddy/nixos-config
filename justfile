@@ -31,17 +31,17 @@ rebuild target +args="":
         ./nix.sh rebuild "{{target}}" {{args}}
     fi
 
-celler input:
+celler input +args="":
     #!/usr/bin/env bash
     if [ "{{input}}" == "sync" ]; then
         ssh homebox "sudo systemctl start celler-sync"
         echo "NAR storage replication triggered on homebox."
     elif [ "{{input}}" == "all" ]; then
         for h in {{hosts}}; do
-            ./nix.sh celler "$h"
+            ./nix.sh celler "$h" {{args}}
         done
     else
-        ./nix.sh celler "{{input}}"
+        ./nix.sh celler "{{input}}" {{args}}
     fi
 
 help:

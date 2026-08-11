@@ -42,8 +42,16 @@ _: {
 
       folderDevicesAttrs = lib.genAttrs folderDeviceNames (name: allDevices.${name} or { });
 
+      hostDeviceAttr =
+        if allDevices ? ${config.networking.hostName} then
+          { "${config.networking.hostName}" = allDevices.${config.networking.hostName}; }
+        else
+          { };
+
       finalDevices = lib.filterAttrs (_: value: value ? id) (
-        lib.recursiveUpdate folderDevicesAttrs resolvedDevices
+        lib.recursiveUpdate folderDevicesAttrs (
+          lib.recursiveUpdate resolvedDevices hostDeviceAttr
+        )
       );
     in
     {
@@ -80,11 +88,6 @@ _: {
           settings = {
             devices = finalDevices;
             folders = cfg.folders;
-            gui = {
-              theme = "dark";
-              insecureSkipHostcheck = true;
-              insecureAdminAccess = true;
-            };
           };
         };
 

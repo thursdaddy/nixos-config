@@ -20,8 +20,12 @@ _: {
         promptInit = lib.mkIf pkgs.stdenv.isDarwin "starship init fish | source";
         shellAliases = config.mine.aliases.eza // config.mine.aliases.systemctl // config.mine.aliases.journalctl;
         interactiveShellInit = ''
-          set -U fish_greeting ""
+          set -g fish_greeting ""
           set -g fish_pager_color_prefix 444444
+          set -gx GPG_TTY (tty)
+
+          # Erase deprecated universal key bindings variable from pre-4.3
+          set -e --universal fish_key_bindings
 
           if test -n "$SSH_TTY"; and test -n "$SSH_AUTH_SOCK"; and test "$SSH_AUTH_SOCK" != "$HOME/.ssh/ssh_auth_sock"
             mkdir -p ~/.ssh

@@ -59,6 +59,7 @@ _: {
             enable = true;
             modules = {
               ai.enable = true;
+              surround.enable = true;
               animate = {
                 enable = true;
                 scroll = {
@@ -276,7 +277,6 @@ _: {
             };
           };
           render-markdown.enable = true;
-          sandwich.enable = true;
           snacks = {
             enable = true;
             settings = {
@@ -412,6 +412,7 @@ _: {
           obsidian = {
             enable = true;
             settings = {
+              legacy_commands = false;
               workspaces = [
                 {
                   name = "thurs";
@@ -762,7 +763,7 @@ _: {
           unstable.vimPlugins.vim-shellcheck
           unstable.vimPlugins.vim-just
           unstable.vimPlugins.vim-rhubarb
-          vimPlugins.fzfWrapper
+          vimPlugins.fzf-wrapper
         ];
       };
     };
