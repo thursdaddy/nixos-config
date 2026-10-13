@@ -231,14 +231,21 @@ _: {
           })
           (lib.mkIf (cfg.dnsChallengeProvider == "gcp") {
             secrets = {
-              "gcp/traefik/PROJECT_ID" = { };
-              "gcp/traefik/CREDENTIALS.JSON" = { };
+              "gcp/traefik/PROJECT_ID" = {
+                owner = "traefik";
+              };
+              "gcp/traefik/CREDENTIALS.JSON" = {
+                owner = "traefik";
+              };
             };
             templates = {
-              "traefik.keys.env".content = ''
-                GCE_PROJECT=${config.sops.placeholder."gcp/traefik/PROJECT_ID"}
-                GCE_SERVICE_ACCOUNT_FILE=${config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path}
-              '';
+              "traefik.keys.env" = {
+                owner = "traefik";
+                content = ''
+                  GCE_PROJECT=${config.sops.placeholder."gcp/traefik/PROJECT_ID"}
+                  GCE_SERVICE_ACCOUNT_FILE=${config.sops.secrets."gcp/traefik/CREDENTIALS.JSON".path}
+                '';
+              };
             };
           })
         ];

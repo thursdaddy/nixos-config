@@ -29,8 +29,56 @@
           "python3.12-ecdsa-0.19.1"
         ];
         nix = {
+          distributedBuilds = true;
+          buildMachines =
+            (lib.optional (config.networking.hostName != "c137") {
+              hostName = "c137";
+              systems = [
+                "x86_64-linux"
+                "i686-linux"
+                "aarch64-linux"
+              ];
+              maxJobs = 16;
+              speedFactor = 20;
+              sshUser = "${user.name}";
+              supportedFeatures = [
+                "nixos-test"
+                "benchmark"
+                "big-parallel"
+                "kvm"
+              ];
+            })
+            ++ (lib.optional (config.networking.hostName != "wormhole") {
+              hostName = "wormhole";
+              systems = [
+                "x86_64-linux"
+                "i686-linux"
+                "aarch64-linux"
+              ];
+              maxJobs = 8;
+              speedFactor = 10;
+              sshUser = "${user.name}";
+              supportedFeatures = [
+                "nixos-test"
+                "benchmark"
+                "big-parallel"
+                "kvm"
+              ];
+            })
+            ++ (lib.optional isDarwin {
+              hostName = "linux-builder";
+              systems = [
+                "aarch64-linux"
+                "x86_64-linux"
+              ];
+              maxJobs = 4;
+              speedFactor = 1;
+              supportedFeatures = [ "kvm" ];
+            });
+
           extraOptions = ''
             warn-dirty = false
+            builders-use-substitutes = true
             ${if cfg.ghToken.enable then "!include ${config.sops.secrets."github/TOKEN".path}" else ""}
           '';
 

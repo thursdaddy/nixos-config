@@ -30,6 +30,8 @@ _: {
 
         containers = {
           settings.backend = "podman";
+          devteam-runner.enable = true;
+          homelab-agent.enable = true;
           traefik = {
             enable = true;
             dnsChallengeProvider = "gcp";
@@ -114,6 +116,14 @@ _: {
                 ];
                 ignorePerms = true;
               };
+              "work" = {
+                path = "${user.homeDir}/dev/work";
+                devices = [
+                  "mbp"
+                  "wormhole"
+                ];
+                ignorePerms = true;
+              };
             };
           };
           backups = {
@@ -146,5 +156,7 @@ _: {
           CI_SERVER_TOKEN=${config.sops.placeholder."gitlab/GITLAB_COM_RUNNER_TOKEN"}
         '';
       };
+
+      networking.firewall.allowedTCPPorts = [ 8000 ];
     };
 }

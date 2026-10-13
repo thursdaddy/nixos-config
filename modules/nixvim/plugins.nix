@@ -14,6 +14,12 @@ _: {
     in
     {
       programs.nixvim = {
+        extraPackages = with pkgs; [
+          ruff
+          stylua
+          nixfmt
+        ];
+
         plugins = {
           barbecue.enable = true;
           colorful-menu.enable = true;
@@ -21,14 +27,14 @@ _: {
             enable = true;
             settings = {
               format_on_save = {
-                lsp_fallback = true;
+                lsp_fallback = false;
                 timeout_ms = 500;
               };
               formatters_by_ft = {
                 nix = [ "nixfmt" ];
                 python = [
-                  "isort"
-                  "black"
+                  "ruff_format"
+                  "ruff_organize_imports"
                 ];
                 lua = [ "stylua" ];
               };
@@ -376,7 +382,7 @@ _: {
               pylsp = {
                 enable = true;
                 settings.plugins = {
-                  black.enabled = true; # code formatter
+                  black.enabled = false; # code formatter
                   # code style enforcement
                   flake8 = {
                     enabled = true;
@@ -389,7 +395,7 @@ _: {
                       "W503"
                     ];
                   };
-                  isort.enabled = true; # import sort
+                  isort.enabled = false; # import sort
                   jedi.enabled = true; # autocompletion
                   mccabe.enabled = true; # code complexity checker
                   pylint.enabled = true;
@@ -662,7 +668,7 @@ _: {
           {
             mode = "n";
             key = "<leader>cf";
-            action = "<CMD>lua require('conform').format({ async = true, lsp_fallback = true })<CR>";
+            action = "<CMD>lua require('conform').format({ async = true, lsp_fallback = false })<CR>";
             options.desc = "Format Code Buffer";
           }
 

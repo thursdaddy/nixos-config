@@ -33,10 +33,10 @@ _: {
           sessionizer = {
             enable = true;
             searchPaths = [
-              "${user.homeDir}/dev/"
               "${user.homeDir}/dev/nix"
               "${user.homeDir}/dev/cloud"
               "${user.homeDir}/dev/homelab"
+              "${user.homeDir}/dev/work"
             ];
           };
         };

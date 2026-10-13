@@ -25,6 +25,7 @@ _: {
                 ControlPersist 60m
                 ServerAliveInterval 30
                 ServerAliveCountMax 3
+                ConnectTimeout 5
 
               Host github.com
                 HostName github.com

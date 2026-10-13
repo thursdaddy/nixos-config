@@ -26,7 +26,21 @@ rebuild () {
     sudo darwin-rebuild switch --flake .\#mbp "${EXTRA_ARGS[@]}"
   else
     printf "${BLUE}Rebuilding... ${ORANGE}${TARGET} (remote)${NC}\n"
-    nixos-rebuild --flake .\#"${TARGET}" --target-host "${TARGET}" --no-reexec --use-substitutes --sudo switch "${EXTRA_ARGS[@]}"
+    export NIX_SSHOPTS="${NIX_SSHOPTS:--A}"
+    if [[ -z "${SSH_AUTH_SOCK:-}" && ! "${HOSTNAME:-$HOST}" =~ "mbp" ]]; then
+      export SSH_AUTH_SOCK="/home/thurs/.ssh/ssh_auth_sock"
+    fi
+
+    local build_host_args=()
+    if [[ -n "${BUILD_HOST:-}" ]]; then
+      build_host_args=(--build-host "$BUILD_HOST")
+    fi
+
+    if command -v nixos-rebuild &> /dev/null; then
+      nixos-rebuild --flake .\#"${TARGET}" "${build_host_args[@]}" --target-host "${TARGET}" --no-reexec --use-substitutes --sudo switch "${EXTRA_ARGS[@]}"
+    else
+      nix run nixpkgs#nixos-rebuild -- switch --flake .\#"${TARGET}" "${build_host_args[@]}" --target-host "${TARGET}" --no-reexec --use-substitutes --sudo "${EXTRA_ARGS[@]}"
+    fi
   fi
 }
 
@@ -164,7 +178,7 @@ if [[ ${HOSTNAME:-$HOST} =~ "mbp" ]]; then
 fi
 
 # flakes are married to git
-git add .
+
 
 CMD=${1:-help}
 TARGET=${2:-null}
@@ -187,6 +201,9 @@ fi
 case $CMD in
   help)
     print_help
+    ;;
+  eval)
+    nix eval "$TARGET" "${EXTRA_ARGS[@]}"
     ;;
   build)
     build "$TARGET"

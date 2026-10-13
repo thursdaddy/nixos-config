@@ -3,7 +3,6 @@ _: {
     programs.nixvim = {
       autoGroups = {
         highlight_yank = { };
-        wscleanup = { };
       };
 
       autoCmd = [
@@ -27,27 +26,6 @@ _: {
           pattern = "*";
           callback = {
             __raw = "function() vim.highlight.on_yank { higroup = 'incsearch', timeout = 500 } end";
-          };
-        }
-        {
-          group = "wscleanup";
-          event = "bufwritepre";
-          pattern = "*";
-          # replace the raw string command with a lua callback that checks the buffer type
-          callback = {
-            __raw = ''
-              function()
-                if vim.bo.buftype ~= "" then
-                  return
-                end
-                -- save cursor position to prevent the screen from jumping
-                local save = vim.fn.winsaveview()
-                -- run the substitution silently
-                vim.cmd([[%s/\s\+$//e]])
-                -- restore cursor position
-                vim.fn.winrestview(save)
-              end
-            '';
           };
         }
       ];

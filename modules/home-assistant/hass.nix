@@ -69,6 +69,8 @@
           wakeonlan
         ];
 
+        networking.firewall.allowedTCPPorts = [ 8090 ];
+
         services = {
           postgresql = {
             enable = true;
@@ -101,7 +103,6 @@
               }
             );
             lovelaceConfigWritable = true;
-            openFirewall = true;
             config = {
               api = { };
               default_config = { };

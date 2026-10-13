@@ -8,279 +8,257 @@ import shutil
 import socket
 import subprocess
 import sys
-import time
-from typing import Optional
+from typing import Any, Awaitable, Callable, Optional
 
-# Injected by Nix
-SEARCH_PATHS = []
+# Replaced by tmux.nix at build time; left untouched when run directly from the repo.
+_SEARCH_PATHS_JSON = r'''@searchPaths@'''
+_REMOTE_HOSTS_JSON = r'''@remoteHosts@'''
 
 
-def run_cmd(cmd: list[str] | str, shell: bool = False, check: bool = False) -> str:
-    res = subprocess.run(cmd, shell=shell, text=True, capture_output=True)
-    if check and res.returncode != 0:
-        raise RuntimeError(f"Command failed: {cmd}\n{res.stderr}")
-    return res.stdout.strip()
+def _injected(raw: str) -> list[str]:
+    return [] if raw.startswith("@") else json.loads(raw)
+
+
+SEARCH_PATHS: list[str] = _injected(_SEARCH_PATHS_JSON)
+REMOTE_HOSTS: list[str] = _injected(_REMOTE_HOSTS_JSON)
+
+# XDG state paths
+STATE_DIR = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "tmuxs"
+HOSTS_FILE = STATE_DIR / "hosts.txt"
+
+REMOTE_ENV = "export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 TERM=xterm-256color COLORTERM=truecolor; "
+REMOTE_TIMEOUT = 4.0
+SHELLS = {"fish", "bash", "zsh", "sh"}
+WINDOW_FORMAT = "#{session_name}:#{window_index}|#{session_name}|#{window_name}|#{pane_current_command}"
+
+IGNORED_DIRS = {
+    "node_modules",
+    "result",
+    "target",
+    "build",
+    "__pycache__",
+}
+
+
+def run_cmd(cmd: list[str]) -> str:
+    return subprocess.run(cmd, text=True, capture_output=True).stdout.strip()
 
 
 def is_in_tmux() -> bool:
     return "TMUX" in os.environ
 
 
-def detect_restore_cmd(p_cmd: str, p_title: str, w_name: str) -> Optional[str]:
-    c_cmd = (p_cmd or "").strip().lower()
-    c_title = (p_title or "").strip().lower()
-    c_name = (w_name or "").strip().lower()
+def is_local_host(host: str) -> bool:
+    if host.lower() in ("localhost", "127.0.0.1", "::1"):
+        return True
+    local_name = socket.gethostname().lower()
+    host_lower = host.lower()
+    return host_lower == local_name or host_lower == local_name.split(".")[0]
 
-    if "nvim" in c_cmd or "nvim" in c_title or c_name == "nvim":
-        return "nvim"
-    if "agy" in c_cmd or "agy" in c_title or c_name == "agy":
-        return "agy"
 
-    known_tools = {
-        "lazygit", "htop", "btop", "yazi", "ranger", "ncdu", "k9s",
-        "gh", "gitmux", "serpl"
-    }
-    for tool in known_tools:
-        if tool in c_cmd or tool in c_title:
-            return tool
-
-    shells = {"fish", "bash", "zsh", "sh", "dash", "none", "null"}
-    if c_cmd and c_cmd not in shells and c_cmd not in ("python", "python3", "node"):
-        return p_cmd.strip()
-
+def find_git_root(path: Path) -> Optional[Path]:
+    try:
+        current = path.resolve()
+        while current != current.parent:
+            if (current / ".git").exists():
+                return current
+            current = current.parent
+    except OSError:
+        pass
     return None
 
 
-def save_session_layout(sess: str) -> bool:
-    if not sess or sess.startswith("["):
-        return False
-    layouts_dir = Path.home() / ".local/state/tmuxs/layouts"
-    try:
-        layouts_dir.mkdir(parents=True, exist_ok=True)
-    except OSError:
-        return False
+def discover_project_dirs(
+    search_paths: list[str], max_depth: int = 2
+) -> tuple[list[str], list[Path]]:
+    dirs: list[str] = []
+    discovered_roots: list[Path] = []
+    seen_dirs: set[str] = set()
+    seen_roots: set[Path] = set()
+    search_roots = {
+        Path(p).expanduser().resolve()
+        for p in search_paths
+        if Path(p).expanduser().is_dir()
+    }
 
-    format_str = "#{window_index}|#{window_name}|#{window_layout}|#{window_active}|#{pane_index}|#{pane_current_path}|#{pane_current_command}|#{pane_title}|#{pane_active}"
-    try:
-        win_out = run_cmd(["tmux", "list-panes", "-s", "-t", sess, "-F", format_str])
-        if not win_out:
+    def is_project(d: Path) -> bool:
+        try:
+            return (d / ".git").exists() or (d / ".project").exists()
+        except OSError:
             return False
 
-        windows_dict = {}
-        for line in win_out.split("\n"):
-            if not line.strip():
-                continue
-            parts = line.split("|", 8)
-            if len(parts) < 9:
-                continue
-
-            try:
-                w_idx = int(parts[0])
-            except ValueError:
-                continue
-            w_name = parts[1]
-            w_layout = parts[2]
-            w_active = (parts[3] == "1")
-
-            try:
-                p_idx = int(parts[4])
-            except ValueError:
-                continue
-            p_path = parts[5]
-            p_cmd = parts[6]
-            p_title = parts[7]
-            p_active = (parts[8] == "1")
-
-            if w_idx not in windows_dict:
-                windows_dict[w_idx] = {
-                    "index": w_idx,
-                    "name": w_name,
-                    "layout": w_layout,
-                    "active": w_active,
-                    "panes": []
-                }
-
-            r_cmd = detect_restore_cmd(p_cmd, p_title, w_name)
-
-            windows_dict[w_idx]["panes"].append({
-                "index": p_idx,
-                "path": p_path,
-                "cmd": r_cmd,
-                "active": p_active
-            })
-
-        windows_data = list(windows_dict.values())
-        windows_data.sort(key=lambda x: x["index"])
-
-        layout_file = layouts_dir / f"{sess}.json"
-        with layout_file.open("w", encoding="utf-8") as f:
-            json.dump(windows_data, f, indent=2)
-        return True
-    except (subprocess.SubprocessError, RuntimeError, OSError, ValueError):
-        return False
-
-
-def save_all_layouts() -> list[str]:
-    saved = []
-    try:
-        out = run_cmd(["tmux", "list-sessions", "-F", "#{session_name}"])
-        if out:
-            sessions = [line.strip() for line in out.split("\n") if line.strip()]
-            for sess in sessions:
-                if save_session_layout(sess):
-                    saved.append(sess)
-    except (subprocess.SubprocessError, RuntimeError, OSError):
-        pass
-    return saved
-
-
-def handle_save_session() -> bool:
-    choices: list[str] = []
-    curr_sess = None
-    if is_in_tmux():
+    def get_subdirs(p: Path) -> list[Path]:
         try:
-            curr_sess = run_cmd(["tmux", "display-message", "-p", "#S"])
-            if curr_sess:
-                choices.append(f"Save current session ('{curr_sess}')")
-        except Exception:
-            pass
-    choices.append("Save all active sessions")
-    choices.append("[<- Back]")
+            return sorted(
+                [
+                    entry
+                    for entry in p.iterdir()
+                    if entry.is_dir()
+                    and not entry.name.startswith(".")
+                    and entry.name not in IGNORED_DIRS
+                ],
+                key=lambda x: x.name.lower(),
+            )
+        except OSError:
+            return []
 
-    selected = run_fzf(choices, prompt="󰆓  ")
-    if not selected or selected == "[<- Back]":
-        return False
+    def add_discovered(p: Path, allow_search_root: bool = False) -> None:
+        p_str = str(p)
+        try:
+            p_res = p.resolve()
+        except OSError:
+            p_res = p
 
-    if curr_sess and selected == f"Save current session ('{curr_sess}')":
-        if save_session_layout(curr_sess):
-            print(f"Successfully saved layout for session '{curr_sess}'!")
+        if not allow_search_root and p_res in search_roots:
+            return
+
+        if p_str not in seen_dirs and p_res not in seen_roots:
+            seen_dirs.add(p_str)
+            seen_roots.add(p_res)
+            dirs.append(p_str)
+            discovered_roots.append(p_res)
+
+    visited_paths: set[Path] = set()
+
+    def scan(d: Path, current_depth: int) -> None:
+        try:
+            d_res = d.resolve()
+        except OSError:
+            d_res = d
+
+        if d_res in visited_paths:
+            return
+        visited_paths.add(d_res)
+
+        if is_project(d):
+            add_discovered(d)
+            return
+
+        subdirs = get_subdirs(d) if current_depth < max_depth else []
+        has_child_project = any(is_project(sub) for sub in subdirs)
+
+        if has_child_project:
+            for sub in subdirs:
+                scan(sub, current_depth + 1)
         else:
-            print(f"Failed to save layout for session '{curr_sess}'.")
-        return True
-    elif selected == "Save all active sessions":
-        saved = save_all_layouts()
-        if saved:
-            print(f"Successfully saved layouts for {len(saved)} session(s): {', '.join(saved)}")
-        else:
-            print("No active sessions to save.")
-        return True
-    return False
+            add_discovered(d)
 
+    for p_str in search_paths:
+        base = Path(p_str).expanduser()
+        if not base.is_dir():
+            continue
+        if is_project(base):
+            add_discovered(base, allow_search_root=True)
+            continue
+        for child in get_subdirs(base):
+            scan(child, current_depth=1)
 
+    return dirs, discovered_roots
 
 
 def get_ssh_hosts() -> list[str]:
-    hosts: set[str] = set()
-    hosts_file = Path.home() / ".local/state/tmuxs/hosts.txt"
-    if hosts_file.is_file():
+    hosts: set[str] = set(REMOTE_HOSTS)
+    if HOSTS_FILE.is_file():
         try:
-            with hosts_file.open("r", encoding="utf-8") as f:
+            with HOSTS_FILE.open("r", encoding="utf-8") as f:
                 for line in f:
                     h = line.strip()
                     if h:
                         hosts.add(h)
         except OSError:
             pass
-    return sorted(list(hosts))
+    return sorted(hosts)
 
 
-async def fetch_remote_sessions(host: str) -> list[str]:
-    # Fast async SSH call
-    cmd = [
+def remote_hosts() -> list[str]:
+    return [h for h in get_ssh_hosts() if not is_local_host(h)]
+
+
+def ssh_batch_cmd(host: str, script: str) -> list[str]:
+    return [
         "ssh",
-        "-o",
-        "ConnectTimeout=2",
-        "-o",
-        "BatchMode=yes",
+        "-o", "ConnectTimeout=2",
+        "-o", "BatchMode=yes",
+        "--",
         host,
-        "sh -l -c 'export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 TERM=xterm-256color COLORTERM=truecolor; tmux -u list-sessions -F \"#{session_name}\" 2>/dev/null'",
+        f"sh -l -c {shlex.quote(REMOTE_ENV + script)}",
     ]
-    proc = await asyncio.create_subprocess_exec(
-        *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-    )
+
+
+async def ssh_run_async(host: str, script: str) -> Optional[str]:
     try:
-        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=1.5)
-        if proc.returncode == 0 and stdout:
-            sessions = stdout.decode("utf-8", errors="replace").strip().split("\n")
-            return [f"{s} [{host}]" for s in sessions if s]
-    except (asyncio.TimeoutError, TimeoutError):
+        proc = await asyncio.create_subprocess_exec(
+            *ssh_batch_cmd(host, script),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.DEVNULL,
+        )
+    except OSError:
+        return None
+    try:
+        stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=REMOTE_TIMEOUT)
+    except (asyncio.TimeoutError, OSError):
         try:
             proc.kill()
             await proc.wait()
-        except ProcessLookupError:
+        except (ProcessLookupError, OSError):
             pass
-    except OSError:
-        pass
-    return []
+        return None
+    if proc.returncode != 0:
+        return None
+    return stdout.decode("utf-8", errors="replace")
 
 
-async def get_all_remote_sessions() -> list[str]:
-    hosts = get_ssh_hosts()
-    local_hostname = socket.gethostname()
-    tasks = [fetch_remote_sessions(h) for h in hosts if h != local_hostname]
-    results = await asyncio.gather(*tasks)
+async def gather_remote(fetch: Callable[[str], Awaitable[list[str]]]) -> list[str]:
+    results = await asyncio.gather(*(fetch(h) for h in remote_hosts()))
     return [item for sublist in results for item in sublist]
+
+
+def format_window_rows(lines: list[str], host: Optional[str] = None) -> list[str]:
+    parsed = []
+    max_sess = 12
+    max_win = 12
+    for line in lines:
+        if not line.strip():
+            continue
+        parts = line.split("|", 3)
+        if len(parts) < 4:
+            continue
+        target, sess_name, win_name, p_cmd = parts
+        cmd_str = f"[{p_cmd}]" if p_cmd and p_cmd not in SHELLS else ""
+        max_sess = max(max_sess, len(sess_name))
+        max_win = max(max_win, len(win_name))
+        parsed.append((target, sess_name, win_name, cmd_str))
+
+    prefix = f"[{host}]".ljust(12) + " " if host else ""
+    rows = []
+    for target, sess_name, win_name, cmd_str in parsed:
+        sess_col = sess_name.ljust(max_sess)
+        win_col = win_name.ljust(max_win)
+        display = f"{prefix}{sess_col}  ➜  {win_col}  {cmd_str}".rstrip()
+        key = f"[{host}] {target}" if host else target
+        rows.append(f"{key}\t{display}")
+    return rows
+
+
+async def fetch_remote_sessions(host: str) -> list[str]:
+    out = await ssh_run_async(host, 'tmux -u list-sessions -F "#{session_name}" 2>/dev/null')
+    if not out:
+        return []
+    return [f"{s} [{host}]" for s in out.strip().split("\n") if s]
 
 
 async def fetch_remote_windows(host: str) -> list[str]:
-    format_str = f"#{{session_name}}:#{{window_index}}|#{{session_name}}|#{{window_name}}|#{{pane_current_command}}"
-    cmd = [
-        "ssh",
-        "-o",
-        "ConnectTimeout=2",
-        "-o",
-        "BatchMode=yes",
-        host,
-        f"sh -l -c 'export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 TERM=xterm-256color COLORTERM=truecolor; tmux -u list-panes -a -F \"{format_str}\" 2>/dev/null'",
-    ]
-    proc = await asyncio.create_subprocess_exec(
-        *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-    )
-    try:
-        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=1.5)
-        if proc.returncode == 0 and stdout:
-            lines = stdout.decode("utf-8", errors="replace").strip().split("\n")
-            parsed = []
-            max_sess = 12
-            max_win = 12
-            for line in lines:
-                if not line.strip():
-                    continue
-                parts = line.split("|", 3)
-                if len(parts) < 4:
-                    continue
-                target, sess_name, win_name, p_cmd = parts[0], parts[1], parts[2], parts[3]
-                cmd_str = f"[{p_cmd}]" if p_cmd and p_cmd not in ("fish", "bash", "zsh", "sh") else ""
-                max_sess = max(max_sess, len(sess_name))
-                max_win = max(max_win, len(win_name))
-                parsed.append((target, sess_name, win_name, cmd_str))
-
-            result = []
-            host_tag = f"[{host}]".ljust(12)
-            for target, sess_name, win_name, cmd_str in parsed:
-                sess_col = sess_name.ljust(max_sess)
-                win_col = win_name.ljust(max_win)
-                display = f"{host_tag} {sess_col}  ➜  {win_col}  {cmd_str}".rstrip()
-                result.append(f"[{host}] {target}\t{display}")
-            return result
-    except (asyncio.TimeoutError, TimeoutError, OSError):
-        pass
-    return []
-
-
-async def get_all_remote_windows() -> list[str]:
-    hosts = get_ssh_hosts()
-    local_hostname = socket.gethostname()
-    tasks = [fetch_remote_windows(h) for h in hosts if h != local_hostname]
-    results = await asyncio.gather(*tasks)
-    return [item for sublist in results for item in sublist]
+    out = await ssh_run_async(host, f'tmux -u list-panes -a -F "{WINDOW_FORMAT}" 2>/dev/null')
+    if not out:
+        return []
+    return format_window_rows(out.strip().split("\n"), host=host)
 
 
 def get_local_sessions() -> list[str]:
     try:
         out = run_cmd(["tmux", "list-sessions", "-F", "#{session_name}"])
         return [line.strip() for line in out.split("\n") if line.strip()] if out else []
-    except (subprocess.SubprocessError, RuntimeError):
+    except (subprocess.SubprocessError, OSError):
         return []
 
 
@@ -301,7 +279,7 @@ def run_fzf(choices: list[str], prompt: str = "> ", preview: Optional[str] = Non
         return ""
 
 
-def handle_connect_remote(host: str, sess: str, saved_session: Optional[str] = None, passed_socket: Optional[str] = None) -> None:
+def handle_connect_remote(host: str, sess: str, saved_session: Optional[str] = None) -> None:
     target_window = None
     if ":" in sess:
         target_window = sess
@@ -319,6 +297,7 @@ def handle_connect_remote(host: str, sess: str, saved_session: Optional[str] = N
         "-o", "SendEnv=COLORTERM",
         "-o", "SendEnv=LC_*",
         "-o", "SendEnv=LANG",
+        "--",
         host,
         f"exec sh -l -c {shlex.quote(remote_script)}",
     ]
@@ -342,144 +321,61 @@ def connect_remote(host: str, sess: str) -> None:
         handle_connect_remote(host, sess)
 
 
-def get_restore_cmd(item: dict) -> Optional[str]:
-    w_cmd = str(item.get("cmd", "") or "").strip()
-    w_cmd_lower = w_cmd.lower()
-    w_name_lower = str(item.get("name", "") or "").strip().lower()
-
-    if "nvim" in w_cmd_lower or w_name_lower == "nvim":
-        return "nvim"
-    if "agy" in w_cmd_lower or w_name_lower == "agy":
-        return "agy"
-
-    known_tools = {
-        "lazygit", "htop", "btop", "yazi", "ranger", "ncdu", "k9s",
-        "gh", "gitmux", "serpl"
-    }
-    for tool in known_tools:
-        if tool in w_cmd_lower:
-            return tool
-
-    shells = {"fish", "bash", "zsh", "sh", "dash", "none", "null"}
-    if w_cmd and w_cmd_lower not in shells:
-        return w_cmd
-
-    return None
+def sanitize_session_name(name: str) -> str:
+    return name.replace(".", "-").replace(":", "-").replace("/", "-")
 
 
-def start_or_attach_local(name: str, path: Optional[str] = None, restore_layout: bool = False) -> None:
-    safe_name = name.replace(".", "-").replace(":", "-")
+def local_session_paths() -> dict[str, str]:
+    """Map session name -> resolved session start directory."""
+    try:
+        out = run_cmd(["tmux", "list-sessions", "-F", "#{session_name}\t#{session_path}"])
+    except (subprocess.SubprocessError, OSError):
+        return {}
 
-    if restore_layout:
-        if subprocess.run(["tmux", "has-session", "-t", safe_name], capture_output=True).returncode == 0:
-            subprocess.run(["tmux", "kill-session", "-t", safe_name])
+    sessions: dict[str, str] = {}
+    for line in out.split("\n"):
+        if not line.strip():
+            continue
+        name, _, raw_path = line.partition("\t")
+        if not raw_path:
+            sessions[name] = ""
+            continue
+        try:
+            sessions[name] = str(Path(raw_path).expanduser().resolve())
+        except OSError:
+            sessions[name] = raw_path
+    return sessions
 
-    session_exists = subprocess.run(["tmux", "has-session", "-t", safe_name], capture_output=True).returncode == 0
-    if not session_exists:
-        layout_restored = False
-        if restore_layout:
-            layouts_dir = Path.home() / ".local/state/tmuxs/layouts"
-            layout_file = layouts_dir / f"{safe_name}.json"
-            if layout_file.is_file():
-                try:
-                    with layout_file.open("r", encoding="utf-8") as f:
-                        windows_data = json.load(f)
-                    if isinstance(windows_data, list) and windows_data:
-                        active_win_idx = None
 
-                        for w_idx, win in enumerate(windows_data):
-                            w_name = win.get("name", f"win{w_idx+1}")
-                            w_layout = win.get("layout")
-                            win_index = win.get("index", w_idx + 1)
-                            if win.get("active"):
-                                active_win_idx = win_index
-
-                            if "panes" in win and isinstance(win["panes"], list) and win["panes"]:
-                                panes = win["panes"]
-                            else:
-                                panes = [{
-                                    "index": 1,
-                                    "path": win.get("path", path or str(Path.home())),
-                                    "cmd": win.get("cmd"),
-                                    "active": True
-                                }]
-
-                            pane0 = panes[0]
-                            pane0_path = pane0.get("path") or path or str(Path.home())
-                            
-                            if w_idx == 0:
-                                subprocess.run([
-                                    "tmux", "new-session", "-d", "-s", safe_name,
-                                    "-c", pane0_path, "-n", w_name
-                                ], check=True)
-                            else:
-                                subprocess.run([
-                                    "tmux", "new-window", "-t", safe_name,
-                                    "-c", pane0_path, "-n", w_name
-                                ], check=True)
-
-                            win_target = f"{safe_name}:{w_name}"
-                            
-                            r_cmd0 = get_restore_cmd(pane0)
-                            if r_cmd0:
-                                time.sleep(0.05)
-                                subprocess.run([
-                                    "tmux", "send-keys", "-t", f"{win_target}.{pane0.get('index', 1)}",
-                                    r_cmd0, "C-m"
-                                ])
-
-                            active_pane_idx = None
-                            if pane0.get("active"):
-                                active_pane_idx = pane0.get("index", 1)
-
-                            for p in panes[1:]:
-                                p_path = p.get("path") or pane0_path
-                                subprocess.run([
-                                    "tmux", "split-window", "-t", win_target,
-                                    "-c", p_path
-                                ])
-                                p_idx = p.get("index", 2)
-                                p_target = f"{win_target}.{p_idx}"
-                                r_cmd = get_restore_cmd(p)
-                                if r_cmd:
-                                    time.sleep(0.05)
-                                    subprocess.run([
-                                        "tmux", "send-keys", "-t", p_target,
-                                        r_cmd, "C-m"
-                                    ])
-                                if p.get("active"):
-                                    active_pane_idx = p_idx
-
-                            if w_layout:
-                                subprocess.run(["tmux", "select-layout", "-t", win_target, w_layout])
-
-                            if active_pane_idx is not None:
-                                subprocess.run(["tmux", "select-pane", "-t", f"{win_target}.{active_pane_idx}"])
-
-                        if active_win_idx is not None:
-                            subprocess.run(["tmux", "select-window", "-t", f"{safe_name}:{active_win_idx}"])
-
-                        layout_restored = True
-                except Exception:
-                    pass
-
-        if not layout_restored:
-            if path:
-                subprocess.run([
-                    "tmux", "new-session", "-d", "-s", safe_name,
-                    "-c", path, "-n", "nvim"
-                ])
-                time.sleep(0.05)
-                subprocess.run(["tmux", "send-keys", "-t", f"{safe_name}:nvim", "nvim", "C-m"])
-                subprocess.run(["tmux", "new-window", "-c", path, "-t", safe_name])
-                subprocess.run(["tmux", "select-window", "-t", f"{safe_name}:nvim"])
-            else:
-                subprocess.run(["tmux", "new-session", "-d", "-s", safe_name])
-
+def attach_session(name: str) -> None:
+    # "=" forces an exact session match; tmux otherwise falls back to prefix matching.
+    target = f"={name}"
     if is_in_tmux():
-        subprocess.run(["tmux", "switch-client", "-t", safe_name])
+        subprocess.run(["tmux", "switch-client", "-t", target])
     else:
-        subprocess.run(["tmux", "attach", "-t", safe_name])
+        subprocess.run(["tmux", "attach", "-t", target])
+
+
+def open_project(path: str) -> None:
+    resolved = str(Path(path).expanduser().resolve())
+    sessions = local_session_paths()
+    for name, s_path in sessions.items():
+        if s_path == resolved:
+            attach_session(name)
+            return
+
+    p = Path(resolved)
+    name = sanitize_session_name(p.name or "root")
+    if name in sessions:
+        # Same folder name, different project: disambiguate with the parent dir.
+        name = sanitize_session_name(f"{p.parent.name}-{p.name}")
+    if name not in sessions:
+        subprocess.run(["tmux", "new-session", "-d", "-s", name, "-c", resolved, "-n", "nvim"])
+        # Type nvim into a shell so quitting nvim leaves the window open.
+        subprocess.run(["tmux", "send-keys", "-t", f"={name}:nvim", "nvim", "Enter"])
+        subprocess.run(["tmux", "new-window", "-t", f"={name}:", "-c", resolved])
+        subprocess.run(["tmux", "select-window", "-t", f"={name}:nvim"])
+    attach_session(name)
 
 
 def handle_preview(item: str) -> None:
@@ -496,18 +392,8 @@ def handle_preview(item: str) -> None:
         sess, host = item.rsplit(" [", 1)
         host = host[:-1]
         print(f"=== Remote Session Preview ({host}) ===")
-        remote_script = f"export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 TERM=xterm-256color COLORTERM=truecolor; tmux -u list-windows -t {shlex.quote(sess)} -F '#I:#W #{{?window_active,(active),}}' && echo && tmux -u capture-pane -ep -t {shlex.quote(sess)}"
-        out = run_cmd(
-            [
-                "ssh",
-                "-o",
-                "ConnectTimeout=2",
-                "-o",
-                "BatchMode=yes",
-                host,
-                f"sh -l -c {shlex.quote(remote_script)}",
-            ]
-        )
+        remote_script = f"tmux -u list-windows -t {shlex.quote(sess)} -F '#I:#W #{{?window_active,(active),}}' && echo && tmux -u capture-pane -ep -t {shlex.quote(sess)}"
+        out = run_cmd(ssh_batch_cmd(host, remote_script))
         print(out)
     else:
         print("=== Local Session Preview ===")
@@ -545,18 +431,8 @@ def handle_preview_window(target: str) -> None:
         if "] " in target:
             host, sess_win = target[1:].split("] ", 1)
             print(f"=== Remote Window Preview ({host}) ===")
-            remote_script = f"export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 TERM=xterm-256color COLORTERM=truecolor; tmux -u capture-pane -ep -t {shlex.quote(sess_win)}"
-            out = run_cmd(
-                [
-                    "ssh",
-                    "-o",
-                    "ConnectTimeout=2",
-                    "-o",
-                    "BatchMode=yes",
-                    host,
-                    f"sh -l -c {shlex.quote(remote_script)}",
-                ]
-            )
+            remote_script = f"tmux -u capture-pane -ep -t {shlex.quote(sess_win)}"
+            out = run_cmd(ssh_batch_cmd(host, remote_script))
             print(out)
         else:
             print("Invalid remote window target format.")
@@ -565,139 +441,181 @@ def handle_preview_window(target: str) -> None:
         print(out)
 
 
-def handle_dir_preview(path: str) -> None:
+def handle_dir_preview(item: str) -> None:
+    if item == "[<- Back]":
+        print("Return to main menu.")
+        return
+    if item == "[Add New Remote Host]":
+        print("Manually add a new remote host to your local state.")
+        return
+    if item.startswith("[Remote] "):
+        host = item[len("[Remote] "):]
+        print(f"Create or attach a session on {host}.")
+        return
+
+    if (Path(item) / ".git").exists():
+        print("=== Git ===")
+        subprocess.run(["git", "-C", item, "-c", "color.status=always", "status", "-sb"])
+        subprocess.run(["git", "-C", item, "log", "--oneline", "--color=always", "-5"])
+        print()
     print("=== Content ===")
     if shutil.which("eza"):
-        subprocess.run(
-            ["eza", "--tree", "--level=2", "--color=always", "--icons", path]
-        )
+        subprocess.run(["eza", "--level=1", "--color=always", "--icons", item])
     else:
-        subprocess.run(["ls", "-F", path])
+        subprocess.run(["ls", "-F", item])
+
+
+def pick_session(
+    prompt_icon: str,
+    on_local: Callable[[str], None],
+    on_remote: Callable[[str, str], None],
+) -> bool:
+    preview = f"{shlex.quote(sys.argv[0])} --preview {{}}"
+    while True:
+        all_sessions = get_local_sessions() + ["[Search Remote Sessions]", "[<- Back]"]
+        selected = run_fzf(all_sessions, prompt=f"{prompt_icon}  ", preview=preview)
+        if not selected or selected == "[<- Back]":
+            return False
+
+        if selected != "[Search Remote Sessions]":
+            on_local(selected)
+            return True
+
+        print("Fetching remote sessions...")
+        remote_sessions = asyncio.run(gather_remote(fetch_remote_sessions))
+        remote_choices = remote_sessions + ["[<- Back]"] if remote_sessions else ["[No remote sessions found]", "[<- Back]"]
+        selected_remote = run_fzf(
+            remote_choices, prompt=f"{prompt_icon} (remote)  ", preview=preview
+        )
+        if not selected_remote or selected_remote in ("[<- Back]", "[No remote sessions found]"):
+            continue
+
+        if " [" in selected_remote and selected_remote.endswith("]"):
+            sess, host = selected_remote.rsplit(" [", 1)
+            on_remote(host[:-1], sess)
+            return True
+
+
+def kill_local(name: str) -> None:
+    subprocess.run(["tmux", "kill-session", "-t", f"={name}"])
+
+
+def kill_remote(host: str, sess: str) -> None:
+    try:
+        subprocess.run(
+            ssh_batch_cmd(host, f"tmux -u kill-session -t {shlex.quote(sess)}"),
+            timeout=REMOTE_TIMEOUT,
+        )
+    except (subprocess.SubprocessError, OSError):
+        pass
 
 
 def handle_running() -> bool:
-    while True:
-        local_sessions = get_local_sessions()
-        all_sessions = local_sessions + ["[Search Remote Sessions]", "[<- Back]"]
-
-        selected = run_fzf(
-            all_sessions, prompt="󰖰  ", preview=f"{shlex.quote(sys.argv[0])} --preview {{}}"
-        )
-        if not selected or selected == "[<- Back]":
-            return False
-
-        if selected == "[Search Remote Sessions]":
-            print("Fetching remote sessions...")
-            remote_sessions = asyncio.run(get_all_remote_sessions())
-            remote_choices = remote_sessions + ["[<- Back]"] if remote_sessions else ["[No remote sessions found]", "[<- Back]"]
-            selected_remote = run_fzf(
-                remote_choices, prompt="󰖰 (remote)  ", preview=f"{shlex.quote(sys.argv[0])} --preview {{}}"
-            )
-            if not selected_remote or selected_remote in ("[<- Back]", "[No remote sessions found]"):
-                continue
-
-            if " [" in selected_remote and selected_remote.endswith("]"):
-                sess, host = selected_remote.rsplit(" [", 1)
-                host = host[:-1]
-                connect_remote(host, sess)
-                return True
-        else:
-            start_or_attach_local(selected)
-            return True
+    return pick_session("󰖰", attach_session, connect_remote)
 
 
 def handle_kill() -> bool:
-    while True:
-        local_sessions = get_local_sessions()
-        all_sessions = local_sessions + ["[Search Remote Sessions]", "[<- Back]"]
-
-        selected = run_fzf(
-            all_sessions, prompt="󰆴  ", preview=f"{shlex.quote(sys.argv[0])} --preview {{}}"
-        )
-        if not selected or selected == "[<- Back]":
-            return False
-
-        if selected == "[Search Remote Sessions]":
-            print("Fetching remote sessions...")
-            remote_sessions = asyncio.run(get_all_remote_sessions())
-            remote_choices = remote_sessions + ["[<- Back]"] if remote_sessions else ["[No remote sessions found]", "[<- Back]"]
-            selected_remote = run_fzf(
-                remote_choices, prompt="󰆴 (remote)  ", preview=f"{shlex.quote(sys.argv[0])} --preview {{}}"
-            )
-            if not selected_remote or selected_remote in ("[<- Back]", "[No remote sessions found]"):
-                continue
-
-            if " [" in selected_remote and selected_remote.endswith("]"):
-                sess, host = selected_remote.rsplit(" [", 1)
-                host = host[:-1]
-                # Fast async SSH kill command wrapped in sh -l -c to find the socket
-                remote_script = f"export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 TERM=xterm-256color COLORTERM=truecolor; tmux -u kill-session -t {shlex.quote(sess)}"
-                subprocess.run(
-                    [
-                        "ssh",
-                        "-o",
-                        "ConnectTimeout=2",
-                        "-o",
-                        "BatchMode=yes",
-                        host,
-                        f"sh -l -c {shlex.quote(remote_script)}",
-                    ]
-                )
-                return True
-        else:
-            subprocess.run(["tmux", "kill-session", "-t", selected])
-            return True
+    return pick_session("󰆴", kill_local, kill_remote)
 
 
-def handle_new() -> bool:
-    choices: list[str] = []
-    # Add remotes first
-    hosts = get_ssh_hosts()
-    local_host = socket.gethostname()
-    for h in hosts:
-        if h != local_host:
-            choices.append(f"[Remote] {h}")
+def zoxide_scores() -> list[tuple[float, Path]]:
+    if not shutil.which("zoxide"):
+        return []
+    try:
+        out = run_cmd(["zoxide", "query", "--list", "--score"])
+    except (subprocess.SubprocessError, OSError):
+        return []
 
-    # Add local dirs
-    dirs: list[str] = []
-    for p_str in SEARCH_PATHS:
-        p = Path(p_str)
-        if p.is_dir():
-            try:
-                for entry in p.iterdir():
-                    if entry.is_dir():
-                        dirs.append(str(entry))
-            except OSError:
-                pass
-
-    # Add zoxide
-    if shutil.which("zoxide"):
+    result: list[tuple[float, Path]] = []
+    for line in out.split("\n"):
+        parts = line.split(maxsplit=1)
+        if len(parts) != 2:
+            continue
         try:
-            z_dirs = run_cmd(["zoxide", "query", "-l"]).split("\n")
-            for z in z_dirs:
-                if z:
-                    z_path = Path(z)
-                    if z_path.is_dir() and str(z_path) not in dirs:
-                        dirs.append(str(z_path))
-        except (subprocess.SubprocessError, RuntimeError):
-            pass
+            score = float(parts[0])
+        except ValueError:
+            continue
+        z_path = Path(parts[1]).expanduser()
+        try:
+            if not z_path.is_dir():
+                continue
+        except OSError:
+            continue
+        result.append((score, z_path))
+    return result
 
-    choices.extend(dirs)
-    choices.append("[Add New Remote Host]")
-    choices.append("[<- Back]")
 
-    preview_cmd = f'bash -c \'if [[ "$1" == "[<- Back]" ]]; then echo "Return to main menu"; elif [[ "$1" == "[Add New Remote Host]" ]]; then echo "Manually add a new remote host to your local state"; elif [[ "$1" == \\[Remote\\]* ]]; then echo "Create new session on remote host"; else "$0" --dir-preview "$1"; fi\' {shlex.quote(sys.argv[0])} {{}}'
-    selected = run_fzf(choices, prompt="  ", preview=preview_cmd)
-    if not selected or selected == "[<- Back]":
+def home_display(path: str) -> str:
+    home = str(Path.home())
+    if path == home or path.startswith(home + os.sep):
+        return "~" + path[len(home):]
+    return path
+
+
+def project_candidates() -> list[str]:
+    """Discovered projects plus zoxide dirs, ranked by zoxide frecency."""
+    _, roots = discover_project_dirs(SEARCH_PATHS)
+    search_roots = {str(Path(p).expanduser().resolve()) for p in SEARCH_PATHS}
+
+    candidates: list[str] = [str(r) for r in roots]
+    scores: dict[str, float] = {c: 0.0 for c in candidates}
+
+    for score, z_path in zoxide_scores():
+        try:
+            z_res = z_path.resolve()
+        except OSError:
+            continue
+
+        # Credit visits inside a discovered project to the deepest containing root.
+        containing = [r for r in roots if z_res == r or z_res.is_relative_to(r)]
+        if containing:
+            best = max(containing, key=lambda r: len(r.parts))
+            scores[str(best)] += score
+            continue
+
+        # Collapse subdirectories to git root if within a git repo
+        candidate = str(find_git_root(z_path) or z_res)
+        if candidate in search_roots:
+            continue
+        if candidate not in scores:
+            candidates.append(candidate)
+            scores[candidate] = 0.0
+        scores[candidate] += score
+
+    return sorted(candidates, key=lambda c: (-scores[c], home_display(c).lower()))
+
+
+def handle_new(query: str = "") -> bool:
+    active = set(local_session_paths().values())
+    choices: list[str] = []
+    for path in project_candidates():
+        marker = "● " if path in active else "  "
+        choices.append(f"{path}\t{marker}{home_display(path)}")
+
+    for h in remote_hosts():
+        choices.append(f"[Remote] {h}\t[Remote] {h}")
+    choices.append("[Add New Remote Host]\t[Add New Remote Host]")
+    choices.append("[<- Back]\t[<- Back]")
+
+    extra_args = ["--delimiter=\t", "--with-nth=2", "--scheme=path"]
+    if query:
+        extra_args += ["--query", query]
+    selected = run_fzf(
+        choices,
+        prompt="\uf07c  ",
+        preview=f"{shlex.quote(sys.argv[0])} --dir-preview {{1}}",
+        extra_args=extra_args,
+    )
+    key = selected.split("\t")[0]
+    if not key or key == "[<- Back]":
         return False
 
-    if selected == "[Add New Remote Host]":
+    if key == "[Add New Remote Host]":
         new_host = input("Enter new hostname or IP: ").strip()
         if new_host:
-            state_dir = Path.home() / ".local/state/tmuxs"
             try:
-                state_dir.mkdir(parents=True, exist_ok=True)
-                with (state_dir / "hosts.txt").open("a", encoding="utf-8") as f:
+                STATE_DIR.mkdir(parents=True, exist_ok=True)
+                with HOSTS_FILE.open("a", encoding="utf-8") as f:
                     f.write(new_host + "\n")
                 print(f"Added {new_host} to saved hosts!")
             except OSError as e:
@@ -708,50 +626,27 @@ def handle_new() -> bool:
             connect_remote(new_host, sess_name)
         return True
 
-    if selected.startswith("[Remote] "):
-        host = selected.split(" ", 1)[1]
+    if key.startswith("[Remote] "):
+        host = key.split(" ", 1)[1]
         print(f"Creating new session on {host}")
         sess_name = input("Session name (default 'main'): ").strip()
         if not sess_name:
             sess_name = "main"
         connect_remote(host, sess_name)
     else:
-        basename = Path(selected).name
-        start_or_attach_local(basename, selected)
+        open_project(key)
     return True
 
 
 def handle_windows() -> bool:
     # List all panes across all local sessions with structured delimiter
-    format_str = "#{session_name}:#{window_index}|#{session_name}|#{window_name}|#{pane_current_command}"
     try:
-        out = run_cmd(["tmux", "list-panes", "-a", "-F", format_str])
+        out = run_cmd(["tmux", "list-panes", "-a", "-F", WINDOW_FORMAT])
         raw_lines = [line for line in out.split("\n") if line.strip()] if out else []
-    except (subprocess.SubprocessError, RuntimeError):
+    except (subprocess.SubprocessError, OSError):
         raw_lines = []
 
-    parsed = []
-    max_sess = 12
-    max_win = 12
-
-    for line in raw_lines:
-        parts = line.split("|", 3)
-        if len(parts) < 4:
-            continue
-        target, sess_name, win_name, p_cmd = parts[0], parts[1], parts[2], parts[3]
-        cmd_str = f"[{p_cmd}]" if p_cmd and p_cmd not in ("fish", "bash", "zsh", "sh") else ""
-        max_sess = max(max_sess, len(sess_name))
-        max_win = max(max_win, len(win_name))
-        parsed.append((target, sess_name, win_name, cmd_str))
-
-    formatted_choices = []
-    for target, sess_name, win_name, cmd_str in parsed:
-        sess_col = sess_name.ljust(max_sess)
-        win_col = win_name.ljust(max_win)
-        display = f"{sess_col}  ➜  {win_col}  {cmd_str}".rstrip()
-        formatted_choices.append(f"{target}\t{display}")
-
-    choices = formatted_choices + ["[Search Remote Windows]", "[<- Back]"]
+    choices = format_window_rows(raw_lines) + ["[Search Remote Windows]", "[<- Back]"]
 
     selected = run_fzf(
         choices,
@@ -764,7 +659,7 @@ def handle_windows() -> bool:
 
     if selected == "[Search Remote Windows]":
         print("Fetching remote windows...")
-        remote_windows = asyncio.run(get_all_remote_windows())
+        remote_windows = asyncio.run(gather_remote(fetch_remote_windows))
         remote_choices = remote_windows + ["[<- Back]"] if remote_windows else ["[No remote windows found]", "[<- Back]"]
         selected_remote = run_fzf(
             remote_choices,
@@ -782,73 +677,25 @@ def handle_windows() -> bool:
         return True
 
     target = selected.split("\t")[0]
-    run_cmd(["tmux", "switch-client", "-t", target])
-    return True
-
-
-def handle_preview_layout(sess: str) -> None:
-    layouts_dir = Path.home() / ".local/state/tmuxs/layouts"
-    layout_file = layouts_dir / f"{sess}.json"
-    if not layout_file.is_file():
-        print(f"No saved layout found for '{sess}'.")
-        return
-    try:
-        with layout_file.open("r", encoding="utf-8") as f:
-            windows_data = json.load(f)
-        print(f"=== Saved Layout Preview ({sess}) ===")
-        if isinstance(windows_data, list):
-            for win in windows_data:
-                w_idx = win.get("index", "?")
-                w_name = win.get("name", "")
-                panes = win.get("panes", [])
-                pane_cmds = [p.get("cmd") or "shell" for p in panes if isinstance(p, dict)]
-                print(f"Window {w_idx}: {w_name} [{', '.join(pane_cmds)}]")
-                for p in panes:
-                    if isinstance(p, dict):
-                        p_idx = p.get("index", "?")
-                        p_path = p.get("path", "")
-                        p_cmd = p.get("cmd") or "shell"
-                        print(f"  Pane {p_idx}: {p_cmd} ({p_path})")
-    except Exception as e:
-        print(f"Error reading layout file: {e}")
-
-
-def handle_restore_session(target_sess: Optional[str] = None) -> bool:
-    layouts_dir = Path.home() / ".local/state/tmuxs/layouts"
-    if not layouts_dir.is_dir():
-        print("No saved layouts directory found (~/.local/state/tmuxs/layouts).")
-        return False
-
-    saved_files = list(layouts_dir.glob("*.json"))
-    saved_sessions = sorted([f.stem for f in saved_files])
-
-    if target_sess:
-        if target_sess in saved_sessions:
-            start_or_attach_local(target_sess, restore_layout=True)
-            return True
-        else:
-            safe_target = target_sess.replace(".", "-").replace(":", "-")
-            if safe_target in saved_sessions:
-                start_or_attach_local(safe_target, restore_layout=True)
-                return True
-            print(f"No saved layout found for '{target_sess}'.")
-            return False
-
-    if not saved_sessions:
-        print("No saved session layouts found in ~/.local/state/tmuxs/layouts.")
-        return False
-
-    choices = saved_sessions + ["[<- Back]"]
-    preview_cmd = f'bash -c \'if [[ "$1" == "[<- Back]" ]]; then echo "Return to main menu"; else "$0" --preview-layout "$1"; fi\' {shlex.quote(sys.argv[0])} {{}}'
-    selected = run_fzf(choices, prompt="󰁯  ", preview=preview_cmd)
-    if not selected or selected == "[<- Back]":
-        return False
-
-    start_or_attach_local(selected, restore_layout=True)
+    if is_in_tmux():
+        run_cmd(["tmux", "switch-client", "-t", target])
+    else:
+        subprocess.run(["tmux", "attach", "-t", target])
     return True
 
 
 def main() -> None:
+    dispatch: dict[str, Callable[..., Any]] = {
+        "running": handle_running,
+        "running-sessions": handle_running,
+        "new": handle_new,
+        "new-session": handle_new,
+        "kill": handle_kill,
+        "kill-session": handle_kill,
+        "windows": handle_windows,
+        "--windows": handle_windows,
+    }
+
     if len(sys.argv) > 1:
         flag = sys.argv[1]
         if flag == "--preview":
@@ -859,84 +706,71 @@ def main() -> None:
             target = sys.argv[2] if len(sys.argv) > 2 else ""
             handle_preview_window(target)
             sys.exit(0)
-        elif flag == "--preview-layout":
-            sess = sys.argv[2] if len(sys.argv) > 2 else ""
-            handle_preview_layout(sess)
-            sys.exit(0)
         elif flag == "--dir-preview":
             path = sys.argv[2] if len(sys.argv) > 2 else "."
             handle_dir_preview(path)
-            sys.exit(0)
-        elif flag in ("--windows", "windows"):
-            handle_windows()
-            sys.exit(0)
-        elif flag in ("running-sessions", "running"):
-            handle_running()
-            sys.exit(0)
-        elif flag in ("new-session", "new"):
-            handle_new()
-            sys.exit(0)
-        elif flag in ("kill-session", "kill"):
-            handle_kill()
-            sys.exit(0)
-        elif flag in ("--restore", "-r", "restore-sessions", "restore-session", "restore"):
-            target_sess = sys.argv[2] if len(sys.argv) > 2 else None
-            handle_restore_session(target_sess)
             sys.exit(0)
         elif flag == "--connect-remote":
             host = sys.argv[2] if len(sys.argv) > 2 else ""
             sess = sys.argv[3] if len(sys.argv) > 3 else ""
             saved_session = sys.argv[4] if len(sys.argv) > 4 else None
-            passed_socket = sys.argv[5] if len(sys.argv) > 5 else None
-            handle_connect_remote(host, sess, saved_session, passed_socket)
+            handle_connect_remote(host, sess, saved_session)
             sys.exit(0)
-        elif flag in ("--save-layouts", "save-sessions", "save-session", "save"):
-            handle_save_session()
+        elif flag in dispatch:
+            dispatch[flag]()
             sys.exit(0)
         else:
-            # Handle direct session/dir launch (e.g. `tmuxs nixos-config`)
+            # Direct launch (e.g. `tmuxs nixos-config`, `tmuxs ~/src/foo`, `tmuxs .`).
+            # Order: ".", explicit path, exact project name, zoxide, project substring;
+            # if nothing matches, open the folder picker prefilled with the argument.
             arg = sys.argv[1]
-            found_path = None
+            found_path: Optional[str] = None
 
             if arg == ".":
                 found_path = str(Path.cwd())
-                arg = Path.cwd().name or "root"
-            else:
-                for p_str in SEARCH_PATHS:
-                    full_path = Path(p_str) / arg
-                    if full_path.is_dir():
-                        found_path = str(full_path)
+
+            if not found_path and ("/" in arg or arg.startswith("~")):
+                direct_path = Path(arg).expanduser()
+                if direct_path.is_dir():
+                    found_path = str(direct_path.resolve())
+
+            project_dirs: list[str] = []
+            if not found_path:
+                project_dirs, _ = discover_project_dirs(SEARCH_PATHS)
+                for d in project_dirs:
+                    if Path(d).name.lower() == arg.lower():
+                        found_path = d
+                        break
+
+            if not found_path and shutil.which("zoxide"):
+                try:
+                    z_match = run_cmd(["zoxide", "query", arg])
+                    if z_match and Path(z_match).is_dir():
+                        found_path = z_match
+                except (subprocess.SubprocessError, OSError):
+                    pass
+
+            if not found_path and arg:
+                for d in project_dirs:
+                    if arg.lower() in Path(d).name.lower():
+                        found_path = d
                         break
 
             if found_path:
-                start_or_attach_local(arg, found_path)
+                open_project(found_path)
             else:
-                # Fallback to pure session name
-                start_or_attach_local(arg)
+                handle_new(query=arg)
             sys.exit(0)
 
-    options = ["running", "new", "restore", "save", "kill"]
-
+    options = ["running", "new", "windows", "kill"]
     while True:
-        selected = run_fzf(options, prompt="  ")
+        selected = run_fzf(options, prompt="\uf135  ")
         if not selected:
             sys.exit(0)
 
-        done = False
-        if selected in ("kill-session", "kill"):
-            done = handle_kill()
-        elif selected in ("save-sessions", "save-session", "save"):
-            done = handle_save_session()
-        elif selected in ("restore-sessions", "restore-session", "restore"):
-            done = handle_restore_session()
-        elif selected in ("new-session", "new"):
-            done = handle_new()
-        elif selected in ("running-sessions", "running"):
-            done = handle_running()
-
-        if done:
+        fn = dispatch.get(selected)
+        if fn and fn():
             break
-
 
 
 if __name__ == "__main__":

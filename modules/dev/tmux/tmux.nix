@@ -10,10 +10,26 @@ _: {
       cfg = config.mine.dev.tmux;
       inherit (config.mine.base) user;
 
-      tmuxs_py = pkgs.writeScriptBin "tmuxs" ''
-        #!${pkgs.python3}/bin/python3
-        SEARCH_PATHS = ${builtins.toJSON cfg.sessionizer.searchPaths}
-        ${builtins.replaceStrings [ "SEARCH_PATHS = []" ] [ "" ] (builtins.readFile ./tmuxs.py)}
+      tmuxsSrc = builtins.readFile ./tmuxs.py;
+      tmuxsPlaceholders = [ "@searchPaths@" "@remoteHosts@" ];
+      tmuxs_py =
+        assert lib.assertMsg (lib.all (p: lib.hasInfix p tmuxsSrc) tmuxsPlaceholders)
+          "tmuxs.py is missing one of ${toString tmuxsPlaceholders}";
+        pkgs.writeScriptBin "tmuxs" ''
+          #!${pkgs.python3}/bin/python3
+          ${builtins.replaceStrings tmuxsPlaceholders [
+            (builtins.toJSON cfg.sessionizer.searchPaths)
+            (builtins.toJSON cfg.sessionizer.remoteHosts)
+          ] tmuxsSrc}
+        '';
+
+      gitmuxConf = pkgs.writeText "gitmux.conf" ''
+        tmux:
+          layout: [branch, divergence, " - ", flags]
+          options:
+            branch_max_len: 20
+            branch_trim: right
+            ellipsis: …
       '';
     in
     {
@@ -29,6 +45,11 @@ _: {
                 default = [ ];
                 description = "Paths to use for autocomplete";
               };
+              remoteHosts = lib.mkOption {
+                type = lib.types.listOf lib.types.str;
+                default = [ ];
+                description = "SSH hosts queried for remote tmux sessions (merged with ~/.local/state/tmuxs/hosts.txt)";
+              };
             };
           };
         };
@@ -36,11 +57,10 @@ _: {
 
       config = {
         environment.systemPackages = [
-          (lib.mkIf cfg.sessionizer.enable tmuxs_py)
           pkgs.tmux
           pkgs.fzf
           pkgs.gitmux
-        ] ++ lib.optionals cfg.sessionizer.enable [ pkgs.zoxide ];
+        ] ++ lib.optionals cfg.sessionizer.enable [ tmuxs_py pkgs.zoxide ];
 
         programs.tmux = {
           enable = true;
@@ -50,8 +70,8 @@ _: {
             in
             ''
               ${builtins.replaceStrings
-                [ "@fzf@" "@yank@" ]
-                [ "${pkgs.tmuxPlugins.tmux-fzf}" "${pkgs.tmuxPlugins.yank}" ]
+                [ "@fzf@" "@yank@" "@gitmuxConf@" ]
+                [ "${pkgs.tmuxPlugins.tmux-fzf}" "${pkgs.tmuxPlugins.yank}" "${gitmuxConf}" ]
                 tmuxConf
               }
 
