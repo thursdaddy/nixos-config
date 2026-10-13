@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "audiobookshelf";
-      version = "2.36.0";
+      version = "2.37.1";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;

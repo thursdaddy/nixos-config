@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "open-webui";
-      version = "0.11.0";
+      version = "0.11.4";
 
       cfg = config.mine.containers.${name};
     in

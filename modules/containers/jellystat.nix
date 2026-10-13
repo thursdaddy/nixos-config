@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "jellystat";
-      version = "1.1.11";
+      version = "1.1.12";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;

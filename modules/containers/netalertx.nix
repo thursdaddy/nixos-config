@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "netalertx";
-      version = "26.8.5";
+      version = "26.10.0";
       cfg = config.mine.containers.${name};
       hostName = config.networking.hostName;
     in
@@ -42,7 +42,7 @@ _: {
         networking.firewall.allowedTCPPorts = [ 20211 ];
 
         virtualisation.oci-containers.containers."${name}" = {
-          image = "ghcr.io/netalertx/netalertx:latest";
+          image = "ghcr.io/netalertx/netalertx:${version}";
           pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
           hostname = name;
           extraOptions = [

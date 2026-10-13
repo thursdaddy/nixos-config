@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "gitea";
-      version = "1.27.1";
+      version = "28.0.0";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;
@@ -44,6 +44,7 @@ _: {
               GITEA__database__NAME = "gitea";
               GITEA__database__USER = "gitea";
               GITEA__migrations__ALLOWED_DOMAINS = "git.thurs.pw, github.com, api.github.com";
+              GITEA__webhook__ALLOWED_HOST_LIST = "*,192.168.0.0/16,100.64.0.0/10,*.thurs.pw";
             };
             environmentFiles = [
               config.sops.templates."gitea-web".path

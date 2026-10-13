@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "vaultwarden";
-      version = "1.37.1";
+      version = "1.37.3";
 
       cfg = config.mine.containers.${name};
       traefikCfg = config.mine.homelab.${hostName}.apps.${name}.traefik;

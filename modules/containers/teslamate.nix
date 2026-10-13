@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "teslamate";
-      version = "4.0.1";
+      version = "4.3.0";
 
       cfg = config.mine.containers.teslamate;
       configPath = config.mine.containers.settings.configPath;

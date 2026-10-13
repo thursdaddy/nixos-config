@@ -211,7 +211,7 @@ _: {
                       "contentType": "text/markdown"
                     }
                   },
-                  "priority": 3,
+                  "priority": 0,
                   {{range .Decisions -}}
                   "title": "{{.Type }} {{ .Value }} for {{.Duration}}",
                   "message": "{{$alert.Scenario}} \n\n[crowdsec cti](https://app.crowdsec.net/cti/{{.Value -}}) \n\n[shodan](https://shodan.io/host/{{.Value -}})"

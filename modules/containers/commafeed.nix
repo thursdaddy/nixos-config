@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "commafeed";
-      version = "7.3.0";
+      version = "7.3.2";
 
       cfg = config.mine.containers.${name};
       port = 8082;
