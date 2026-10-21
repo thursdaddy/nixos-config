@@ -153,8 +153,9 @@ _: {
       tomlFormat = pkgs.formats.toml { };
     in
     {
+      mine.base.packages = [ pkgs.starship ];
+
       environment = {
-        systemPackages = [ pkgs.starship ];
         etc = {
           "starship.toml".source = tomlFormat.generate "starship-toml" starshipConfig;
         };

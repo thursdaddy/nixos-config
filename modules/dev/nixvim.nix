@@ -11,7 +11,7 @@
       config = {
         programs.nixvim.enable = true;
 
-        environment.systemPackages = [
+        mine.dev.packages = [
           pkgs.ripgrep
         ];
       };
@@ -28,7 +28,7 @@
       config = {
         programs.nixvim.enable = true;
 
-        environment.systemPackages = [
+        mine.dev.packages = [
           pkgs.ripgrep
         ];
       };

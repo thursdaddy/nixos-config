@@ -8,7 +8,6 @@ _: {
     }:
     let
       cfg = config.mine.dev.tmux;
-      inherit (config.mine.base) user;
 
       tmuxsSrc = builtins.readFile ./tmuxs.py;
       tmuxsPlaceholders = [ "@searchPaths@" "@remoteHosts@" ];
@@ -41,9 +40,9 @@ _: {
             options = {
               enable = lib.mkEnableOption "Enable tmuxs";
               searchPaths = lib.mkOption {
-                type = lib.types.listOf lib.types.path;
+                type = lib.types.listOf lib.types.str;
                 default = [ ];
-                description = "Paths to use for autocomplete";
+                description = "Directories to use for autocomplete (~ is expanded)";
               };
               remoteHosts = lib.mkOption {
                 type = lib.types.listOf lib.types.str;
@@ -56,8 +55,7 @@ _: {
       };
 
       config = {
-        environment.systemPackages = [
-          pkgs.tmux
+        mine.dev.packages = [
           pkgs.fzf
           pkgs.gitmux
         ] ++ lib.optionals cfg.sessionizer.enable [ tmuxs_py pkgs.zoxide ];

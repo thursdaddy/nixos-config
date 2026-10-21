@@ -43,6 +43,9 @@
 
         [diff "sopsdiffer"]
           textconv = sops -d
+
+        [include]
+          path = ${config.sops.templates."gitconfig-work-include".path}
       '';
     in
     {
@@ -50,24 +53,46 @@
         etc = {
           "gitconfig".text = myGitConfig;
         };
-
-        systemPackages = with pkgs; [
-          gh
-          unstable.hunk
-          gnupg
-          pass
-          (
-            if pkgs.stdenv.hostPlatform.isDarwin then
-              pkgs.darwinGit
-            else
-              pkgs.git
-          )
-        ];
       };
+
+      mine.dev.packages = with pkgs; [
+        gh
+        unstable.hunk
+        gnupg
+        pass
+      ];
 
       programs = {
         fish = {
           shellAliases = lib.mkIf (user.shell.package == pkgs.fish) config.mine.aliases.git;
+        };
+      };
+
+      sops = {
+        secrets = {
+          "work/ORG" = { };
+          "work/USERNAME" = { };
+          "work/EMAIL" = { };
+        };
+        templates = {
+          "gitconfig-work-include" = {
+            owner = "${user.name}";
+            content = ''
+              [includeIf "gitdir:~/dev/work/${config.sops.placeholder."work/ORG"}/"]
+                path = ${config.sops.templates."gitconfig-work-profile".path}
+            '';
+          };
+          "gitconfig-work-profile" = {
+            owner = "${user.name}";
+            content = ''
+              [user]
+                name = ${config.sops.placeholder."work/USERNAME"}
+                email = ${config.sops.placeholder."work/EMAIL"}
+
+              [core]
+                sshCommand = ssh -F /dev/null -o IdentityFile=~/.ssh/${config.sops.placeholder."work/ORG"} -o IdentitiesOnly=yes -o AddKeysToAgent=yes
+            '';
+          };
         };
       };
     };

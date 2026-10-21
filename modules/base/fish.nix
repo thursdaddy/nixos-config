@@ -7,7 +7,7 @@ _: {
       ...
     }:
     {
-      environment.systemPackages = with pkgs; [
+      mine.base.packages = with pkgs; [
         fishPlugins.colored-man-pages
         fishPlugins.done
         fishPlugins.forgit
@@ -56,7 +56,6 @@ _: {
             # Homebrew is installed on MacOS
             /opt/homebrew/bin/brew shellenv | source
           end
-          starship init fish | source
 
           # Zoxide integration
           if type -q zoxide

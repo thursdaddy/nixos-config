@@ -44,7 +44,7 @@ _: {
         (lib.mkIf cfg.enable {
           nixpkgs.config.allowUnfreePredicate = pkg: cfg.crush && builtins.elem (lib.getName pkg) [ "crush" ];
 
-          environment.systemPackages =
+          mine.dev.packages =
             (lib.optional cfg.crush pkgs.unstable.crush)
             ++ (lib.optionals cfg.antigravity [
               pkgs.unstable.antigravity-cli
@@ -59,6 +59,7 @@ _: {
           lib.optionalAttrs (options ? systemd) {
             systemd.user.tmpfiles.rules = [
               "d %h/.gemini/config 0700 - - -"
+              "d %h/.gemini/antigravity-cli 0700 - - -"
               "L+ %h/.gemini/config/rules - - - - %h/dev/homelab/agent/.agents/rules"
               "L+ %h/.gemini/config/skills - - - - %h/dev/homelab/agent/.agents/skills"
               "L+ %h/.gemini/config/plugins - - - - %h/dev/homelab/agent/.agents/plugins"
@@ -66,6 +67,7 @@ _: {
               "L+ %h/.gemini/config/hooks.json - - - - %h/dev/homelab/agent/.agents/hooks.json"
               "L+ %h/.gemini/config/AGENTS.md - - - - %h/dev/homelab/agent/.agents/AGENTS.md"
               "L+ %h/.gemini/config/mcp_config.json - - - - %h/dev/homelab/agent/mcp.json"
+              "L+ %h/.gemini/antigravity-cli/settings.json - - - - %h/dev/homelab/agent/.agents/settings.json"
             ];
           }
         ))
@@ -95,7 +97,7 @@ _: {
         (lib.mkIf cfg.enable (
           lib.optionalAttrs (!(options ? systemd)) {
             system.activationScripts.postActivation.text = ''
-              mkdir -p "${config.mine.base.user.homeDir}/.gemini/config"
+              mkdir -p "${config.mine.base.user.homeDir}/.gemini/config" "${config.mine.base.user.homeDir}/.gemini/antigravity-cli"
               rm -rf "${config.mine.base.user.homeDir}/.gemini/config/rules" "${config.mine.base.user.homeDir}/.gemini/config/skills" "${config.mine.base.user.homeDir}/.gemini/config/plugins" "${config.mine.base.user.homeDir}/.gemini/config/plugins.json" "${config.mine.base.user.homeDir}/.gemini/config/skills.json"
               ln -sfn "${config.mine.base.user.homeDir}/dev/homelab/agent/.agents/rules" "${config.mine.base.user.homeDir}/.gemini/config/rules"
               ln -sfn "${config.mine.base.user.homeDir}/dev/homelab/agent/.agents/skills" "${config.mine.base.user.homeDir}/.gemini/config/skills"
@@ -104,6 +106,7 @@ _: {
               ln -sf "${config.mine.base.user.homeDir}/dev/homelab/agent/.agents/hooks.json" "${config.mine.base.user.homeDir}/.gemini/config/hooks.json"
               ln -sf "${config.mine.base.user.homeDir}/dev/homelab/agent/.agents/AGENTS.md" "${config.mine.base.user.homeDir}/.gemini/config/AGENTS.md"
               ln -sf "${config.mine.base.user.homeDir}/dev/homelab/agent/mcp.json" "${config.mine.base.user.homeDir}/.gemini/config/mcp_config.json"
+              ln -sf "${config.mine.base.user.homeDir}/dev/homelab/agent/.agents/settings.json" "${config.mine.base.user.homeDir}/.gemini/antigravity-cli/settings.json"
               chown -R ${config.mine.base.user.name}:staff "${config.mine.base.user.homeDir}/.gemini"
             '';
           }

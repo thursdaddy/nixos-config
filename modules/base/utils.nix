@@ -13,8 +13,15 @@
       celler-client = inputs.celler.packages.${pkgs.stdenv.hostPlatform.system}.default;
     in
     {
-      options.mine.base.utils = {
-        sysadmin.enable = lib.mkEnableOption "Sysadmin focused utils";
+      options.mine.base = {
+        packages = lib.mkOption {
+          type = lib.types.listOf lib.types.package;
+          default = [ ];
+          description = "User-space base packages shared by hosts and the dev profile";
+        };
+        utils = {
+          sysadmin.enable = lib.mkEnableOption "Sysadmin focused utils";
+        };
       };
 
       config = {
@@ -22,19 +29,22 @@
           export GPG_TTY=$(tty)
         '';
 
+        mine.base.packages = with pkgs; [
+          bottom
+          curl
+          eza
+          fastfetch
+          (if pkgs.stdenv.hostPlatform.isDarwin then pkgs.darwinGit else pkgs.git)
+          jq
+          just
+          killall
+          tree
+          wget
+        ];
+
         environment.systemPackages =
           with pkgs;
-          [
-            bottom
-            curl
-            eza
-            fastfetch
-            jq
-            just
-            killall
-            tree
-            wget
-          ]
+          config.mine.base.packages
           ++ lib.optionals (cfg.sysadmin.enable) [
             celler-client
             bind
@@ -50,13 +60,6 @@
             wakeonlan
           ]
           ++ lib.optionals (!pkgs.stdenv.hostPlatform.isAarch64 && cfg.sysadmin.enable) [ rar ]
-          ++ lib.optionals (options ? mine.dev) [
-            glow
-            nixfmt
-            nixpkgs-fmt
-            shellcheck
-            statix
-          ]
           ++ lib.optionals (!(options ? mine.dev)) [ neovim ];
 
         nixpkgs.config.allowUnfreePredicate =

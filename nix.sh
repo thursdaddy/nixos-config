@@ -13,27 +13,31 @@ NC='\033[0m' # No Color
 
 #--option eval-cache false
 rebuild () {
+  local build_host_args=(--builders "")
+  if [[ -n "${BUILD_HOST:-}" ]]; then
+    export NIX_SSHOPTS="${NIX_SSHOPTS:--A}"
+    if [[ -z "${SSH_AUTH_SOCK:-}" && ! "${HOSTNAME:-$HOST}" =~ "mbp" ]]; then
+      export SSH_AUTH_SOCK="/home/thurs/.ssh/ssh_auth_sock"
+    fi
+    build_host_args+=(--build-host "$BUILD_HOST")
+  fi
+
   if [[ "${HOSTNAME:-$HOST}" =~ "$TARGET" ]]; then
     if [[ "$TARGET" == "mbp" ]]; then
       printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local darwin)${NC}\n"
-      sudo darwin-rebuild switch --flake .\#mbp "${EXTRA_ARGS[@]}"
+      sudo darwin-rebuild switch --flake .\#mbp --builders "" "${EXTRA_ARGS[@]}"
     else
       printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local nixos)${NC}\n"
-      sudo nixos-rebuild --flake .\#"$TARGET" --no-reexec --use-substitutes switch "${EXTRA_ARGS[@]}"
+      nixos-rebuild --flake .\#"$TARGET" "${build_host_args[@]}" --no-reexec --use-substitutes --sudo switch "${EXTRA_ARGS[@]}"
     fi
   elif [[ "$TARGET" == "mbp" ]]; then
     printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local darwin)${NC}\n"
-    sudo darwin-rebuild switch --flake .\#mbp "${EXTRA_ARGS[@]}"
+    sudo darwin-rebuild switch --flake .\#mbp --builders "" "${EXTRA_ARGS[@]}"
   else
     printf "${BLUE}Rebuilding... ${ORANGE}${TARGET} (remote)${NC}\n"
     export NIX_SSHOPTS="${NIX_SSHOPTS:--A}"
     if [[ -z "${SSH_AUTH_SOCK:-}" && ! "${HOSTNAME:-$HOST}" =~ "mbp" ]]; then
       export SSH_AUTH_SOCK="/home/thurs/.ssh/ssh_auth_sock"
-    fi
-
-    local build_host_args=()
-    if [[ -n "${BUILD_HOST:-}" ]]; then
-      build_host_args=(--build-host "$BUILD_HOST")
     fi
 
     if command -v nixos-rebuild &> /dev/null; then
