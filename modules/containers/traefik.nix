@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "traefik";
-      version = "3.7.13";
+      version = "3.7.16";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;

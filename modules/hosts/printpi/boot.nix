@@ -15,15 +15,7 @@ _: {
         kernel.sysctl = {
           "vm.mmap_rnd_bits" = 24;
         };
-        kernelPackages = let
-          rpiKernel = pkgs.callPackage "${pkgs.path}/pkgs/os-specific/linux/kernel/linux-rpi.nix" {
-            kernelPatches = with pkgs.linuxKernel.packages.linux_rpi4.kernelPatches or pkgs.linuxKernel.kernelPatches; [
-              bridge_stp_helper
-              request_key_helper
-            ];
-            rpiVersion = 4;
-          };
-        in pkgs.linuxKernel.packagesFor rpiKernel;
+        kernelPackages = pkgs.rpi4KernelPackages;
         loader = {
           grub.enable = false;
           generic-extlinux-compatible.enable = true;
@@ -39,7 +31,11 @@ _: {
       };
 
       hardware.enableRedistributableFirmware = true;
-      hardware.raspberry-pi."4".poe-plus-hat.enable = true;
+      hardware.raspberry-pi.configtxt.deviceTreeOverlays."board-type=0x11" = [
+        {
+          rpi-poe-plus = { };
+        }
+      ];
 
       nixpkgs.hostPlatform = "aarch64-linux";
       system.stateVersion = "24.11";

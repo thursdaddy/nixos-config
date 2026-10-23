@@ -14,6 +14,18 @@ let
     homelab-backup = final.callPackage ../packages/homelab-backup { pkgs = final; };
     hypridle-patched = final.callPackage ../packages/hypridle { pkgs = final; };
     octoprint312 = final.callPackage ../packages/octoprint312 { pkgs = final; };
+    rpi4KernelPackages =
+      let
+        crossPkgs = inputs.nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform;
+        rpiKernel = crossPkgs.callPackage "${crossPkgs.path}/pkgs/os-specific/linux/kernel/linux-rpi.nix" {
+          kernelPatches = with crossPkgs.linuxKernel.kernelPatches; [
+            bridge_stp_helper
+            request_key_helper
+          ];
+          rpiVersion = 4;
+        };
+      in
+      crossPkgs.linuxKernel.packagesFor rpiKernel;
     siomon = final.callPackage ../packages/siomon { pkgs = final; };
     wallpapers = final.callPackage ../packages/wallpapers { pkgs = final; };
     input-remapper = prev.input-remapper.overrideAttrs (oldAttrs: {

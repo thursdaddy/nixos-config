@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "hoarder";
-      version = "0.33.2";
+      version = "0.34.0";
 
       cfg = config.mine.containers.${name};
     in
@@ -49,6 +49,7 @@ _: {
               MEILI_ADDR = "http://meilisearch:7700";
               BROWSER_WEB_URL = "http://chrome:9222";
               DATA_DIR = "/data";
+              DB_WAL_MODE = "true";
               OLLAMA_BASE_URL = "http://${config.mine.homelab.jupiter.hostIp}:11434";
               INFERENCE_IMAGE_MODEL = "deepseek-r1:7b";
               INFERENCE_TEXT_MODEL = "deepseek-r1:7b";

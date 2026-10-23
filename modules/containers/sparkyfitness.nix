@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "sparkyfitness";
-      version = "1.7.3";
+      version = "1.9.0";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;

@@ -11,48 +11,6 @@
       port = 5455; # Changed from 5454 to 5455 to avoid port conflicts with Attic
       cfg = config.mine.services.celler;
 
-      checkedConfigFile =
-        pkgs.runCommand "checked-celler-server.toml"
-          {
-            configFile = config.services.cellerd.configFile;
-          }
-          ''
-            cat $configFile
-
-            export CELLER_SERVER_TOKEN_HS256_SECRET_BASE64="dGVzdCBzZWNyZXQ="
-            export CELLER_SERVER_DATABASE_URL="sqlite://:memory:"
-            ${config.services.cellerd.package}/bin/cellerd --mode check-config -f $configFile
-            cat <$configFile >$out
-          '';
-
-      celleradmShim = pkgs.writeShellScript "celleradm" ''
-        if [ -n "$CELLERADM_PWD" ]; then
-          cd "$CELLERADM_PWD"
-          if [ "$?" != "0" ]; then
-            >&2 echo "Warning: Failed to change directory to $CELLERADM_PWD"
-          fi
-        fi
-
-        exec ${config.services.cellerd.package}/bin/celleradm -f ${checkedConfigFile} "$@"
-      '';
-
-      celleradmWrapper = pkgs.writeShellScriptBin "cellerd-celleradm" ''
-        exec systemd-run \
-          --quiet \
-          --pipe \
-          --pty \
-          --wait \
-          --collect \
-          --service-type=exec \
-          --property=EnvironmentFile=${config.services.cellerd.environmentFile} \
-          --property=DynamicUser=yes \
-          --property=User=${config.services.cellerd.user} \
-          --property=Environment=CELLERADM_PWD=$(pwd) \
-          --working-directory / \
-          -- \
-          ${celleradmShim} "$@"
-      '';
-
       initReplicationScript = pkgs.writeText "init-replication.sh" ''
         #!/bin/bash
         set -e
@@ -169,9 +127,13 @@
         services.cellerd = {
           enable = true;
           mode = cfg.mode;
-          environmentFile = config.sops.templates."cellerd_env".path;
+          configFile = config.sops.templates."cellerd-server.toml".path;
+          environmentFile = null;
           settings = {
             listen = "[::]:5455"; # Use port 5455 to avoid conflicts with Attic
+            jwt = {
+              rs256-public-key-file = "/var/lib/cellerd/rs256-public-key.pem";
+            };
             chunking = {
               avg-size = 65536;
               max-size = 262144;
@@ -182,11 +144,12 @@
               type = "local";
               path = "/var/lib/cellerd/storage";
             };
+            database.url =
+              if cfg.replication.enable then
+                "postgresql://celler:${config.sops.placeholder."attic/DB_PASS"}@127.0.0.1:54546/celler"
+              else
+                lib.mkDefault "sqlite:///var/lib/cellerd/server.db?mode=rwc";
           };
-        };
-
-        services.cellerd.settings = {
-          database.url = lib.mkIf (!cfg.replication.enable) (lib.mkDefault "sqlite:///var/lib/cellerd/server.db?mode=rwc");
         };
 
         # Postgres DB container for celler
@@ -217,15 +180,16 @@
 
         sops = {
           secrets = {
-            "attic/SERVER_TOKEN_BASE64_SECRET" = { };
+            "attic/SERVER_TOKEN_BASE64_SECRET" = {
+              owner = config.services.cellerd.user;
+            };
             "attic/DB_PASS" = { };
           };
           templates = {
-            "cellerd_env" = {
-              content = ''
-                CELLER_SERVER_TOKEN_RS256_SECRET_BASE64="${config.sops.placeholder."attic/SERVER_TOKEN_BASE64_SECRET"}"
-                CELLER_SERVER_DATABASE_URL="postgresql://celler:${config.sops.placeholder."attic/DB_PASS"}@127.0.0.1:54546/celler"
-              '';
+            "cellerd-server.toml" = {
+              owner = config.services.cellerd.user;
+              group = config.services.cellerd.group;
+              file = (pkgs.formats.toml { }).generate "server.toml" config.services.cellerd.settings;
             };
             "celler-db".content = ''
               POSTGRES_PASSWORD=${config.sops.placeholder."attic/DB_PASS"}
@@ -328,7 +292,10 @@
           wants = [ "network-online.target" ];
 
           serviceConfig = {
-            ExecStart = "${config.services.cellerd.package}/bin/cellerd -f ${checkedConfigFile} --mode ${config.services.cellerd.mode}";
+            ExecStartPre = pkgs.writeShellScript "cellerd-extract-pubkey" ''
+              ${pkgs.coreutils}/bin/base64 -d ${config.sops.secrets."attic/SERVER_TOKEN_BASE64_SECRET".path} | ${pkgs.openssl}/bin/openssl rsa -pubout -out /var/lib/cellerd/rs256-public-key.pem
+            '';
+            ExecStart = "${config.services.cellerd.package}/bin/cellerd -f ${config.services.cellerd.configFile} --mode ${config.services.cellerd.mode}";
             EnvironmentFile = config.services.cellerd.environmentFile;
             StateDirectory = "cellerd"; # for usage with local storage and sqlite
             StateDirectoryMode = "0770";
@@ -384,7 +351,6 @@
 
         environment.systemPackages = [
           config.services.cellerd.package
-          celleradmWrapper
           celler-rrsync-shim
         ];
 

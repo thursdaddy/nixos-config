@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "paperless";
-      version = "3.2.1";
+      version = "3.3.3";
 
       cfg = config.mine.containers.${name};
       fqdn = "${cfg.subdomain}.${config.mine.containers.traefik.rootDomainName}";

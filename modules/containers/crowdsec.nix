@@ -8,6 +8,7 @@ _: {
     }:
     let
       name = "crowdsec";
+      version = "1.8.1";
       cfg = config.mine.containers.${name};
       hostName = config.networking.hostName;
 
@@ -133,7 +134,7 @@ _: {
         networking.firewall.allowedTCPPorts = [ 8080 ];
 
         virtualisation.oci-containers.containers."${name}" = {
-          image = "docker.io/crowdsecurity/crowdsec:v1.6.2";
+          image = "docker.io/crowdsecurity/crowdsec:v${version}";
           pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
           hostname = name;
           extraOptions = [
@@ -155,6 +156,8 @@ _: {
             DISABLE_ONLINE_API = "true";
           };
           labels = {
+            "org.opencontainers.image.version" = "${version}";
+            "org.opencontainers.image.source" = "https://github.com/crowdsecurity/crowdsec";
             "homelab.backup.enable" = "true";
             "homelab.backup.path" = "${config.mine.containers.settings.configPath}/${name}";
           };

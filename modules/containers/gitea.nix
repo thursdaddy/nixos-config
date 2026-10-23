@@ -8,7 +8,7 @@ _: {
     }:
     let
       name = "gitea";
-      version = "28.0.0";
+      version = "28.2.0";
 
       cfg = config.mine.containers.${name};
       configPath = config.mine.containers.settings.configPath;
