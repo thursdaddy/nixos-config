@@ -30,8 +30,6 @@ _: {
 
         containers = {
           settings.backend = "podman";
-          devteam-runner.enable = true;
-          homelab-agent.enable = true;
           traefik = {
             enable = true;
             dnsChallengeProvider = "gcp";

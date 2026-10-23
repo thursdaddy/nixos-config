@@ -1,7 +1,6 @@
 _: {
   flake.modules.nixos.apps =
     {
-      config,
       lib,
       pkgs,
       ...
@@ -13,7 +12,11 @@ _: {
         bindsTo = [ "graphical-session.target" ];
         wantedBy = [ "graphical-session.target" ];
         partOf = [ "graphical-session.target" ];
-        path = [ config.system.path ];
+        path = [
+          "/run/wrappers"
+          "/run/current-system/sw"
+        ];
+        restartIfChanged = false;
         serviceConfig = {
           ExecStart = "${lib.getExe pkgs.obsidian}";
           Restart = "on-failure";

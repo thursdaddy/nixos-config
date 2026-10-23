@@ -76,6 +76,11 @@ _: {
               "${cfg.wake-on-lan.interface}".wakeOnLan.enable = true;
             };
             useNetworkd = lib.mkIf cfg.networkd.enable true;
+            # nsncd has no cache to invalidate; restarting it on every resolv.conf
+            # change only bursts it into its start limit during boot
+            resolvconf.extraConfig = lib.mkIf config.services.nscd.enableNsncd ''
+              libc_restart=true
+            '';
           };
 
           systemd.network.enable = lib.mkIf cfg.networkd.enable true;

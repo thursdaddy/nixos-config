@@ -18,7 +18,7 @@
         };
 
         animations = {
-          enabled = true;
+          enabled = false;
         };
 
         background = [
@@ -48,7 +48,7 @@
 
         label = {
           monitor = "DP-1";
-          text = ''cmd[update:10] echo "<b>$(date +'%_I:%M:%S')</b>"'';
+          text = ''cmd[update:1000] echo "<b>$(date +'%_I:%M:%S')</b>"'';
           text_align = "center";
           color = "rgba(255, 255, 255, 1.0)";
           font_size = "80";
@@ -102,14 +102,12 @@
           ];
           onSuccess = [ "unlock.target" ];
           serviceConfig = {
-            Type = "forking";
-            Environment = [
-              "WAYLAND_DISPLAY=wayland-1"
-              "XDG_RUNTIME_DIR=/run/user/1000"
-            ];
+            Type = "simple";
             ExecCondition = "${pkgs.bash}/bin/bash -c '! ${lib.getExe' pkgs.busybox "pidof"} hyprlock'";
-            ExecStart = "${pkgs.bash}/bin/bash -c '${lib.getExe pkgs.unstable.hyprlock} --grace 3 & sleep 1'";
-            Restart = "no";
+            ExecStart = "${lib.getExe pkgs.unstable.hyprlock} --immediate-render --no-fade-in";
+            ExecStartPost = "${pkgs.coreutils}/bin/sleep 2";
+            Restart = "on-failure";
+            RestartSec = 1;
           };
         };
       };

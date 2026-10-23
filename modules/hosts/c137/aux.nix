@@ -29,16 +29,15 @@ _: {
 
       # disable devices that trigger wake
       systemd.services.udev-suspend-fix = {
-        description = "add udev rule to fix systemctl suspend";
+        description = "disable ACPI wakeup devices to fix systemctl suspend";
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           Type = "oneshot";
         };
         script = ''
-          devices=(GP12 BXBR GP13 SWUS SWDS GPP8 GPP0)
-          for device in $devices; do
-            if $(grep -qw "^$device.*enabled" /proc/acpi/wakeup); then
-              echo $device | tee /proc/acpi/wakeup
+          for device in GP12 BXBR GP13 SWUS SWDS GPP8 GPP0; do
+            if grep -qw "^$device.*enabled" /proc/acpi/wakeup; then
+              echo "$device" > /proc/acpi/wakeup
             fi
           done
         '';

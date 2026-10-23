@@ -8,7 +8,7 @@
     }:
     let
       cfg = config.mine.desktop.ferrosonic;
-      
+
       ferrosonic = pkgs.rustPlatform.buildRustPackage rec {
         pname = "ferrosonic";
         version = "0.5.0";
@@ -21,20 +21,20 @@
         };
 
         cargoHash = "sha256-0/1DNMwsFOGqTu9ivJoNQJh8bUf1vaJ9JawDsQ0O25A=";
-        
+
         doCheck = false; # Fails in Nix build sandbox due to mpv socket path
-        
+
         nativeBuildInputs = [ pkgs.pkg-config ];
         buildInputs = [ pkgs.openssl ];
       };
-      
+
     in
     {
       options.mine.desktop.ferrosonic = {
         enable = lib.mkOption {
           description = "Ferrosonic Terminal Music Player";
           type = lib.types.bool;
-          default = true;
+          default = false;
         };
       };
 

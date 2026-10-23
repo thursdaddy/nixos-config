@@ -10,99 +10,18 @@ _: {
       cfg = config.mine.desktop.hyprland;
       inherit (config.mine.base) user;
 
-      hyprlandSettings = {
-        "$mod" = "SUPER";
+      toLua = lib.generators.toLua { multiline = false; };
+      call = fn: args: "hl.${fn}(${toLua args})";
+      bind = keys: dispatcher: "hl.bind(${toLua keys}, ${dispatcher})";
+      exec = cmd: "hl.dsp.exec_cmd(${toLua cmd})";
 
-        exec-once = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP";
-        animations = {
-          enabled = true;
-          bezier = [
-            "overshot, 0.05, 0.9, 0.1, 1.1"
-            "easeOutQuint, 0.23, 1, 0.32, 1"
-          ];
-          animation = [
-            "windowsIn, 1, 5, easeOutQuint, slidefade"
-            "windowsOut, 1, 3, easeOutQuint, popin 50%"
-            "windowsMove, 1, 3, easeOutQuint, popin 50%"
-            "workspaces, 1, 5, overshot, slidevert"
-            "fade, 1, 5, default"
-            "border, 1, 20, default" # Slow border color fade
-          ];
-        };
+      mod = "SUPER";
 
-        bind = [
-          "$mod, space, exec, fuzzel"
-          "$mod_SHIFT, space, togglefloating"
-          "$mod, return, exec, ghostty"
-          "$mod_SHIFT, return, exec, [float;noanim] ghostty"
-          "$mod, F, fullscreen"
-          "$mod, E, exec, bemoji -c"
-          "$mod, G, exec, grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
-          "$mod_SHIFT, B, exec, vivaldi"
-          "$mod_SHIFT, D, exec, discord"
-          "$mod_SHIFT, F, fullscreen, 1"
-          "$mod_SHIFT, G, exec, grim -g \"$(slurp)\" - | wl-copy"
-          "$mod_SHIFT, O, exec, obsidian"
-          "$mod_SHIFT, P, exec, plex-desktop"
-          "$mod_SHIFT, Q, killactive"
-          "$mod_SHIFT, X, exec, loginctl lock-session"
-          "$mod_SHIFT, Z, exec, systemctl suspend"
-          "$mod_SHIFT, Y, exec, ${lib.getExe pkgs.chromium} --app=https://youtube.com"
-          "$mod_SHIFT, M, exec, ${lib.getExe pkgs.chromium} --app=https://music.youtube.com"
-          # Mouse Focus
-          "$mod, H, movefocus, l"
-          "$mod, L, movefocus, r"
-          "$mod, K, movefocus, u"
-          "$mod, J, movefocus, d"
-          # Window Management
-          "$mod_SHIFT, H, movewindoworgroup, l"
-          "$mod_SHIFT, L, movewindoworgroup, r"
-          "$mod_SHIFT, K, movewindoworgroup, u"
-          "$mod_SHIFT, J, movewindoworgroup, d"
-          # Workspace Switcher
-          "$mod, TAB, workspace, previous"
-          "$mod, T, togglegroup"
-          "$mod, C, changegroupactive, b"
-          "$mod, V, changegroupactive, f"
-          "$mod_SHIFT, v, layoutmsg, togglesplit"
-        ]
-        ++ (
-          # workspaces
-          # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
-          builtins.concatLists (
-            builtins.genList (
-              x:
-              let
-                ws =
-                  let
-                    c = (x + 1) / 10;
-                  in
-                  builtins.toString (x + 1 - (c * 10));
-              in
-              [
-                "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                "$mod_SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
-              ]
-            ) 10
-          )
-        );
-
-        bindm = [
-          "$mod, mouse:272, resizewindow"
-          "$mod, mouse:273, movewindow"
-        ];
-
-        binds = {
-          allow_workspace_cycles = true;
-        };
-
-        cursor = {
-          enable_hyprcursor = true;
-        };
-
-        debug = {
-          disable_logs = false;
-        };
+      settings = {
+        animations.enabled = true;
+        binds.allow_workspace_cycles = true;
+        cursor.enable_hyprcursor = true;
+        debug.disable_logs = false;
 
         decoration = {
           dim_inactive = true;
@@ -122,89 +41,269 @@ _: {
         };
 
         group = {
-          "col.border_active" = "0xffffffff";
-          "col.border_inactive" = "0xff000000";
+          col = {
+            border_active = "0xffffffff";
+            border_inactive = "0xff000000";
+          };
           groupbar = {
-            height = "14";
-            font_size = "12";
-            indicator_height = "2";
+            height = 14;
+            font_size = 12;
+            indicator_height = 2;
             text_color = "0xffffffff";
-            "col.active" = "0xff88c0d0";
-            "col.inactive" = "0xff4c566a";
+            col = {
+              active = "0xff88c0d0";
+              inactive = "0xff4c566a";
+            };
           };
         };
 
-        master = {
-          new_status = "master";
-        };
+        master.new_status = "master";
 
         misc = {
+          allow_session_lock_restore = true;
           key_press_enables_dpms = true;
         };
-
-        monitor = [
-          "DP-1, 2560x1440@165, 90x0, 1"
-          "DP-2, 3840x1600@144, 0x1440, 1"
-          "DP-3, 2560x1440@120, 3840x480, 1, transform, 3"
-        ];
-
-        windowrule = [
-          "fullscreen 1, match:class ^steam_app_[0-9]+$"
-          "maximize 1, match:class Vivaldi-stable match:initial_title ^192.168.10.189/$"
-          "maximize 1, match:class chrome-music.youtube.com__-Default"
-          "maximize 1, match:class chrome-youtube.com__-Default"
-          "no_dim on, match:class ^steam_app_[0-9]+$"
-          "no_dim on, match:workspace 2"
-          "no_dim on, match:workspace 8"
-          "render_unfocused 1, match:class ^steam_app_[0-9]+$"
-          "size 90% 90%, match:class chrome-music.youtube.com__-Default"
-          "size 90% 90%, match:class chrome-youtube.com__-Default"
-          "workspace 10 silent, match:class steam"
-          "workspace 4 silent, match:class Bitwarden"
-          "workspace 4 silent, match:class \"Proton Mail\""
-          "workspace 5 silent, match:class discord"
-          "workspace 5 silent, match:class Element"
-          "workspace 6 silent, match:class obsidian"
-          "workspace 8 silent, match:class Vivaldi-stable match:initial_title ^192.168.10.189/$"
-          "workspace 8 silent, match:class chrome-music.youtube.com__-Default"
-          "workspace 8 silent, match:class chrome-youtube.com__-Default"
-          "workspace 9, match:class ^steam_app_[0-9]+$"
-        ];
-
-        workspace = [
-          "1, monitor:DP-2, gapsin:3, gapsout:3"
-          "2, monitor:DP-2"
-          "3, monitor:DP-2"
-          "4, monitor:DP-2"
-          "5, monitor:DP-3"
-          "6, monitor:DP-3"
-          "7, monitor:DP-3"
-          "8, monitor:DP-1, gapsin:0, gapsout:0"
-          "9, monitor:DP-1"
-          "10, monitor:DP-1"
-        ];
-
-        layerrule = [
-          "blur on, match:namespace waybar"
-          "ignore_alpha 0.1, match:namespace waybar"
-          "blur on, match:namespace swaync-control-center"
-          "ignore_alpha 0.1, match:namespace swaync-control-center"
-          "blur on, match:namespace swaync-notification-window"
-          "ignore_alpha 0.1, match:namespace swaync-notification-window"
-          "no_anim on, match:namespace swaync-notification-window"
-        ];
       };
 
-      hyprlandConf = lib.thurs.toHyprconf {
-        attrs = hyprlandSettings;
-        importantPrefixes = [
-          "$"
-          "bezier"
-          "source"
-          "name"
-          "output"
-        ];
+      curves = [
+        ''hl.curve("overshot", { type = "bezier", points = { { 0.05, 0.9 }, { 0.1, 1.1 } } })''
+        ''hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })''
+      ];
+
+      animations = [
+        {
+          leaf = "windowsIn";
+          speed = 5;
+          bezier = "easeOutQuint";
+          style = "slidefade";
+        }
+        {
+          leaf = "windowsOut";
+          speed = 3;
+          bezier = "easeOutQuint";
+          style = "popin 50%";
+        }
+        {
+          leaf = "windowsMove";
+          speed = 3;
+          bezier = "easeOutQuint";
+          style = "popin 50%";
+        }
+        {
+          leaf = "workspaces";
+          speed = 5;
+          bezier = "overshot";
+          style = "slidevert";
+        }
+        {
+          leaf = "fade";
+          speed = 5;
+          bezier = "default";
+        }
+        {
+          leaf = "border";
+          speed = 20; # Slow border color fade
+          bezier = "default";
+        }
+      ];
+
+      monitors = [
+        {
+          output = "DP-1";
+          mode = "2560x1440@165";
+          position = "90x0";
+          scale = 1;
+        }
+        {
+          output = "DP-2";
+          mode = "3840x1600@144";
+          position = "0x1440";
+          scale = 1;
+        }
+        {
+          output = "DP-3";
+          mode = "2560x1440@120";
+          position = "3840x480";
+          scale = 1;
+          transform = 3;
+        }
+      ];
+
+      workspaceRules = [
+        {
+          workspace = "1";
+          monitor = "DP-2";
+          gaps_in = 3;
+          gaps_out = 3;
+        }
+        {
+          workspace = "2";
+          monitor = "DP-2";
+        }
+        {
+          workspace = "3";
+          monitor = "DP-2";
+        }
+        {
+          workspace = "4";
+          monitor = "DP-2";
+        }
+        {
+          workspace = "5";
+          monitor = "DP-3";
+        }
+        {
+          workspace = "6";
+          monitor = "DP-3";
+        }
+        {
+          workspace = "7";
+          monitor = "DP-3";
+        }
+        {
+          workspace = "8";
+          monitor = "DP-1";
+          gaps_in = 0;
+          gaps_out = 0;
+        }
+        {
+          workspace = "9";
+          monitor = "DP-1";
+        }
+        {
+          workspace = "10";
+          monitor = "DP-1";
+        }
+      ];
+
+      workspaceByClass = {
+        steam = "10";
+        Bitwarden = "4";
+        proton-mail = "4";
+        discord = "5";
+        element-desktop = "5";
+        "md.obsidian.Obsidian" = "6";
       };
+
+      windowRules = [
+        {
+          match.class = "^steam_app_[0-9]+$";
+          fullscreen = true;
+          no_dim = true;
+          render_unfocused = true;
+          workspace = "9";
+        }
+        {
+          match.workspace = "2";
+          no_dim = true;
+        }
+        {
+          match.workspace = "8";
+          no_dim = true;
+        }
+      ]
+      ++
+        map
+          (class: {
+            match.class = class;
+            maximize = true;
+            size = "90% 90%";
+            workspace = "8 silent";
+          })
+          [
+            "chrome-music.youtube.com__-Default"
+            "chrome-youtube.com__-Default"
+            "org.jellyfin.JellyfinDesktop"
+          ]
+      ++ lib.mapAttrsToList (class: ws: {
+        match.class = class;
+        workspace = "${ws} silent";
+      }) workspaceByClass;
+
+      layerRules = [
+        {
+          match.namespace = "waybar";
+          blur = true;
+          ignore_alpha = 0.1;
+        }
+        {
+          match.namespace = "swaync-control-center";
+          blur = true;
+          ignore_alpha = 0.1;
+        }
+        {
+          match.namespace = "swaync-notification-window";
+          blur = true;
+          ignore_alpha = 0.1;
+          no_anim = true;
+        }
+      ];
+
+      binds = [
+        (bind "${mod} + space" (exec "fuzzel"))
+        (bind "${mod} + SHIFT + space" "hl.dsp.window.float()")
+        (bind "${mod} + return" (exec "ghostty"))
+        (bind "${mod} + SHIFT + return" "hl.dsp.exec_cmd(\"ghostty\", { float = true, no_anim = true })")
+        (bind "${mod} + F" "hl.dsp.window.fullscreen()")
+        (bind "${mod} + E" (exec "bemoji -c"))
+        (bind "${mod} + G" (
+          exec "grim -g \"$(slurp)\" \"${user.homeDir}/pictures/screenshots/$(date +'%F_%H-%M-%S_slurp')\""
+        ))
+        (bind "${mod} + SHIFT + B" (exec "vivaldi"))
+        (bind "${mod} + SHIFT + D" (exec "discord"))
+        (bind "${mod} + SHIFT + F" "hl.dsp.window.fullscreen({ mode = \"maximized\" })")
+        (bind "${mod} + SHIFT + G" (exec "grim -g \"$(slurp)\" - | wl-copy"))
+        (bind "${mod} + SHIFT + O" (exec "obsidian"))
+        (bind "${mod} + SHIFT + P" (exec "${lib.getExe pkgs.jellyfin-desktop}"))
+        (bind "${mod} + SHIFT + Q" "hl.dsp.window.close()")
+        (bind "${mod} + SHIFT + X" (exec "loginctl lock-session"))
+        (bind "${mod} + SHIFT + Z" (exec "systemctl suspend"))
+        (bind "${mod} + SHIFT + Y" (exec "${lib.getExe pkgs.chromium} --app=https://youtube.com"))
+        (bind "${mod} + SHIFT + M" (exec "${lib.getExe pkgs.chromium} --app=https://music.youtube.com"))
+        (bind "${mod} + mouse:272" "hl.dsp.window.resize()")
+        (bind "${mod} + mouse:273" "hl.dsp.window.drag()")
+        # Workspace Switcher
+        (bind "${mod} + TAB" "hl.dsp.focus({ workspace = \"previous\" })")
+        (bind "${mod} + T" "hl.dsp.group.toggle()")
+        (bind "${mod} + C" "hl.dsp.group.prev()")
+        (bind "${mod} + V" "hl.dsp.group.next()")
+        (bind "${mod} + SHIFT + V" "hl.dsp.layout(\"togglesplit\")")
+      ]
+      ++ lib.concatLists (
+        lib.mapAttrsToList
+          (key: direction: [
+            (bind "${mod} + ${key}" "hl.dsp.focus({ direction = \"${direction}\" })")
+            (bind "${mod} + SHIFT + ${key}" "hl.dsp.window.move({ direction = \"${direction}\", group_aware = true })")
+          ])
+          {
+            H = "left";
+            L = "right";
+            K = "up";
+            J = "down";
+          }
+      )
+      ++ lib.concatMap (
+        # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
+        ws:
+        let
+          key = toString (lib.mod ws 10);
+        in
+        [
+          (bind "${mod} + ${key}" "hl.dsp.focus({ workspace = ${toString ws} })")
+          (bind "${mod} + SHIFT + ${key}" "hl.dsp.window.move({ workspace = ${toString ws} })")
+        ]
+      ) (lib.range 1 10);
+
+      hyprlandLua = lib.concatLines (
+        [ (call "config" settings) ]
+        ++ map (call "monitor") monitors
+        ++ curves
+        ++ map (a: call "animation" (a // { enabled = true; })) animations
+        ++ map (call "workspace_rule") workspaceRules
+        ++ map (call "window_rule") windowRules
+        ++ map (call "layer_rule") layerRules
+        ++ binds
+      );
 
     in
     {
@@ -215,13 +314,14 @@ _: {
       config = lib.mkIf cfg.enable {
         programs.hyprland = {
           enable = true;
+          package = pkgs.unstable.hyprland;
           xwayland.enable = true;
           withUWSM = true;
           systemd.setPath.enable = true;
         };
 
         environment = {
-          etc."xdg/hypr/hyprland.conf".text = hyprlandConf;
+          etc."xdg/hypr/hyprland.lua".text = hyprlandLua;
           sessionVariables = {
             NIXOS_OZONE_WL = "1";
             QT_QPA_PLATFORM = "wayland;xcb";
@@ -240,16 +340,16 @@ _: {
             hyprpicker
           ];
           variables = {
-            HYPRLAND_CONFIG = "/etc/xdg/hypr/hyprland.conf";
+            HYPRLAND_CONFIG = "/etc/xdg/hypr/hyprland.lua";
           };
         };
 
-        xdg.portal = {
-          enable = true;
-          extraPortals = [
-            pkgs.xdg-desktop-portal-hyprland
-          ];
-        };
+        # gtk.nix sets config.common, whose portals.conf would otherwise shadow
+        # the hyprland-portals.conf shipped in the hyprland package
+        xdg.portal.config.hyprland.default = [
+          "hyprland"
+          "gtk"
+        ];
       };
     };
 }

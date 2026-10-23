@@ -10,6 +10,11 @@
     let
       cfg = config.mine.desktop.hypridle;
 
+      # hyprctl dispatch takes a lua dispatcher expression when hyprland runs a lua config
+      dpms =
+        action:
+        "${lib.getExe' config.programs.hyprland.package "hyprctl"} dispatch 'hl.dsp.dpms({ action = \"${action}\" })'";
+
       # Having ongoing issues with hypridle crashing hyprlock and from looking at logs
       # it seems like hypridle is not behaving properly when its executing commands simliar to:
       # https://github.com/hyprwm/hypridle/issues/166
@@ -30,8 +35,8 @@
           }
           {
             timeout = 600;
-            on-timeout = "${lib.getExe' pkgs.hyprland "hyprctl"} dispatch dpms off";
-            on-resume = "${lib.getExe' pkgs.hyprland "hyprctl"} dispatch dpms on";
+            on-timeout = dpms "off";
+            on-resume = dpms "on";
           }
           {
             timeout = 900;
@@ -60,7 +65,7 @@
             ConditionEnvironment = "WAYLAND_DISPLAY";
           };
           serviceConfig = {
-            ExecStart = "${lib.getExe pkgs.hypridle}";
+            ExecStart = "${lib.getExe pkgs.unstable.hypridle}";
             Type = "simple";
             Restart = "always";
             RestartSec = "10s";

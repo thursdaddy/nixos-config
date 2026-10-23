@@ -1,13 +1,27 @@
 _: {
   flake.modules.nixos.apps =
     {
-      config,
       lib,
       pkgs,
       ...
     }:
     let
-      package = pkgs.unstable.discord;
+      unwrapped = pkgs.unstable.discord;
+      discordBypass = pkgs.writeShellScript "discord-vpn-bypass" ''
+        if [ "$(${pkgs.coreutils}/bin/id -gn)" != "vpn-bypass" ]; then
+          exec /run/wrappers/bin/sg vpn-bypass -c "exec ${lib.getExe unwrapped} ''${*@Q}"
+        fi
+        exec ${lib.getExe unwrapped} "$@"
+      '';
+      package = pkgs.symlinkJoin {
+        name = "discord-vpn-bypass-${unwrapped.version}";
+        paths = [ unwrapped ];
+        postBuild = ''
+          rm -f $out/bin/Discord $out/bin/discord
+          ln -s ${discordBypass} $out/bin/Discord
+          ln -s $out/bin/Discord $out/bin/discord
+        '';
+      };
     in
     {
       environment.systemPackages = [
@@ -20,9 +34,13 @@ _: {
         bindsTo = [ "graphical-session.target" ];
         wantedBy = [ "graphical-session.target" ];
         partOf = [ "graphical-session.target" ];
-        path = [ config.system.path ];
+        path = [
+          "/run/wrappers"
+          "/run/current-system/sw"
+        ];
+        restartIfChanged = false;
         serviceConfig = {
-          ExecStart = "${lib.getExe package}";
+          ExecStart = "${package}/bin/Discord";
           Restart = "on-failure";
           RestartSec = "5s";
           KillMode = "mixed";

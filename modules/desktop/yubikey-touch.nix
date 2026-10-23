@@ -5,6 +5,8 @@ _: {
       ...
     }:
     {
+      services.pcscd.enable = true;
+
       programs.yubikey-touch-detector = {
         enable = true;
         libnotify = true;
