@@ -28,6 +28,9 @@ rebuild () {
       sudo darwin-rebuild switch --flake .\#mbp --builders "" "${EXTRA_ARGS[@]}"
     else
       printf "${BLUE}Rebuilding... ${GREEN}${TARGET} (local nixos)${NC}\n"
+      if [[ -z "${SSH_AUTH_SOCK:-}" && ! "${HOSTNAME:-$HOST}" =~ "mbp" ]]; then
+        export SSH_AUTH_SOCK="/home/thurs/.ssh/ssh_auth_sock"
+      fi
       nixos-rebuild --flake .\#"$TARGET" "${build_host_args[@]}" --no-reexec --use-substitutes --sudo switch "${EXTRA_ARGS[@]}"
     fi
   elif [[ "$TARGET" == "mbp" ]]; then
