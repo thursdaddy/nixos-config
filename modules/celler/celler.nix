@@ -10,27 +10,6 @@
       name = "celler";
       port = 5455; # Changed from 5454 to 5455 to avoid port conflicts with Attic
       cfg = config.mine.services.celler;
-
-      initReplicationScript = pkgs.writeText "init-replication.sh" ''
-        #!/bin/bash
-        set -e
-        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-            CREATE ROLE replicator WITH REPLICATION LOGIN PASSWORD '$REPLICATION_PASSWORD';
-        EOSQL
-        echo "host replication replicator 0.0.0.0/0 md5" >> "$PGDATA/pg_hba.conf"
-      '';
-
-      celler-rrsync-shim = pkgs.writeShellScriptBin "celler-rrsync-shim" ''
-        case "$SSH_ORIGINAL_COMMAND" in
-          "rsync --server "*"/var/lib/cellerd/storage/" | "rsync --server "*"/var/lib/cellerd/storage")
-            exec ${pkgs.rsync}/bin/rsync ''${SSH_ORIGINAL_COMMAND#rsync}
-            ;;
-          *)
-            echo "Access denied: Only rsync server mode for celler storage is permitted." >&2
-            exit 1
-            ;;
-        esac
-      '';
     in
     {
       options = {
@@ -76,34 +55,6 @@
             default = "monolithic";
             description = "Celler execution mode";
           };
-          replication = {
-            enable = lib.mkEnableOption "Enable PostgreSQL streaming replication";
-            role = lib.mkOption {
-              type = lib.types.enum [ "primary" "standby" ];
-              description = "PostgreSQL replication role (primary or standby)";
-            };
-            primaryHost = lib.mkOption {
-              type = lib.types.str;
-              default = "192.168.10.60";
-              description = "Primary PostgreSQL host IP";
-            };
-          };
-          backupSync = {
-            enable = lib.mkEnableOption "Enable NAR storage sync on path change";
-            targetHost = lib.mkOption {
-              type = lib.types.str;
-              description = "The target passive host to sync data to.";
-            };
-            interface = lib.mkOption {
-              type = lib.types.str;
-              description = "The network interface carrying the Virtual IP.";
-            };
-            virtualIp = lib.mkOption {
-              type = lib.types.str;
-              default = "192.168.10.54";
-              description = "The Virtual IP to check.";
-            };
-          };
         };
       };
 
@@ -113,7 +64,6 @@
             traefik.static = {
               celler = {
                 inherit port;
-                dns = false; # Prevent blocky from auto-scraping host-specific IPs
                 labels = {
                   "traefik.http.services.celler.loadbalancer.serverstransport" = "cellerTransport";
                   "traefik.http.serversTransports.cellerTransport.forwardingTimeouts.responseHeaderTimeout" = "3600s";
@@ -144,11 +94,7 @@
               type = "local";
               path = "/var/lib/cellerd/storage";
             };
-            database.url =
-              if cfg.replication.enable then
-                "postgresql://celler:${config.sops.placeholder."attic/DB_PASS"}@127.0.0.1:54546/celler"
-              else
-                lib.mkDefault "sqlite:///var/lib/cellerd/server.db?mode=rwc";
+            database.url = "postgresql://celler:${config.sops.placeholder."attic/DB_PASS"}@127.0.0.1:54546/celler";
           };
         };
 
@@ -158,12 +104,10 @@
           pull = if config.virtualisation.oci-containers.backend == "podman" then "newer" else "missing";
           hostname = "celler-db";
           ports = [
-            "0.0.0.0:54546:5432" # Use port 54546 to avoid conflicts with attic-db (54545)
+            "127.0.0.1:54546:5432" # Use port 54546 to avoid conflicts with attic-db (54545)
           ];
           volumes = [
             "/opt/configs/celler/db:/var/lib/postgresql/data"
-          ] ++ lib.optionals (cfg.replication.enable && cfg.replication.role == "primary") [
-            "${initReplicationScript}:/docker-entrypoint-initdb.d/init-replication.sh:ro"
           ];
           environmentFiles = [
             config.sops.templates."celler-db".path
@@ -189,101 +133,23 @@
             "cellerd-server.toml" = {
               owner = config.services.cellerd.user;
               group = config.services.cellerd.group;
-              file = (pkgs.formats.toml { }).generate "server.toml" config.services.cellerd.settings;
+              content = builtins.readFile (
+                (pkgs.formats.toml { }).generate "server.toml" config.services.cellerd.settings
+              );
             };
             "celler-db".content = ''
               POSTGRES_PASSWORD=${config.sops.placeholder."attic/DB_PASS"}
-              REPLICATION_PASSWORD=${config.sops.placeholder."attic/DB_PASS"}
             '';
           };
         };
 
-        networking.firewall.allowedTCPPorts = [ 5455 54546 ];
-
-        # Standby database initialization hook
-        systemd.services.podman-celler-db = lib.mkIf (cfg.replication.enable && cfg.replication.role == "standby") {
-          after = [ "sops-nix.service" ];
-          serviceConfig.ExecStartPre = pkgs.writeShellScript "celler-db-standby-init" ''
-            if [ ! -f /opt/configs/celler/db/pgdata/standby.signal ]; then
-              echo "Standby database not initialized. Performing pg_basebackup..."
-              mkdir -p /opt/configs/celler/db
-              
-              PASSWORD=$(${pkgs.gnugrep}/bin/grep REPLICATION_PASSWORD ${config.sops.templates."celler-db".path} | ${pkgs.coreutils}/bin/cut -d= -f2)
-              
-              rm -rf /opt/configs/celler/db/pgdata
-              
-              PGPASSWORD=$PASSWORD ${pkgs.podman}/bin/podman run --rm \
-                -e PGPASSWORD \
-                -v /opt/configs/celler/db:/var/lib/postgresql/data \
-                postgres:17.6-alpine \
-                pg_basebackup -h ${cfg.replication.primaryHost} -p 54546 -U replicator -D /var/lib/postgresql/data/pgdata -Fp -Xs -R
-                
-              chown -R root:root /opt/configs/celler/db
-            fi
-          '';
-        };
-
-
+        networking.firewall.allowedTCPPorts = [ 5455 ];
 
         users.groups.cellerd = { };
         users.users.cellerd = {
           isSystemUser = true;
           group = "cellerd";
           description = "Celler Daemon User";
-        };
-
-        users.users.celler-sync = {
-          isSystemUser = true;
-          group = "cellerd";
-          description = "Celler Active-Standby Sync User";
-          createHome = true;
-          home = "/var/lib/celler-sync";
-          shell = pkgs.bash;
-        };
-
-        # Active-to-passive synchronization service for NAR files
-        systemd.services.celler-sync = lib.mkIf cfg.backupSync.enable {
-          description = "Sync Celler NAR storage to passive node";
-          wants = [ "network-online.target" ];
-          after = [ "network-online.target" ];
-          serviceConfig = {
-            Type = "oneshot";
-            User = "celler-sync";
-            Group = "cellerd";
-            ExecStart = pkgs.writeShellScript "celler-sync.sh" ''
-              # Check if this node is currently the active MASTER (holds the VIP)
-              if ! ${pkgs.iproute2}/bin/ip addr show dev ${cfg.backupSync.interface} | grep -q "${cfg.backupSync.virtualIp}"; then
-                echo "This node is not the active MASTER. Skipping sync."
-                exit 0
-              fi
-
-              # Generate dynamic SSH key pair if not exists
-              if [ ! -f /var/lib/celler-sync/.ssh/id_ed25519 ]; then
-                echo "Generating SSH key pair for celler-sync..."
-                mkdir -p /var/lib/celler-sync/.ssh
-                chmod 700 /var/lib/celler-sync/.ssh
-                ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -N "" -f /var/lib/celler-sync/.ssh/id_ed25519
-                chown -R celler-sync:cellerd /var/lib/celler-sync/.ssh
-              fi
-
-              echo "Syncing NAR storage..."
-              ${pkgs.rsync}/bin/rsync -avz --no-owner --no-group --omit-dir-times --delete \
-                -e "${pkgs.openssh}/bin/ssh -i /var/lib/celler-sync/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new" \
-                /var/lib/cellerd/storage/ celler-sync@${cfg.backupSync.targetHost}:/var/lib/cellerd/storage/
-              echo "Sync complete."
-            '';
-          };
-        };
-
-        # Periodically trigger sync to synchronize new NARs
-        systemd.timers.celler-sync = lib.mkIf cfg.backupSync.enable {
-          description = "Timer to trigger Celler NAR storage synchronization";
-          timerConfig = {
-            OnBootSec = "15m";
-            OnUnitActiveSec = "15m";
-            Unit = "celler-sync.service";
-          };
-          wantedBy = [ "timers.target" ];
         };
 
         systemd.services.cellerd = {
@@ -351,7 +217,6 @@
 
         environment.systemPackages = [
           config.services.cellerd.package
-          celler-rrsync-shim
         ];
 
         environment.etc =

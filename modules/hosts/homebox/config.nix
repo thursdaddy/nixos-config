@@ -40,55 +40,7 @@ _: {
         };
         services = {
           backups = enabled;
-          celler = {
-            enable = true;
-            replication = {
-              enable = true;
-              role = "primary";
-            };
-            backupSync = {
-              enable = true;
-              targetHost = "streambox";
-              interface = "eno1";
-            };
-          };
-          keepalived = {
-            enable = true;
-            vrrpScripts = {
-              check_celler = {
-                script = "${pkgs.postgresql}/bin/pg_isready -h 127.0.0.1 -p 54546";
-                interval = 5;
-                weight = -60;
-                user = "root";
-              };
-            };
-            instances.celler = {
-              state = "BACKUP";
-              priority = 150;
-              virtualIp = "192.168.10.54/24";
-              interface = "eno1";
-              routerId = 54;
-              noPreempt = true;
-              trackScripts = [ "check_celler" ];
-              notifyMaster = ''
-                TARGET_IP="${config.mine.homelab.homebox.hostIp}"
-                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
-                /run/current-system/sw/bin/iptables -t nat -A PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
-                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
-                /run/current-system/sw/bin/iptables -t nat -A OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
-                /run/current-system/sw/bin/podman exec -u postgres celler-db pg_ctl -D /var/lib/postgresql/data/pgdata promote || true
-                systemctl start cellerd.service
-              '';
-              notifyBackup = ''
-                systemctl stop cellerd.service
-                TARGET_IP="${config.mine.homelab.homebox.hostIp}"
-                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
-                /run/current-system/sw/bin/iptables -t nat -D PREROUTING -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
-                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 443 -j DNAT --to-destination $TARGET_IP:443 || true
-                /run/current-system/sw/bin/iptables -t nat -D OUTPUT -d 192.168.10.54 -p tcp --dport 80 -j DNAT --to-destination $TARGET_IP:80 || true
-              '';
-            };
-          };
+          celler = enabled;
           victoriametrics = {
             enable = true;
             scrapeConfig = ''
@@ -142,9 +94,6 @@ _: {
               "--entrypoints.tailscale.transport.respondingtimeouts.writetimeout=3600s"
               "--entrypoints.tailscale.transport.respondingtimeouts.idletimeout=3600s"
               "--entrypoints.websecure.address=192.168.10.60:443"
-              "--entrypoints.websecure.transport.respondingtimeouts.readtimeout=3600s"
-              "--entrypoints.websecure.transport.respondingtimeouts.writetimeout=3600s"
-              "--entrypoints.websecure.transport.respondingtimeouts.idletimeout=3600s"
               "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
               "--experimental.plugins.fail2ban.version=v0.9.0"
             ];
@@ -173,6 +122,5 @@ _: {
                 servers:
                   - url: "http://127.0.0.1:8090"
       '';
-      systemd.services.cellerd.wantedBy = lib.mkForce [ ];
     };
 }
