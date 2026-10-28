@@ -1,7 +1,6 @@
 _: {
   configurations.nixos.proxbox1.module =
     {
-      config,
       lib,
       ...
     }:

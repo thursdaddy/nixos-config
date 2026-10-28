@@ -51,25 +51,25 @@
             targets = [ (getHostTarget hostName 9100) ];
             labels = { instance = hostName; };
           }) (lib.filterAttrs (hostName: hostValue:
-            hostValue.config.services.prometheus.exporters.node.enable or false
+            hostValue.config.mine.services.prometheus.exporters.node.enable or false
           ) targetConfigs);
 
           smartctlTargets = lib.mapAttrsToList (hostName: hostValue: {
             targets = [ (getHostTarget hostName 9633) ];
             labels = { instance = hostName; };
           }) (lib.filterAttrs (hostName: hostValue:
-            hostValue.config.services.prometheus.exporters.smartctl.enable or false
+            hostValue.config.mine.services.prometheus.exporters.smartctl.enable or false
           ) targetConfigs);
 
           zfsTargets = lib.mapAttrsToList (hostName: hostValue: {
             targets = [ (getHostTarget hostName 9134) ];
             labels = { instance = hostName; };
           }) (lib.filterAttrs (hostName: hostValue:
-            hostValue.config.services.prometheus.exporters.zfs.enable or false
+            hostValue.config.mine.services.prometheus.exporters.zfs.enable or false
           ) targetConfigs);
 
           blockyHosts = lib.filterAttrs (hostName: hostValue:
-            hostValue.config.services.blocky.enable or false
+            hostValue.config.mine.services.blocky.enable or false
           ) targetConfigs;
 
           blockyJobs = lib.mapAttrsToList (hostName: hostValue: {
@@ -83,7 +83,6 @@
           }) blockyHosts;
 
           hasTraefik = hostValue:
-            (hostValue.config.services.traefik.enable or false) ||
             (hostValue.config.mine.services.traefik.enable or false) ||
             (hostValue.config.mine.containers.traefik.enable or false);
 
@@ -118,21 +117,21 @@
             targets = [ (getHostTarget hostName 8428) ];
             labels = { instance = hostName; };
           }) (lib.filterAttrs (hostName: hostValue:
-            hostValue.config.services.victoriametrics.enable or false
+            hostValue.config.mine.services.victoriametrics.enable or false
           ) targetConfigs);
 
           lokiTargets = lib.mapAttrsToList (hostName: hostValue: {
             targets = [ (getHostTarget hostName 3100) ];
             labels = { instance = hostName; };
           }) (lib.filterAttrs (hostName: hostValue:
-            hostValue.config.services.loki.enable or false
+            hostValue.config.mine.services.loki.enable or false
           ) targetConfigs);
 
           alloyTargets = lib.mapAttrsToList (hostName: hostValue: {
             targets = [ (getHostTarget hostName 12346) ];
             labels = { instance = hostName; };
           }) (lib.filterAttrs (hostName: hostValue:
-            hostValue.config.services.alloy.enable or false
+            hostValue.config.mine.services.alloy.enable or false
           ) targetConfigs);
 
           yamlVal = {

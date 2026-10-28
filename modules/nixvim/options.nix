@@ -6,7 +6,7 @@ _: {
     in
     {
       programs.nixvim = {
-        nixpkgs.source = pkgs.path;
+        nixpkgs.useGlobalPackages = true;
         opts = {
           # numbers
           relativenumber = true;

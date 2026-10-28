@@ -1,13 +1,27 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
 let
-  unstablePkgs = final: prev: {
-    unstable = import inputs.unstable {
-      system = final.stdenv.hostPlatform.system;
+  unstableBySystem = lib.genAttrs [
+    "x86_64-linux"
+    "aarch64-linux"
+    "aarch64-darwin"
+  ] (
+    system:
+    import inputs.unstable {
+      inherit system;
       config.allowUnfree = true;
-    };
+    }
+  );
+
+  unstablePkgs = final: prev: {
+    unstable =
+      unstableBySystem.${final.stdenv.hostPlatform.system} or (import inputs.unstable {
+        system = final.stdenv.hostPlatform.system;
+        config.allowUnfree = true;
+      });
   };
 
   customPkgs = final: prev: {
+    antigravity = final.callPackage ../packages/antigravity { pkgs = final; };
     darwinGit = final.callPackage ../packages/darwinGit { pkgs = final; };
     gotify-alert = final.callPackage ../packages/gotify-alert { pkgs = final; };
     hass-gotify = final.home-assistant.python3Packages.callPackage ../packages/hass-gotify { };
