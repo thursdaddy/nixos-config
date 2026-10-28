@@ -100,6 +100,14 @@
                     zlib-ng
                     kegtron-ble
                   ];
+                packageOverrides = self: super: {
+                  pylutron-caseta = super.pylutron-caseta.overridePythonAttrs (oldAttrs: {
+                    postPatch = (oldAttrs.postPatch or "") + ''
+                      substituteInPlace src/pylutron_caseta/smartbridge.py \
+                        --replace-fail 'ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)' 'ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT); ssl_context.check_hostname = False'
+                    '';
+                  });
+                };
               }
             );
             lovelaceConfigWritable = true;
