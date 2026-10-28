@@ -56,6 +56,7 @@ _: {
 
         desktop = {
           amd = enabled;
+          antigravity = enabled;
           cursor = enabled;
           greetd = enabled;
           hypridle = enabled;
@@ -153,13 +154,12 @@ _: {
       ];
 
       networking.firewall = {
-        enable = lib.mkForce false;
         extraCommands = ''
           iptables -I FORWARD 1 -i br+ -j ACCEPT
           iptables -I FORWARD 1 -o br+ -j ACCEPT
         '';
+        trustedInterfaces = [ "docker0" ];
       };
-      networking.firewall.trustedInterfaces = [ "docker0" ];
 
       virtualisation.docker.storageDriver = "overlay2";
       fileSystems."/var/lib/docker" = {

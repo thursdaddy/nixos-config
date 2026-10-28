@@ -2,7 +2,10 @@ _: {
   flake.modules.nixos.desktop = {
     programs.seahorse.enable = true; # keyring GUI
 
-    security.pam.services.login.enableGnomeKeyring = true;
+    security.pam.services = {
+      greetd.enableGnomeKeyring = true;
+      login.enableGnomeKeyring = true;
+    };
 
     services = {
       gnome = {

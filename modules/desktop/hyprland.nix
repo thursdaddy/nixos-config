@@ -129,6 +129,21 @@ _: {
         }
       ];
 
+      monitorFallbacks = {
+        "DP-3" = [
+          "DP-2"
+          "DP-1"
+        ];
+        "DP-2" = [
+          "DP-1"
+          "DP-3"
+        ];
+        "DP-1" = [
+          "DP-2"
+          "DP-3"
+        ];
+      };
+
       workspaceRules = [
         {
           workspace = "1";
@@ -294,12 +309,20 @@ _: {
         ]
       ) (lib.range 1 10);
 
+      workspaceFallbackLua = ''
+        do
+          local base_workspace_rules = ${toLua workspaceRules}
+          local monitor_fallbacks = ${toLua monitorFallbacks}
+        ${builtins.readFile ./hyprland/workspace-fallback.lua}
+        end
+      '';
+
       hyprlandLua = lib.concatLines (
         [ (call "config" settings) ]
         ++ map (call "monitor") monitors
         ++ curves
         ++ map (a: call "animation" (a // { enabled = true; })) animations
-        ++ map (call "workspace_rule") workspaceRules
+        ++ [ workspaceFallbackLua ]
         ++ map (call "window_rule") windowRules
         ++ map (call "layer_rule") layerRules
         ++ binds
