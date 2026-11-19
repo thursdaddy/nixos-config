@@ -20,7 +20,6 @@ _: {
 
         containers = {
           settings.backend = "podman";
-          audiobookshelf = enabled;
           immich = enabled;
           jellyfin = enabled;
           jellystat = enabled;

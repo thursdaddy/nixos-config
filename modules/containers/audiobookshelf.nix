@@ -29,7 +29,7 @@ _: {
             enable = true;
             mounts = {
               "/media/books" = {
-                device = "192.168.10.12:/media/books";
+                device = "192.168.10.12:/fast/books";
               };
             };
           };
@@ -62,7 +62,12 @@ _: {
             };
           in
           {
-            services."backup-${name}" = backup.service;
+            services = {
+              "backup-${name}" = backup.service;
+              "${config.mine.containers.settings.backend}-${name}" = {
+                unitConfig.RequiresMountsFor = [ "/media/books" ];
+              };
+            };
             timers."backup-${name}" = backup.timer;
           };
 

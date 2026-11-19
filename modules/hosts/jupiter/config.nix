@@ -20,6 +20,7 @@ _: {
 
         containers = {
           settings.backend = "podman";
+          bookorbit = enabled;
           commafeed = enabled;
           greenbook = enabled;
           hoarder = enabled;
