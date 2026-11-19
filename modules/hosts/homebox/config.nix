@@ -56,7 +56,7 @@ _: {
             '';
           };
           gitea-runner = {
-            enable = true;
+            enable = false;
             runners = {
               "${config.networking.hostName}" = {
                 labels = [
@@ -100,27 +100,36 @@ _: {
           };
         };
       };
-      
-      environment.etc."traefik/static/tesla-key.yaml".text = ''
-        http:
-          routers:
-            tesla-key:
-              rule: "Host(`homebox.fable-pinecone.ts.net`) && PathPrefix(`/.well-known/appspecific/com.tesla.3p.public-key.pem`)"
-              service: "tesla-key"
-              entryPoints:
-                - "tailscale"
+
+      environment.etc =
+        let
+          alloyTraefik = lib.thurs.mkAlloyJournal {
+            name = "traefik";
+          };
+        in
+        {
+          "${alloyTraefik.name}" = alloyTraefik.value;
+          "traefik/static/tesla-key.yaml".text = ''
+            http:
+              routers:
+                tesla-key:
+                  rule: "Host(`homebox.fable-pinecone.ts.net`) && PathPrefix(`/.well-known/appspecific/com.tesla.3p.public-key.pem`)"
+                  service: "tesla-key"
+                  entryPoints:
+                    - "tailscale"
+                  middlewares:
+                    - "teslarewrite"
               middlewares:
-                - "teslarewrite"
-          middlewares:
-            teslarewrite:
-              replacePathRegex:
-                regex: "^/.well-known/appspecific/com.tesla.3p.public-key.pem$"
-                replacement: "/local/tesla/com.tesla.3p.public-key.pem"
-          services:
-            tesla-key:
-              loadBalancer:
-                servers:
-                  - url: "http://127.0.0.1:8090"
-      '';
+                teslarewrite:
+                  replacePathRegex:
+                    regex: "^/.well-known/appspecific/com.tesla.3p.public-key.pem$"
+                    replacement: "/local/tesla/com.tesla.3p.public-key.pem"
+              services:
+                tesla-key:
+                  loadBalancer:
+                    servers:
+                      - url: "http://127.0.0.1:8090"
+          '';
+        };
     };
 }
