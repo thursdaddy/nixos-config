@@ -35,7 +35,7 @@ window#waybar {
     border-radius: 12px;
 }
 
-#workspaces, #clock.time, #clock.date, #network, #pulseaudio, #window, #tray, #cpu, #memory, #temperature, #custom-notification, #mpris {
+#workspaces, #clock.time, #clock.date, #network, #pulseaudio, #window, #tray, #cpu, #memory, #temperature, #custom-notification, #custom-hypridle, #mpris {
     padding: 0 5px;
 }
 
@@ -106,6 +106,20 @@ window#waybar {
 #custom-notification.dnd-none,
 #custom-notification.inhibited-notification,
 #custom-notification.inhibited-none {
+    color: @red;
+    text-shadow: 0px 0px 6px rgba(191, 97, 106, 0.5);
+}
+
+#custom-hypridle,
+#custom-hypridle.active {
+    color: @fg;
+}
+
+#custom-hypridle.inhibited {
+    color: @purple;
+}
+
+#custom-hypridle.stopped {
     color: @red;
     text-shadow: 0px 0px 6px rgba(191, 97, 106, 0.5);
 }

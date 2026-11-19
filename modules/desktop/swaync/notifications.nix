@@ -31,7 +31,7 @@ _: {
 
         "xdg/swaync/config.json".text = builtins.toJSON {
           "$schema" = "${pkgs.swaynotificationcenter}/etc/xdg/swaync/config.schema.json";
-          "positionX" = "center";
+          "positionX" = "right";
           "positionY" = "top";
           "layer" = "top";
           "layer-shell" = true;
@@ -39,6 +39,7 @@ _: {
           "control-center-width" = 450;
           "control-center-height" = 500;
           "control-center-margin-top" = 15;
+          "control-center-margin-right" = 15;
           "notification-window-width" = 400;
           "notification-icon-size" = 36;
           "notification-body-image-height" = 100;

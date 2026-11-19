@@ -17,6 +17,13 @@ _: {
 
       mod = "SUPER";
 
+      # sleep lets the bind's keys settle so key_press_enables_dpms doesn't wake the monitors
+      lockScreenOff = pkgs.writeShellScript "hypr-lock-screen-off" ''
+        ${lib.getExe' pkgs.systemd "loginctl"} lock-session
+        ${pkgs.coreutils}/bin/sleep 1
+        ${lib.getExe' config.programs.hyprland.package "hyprctl"} dispatch 'hl.dsp.dpms({ action = "off" })'
+      '';
+
       settings = {
         animations.enabled = true;
         binds.allow_workspace_cycles = true;
@@ -271,6 +278,7 @@ _: {
         (bind "${mod} + SHIFT + O" (exec "obsidian"))
         (bind "${mod} + SHIFT + P" (exec "${lib.getExe pkgs.jellyfin-desktop}"))
         (bind "${mod} + SHIFT + Q" "hl.dsp.window.close()")
+        (bind "${mod} + SHIFT + C" (exec "${lockScreenOff}"))
         (bind "${mod} + SHIFT + X" (exec "loginctl lock-session"))
         (bind "${mod} + SHIFT + Z" (exec "systemctl suspend"))
         (bind "${mod} + SHIFT + Y" (exec "${lib.getExe pkgs.chromium} --app=https://youtube.com"))

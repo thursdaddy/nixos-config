@@ -73,6 +73,16 @@ _: {
           on-click-middle = "${lib.getExe' pkgs.swaynotificationcenter "swaync-client"} -C -sw";
           escape = true;
         };
+        "custom/hypridle" = {
+          return-type = "json";
+          exec = "${lib.getExe config.mine.desktop.hypridle.package} status";
+          interval = 10;
+          signal = 8;
+          on-click = "${lib.getExe config.mine.desktop.hypridle.package} toggle";
+          on-click-right = "${lib.getExe config.mine.desktop.hypridle.package} toggle-service";
+          tooltip = true;
+          escape = true;
+        };
         "pulseaudio" = {
           scroll-step = 5;
           format = "{icon}   {volume}%";
@@ -141,6 +151,7 @@ _: {
         modules-center = [
           "clock#time"
           "custom/notification"
+          "custom/hypridle"
         ];
         modules-right = [
           "pulseaudio"
