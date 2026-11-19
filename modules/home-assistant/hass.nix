@@ -95,6 +95,7 @@
                     govee-local-api
                     grpcio
                     grpcio-tools
+                    led-ble
                     psutil-home-assistant
                     psycopg2
                     zlib-ng
@@ -130,6 +131,47 @@
                 ];
               };
               input_boolean = "!include booleans.yaml";
+              # HVAC filter tracker (AppDaemon climate/filter_tracker.py). Runtime and last-changed have
+              # no `initial` so HA restores them; thresholds are declarative and reset on restart.
+              input_number = {
+                hvac_filter_runtime = {
+                  name = "HVAC Filter Runtime";
+                  min = 0;
+                  max = 10000;
+                  step = 0.001;
+                  mode = "box";
+                  unit_of_measurement = "h";
+                  icon = "mdi:air-filter";
+                };
+                hvac_filter_runtime_threshold = {
+                  name = "HVAC Filter Runtime Threshold";
+                  initial = 300;
+                  min = 50;
+                  max = 2000;
+                  step = 10;
+                  mode = "box";
+                  unit_of_measurement = "h";
+                  icon = "mdi:air-filter";
+                };
+                hvac_filter_days_threshold = {
+                  name = "HVAC Filter Days Threshold";
+                  initial = 90;
+                  min = 30;
+                  max = 365;
+                  step = 1;
+                  mode = "box";
+                  unit_of_measurement = "d";
+                  icon = "mdi:calendar-clock";
+                };
+              };
+              input_datetime = {
+                hvac_filter_last_changed = {
+                  name = "HVAC Filter Last Changed";
+                  has_date = true;
+                  has_time = false;
+                  icon = "mdi:calendar-check";
+                };
+              };
               notify = "!include notify.yaml";
               google_assistant = "!include google_assistant.yaml";
               lovelace.resource_mode = "yaml";
@@ -243,6 +285,17 @@
                   - light
                   - input_boolean
                   - vacuum
+                entity_config:
+                  input_boolean.lights_tv_automation:
+                    expose: false
+                  input_boolean.lock_front_door_jammed:
+                    expose: false
+                  input_boolean.lock_back_door_jammed:
+                    expose: false
+                  input_boolean.automated_locks:
+                    expose: false
+                  input_boolean.test_boolean:
+                    expose: false
               '';
             };
           };

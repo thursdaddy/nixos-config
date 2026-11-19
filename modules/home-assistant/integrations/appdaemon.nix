@@ -42,6 +42,7 @@ _: {
             "appdaemon_conf" = {
               path = "${appDir}/appdaemon.yaml";
               owner = config.mine.base.user.name;
+              restartUnits = [ "appdaemon.service" ];
               content = ''
                 appdaemon:
                   time_zone: ${config.time.timeZone}

@@ -62,3 +62,14 @@ hvac_manual_control:
   name: HVAC Manual Control
   initial: false
   icon: mdi:thermostat
+motion_printer:
+  name: Printer Motion Automations
+  initial: true
+  icon: mdi:run-fast
+# No `initial` on the helpers below so HA restores them across restarts
+hvac_forecast_shutoff:
+  name: HVAC Off for Mild Forecast
+  icon: mdi:thermostat-auto
+hvac_filter_replace:
+  name: HVAC Filter Needs Replacing
+  icon: mdi:air-filter
